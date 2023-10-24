@@ -27,19 +27,23 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @AndroidEntryPoint
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 class AlbumWidgetConfigurationActivity : ComponentActivity() {
 
 //    @Inject
@@ -114,8 +118,10 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
         setContent {
             val vm: ConfigurationViewModel = hiltViewModel()
             val group by vm.groupFlow.collectAsState(null)
+            val project by vm.project.collectAsState(null)
 
             var groupId by remember { mutableStateOf("") }
+            var projectId by remember { mutableStateOf("") }
 
             fun closeConfiguration() {
                 val resultValue = Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
@@ -124,6 +130,8 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
                 finish()
             }
 
+            val keyboardController = LocalSoftwareKeyboardController.current
+            val scope = rememberCoroutineScope()
             Scaffold(
                 contentWindowInsets = WindowInsets(0, 0, 0, 0),
                 topBar = {
@@ -149,20 +157,43 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
                         value = groupId,
                         onValueChange = { groupId = it })
 
-                    Button(onClick = {
-                        vm.setGroupId(groupId)
-                    }) {
-                        Text("Click meeee")
+                    TextField(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        label = { Text("Project name (username)") },
+                        singleLine = true,
+                        value = projectId,
+                        onValueChange = { projectId = it })
+
+
+                    Button(
+                        onClick = {
+                            if (groupId.isNotBlank()) {
+                                vm.setGroupId(groupId)
+                            } else if (projectId.isNotBlank()) {
+                                vm.setProjectId(projectId)
+                            }
+
+                            scope.launch {
+                                keyboardController?.hide()
+                            }
+
+                        },
+                        enabled = groupId.isNotBlank() || projectId.isNotBlank()
+                    ) {
+                        Text("Click to set ${if (groupId.isNotBlank()) "Group" else if (projectId.isNotBlank()) "Project" else "Nothing"}")
                     }
 
-                    group?.let {
-                        val biggestImage = it.currentAlbum.images.maxBy { it.height + it.width }.url
+                    if (group != null || project != null) {
+                        val currentAlbum = (group?.currentAlbum ?: project?.currentAlbum)!!
+                        val currentCoverImage = currentAlbum.images.maxBy { it.height + it.width }?.url
                         AsyncImage(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(16.dp),
-                            model = biggestImage, contentDescription = "Current Album"
+                            model = currentCoverImage, contentDescription = "Current Album"
                         )
+                        Text("${currentAlbum.artist} - ${currentAlbum.name}")
                     }
 
 

@@ -3,7 +3,8 @@ package dk.clausr.a1001albumsgenerator.network.retrofit
 import dk.LocalAssetManager
 import dk.clausr.a1001albumsgenerator.network.OAGDataSource
 import dk.clausr.a1001albumsgenerator.network.fake.FakeAssetManager
-import dk.clausr.a1001albumsgenerator.network.model.NetworkGroupResponse
+import dk.clausr.a1001albumsgenerator.network.model.NetworkGroup
+import dk.clausr.a1001albumsgenerator.network.model.NetworkProject
 import dk.clausr.core.common.network.Dispatcher
 import dk.clausr.core.common.network.OagDispatchers
 import kotlinx.coroutines.CoroutineDispatcher
@@ -13,13 +14,18 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import javax.inject.Inject
 
+@OptIn(ExperimentalSerializationApi::class)
 class DemoDataSource @Inject constructor(
     private val json: Json,
     private val assets: FakeAssetManager = LocalAssetManager,
     @Dispatcher(OagDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : OAGDataSource {
-    @OptIn(ExperimentalSerializationApi::class)
-    override suspend fun getGroup(groupId: String): NetworkGroupResponse = withContext(ioDispatcher) {
+
+    override suspend fun getGroup(groupId: String): NetworkGroup = withContext(ioDispatcher) {
         assets.open("mock_group_response.json").use(json::decodeFromStream)
+    }
+
+    override suspend fun getProject(projectId: String): NetworkProject = withContext(ioDispatcher) {
+        assets.open("mock_project_response.json").use(json::decodeFromStream)
     }
 }

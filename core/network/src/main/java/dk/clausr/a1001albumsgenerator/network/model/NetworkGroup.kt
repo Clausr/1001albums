@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class NetworkGroupResponse(
+data class NetworkGroup(
     val name: String,
     val slug: String,
     val updateFrequency: NetworkUpdateFrequency,
@@ -18,15 +18,15 @@ data class NetworkGroupResponse(
     val ratingByDecade: List<NetworkDecade>,
     val numberOfGeneratedAlbums: Int,
     val totalVotes: Int,
-) {
-    @Serializable
-    enum class NetworkUpdateFrequency {
-        @SerialName("dailyWithWeekends")
-        DailyWithWeekends,
+)
 
-        @SerialName("dailyWithoutWeekends")
-        DailyWithoutWeekends,
-    }
+@Serializable
+enum class NetworkUpdateFrequency {
+    @SerialName("dailyWithWeekends")
+    DailyWithWeekends,
+
+    @SerialName("dailyWithoutWeekends")
+    DailyWithoutWeekends,
 }
 
 
