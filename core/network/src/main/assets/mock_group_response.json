@@ -1,0 +1,620 @@
+{
+  "name": "Claus + Rasmus delemusik",
+  "slug": "claus-rasmus-delemusik",
+  "updateFrequency": "dailyWithWeekends",
+  "filteredSelection": {
+    "selections": [],
+    "genres": []
+  },
+  "currentAlbum": {
+    "artist": "George Michael",
+    "artistOrigin": "uk",
+    "images": [
+      {
+        "height": 640,
+        "url": "https://i.scdn.co/image/b0918e54e212d316e08952621867fbaa296ca2b3",
+        "width": 640
+      },
+      {
+        "height": 300,
+        "url": "https://i.scdn.co/image/3bf5a8a009d4cd25caef6ba565fa53e2c40a58bb",
+        "width": 300
+      },
+      {
+        "height": 64,
+        "url": "https://i.scdn.co/image/3459ae5e760756dfaa7e0302c9eb34e15667b5ad",
+        "width": 64
+      }
+    ],
+    "genres": [
+      "pop"
+    ],
+    "subGenres": [],
+    "name": "Faith",
+    "slug": "faith",
+    "releaseDate": "1987",
+    "globalReviewsUrl": "https://1001albumsgenerator.com/albums/34K1Kvskt9arWy8E1Gz3Lw/faith",
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Faith_(George_Michael_album)",
+    "spotifyId": "34K1Kvskt9arWy8E1Gz3Lw",
+    "appleMusicId": "395918916",
+    "tidalId": 4841933,
+    "amazonMusicId": "B004K7BJHW",
+    "youtubeMusicId": "OLAK5uy_mmh-u17hyzW3TavEi9E5GAXPqr5fGLhe8"
+  },
+  "latestAlbum": {
+    "artist": "U2",
+    "artistOrigin": "other",
+    "images": [
+      {
+        "height": 640,
+        "url": "https://i.scdn.co/image/ab67616d0000b273673526fcf35ab235e1a9d94c",
+        "width": 640
+      },
+      {
+        "height": 300,
+        "url": "https://i.scdn.co/image/ab67616d00001e02673526fcf35ab235e1a9d94c",
+        "width": 300
+      },
+      {
+        "height": 64,
+        "url": "https://i.scdn.co/image/ab67616d00004851673526fcf35ab235e1a9d94c",
+        "width": 64
+      }
+    ],
+    "genres": [
+      "rock"
+    ],
+    "subGenres": [
+      "irish-rock",
+      "permanent-wave",
+      "rock"
+    ],
+    "name": "War",
+    "slug": "war",
+    "releaseDate": "1983",
+    "globalReviewsUrl": "https://1001albumsgenerator.com/albums/6GaqU0TlYBKHUiSJ0AT9A2/war",
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/War_(U2_album)",
+    "spotifyId": "6GaqU0TlYBKHUiSJ0AT9A2",
+    "appleMusicId": "1440894470",
+    "tidalId": 621713,
+    "amazonMusicId": "B073JSGG8H",
+    "youtubeMusicId": "OLAK5uy_nuez2OLRZURWEwEonP_eKZIjKKP_o93e0",
+    "votes": 3,
+    "totalRating": 11,
+    "averageRating": 3.67,
+    "listenedAt": "2023-10-24T03:15:07.967Z"
+  },
+  "highestRatedAlbums": [
+    {
+      "artist": "Kanye West",
+      "artistOrigin": "us",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://i.scdn.co/image/205b6692b6b710a322919c7ca9cece2997ac1869",
+          "width": 640
+        },
+        {
+          "height": 300,
+          "url": "https://i.scdn.co/image/2225ea2c7fdb286dfc69ffbc1a67a1b92a9ad3e4",
+          "width": 300
+        },
+        {
+          "height": 64,
+          "url": "https://i.scdn.co/image/27475aefd86ad8eaf6ff52b524ce049fbf44c2a8",
+          "width": 64
+        }
+      ],
+      "genres": [
+        "hip-hop"
+      ],
+      "subGenres": [
+        "chicago-rap",
+        "rap"
+      ],
+      "name": "My Beautiful Dark Twisted Fantasy",
+      "slug": "my-beautiful-dark-twisted-fantasy",
+      "releaseDate": "2010",
+      "globalReviewsUrl": "https://1001albumsgenerator.com/albums/6LBiuhK7PZKjVXyMfPxPoh/my-beautiful-dark-twisted-fantasy",
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/My_Beautiful_Dark_Twisted_Fantasy",
+      "spotifyId": "6LBiuhK7PZKjVXyMfPxPoh",
+      "appleMusicId": "1440742903",
+      "tidalId": 4875681,
+      "amazonMusicId": "B004BWT0AE",
+      "youtubeMusicId": "OLAK5uy_lh6e__g89bgNq1BF7EM9GMlXMLzwvatgA",
+      "votes": 3,
+      "totalRating": 14,
+      "averageRating": 4.67,
+      "listenedAt": "2023-10-17T03:15:08.401Z"
+    },
+    {
+      "artist": "Metallica",
+      "artistOrigin": "us",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://i.scdn.co/image/0b4e70e1ecbbe0085e5c169c447b1648cccf9b21",
+          "width": 640
+        },
+        {
+          "height": 300,
+          "url": "https://i.scdn.co/image/acb6fa806b845764a43775310e4378d2c9503f5f",
+          "width": 300
+        },
+        {
+          "height": 64,
+          "url": "https://i.scdn.co/image/cfd297084e8e46f48f123ca87f6d0f1c43db20e8",
+          "width": 64
+        }
+      ],
+      "genres": [
+        "metal"
+      ],
+      "subGenres": [
+        "hard-rock",
+        "metal",
+        "old-school-thrash",
+        "rock",
+        "thrash-metal"
+      ],
+      "name": "...And Justice For All",
+      "slug": "and-justice-for-all",
+      "releaseDate": "1988",
+      "globalReviewsUrl": "https://1001albumsgenerator.com/albums/69oeRoYEpSsNPGVuYRxfoB/and-justice-for-all",
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/...And_Justice_for_All_(album)",
+      "spotifyId": "69oeRoYEpSsNPGVuYRxfoB",
+      "appleMusicId": "1434424163",
+      "tidalId": 166789684,
+      "amazonMusicId": "B07GX486Q8",
+      "youtubeMusicId": "OLAK5uy_nIDGlbzOP5Y7eHdarScFKVlCKk39qf36M",
+      "votes": 3,
+      "totalRating": 14,
+      "averageRating": 4.67,
+      "listenedAt": "2023-10-21T03:15:09.151Z"
+    },
+    {
+      "artist": "The Chemical Brothers",
+      "artistOrigin": "uk",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://i.scdn.co/image/fa566549a74cbab1116ae95f9454768be01ed879",
+          "width": 640
+        },
+        {
+          "height": 300,
+          "url": "https://i.scdn.co/image/aaf526239abff18115f23dc29cad6cf9fcd4f103",
+          "width": 300
+        },
+        {
+          "height": 64,
+          "url": "https://i.scdn.co/image/3e83da88c565ac057c7c8dc92b8d453d33a38ceb",
+          "width": 64
+        }
+      ],
+      "genres": [
+        "electronica"
+      ],
+      "subGenres": [
+        "alternative-dance",
+        "big-beat",
+        "breakbeat",
+        "electronica",
+        "new-rave",
+        "rave"
+      ],
+      "name": "Dig Your Own Hole",
+      "slug": "dig-your-own-hole",
+      "releaseDate": "1997",
+      "globalReviewsUrl": "https://1001albumsgenerator.com/albums/2DYl4Z5qrQrQvEbMj4Alle/dig-your-own-hole",
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Dig_Your_Own_Hole",
+      "spotifyId": "2DYl4Z5qrQrQvEbMj4Alle",
+      "appleMusicId": "714366008",
+      "tidalId": 1477459,
+      "amazonMusicId": "B073JY54KB",
+      "youtubeMusicId": "OLAK5uy_mK38OMt0vuNZIPhIcYwUtPkBgwArA1A8Q",
+      "votes": 3,
+      "totalRating": 12,
+      "averageRating": 4,
+      "listenedAt": "2023-10-20T03:15:08.819Z"
+    },
+    {
+      "artist": "Sly & The Family Stone",
+      "artistOrigin": "us",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://i.scdn.co/image/178278f98ca9e59338bcbab3620ce8755ca78ec5",
+          "width": 640
+        },
+        {
+          "height": 300,
+          "url": "https://i.scdn.co/image/17be8c2064a5d0e4d9f5e5ba24d403040ffc5e29",
+          "width": 300
+        },
+        {
+          "height": 64,
+          "url": "https://i.scdn.co/image/b843934aa6a415b0f8dcd1bd68405ea361a0be26",
+          "width": 64
+        }
+      ],
+      "genres": [
+        "rock",
+        "soul",
+        "funk"
+      ],
+      "subGenres": [
+        "classic-soul",
+        "funk",
+        "funk-rock",
+        "psychedelic-soul",
+        "soul"
+      ],
+      "name": "Stand!",
+      "slug": "stand",
+      "releaseDate": "1969",
+      "globalReviewsUrl": "https://1001albumsgenerator.com/albums/7iwS1r6JHYJe9xpPjzmWqD/stand",
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Stand!",
+      "spotifyId": "7iwS1r6JHYJe9xpPjzmWqD",
+      "appleMusicId": "216551517",
+      "tidalId": 1277469,
+      "amazonMusicId": "B00138CS0I",
+      "youtubeMusicId": "OLAK5uy_kNnrk66bTQf9O0VcAZzfQT7UhuLsbzaKE",
+      "votes": 2,
+      "totalRating": 8,
+      "averageRating": 4,
+      "listenedAt": "2023-10-09T03:15:08.667Z"
+    },
+    {
+      "artist": "Gorillaz",
+      "artistOrigin": "uk",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://i.scdn.co/image/ab67616d0000b273f6c46838e4425ea96e2562fe",
+          "width": 640
+        },
+        {
+          "height": 300,
+          "url": "https://i.scdn.co/image/ab67616d00001e02f6c46838e4425ea96e2562fe",
+          "width": 300
+        },
+        {
+          "height": 64,
+          "url": "https://i.scdn.co/image/ab67616d00004851f6c46838e4425ea96e2562fe",
+          "width": 64
+        }
+      ],
+      "genres": [
+        "rock"
+      ],
+      "subGenres": [
+        "alternative-hip-hop"
+      ],
+      "name": "Gorillaz",
+      "slug": "gorillaz",
+      "releaseDate": "2001",
+      "globalReviewsUrl": "https://1001albumsgenerator.com/albums/4tUxQkrduOE8sfgwJ5BI2F/gorillaz",
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Gorillaz_(album)",
+      "spotifyId": "4tUxQkrduOE8sfgwJ5BI2F",
+      "appleMusicId": "850576570",
+      "tidalId": 1404355,
+      "amazonMusicId": "B004SBQTHU",
+      "youtubeMusicId": "OLAK5uy_ktGXrd2wOfjJqSIXO2Lnm7vPpsfNBxZd0",
+      "votes": 2,
+      "totalRating": 8,
+      "averageRating": 4,
+      "listenedAt": "2023-10-11T03:15:08.565Z"
+    }
+  ],
+  "lowestRatedAlbums": [
+    {
+      "artist": "Kings of Leon",
+      "artistOrigin": "us",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://i.scdn.co/image/ab67616d0000b2738df6e3203adc247218810906",
+          "width": 640
+        },
+        {
+          "height": 300,
+          "url": "https://i.scdn.co/image/ab67616d00001e028df6e3203adc247218810906",
+          "width": 300
+        },
+        {
+          "height": 64,
+          "url": "https://i.scdn.co/image/ab67616d000048518df6e3203adc247218810906",
+          "width": 64
+        }
+      ],
+      "genres": [
+        "rock"
+      ],
+      "subGenres": [
+        "rock",
+        "modern-rock"
+      ],
+      "name": "Aha Shake Heartbreak",
+      "slug": "aha-shake-heartbreak",
+      "releaseDate": "2004",
+      "globalReviewsUrl": "https://1001albumsgenerator.com/albums/3fNRzhnl6WAtghBXEeyaub/aha-shake-heartbreak",
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Aha_Shake_Heartbreak",
+      "spotifyId": "3fNRzhnl6WAtghBXEeyaub",
+      "appleMusicId": "1482424654",
+      "tidalId": 11987283,
+      "amazonMusicId": "B07YQ7QZHT",
+      "youtubeMusicId": "OLAK5uy_k-xo8KoN_Gwkb5u3ohlD18j6eGjLcTST8",
+      "votes": 3,
+      "totalRating": 5,
+      "averageRating": 1.67,
+      "listenedAt": "2023-10-19T03:15:08.208Z"
+    },
+    {
+      "artist": "Giant Sand",
+      "artistOrigin": "us",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://i.scdn.co/image/ab67616d0000b273aad6a20648d2a55355c4275d",
+          "width": 640
+        },
+        {
+          "height": 300,
+          "url": "https://i.scdn.co/image/ab67616d00001e02aad6a20648d2a55355c4275d",
+          "width": 300
+        },
+        {
+          "height": 64,
+          "url": "https://i.scdn.co/image/ab67616d00004851aad6a20648d2a55355c4275d",
+          "width": 64
+        }
+      ],
+      "genres": [
+        "rock"
+      ],
+      "subGenres": [
+        "tucson-indie"
+      ],
+      "name": "Chore of Enchantment",
+      "slug": "chore-of-enchantment",
+      "releaseDate": "2000",
+      "globalReviewsUrl": "https://1001albumsgenerator.com/albums/6IeqtN9QwL5LUyQw1hlzMu/chore-of-enchantment",
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Chore_of_Enchantment",
+      "spotifyId": "6IeqtN9QwL5LUyQw1hlzMu",
+      "appleMusicId": "1668346488",
+      "tidalId": 273135450,
+      "amazonMusicId": "B0BT46LLBX",
+      "youtubeMusicId": "OLAK5uy_mmIKQZQVnU7ifNjqoiHkSKjJZV1o39FRI",
+      "votes": 3,
+      "totalRating": 7,
+      "averageRating": 2.33,
+      "listenedAt": "2023-10-18T03:15:08.492Z"
+    },
+    {
+      "artist": "Jerry Lee Lewis",
+      "artistOrigin": "us",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://i.scdn.co/image/ab67616d0000b27389bf701a4bf3328b3faa848d",
+          "width": 640
+        },
+        {
+          "height": 300,
+          "url": "https://i.scdn.co/image/ab67616d00001e0289bf701a4bf3328b3faa848d",
+          "width": 300
+        },
+        {
+          "height": 64,
+          "url": "https://i.scdn.co/image/ab67616d0000485189bf701a4bf3328b3faa848d",
+          "width": 64
+        }
+      ],
+      "genres": [
+        "rock",
+        "rock-and-roll"
+      ],
+      "subGenres": [
+        "adult-standards",
+        "brill-building-pop",
+        "piano-rock",
+        "rock-and-roll",
+        "rockabilly"
+      ],
+      "name": "Live At The Star Club, Hamburg",
+      "slug": "live-at-the-star-club-hamburg",
+      "releaseDate": "1964",
+      "globalReviewsUrl": "https://1001albumsgenerator.com/albums/6pqT4OHQ2QZW77gWehUeLm/live-at-the-star-club-hamburg",
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Live_at_the_Star_Club,_Hamburg",
+      "spotifyId": "6pqT4OHQ2QZW77gWehUeLm",
+      "appleMusicId": "1444108226",
+      "tidalId": 64743524,
+      "amazonMusicId": "B01LZGACZF",
+      "youtubeMusicId": "OLAK5uy_lQ35MgSKW3LXvBxuMJK8xdJE3SsbAd7dE",
+      "votes": 2,
+      "totalRating": 5,
+      "averageRating": 2.5,
+      "listenedAt": "2023-10-16T03:15:08.454Z"
+    },
+    {
+      "artist": "Little Simz",
+      "artistOrigin": "uk",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://i.scdn.co/image/ab67616d0000b2731c54fc953531d5da04232deb",
+          "width": 640
+        },
+        {
+          "height": 300,
+          "url": "https://i.scdn.co/image/ab67616d00001e021c54fc953531d5da04232deb",
+          "width": 300
+        },
+        {
+          "height": 64,
+          "url": "https://i.scdn.co/image/ab67616d000048511c54fc953531d5da04232deb",
+          "width": 64
+        }
+      ],
+      "genres": [
+        "hip-hop"
+      ],
+      "subGenres": [
+        "escape-room",
+        "trap-queen"
+      ],
+      "name": "GREY Area",
+      "slug": "grey-area",
+      "releaseDate": "2019",
+      "globalReviewsUrl": "https://1001albumsgenerator.com/albums/4Wwm4xg2748zhYuzDRFTgY/grey-area",
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Grey_Area_(album)",
+      "spotifyId": "4Wwm4xg2748zhYuzDRFTgY",
+      "appleMusicId": "1444318578",
+      "tidalId": 252759146,
+      "amazonMusicId": "B07KSGPGB1",
+      "youtubeMusicId": "OLAK5uy_l141I-CeV96BaN9hmEz1Vg5F2wSWnv_6M",
+      "votes": 2,
+      "totalRating": 5,
+      "averageRating": 2.5,
+      "listenedAt": "2023-10-14T03:15:10.262Z"
+    },
+    {
+      "artist": "Beck",
+      "artistOrigin": "us",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://i.scdn.co/image/ab67616d0000b27342b1d9121baa3c313a0564e5",
+          "width": 640
+        },
+        {
+          "height": 300,
+          "url": "https://i.scdn.co/image/ab67616d00001e0242b1d9121baa3c313a0564e5",
+          "width": 300
+        },
+        {
+          "height": 64,
+          "url": "https://i.scdn.co/image/ab67616d0000485142b1d9121baa3c313a0564e5",
+          "width": 64
+        }
+      ],
+      "genres": [
+        "rock"
+      ],
+      "subGenres": [
+        "alternative-rock",
+        "anti-folk",
+        "indie-rock",
+        "modern-rock",
+        "permanent-wave",
+        "rock"
+      ],
+      "name": "Guero",
+      "slug": "guero",
+      "releaseDate": "2005",
+      "globalReviewsUrl": "https://1001albumsgenerator.com/albums/1R0BP6MeMLigDNaoztxUAZ/guero",
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Guero",
+      "spotifyId": "1R0BP6MeMLigDNaoztxUAZ",
+      "appleMusicId": "1440809859",
+      "tidalId": 77666324,
+      "amazonMusicId": "B073F9KZJY",
+      "youtubeMusicId": "OLAK5uy_mdsXnTOyrXTGk295F-bA7WxZH3buboMww",
+      "votes": 1,
+      "totalRating": 3,
+      "averageRating": 3,
+      "listenedAt": "2023-10-15T03:15:09.579Z"
+    }
+  ],
+  "favoriteGenres": [
+    {
+      "numberOfAlbums": 2,
+      "totalRating": 21,
+      "votes": 5,
+      "genre": "metal",
+      "rating": 4.2,
+      "numberOfVotes": 5
+    },
+    {
+      "numberOfAlbums": 1,
+      "totalRating": 8,
+      "votes": 2,
+      "genre": "funk",
+      "rating": 4,
+      "numberOfVotes": 2
+    },
+    {
+      "numberOfAlbums": 2,
+      "totalRating": 19,
+      "votes": 5,
+      "genre": "hip-hop",
+      "rating": 3.8,
+      "numberOfVotes": 5
+    }
+  ],
+  "worstGenres": [
+    {
+      "numberOfAlbums": 1,
+      "totalRating": 5,
+      "votes": 2,
+      "genre": "rock-and-roll",
+      "rating": 2.5,
+      "numberOfVotes": 2
+    },
+    {
+      "numberOfAlbums": 7,
+      "totalRating": 47,
+      "votes": 16,
+      "genre": "rock",
+      "rating": 2.94,
+      "numberOfVotes": 16
+    },
+    {
+      "numberOfAlbums": 1,
+      "totalRating": 6,
+      "votes": 2,
+      "genre": "indie",
+      "rating": 3,
+      "numberOfVotes": 2
+    }
+  ],
+  "ratingByDecade": [
+    {
+      "totalRating": 38,
+      "votes": 10,
+      "numberOfAlbums": 4,
+      "decade": "1980",
+      "rating": 3.8
+    },
+    {
+      "totalRating": 19,
+      "votes": 5,
+      "numberOfAlbums": 2,
+      "decade": "2010",
+      "rating": 3.8
+    },
+    {
+      "totalRating": 18,
+      "votes": 5,
+      "numberOfAlbums": 2,
+      "decade": "1990",
+      "rating": 3.6
+    },
+    {
+      "totalRating": 23,
+      "votes": 7,
+      "numberOfAlbums": 3,
+      "decade": "1960",
+      "rating": 3.29
+    },
+    {
+      "totalRating": 32,
+      "votes": 12,
+      "numberOfAlbums": 5,
+      "decade": "2000",
+      "rating": 2.67
+    }
+  ],
+  "numberOfGeneratedAlbums": 16,
+  "totalVotes": 39
+}

@@ -1,10 +1,9 @@
-package dk.clausr.widget
+package dk.clausr.configuration
 
 import android.app.Activity
 import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -15,24 +14,36 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
+import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
+import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
+@AndroidEntryPoint
 @OptIn(ExperimentalMaterial3Api::class)
 class AlbumWidgetConfigurationActivity : ComponentActivity() {
+
+//    @Inject
+//    lateinit var testRepo: OagRepository
 
     val manager: GlanceAppWidgetManager by lazy {
         GlanceAppWidgetManager(this)
@@ -47,14 +58,14 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        Log.d("AlbumWidgetConfigurationActivity", "On resume..")
+//        Timber.d("On resume.. -- ${testRepo.getGroup("")}")
 //        updateView()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Log.i("AlbumWidgetConfigurationActivity", "Widget ID: $appWidgetId")
+        Timber.i("Widget ID: $appWidgetId")
 
         setResult(Activity.RESULT_CANCELED)
 
@@ -85,29 +96,33 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
             }
             val receiver = receiverClass.getDeclaredConstructor()
                 .newInstance() as GlanceAppWidgetReceiver
-//            val provider = receiver.glanceAppWidget.javaClass
-////            ProviderData(
-////                provider = provider,
-////                receiver = receiver.javaClass,
-////                appWidgets = manager.getGlanceIds(provider).map { id ->
-////                    AppWidgetDesc(appWidgetId = id, sizes = manager.getAppWidgetSizes(id))
-////                })
+            val provider = receiver.glanceAppWidget.javaClass
+
+//            manager.getGlanceIds(provider).map { id ->
+//                manager.getAppWidgetSizes(id)
+//            }
+//            ProviderData(
+//                provider = provider,
+//                receiver = receiver.javaClass,
+//                appWidgets = manager.getGlanceIds(provider).map { id ->
+//                    AppWidgetDesc(appWidgetId = id, sizes = manager.getAppWidgetSizes(id))
+//                })
 
         }
 
-        Log.d("AlbumWidget", "${receivers.joinToString { it }} -- ")
+        Timber.d("${receivers.joinToString { it }} -- ")
         setContent {
-            var username by remember { mutableStateOf("") }
+            val vm: ConfigurationViewModel = hiltViewModel()
+            val group by vm.groupFlow.collectAsState(null)
 
-            LaunchedEffect(key1 = username,
-                block = {
-                    if (username.equals("test", ignoreCase = true)) {
-                        val resultValue = Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+            var groupId by remember { mutableStateOf("") }
 
-                        setResult(Activity.RESULT_OK, resultValue)
-                        finish()
-                    }
-                })
+            fun closeConfiguration() {
+                val resultValue = Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+
+                setResult(Activity.RESULT_OK, resultValue)
+                finish()
+            }
 
             Scaffold(
                 contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -118,10 +133,12 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
                 Column(
                     Modifier
                         .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
                         .padding(padding)
                         .padding(horizontal = 16.dp)
                         .background(MaterialTheme.colorScheme.background),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
 
                     TextField(
@@ -129,11 +146,34 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
                             .fillMaxWidth(),
                         label = { Text("Group name") },
                         singleLine = true,
-                        value = username,
-                        onValueChange = { username = it })
+                        value = groupId,
+                        onValueChange = { groupId = it })
+
+                    Button(onClick = {
+                        vm.setGroupId(groupId)
+                    }) {
+                        Text("Click meeee")
+                    }
+
+                    group?.let {
+                        val biggestImage = it.currentAlbum.images.maxBy { it.height + it.width }.url
+                        AsyncImage(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            model = biggestImage, contentDescription = "Current Album"
+                        )
+                    }
+
+
+                    if (group != null) {
+                        Button(onClick = ::closeConfiguration) {
+                            Text("Apply changes")
+                        }
+                    }
+
                 }
             }
         }
     }
-
 }

@@ -22,3 +22,5 @@ include(":core:datastore")
 include(":core:data")
 
 include(":widget")
+include(":core:common")
+include(":core:model")

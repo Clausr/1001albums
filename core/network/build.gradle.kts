@@ -1,5 +1,6 @@
 plugins {
     id("a1001albums.android.library")
+    id("a1001albums.android.hilt")
     id("kotlinx-serialization")
 
 }
@@ -7,15 +8,35 @@ plugins {
 android {
     namespace = "dk.clausr.a1001albumsgenerator.network"
 
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
+
+    buildFeatures {
+        buildConfig = true
+    }
     defaultConfig {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
+
+        buildConfigField("String", "BACKEND_URL", "\"https://1001albumsgenerator.com/api/v1/\"")
     }
 
 }
 
 dependencies {
+    implementation(project(":core:common"))
+    implementation(project(":core:model"))
+
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
+
+    implementation(libs.retrofit.kotlin.serialization)
+    implementation(libs.retrofit.core)
+
+    implementation(libs.okhttp.logging)
+    implementation(libs.coil.kt)
 }

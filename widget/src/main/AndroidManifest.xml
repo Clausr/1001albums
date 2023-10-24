@@ -4,7 +4,7 @@
     <application>
 
         <activity
-            android:name=".AlbumWidgetConfigurationActivity"
+            android:name="dk.clausr.configuration.AlbumWidgetConfigurationActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
