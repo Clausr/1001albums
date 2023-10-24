@@ -1,4 +1,5 @@
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
         google()
         mavenCentral()
@@ -10,9 +11,14 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven("https://jitpack.io") // Necessary for the gradle to be able to download github packages
     }
 }
 
 rootProject.name = "1001 Albums Generator"
 include(":app")
- 
+include(":core:network")
+include(":core:datastore")
+include(":core:data")
+
+include(":widget")

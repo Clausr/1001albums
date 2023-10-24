@@ -7,9 +7,7 @@
     android:minResizeHeight="100dp"
     android:minResizeWidth="100dp"
     android:targetCellWidth="2"
-    android:targetCellHeight="2"
-    android:configure="dk.clausr.a1001albumsgenerator.ui.glance.AlbumWidgetConfigurationActivity"
-    android:widgetCategory="home_screen"
+    android:targetCellHeight="2" android:configure="dk.clausr.widget.AlbumWidgetConfigurationActivity" android:widgetCategory="home_screen"
     android:widgetFeatures="reconfigurable"
     android:resizeMode="horizontal|vertical"/>
 

@@ -1,8 +1,7 @@
-package dk.clausr.a1001albumsgenerator.ui.glance
+package dk.clausr.widget
 
 import android.content.Context
 import android.graphics.Bitmap
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -10,42 +9,28 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmapOrNull
-import androidx.glance.Button
-
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
 import androidx.glance.LocalSize
-import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.CircularProgressIndicator
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
-import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.cornerRadius
-
 import androidx.glance.appwidget.provideContent
-import androidx.glance.layout.Alignment
-import androidx.glance.layout.Column
 import androidx.glance.layout.ContentScale
-import androidx.glance.layout.Row
 import androidx.glance.layout.fillMaxSize
-import androidx.glance.layout.padding
-import androidx.glance.session.GlanceSessionManager
-import androidx.glance.text.Text
 import coil.imageLoader
 import coil.request.CachePolicy
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.SuccessResult
-import dk.clausr.a1001albumsgenerator.MainActivity
-import dk.clausr.a1001albumsgenerator.ui.theme._1001AlbumsGeneratorTheme
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -64,9 +49,7 @@ class DailyAlbumWidget : GlanceAppWidget() {
         var randomImage by remember(url) { mutableStateOf<Bitmap?>(null) }
 
         LaunchedEffect(Unit) {
-//            scope.launch {
-                randomImage = context.getRandomImage(url, force = true)
-//            }
+            randomImage = context.getRandomImage(url, force = true)
         }
         // Load a random image
         LaunchedEffect(url) {
