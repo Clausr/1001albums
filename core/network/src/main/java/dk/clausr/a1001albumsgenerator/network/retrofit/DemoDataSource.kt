@@ -21,11 +21,11 @@ class DemoDataSource @Inject constructor(
     @Dispatcher(OagDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : OAGDataSource {
 
-    override suspend fun getGroup(groupId: String): NetworkGroup = withContext(ioDispatcher) {
-        assets.open("mock_group_response.json").use(json::decodeFromStream)
+    override suspend fun getGroup(groupId: String): Result<NetworkGroup?> = withContext(ioDispatcher) {
+        Result.success(assets.open("mock_group_response.json").use(json::decodeFromStream))
     }
 
-    override suspend fun getProject(projectId: String): NetworkProject = withContext(ioDispatcher) {
-        assets.open("mock_project_response.json").use(json::decodeFromStream)
+    override suspend fun getProject(projectId: String): Result<NetworkProject?> = withContext(ioDispatcher) {
+        Result.success(assets.open("mock_project_response.json").use(json::decodeFromStream))
     }
 }

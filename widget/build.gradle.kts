@@ -14,4 +14,5 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:model"))
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.compose.material.iconsExtended)
 }

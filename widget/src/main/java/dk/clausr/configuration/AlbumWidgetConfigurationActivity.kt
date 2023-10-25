@@ -187,8 +187,7 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
                             }
 
                         },
-                        enabled = //groupId.isNotBlank() ||
-                        projectId.isNotBlank()
+                        enabled = projectId.isNotBlank() && !projectId.equals(project?.name, ignoreCase = true)
                     ) {
                         Text("Click to set project")
 //                        Text("Click to set ${if (groupId.isNotBlank()) "Group" else if (projectId.isNotBlank()) "Project" else "Nothing"}")

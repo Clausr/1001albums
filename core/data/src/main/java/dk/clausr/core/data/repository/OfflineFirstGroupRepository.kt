@@ -11,6 +11,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import timber.log.Timber
 import javax.inject.Inject
 
 class OfflineFirstGroupRepository @Inject constructor(
@@ -21,13 +22,31 @@ class OfflineFirstGroupRepository @Inject constructor(
     override val projectId: Flow<String?> = dataStore.projectId
     override val groupId: Flow<String?> = dataStore.groupId
 
-    override fun getGroup(groupId: String): Flow<Group> = flow {
+    override fun getGroup(groupId: String): Flow<Group?> = flow {
         dataStore.setGroup(groupId)
-        emit(dataSource.getGroup(groupId).asExternalModel())
+
+        dataSource.getGroup(groupId).apply {
+            onSuccess {
+                emit(it?.asExternalModel())
+            }
+            onFailure {
+                Timber.w("Could not get group..")
+                emit(null)
+            }
+        }
+
     }.flowOn(ioDispatcher)
 
-    override fun getProject(projectId: String): Flow<Project> = flow {
+    override fun getProject(projectId: String): Flow<Project?> = flow {
         dataStore.setProject(projectId)
-        emit(dataSource.getProject(projectId).asExternalModel())
+        dataSource.getProject(projectId).apply {
+            onSuccess {
+                emit(it?.asExternalModel())
+            }
+            onFailure {
+                Timber.w("Could not get project..")
+                emit(null)
+            }
+        }
     }.flowOn(ioDispatcher)
 }
