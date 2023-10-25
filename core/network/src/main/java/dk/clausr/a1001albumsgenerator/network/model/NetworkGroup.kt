@@ -25,7 +25,7 @@ enum class NetworkUpdateFrequency {
     @SerialName("dailyWithWeekends")
     DailyWithWeekends,
 
-    @SerialName("dailyWithoutWeekends")
+    @SerialName("daily")
     DailyWithoutWeekends,
 }
 

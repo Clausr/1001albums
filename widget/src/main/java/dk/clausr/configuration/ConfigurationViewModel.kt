@@ -9,6 +9,8 @@ import dk.clausr.core.model.Project
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.stateIn
@@ -17,14 +19,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ConfigurationViewModel @Inject constructor(
-    private val oagRepository: OagRepository
+    private val oagRepository: OagRepository,
 ) : ViewModel() {
-
-
     private val _groupId: MutableStateFlow<String?> = MutableStateFlow(null)
     private val _projectId: MutableStateFlow<String?> = MutableStateFlow(null)
 
-    val groupFlow: StateFlow<Group?> = _groupId.mapNotNull { it }
+    val groupFlow: StateFlow<Group?> = combine(_groupId, oagRepository.groupId) { explicitGroupId, preferences ->
+        explicitGroupId ?: preferences
+    }
+        .mapNotNull { it }
         .flatMapLatest {
             oagRepository.getGroup(it)
         }
@@ -34,7 +37,11 @@ class ConfigurationViewModel @Inject constructor(
             initialValue = null
         )
 
-    val project: StateFlow<Project?> = _projectId.mapNotNull { it }
+    val project: StateFlow<Project?> = combine(_projectId, oagRepository.projectId) { explicitProjectId, preferences ->
+        explicitProjectId ?: preferences
+    }
+        .mapNotNull { it }
+        .distinctUntilChanged()
         .flatMapLatest { oagRepository.getProject(it) }
         .stateIn(
             scope = viewModelScope,

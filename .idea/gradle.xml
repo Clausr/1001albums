@@ -32,6 +32,8 @@
             <option value="$PROJECT_DIR$/core/datastore" />
             <option value="$PROJECT_DIR$/core/model" />
             <option value="$PROJECT_DIR$/core/network" />
+            <option value="$PROJECT_DIR$/feature" />
+            <option value="$PROJECT_DIR$/feature/overview" />
             <option value="$PROJECT_DIR$/widget" />
           </set>
         </option>

@@ -12,8 +12,8 @@ fun NetworkHistoricAlbum.asExternalModel(): HistoricAlbum = HistoricAlbum(
     globalRating = globalRating
 )
 
-private fun String.mapToRating(): Rating = if (this == "did-not-listen") {
-    Rating.DidNotListen
-} else {
-    Rating.Rated(this.toInt())
+private fun String?.mapToRating(): Rating = when (this) {
+    null -> Rating.Unrated
+    "did-not-listen" -> Rating.DidNotListen
+    else -> Rating.Rated(this.toInt())
 }

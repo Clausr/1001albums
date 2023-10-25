@@ -45,18 +45,25 @@ class DailyAlbumWidget : GlanceAppWidget() {
         }
     }
 
+    override suspend fun onDelete(context: Context, glanceId: GlanceId) {
+        super.onDelete(context, glanceId)
+
+    }
+
     @Composable
     fun MyContent() {
         val context = LocalContext.current
-        val viewModel = EntryPoints.get(context, OagEntryPoint::class.java).vm()
 
-        val group by viewModel.getGroup().collectAsState(initial = null)
+        val viewModel = remember { EntryPoints.get(context, OagEntryPoint::class.java).vm() }
 
-        Timber.d("My Content ran")
-        val latestAlbumUrl = group?.currentAlbum?.images?.maxBy { it.height }?.url
+        val project by viewModel.project.collectAsState(initial = null)
+
+        Timber.d("Widget: Project: ${project?.name}")
+        val latestAlbumUrl = project?.currentAlbum?.images?.maxBy { it.height }?.url
         var currentAlbumImage by remember(latestAlbumUrl) { mutableStateOf<Bitmap?>(null) }
 
         val scope = rememberCoroutineScope()
+
         LaunchedEffect(latestAlbumUrl) {
             if (latestAlbumUrl != null) {
                 currentAlbumImage = context.getImage(latestAlbumUrl)
@@ -70,15 +77,13 @@ class DailyAlbumWidget : GlanceAppWidget() {
                 contentScale = ContentScale.Fit,
                 modifier = GlanceModifier.cornerRadius(16.dp).fillMaxSize()
                     .clickable {
-                        scope.launch {
-//                            randomImage = context.getImage(url, force = true)
-                        }
+                        viewModel.refresh()
                     }
             )
         } else {
             CircularProgressIndicator(modifier = GlanceModifier.clickable {
                 scope.launch {
-//                    randomImage = context.getImage(url, force = true)
+                    viewModel.refresh()
                 }
             })
         }

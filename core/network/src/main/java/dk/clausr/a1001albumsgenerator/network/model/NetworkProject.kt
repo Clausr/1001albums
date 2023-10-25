@@ -15,7 +15,7 @@ data class NetworkProject(
 @Serializable
 data class NetworkHistoricAlbum(
     val album: NetworkAlbum,
-    val rating: String,
+    val rating: String? = null,
     val review: String,
     val generatedAt: String, // TODO LocalDateTime
     val globalRating: Double,

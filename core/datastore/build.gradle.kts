@@ -1,6 +1,6 @@
 plugins {
     id("a1001albums.android.library")
-
+    id("a1001albums.android.hilt")
 }
 
 android {
@@ -8,5 +8,5 @@ android {
 }
 
 dependencies {
-
+    implementation(libs.androidx.datastore.preferences)
 }

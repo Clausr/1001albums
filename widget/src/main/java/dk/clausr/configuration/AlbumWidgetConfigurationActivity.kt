@@ -32,13 +32,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
+import androidx.glance.appwidget.updateAll
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import dagger.hilt.android.AndroidEntryPoint
+import dk.clausr.widget.DailyAlbumWidget
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -92,6 +95,7 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
             .filter { it.provider.packageName == packageName }
             .map { it.provider.className }
 
+        Timber.d("Receivers: $receivers")
 
         val data = receivers.mapNotNull { receiverName ->
             val receiverClass = Class.forName(receiverName)
@@ -112,20 +116,23 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
 //                    AppWidgetDesc(appWidgetId = id, sizes = manager.getAppWidgetSizes(id))
 //                })
 
+
         }
 
         Timber.d("${receivers.joinToString { it }} -- ")
         setContent {
             val vm: ConfigurationViewModel = hiltViewModel()
-            val group by vm.groupFlow.collectAsState(null)
             val project by vm.project.collectAsState(null)
 
-            var groupId by remember { mutableStateOf("") }
-            var projectId by remember { mutableStateOf("") }
+            var projectId by remember(project?.name) { mutableStateOf(project?.name ?: "") }
+            val context = LocalContext.current
+            val coroutineScope = rememberCoroutineScope()
 
             fun closeConfiguration() {
                 val resultValue = Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-
+                coroutineScope.launch {
+                    DailyAlbumWidget().updateAll(context)
+                }
                 setResult(Activity.RESULT_OK, resultValue)
                 finish()
             }
@@ -149,13 +156,13 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
 
-                    TextField(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        label = { Text("Group name") },
-                        singleLine = true,
-                        value = groupId,
-                        onValueChange = { groupId = it })
+//                    TextField(
+//                        modifier = Modifier
+//                            .fillMaxWidth(),
+//                        label = { Text("Group name") },
+//                        singleLine = true,
+//                        value = groupId,
+//                        onValueChange = { groupId = it })
 
                     TextField(
                         modifier = Modifier
@@ -168,9 +175,10 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
 
                     Button(
                         onClick = {
-                            if (groupId.isNotBlank()) {
-                                vm.setGroupId(groupId)
-                            } else if (projectId.isNotBlank()) {
+//                            if (groupId.isNotBlank()) {
+//                                vm.setGroupId(groupId)
+//                            } else
+                            if (projectId.isNotBlank()) {
                                 vm.setProjectId(projectId)
                             }
 
@@ -179,29 +187,36 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
                             }
 
                         },
-                        enabled = groupId.isNotBlank() || projectId.isNotBlank()
+                        enabled = //groupId.isNotBlank() ||
+                        projectId.isNotBlank()
                     ) {
-                        Text("Click to set ${if (groupId.isNotBlank()) "Group" else if (projectId.isNotBlank()) "Project" else "Nothing"}")
+                        Text("Click to set project")
+//                        Text("Click to set ${if (groupId.isNotBlank()) "Group" else if (projectId.isNotBlank()) "Project" else "Nothing"}")
                     }
 
-                    if (group != null || project != null) {
-                        val currentAlbum = (group?.currentAlbum ?: project?.currentAlbum)!!
+                    if (project != null) {
+                        val currentAlbum = project?.currentAlbum!!
                         val currentCoverImage = currentAlbum.images.maxBy { it.height + it.width }?.url
-                        AsyncImage(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            model = currentCoverImage, contentDescription = "Current Album"
-                        )
-                        Text("${currentAlbum.artist} - ${currentAlbum.name}")
-                    }
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            AsyncImage(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                model = currentCoverImage, contentDescription = "Current Album"
+                            )
+                            Text("${currentAlbum.artist} - ${currentAlbum.name}")
+                        }
 
-
-                    if (group != null) {
                         Button(onClick = ::closeConfiguration) {
                             Text("Apply changes")
                         }
                     }
+
+
+//                    if (group != null) {
+//                        Button(onClick = ::closeConfiguration) {
+//                            Text("Apply changes")
+//                        }
+//                    }
 
                 }
             }

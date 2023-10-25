@@ -11,4 +11,5 @@ data class HistoricAlbum(
 sealed class Rating {
     data class Rated(val rating: Int) : Rating()
     data object DidNotListen : Rating()
+    data object Unrated : Rating()
 }
