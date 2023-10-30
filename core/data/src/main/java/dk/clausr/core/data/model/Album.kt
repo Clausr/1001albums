@@ -1,6 +1,7 @@
 package dk.clausr.core.data.model
 
 import dk.clausr.a1001albumsgenerator.network.model.NetworkAlbum
+import dk.clausr.core.database.model.AlbumEntity
 import dk.clausr.core.model.Album
 
 fun NetworkAlbum.asExternalModel(): Album = Album(
@@ -21,3 +22,17 @@ fun NetworkAlbum.asExternalModel(): Album = Album(
     youtubeMusicId = youtubeMusicId
 )
 
+fun NetworkAlbum.toEntity(): AlbumEntity = AlbumEntity(
+    slug = slug,
+    artist = artist,
+    artistOrigin = artistOrigin,
+    name = name,
+    releaseDate = releaseDate,
+    globalReviewsUrl = globalReviewsUrl,
+    wikipediaUrl = wikipediaUrl,
+    spotifyId = spotifyId,
+    appleMusicId = appleMusicId,
+    tidalId = tidalId,
+    amazonMusicId = amazonMusicId,
+    youtubeMusicId = youtubeMusicId
+)

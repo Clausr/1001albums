@@ -6,10 +6,10 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,11 +37,12 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
-import androidx.glance.appwidget.updateAll
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.work.WorkManager
 import coil.compose.AsyncImage
 import dagger.hilt.android.AndroidEntryPoint
-import dk.clausr.widget.DailyAlbumWidget
+import dk.clausr.worker.UpdateWidgetWorker
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -49,10 +50,7 @@ import timber.log.Timber
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 class AlbumWidgetConfigurationActivity : ComponentActivity() {
 
-//    @Inject
-//    lateinit var testRepo: OagRepository
-
-    val manager: GlanceAppWidgetManager by lazy {
+    private val manager: GlanceAppWidgetManager by lazy {
         GlanceAppWidgetManager(this)
     }
 
@@ -62,11 +60,11 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
         ) ?: AppWidgetManager.INVALID_APPWIDGET_ID
     }
 
+    private val vm: ConfigurationViewModel by viewModels()
 
     override fun onResume() {
         super.onResume()
-//        Timber.d("On resume.. -- ${testRepo.getGroup("")}")
-//        updateView()
+        updateView()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,6 +72,7 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
 
         Timber.i("Widget ID: $appWidgetId")
 
+        vm.setWidgetId(appWidgetId)
         setResult(Activity.RESULT_CANCELED)
 
         updateView()
@@ -83,12 +82,11 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
             finish()
             return
         }
-
-
     }
 
-    @OptIn(ExperimentalLayoutApi::class)
     private fun updateView() {
+        Timber.i("Update view")
+
         // Discover the GlanceAppWidget
         val appWidgetManager = AppWidgetManager.getInstance(this@AlbumWidgetConfigurationActivity)
         val receivers = appWidgetManager.installedProviders
@@ -96,8 +94,9 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
             .map { it.provider.className }
 
         Timber.d("Receivers: $receivers")
+        val coroutineScope = CoroutineScope(SupervisorJob())
 
-        val data = receivers.mapNotNull { receiverName ->
+        receivers.mapNotNull { receiverName ->
             val receiverClass = Class.forName(receiverName)
             if (!GlanceAppWidgetReceiver::class.java.isAssignableFrom(receiverClass)) {
                 return@mapNotNull null
@@ -106,33 +105,37 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
                 .newInstance() as GlanceAppWidgetReceiver
             val provider = receiver.glanceAppWidget.javaClass
 
-//            manager.getGlanceIds(provider).map { id ->
-//                manager.getAppWidgetSizes(id)
-//            }
-//            ProviderData(
-//                provider = provider,
-//                receiver = receiver.javaClass,
-//                appWidgets = manager.getGlanceIds(provider).map { id ->
-//                    AppWidgetDesc(appWidgetId = id, sizes = manager.getAppWidgetSizes(id))
-//                })
+            coroutineScope.launch {
+                val sizes = manager.getGlanceIds(provider).flatMap { id ->
+                    manager.getAppWidgetSizes(id)
+                }
+                Timber.d("Sizes: ${sizes.joinToString { it.toString() }}")
+//                ProviderData(
+//                    provider = provider,
+//                    receiver = receiver.javaClass,
+//                    appWidgets = manager.getGlanceIds(provider).map { id ->
+//                        AppWidgetDesc(appWidgetId = id, sizes = manager.getAppWidgetSizes(id))
+//                    })
 
-
+            }
         }
 
-        Timber.d("${receivers.joinToString { it }} -- ")
         setContent {
-            val vm: ConfigurationViewModel = hiltViewModel()
-            val project by vm.project.collectAsState(null)
+            val widget by vm.widget.collectAsState()
 
-            var projectId by remember(project?.name) { mutableStateOf(project?.name ?: "") }
+            Timber.d("Project: -- widget: $widget")
+
+            var projectId by remember(widget?.projectName) { mutableStateOf(widget?.projectName ?: "") }
             val context = LocalContext.current
             val coroutineScope = rememberCoroutineScope()
 
             fun closeConfiguration() {
+                Timber.d("Close configuration")
                 val resultValue = Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-                coroutineScope.launch {
-                    DailyAlbumWidget().updateAll(context)
-                }
+
+                WorkManager.getInstance(this)
+                    .enqueue(UpdateWidgetWorker.refreshAlbumRepeatedly("decoid"))
+
                 setResult(Activity.RESULT_OK, resultValue)
                 finish()
             }
@@ -155,15 +158,6 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-
-//                    TextField(
-//                        modifier = Modifier
-//                            .fillMaxWidth(),
-//                        label = { Text("Group name") },
-//                        singleLine = true,
-//                        value = groupId,
-//                        onValueChange = { groupId = it })
-
                     TextField(
                         modifier = Modifier
                             .fillMaxWidth(),
@@ -172,14 +166,11 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
                         value = projectId,
                         onValueChange = { projectId = it })
 
-
                     Button(
                         onClick = {
-//                            if (groupId.isNotBlank()) {
-//                                vm.setGroupId(groupId)
-//                            } else
                             if (projectId.isNotBlank()) {
                                 vm.setProjectId(projectId)
+                                Timber.d("Project id: $projectId")
                             }
 
                             scope.launch {
@@ -187,36 +178,25 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
                             }
 
                         },
-                        enabled = projectId.isNotBlank() && !projectId.equals(project?.name, ignoreCase = true)
+                        enabled = projectId.isNotBlank() && !projectId.equals(widget?.projectName, ignoreCase = true)
                     ) {
                         Text("Click to set project")
-//                        Text("Click to set ${if (groupId.isNotBlank()) "Group" else if (projectId.isNotBlank()) "Project" else "Nothing"}")
                     }
 
-                    if (project != null) {
-                        val currentAlbum = project?.currentAlbum!!
-                        val currentCoverImage = currentAlbum.images.maxBy { it.height + it.width }?.url
+                    if (widget != null) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             AsyncImage(
                                 modifier = Modifier
                                     .fillMaxWidth(),
-                                model = currentCoverImage, contentDescription = "Current Album"
+                                model = widget?.currentCoverUrl, contentDescription = "Current Album"
                             )
-                            Text("${currentAlbum.artist} - ${currentAlbum.name}")
+                            Text("${widget?.currentAlbumArtist} - ${widget?.currentAlbumTitle}")
                         }
 
                         Button(onClick = ::closeConfiguration) {
                             Text("Apply changes")
                         }
                     }
-
-
-//                    if (group != null) {
-//                        Button(onClick = ::closeConfiguration) {
-//                            Text("Apply changes")
-//                        }
-//                    }
-
                 }
             }
         }

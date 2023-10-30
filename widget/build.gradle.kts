@@ -15,4 +15,10 @@ dependencies {
     implementation(project(":core:model"))
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.compose.material.iconsExtended)
+
+    implementation(libs.androidx.work.ktx)
+    implementation(libs.androidx.hilt.work)
+    implementation(libs.hilt.ext.work)
+    kapt(libs.hilt.ext.compiler)
+
 }

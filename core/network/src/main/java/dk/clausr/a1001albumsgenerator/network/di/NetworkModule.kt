@@ -17,7 +17,6 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
@@ -45,20 +44,13 @@ object NetworkModule {
     fun okHttpCallFactory(
 
     ): Call.Factory {
-        val logging = HttpLoggingInterceptor { message ->
-            // Disable logging if it's an image upload to prevent bloated logcat
-            if (!message.contains("�")) {
-                Timber.v(message)
-            }
-        }.setLevel(HttpLoggingInterceptor.Level.BODY)
-
         val okHttpClient = OkHttpClient.Builder()
             .readTimeout(15, TimeUnit.SECONDS)
             .writeTimeout(15, TimeUnit.SECONDS)
             .connectTimeout(30, TimeUnit.SECONDS)
             .addNetworkInterceptor(
                 HttpLoggingInterceptor().apply {
-                    level = HttpLoggingInterceptor.Level.BODY
+                    level = HttpLoggingInterceptor.Level.BASIC
                 }
             )
             .build()

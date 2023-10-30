@@ -1,7 +1,7 @@
 package dk.clausr.a1001albumsgenerator.network.retrofit
 
 import dk.LocalAssetManager
-import dk.clausr.a1001albumsgenerator.network.OAGDataSource
+import dk.clausr.a1001albumsgenerator.network.OAGNetworkDataSource
 import dk.clausr.a1001albumsgenerator.network.fake.FakeAssetManager
 import dk.clausr.a1001albumsgenerator.network.model.NetworkGroup
 import dk.clausr.a1001albumsgenerator.network.model.NetworkProject
@@ -19,7 +19,7 @@ class DemoDataSource @Inject constructor(
     private val json: Json,
     private val assets: FakeAssetManager = LocalAssetManager,
     @Dispatcher(OagDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
-) : OAGDataSource {
+) : OAGNetworkDataSource {
 
     override suspend fun getGroup(groupId: String): Result<NetworkGroup?> = withContext(ioDispatcher) {
         Result.success(assets.open("mock_group_response.json").use(json::decodeFromStream))

@@ -20,6 +20,8 @@ tasks.withType<KotlinCompile>().configureEach {
 dependencies {
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
+    compileOnly(libs.ksp.gradlePlugin)
+
 }
 
 gradlePlugin {
@@ -59,6 +61,10 @@ gradlePlugin {
         register("androidWidget") {
             id = "a1001albums.android.widget"
             implementationClass = "AndroidWidgetConventionPlugin"
+        }
+        register("androidRoom") {
+            id = "a1001albums.android.room"
+            implementationClass = "AndroidRoomConventionPlugin"
         }
 
     }

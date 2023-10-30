@@ -10,11 +10,20 @@ import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
 import dk.clausr.a1001albumsgenerator.ui.theme._1001AlbumsGeneratorTheme
 import dk.clausr.feature.overview.OverviewRoute
+import dk.clausr.widget.DailyAlbumWidget
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            DailyAlbumWidget().updateAll(this@MainActivity)
+        }
+
         setContent {
             _1001AlbumsGeneratorTheme {
                 // A surface container using the 'background' color from the theme

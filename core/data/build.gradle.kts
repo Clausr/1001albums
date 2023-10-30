@@ -1,7 +1,6 @@
 plugins {
     id("a1001albums.android.library")
     id("a1001albums.android.hilt")
-
 }
 
 android {
@@ -14,6 +13,14 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:model"))
     implementation(project(":core:datastore"))
+    implementation(project(":core:database"))
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.datastore.preferences)
+
+    api(libs.androidx.work.ktx)
+    api(libs.androidx.hilt.work)
+    implementation(libs.hilt.ext.work)
+
+    kapt(libs.hilt.ext.compiler)
+
 }

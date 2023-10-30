@@ -30,6 +30,7 @@ internal fun OverviewScreen(
     groupId: String?,
     modifier: Modifier = Modifier
 ) {
+
     Column(modifier = Modifier.fillMaxSize()) {
         Text("ProjectId", style = MaterialTheme.typography.labelLarge)
         Text(projectId.toString())

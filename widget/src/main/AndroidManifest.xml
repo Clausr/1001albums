@@ -21,6 +21,10 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/album_app_widget_info" />
         </receiver>
+
+        <activity
+            android:name="dk.clausr.WebsiteActivity"
+            android:exported="true" />
     </application>
 
 </manifest>
