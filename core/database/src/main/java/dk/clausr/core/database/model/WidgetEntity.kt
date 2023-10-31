@@ -10,4 +10,6 @@ data class WidgetEntity(
     val currentAlbumTitle: String,
     val currentAlbumArtist: String,
     val currentCoverUrl: String,
+    val newAlbumAvailable: Boolean,
+//    val albumDate: LocalDate,
 )

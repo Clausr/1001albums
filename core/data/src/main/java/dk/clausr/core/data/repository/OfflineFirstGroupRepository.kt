@@ -1,10 +1,9 @@
 package dk.clausr.core.data.repository
 
-import dk.clausr.a1001albumsgenerator.network.OAGNetworkDataSource
+import dk.clausr.a1001albumsgenerator.network.OAGDataSource
 import dk.clausr.core.common.network.Dispatcher
 import dk.clausr.core.common.network.OagDispatchers
 import dk.clausr.core.data.model.asExternalModel
-import dk.clausr.core.data.model.toEntity
 import dk.clausr.core.database.dao.ProjectDao
 import dk.clausr.core.database.dao.WidgetDao
 import dk.clausr.core.database.model.WidgetEntity
@@ -13,6 +12,7 @@ import dk.clausr.core.datastore.OagDataStore
 import dk.clausr.core.model.Group
 import dk.clausr.core.model.OAGWidget
 import dk.clausr.core.model.Project
+import dk.clausr.core.model.Rating
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -23,7 +23,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class OfflineFirstGroupRepository @Inject constructor(
-    private val networkDataSource: OAGNetworkDataSource,
+    private val networkDataSource: OAGDataSource,
     @Dispatcher(OagDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
     private val dataStore: OagDataStore,
     private val projectDao: ProjectDao,
@@ -57,37 +57,25 @@ class OfflineFirstGroupRepository @Inject constructor(
 
     override suspend fun setProject(projectId: String) {
         dataStore.setProject(projectId)
-        val projectRes = networkDataSource.getProject(projectId).getOrThrow()
-        projectRes?.toEntity()?.let { projectDao.insertProject(it) }
-        projectRes?.currentAlbum?.let {
-            val widget = WidgetEntity(projectId, it.name, it.artist, it.images.maxBy { it.height }.url)
-            widgetDao.insert(widget)
-        }
-//        projectRes?.currentAlbum?.toEntity()?.let { albumDao.insert(it) }
 
+        updateDailyAlbum(projectId)
     }
 
     override suspend fun updateDailyAlbum(projectId: String) {
         val projectRes = networkDataSource.getProject(projectId).getOrThrow()
-        projectRes?.currentAlbum?.let {
-            val widget = WidgetEntity(projectId, it.name, it.artist, it.images.maxBy { it.height }.url)
-            widgetDao.insert(widget)
-        }
+        val project = projectRes?.asExternalModel() ?: return
+
+        val widget = WidgetEntity(
+            projectName = project.name,
+            currentAlbumTitle = project.currentAlbum.name,
+            currentAlbumArtist = project.currentAlbum.artist,
+            currentCoverUrl = project.currentAlbum.images.maxBy { it.height }.url,
+            newAlbumAvailable = project.history.firstOrNull()?.rating == Rating.Unrated
+        )
+        widgetDao.insert(widget)
     }
 
     override fun getProjectFlow(projectId: String): Flow<Project?> = projectDao.getProject(projectId).map { it?.asExternalModel() }
-//    flow {
-//        dataStore.setProject(projectId)
-//        dataSource.getProject(projectId).apply {
-//            onSuccess {
-//                emit(it?.asExternalModel())
-//            }
-//            onFailure {
-//                Timber.w("Could not get project..")
-//                emit(null)
-//            }
-//        }
-//    }.flowOn(ioDispatcher)
 
     override suspend fun getProject(projectId: String): Project? {
         val projectRes = networkDataSource.getProject(projectId).getOrThrow()

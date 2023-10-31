@@ -1,4 +1,3 @@
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     id("a1001albums.android.library.compose")
     id("a1001albums.android.widget")
@@ -15,6 +14,7 @@ dependencies {
     implementation(project(":core:model"))
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.compose.material.iconsExtended)
+    implementation(libs.androidx.datastore.preferences)
 
     implementation(libs.androidx.work.ktx)
     implementation(libs.androidx.hilt.work)

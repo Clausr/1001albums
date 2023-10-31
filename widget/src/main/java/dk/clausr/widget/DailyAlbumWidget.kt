@@ -10,11 +10,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmapOrNull
-import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.core.net.toUri
 import androidx.glance.ColorFilter
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
@@ -22,9 +23,6 @@ import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
-import androidx.glance.action.ActionParameters
-import androidx.glance.action.actionParametersOf
-import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.CircularProgressIndicator
 import androidx.glance.appwidget.GlanceAppWidget
@@ -53,24 +51,15 @@ import coil.request.ImageRequest
 import coil.request.SuccessResult
 import dagger.hilt.EntryPoints
 import dagger.hilt.android.AndroidEntryPoint
-import dk.clausr.WebsiteActivity
 import timber.log.Timber
-
 
 class DailyAlbumWidget : GlanceAppWidget() {
     override val stateDefinition: GlanceStateDefinition<*> = PreferencesGlanceStateDefinition
 
-//    fun updateAll(context: Context) {
-//        this.updateAll(context)
-//    }
-
-    private val lastUpdatedPreference = stringPreferencesKey("LastUpdateTimestamp")
-    private val destinationKey = ActionParameters.Key<String>(
-        "Hej"
-    )
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         Timber.d("Provide glance: $id")
+
         provideContent {
             MyContent(id)
         }
@@ -83,20 +72,15 @@ class DailyAlbumWidget : GlanceAppWidget() {
     @Composable
     fun MyContent(glanceId: GlanceId) {
         val context = LocalContext.current
-
         val viewModel = remember {
             EntryPoints.get(context, OagEntryPoint::class.java).vm()
         }
 
         val widgetState by viewModel.widgetState.collectAsState(initial = WidgetState.Loading)
 
-//        val lastUpdated = currentState(lastUpdatedPreference)
-//        Timber.d("Widget $glanceId state: ${widgetState} -- State thing: $lastUpdated")
-
         when (val state = widgetState) {
             WidgetState.Error -> {
                 ErrorState {
-                    actionStartActivity<WebsiteActivity>(actionParametersOf(destinationKey to "lel"))
                     viewModel.refresh()
                 }
             }
@@ -107,14 +91,11 @@ class DailyAlbumWidget : GlanceAppWidget() {
 
             is WidgetState.RateYesterday -> RateYesterdaysAlbum(
                 coverUrl = state.coverUrl,
-                goToWebsite = {
-                    actionStartActivity<WebsiteActivity>(actionParametersOf(destinationKey to "lel"))
-                    Timber.d("Go to website?")
-                },
+                projectId = state.projectId,
                 glanceId
             )
 
-            is WidgetState.TodaysAlbum -> TodaysAlbum(coverUrl = state.coverUrl, artist = state.artist, album = state.album) {
+            is WidgetState.TodaysAlbum -> CurrentAlbum(coverUrl = state.coverUrl, artist = state.artist, album = state.album) {
                 viewModel.refresh()
             }
         }
@@ -139,49 +120,39 @@ class DailyAlbumWidget : GlanceAppWidget() {
     }
 
     @Composable
-    fun TodaysAlbum(coverUrl: String, artist: String, album: String, refresh: () -> Unit) {
+    fun CurrentAlbum(coverUrl: String, artist: String, album: String, refresh: () -> Unit) {
         val context = LocalContext.current
         var coverBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
         LaunchedEffect(coverUrl) {
             coverBitmap = context.getImage(coverUrl)
         }
-        Timber.d("TodaysAlbum: $coverUrl -- cover bitmap: $coverBitmap")
 
         coverBitmap?.let {
-            Column(modifier = GlanceModifier.fillMaxSize()) {
+            Column(modifier = GlanceModifier.fillMaxSize().background(GlanceTheme.colors.background)) {
                 CoverImage(
-                    modifier = GlanceModifier.fillMaxSize(),
+                    modifier = GlanceModifier.fillMaxWidth().background(Color.Magenta),
                     bitmap = it,
                     onClick = refresh
                 )
                 Text(
+                    modifier = GlanceModifier.fillMaxWidth(),
                     text = "$artist - $album",
                     maxLines = 1,
                     style = TextStyle(
-                        color = GlanceTheme.colors.onBackground,
+                        color = ColorProvider(Color.Magenta),
                         fontSize = TextUnit(24f, TextUnitType.Sp),
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
                     )
                 )
             }
-        } ?: Box(GlanceModifier.fillMaxSize().background(GlanceTheme.colors.background).clickable(refresh), contentAlignment = Alignment.Center) {
-            Text(
-                text = "No cover :/\n$artist - $album",
-                style = TextStyle(
-                    color = GlanceTheme.colors.onBackground,
-                    fontSize = TextUnit(24f, TextUnitType.Sp),
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                )
-            )
         }
     }
 
 
     @Composable
-    fun RateYesterdaysAlbum(coverUrl: String, goToWebsite: () -> Unit, glanceId: GlanceId) {
+    fun RateYesterdaysAlbum(coverUrl: String, projectId: String, glanceId: GlanceId) {
         val context = LocalContext.current
         var coverBitmap by remember(coverUrl) { mutableStateOf<Bitmap?>(null) }
 
@@ -197,7 +168,14 @@ class DailyAlbumWidget : GlanceAppWidget() {
 
             Box(
                 modifier = GlanceModifier
-                    .fillMaxSize().clickable(goToWebsite),
+                    .fillMaxSize()
+                    .clickable {
+                        val intent = Intent(Intent.ACTION_VIEW).apply {
+                            data = "https://1001albumsgenerator.com/$projectId".toUri()
+                            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                        }
+                        context.startActivity(intent)
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -252,17 +230,6 @@ class DailyAlbumWidget : GlanceAppWidget() {
             is SuccessResult -> result.drawable.toBitmapOrNull()
         }
     }
-
-//    fun Context.updateDailyAlbumWidget(id: GlanceId) {
-//        val manager = GlanceAppWidgetManager(this)
-//        val widget = DailyAlbumWidget()
-//        val glanceIds = manager.getGlanceIds(widget.javaClass)
-//        glanceIds.forEach { glanceId ->
-//            widget.update(this@DailyAlbumWidget, glanceId)
-//        }
-//            DailyAlbumWidget().updateAll(this@updateDailyAlbumWidget)
-//        }
-//    }
 }
 
 @AndroidEntryPoint
@@ -271,7 +238,6 @@ class AlbumWidgetReceiver : GlanceAppWidgetReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
-
-        Timber.i("GlanceAppWidgetReceiver: ${intent.extras?.keySet()?.joinToString { it }} ")
+        Timber.i("onReceive: ${intent.toUri(0)}")
     }
 }

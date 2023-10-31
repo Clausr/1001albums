@@ -5,4 +5,5 @@ data class OAGWidget(
     val currentAlbumTitle: String,
     val currentAlbumArtist: String,
     val currentCoverUrl: String,
+    val newAlbumAvailable: Boolean,
 )

@@ -25,26 +25,20 @@ class WidgetViewModel @Inject constructor(
 
     val widget = oagRepository.getWidgetFlow("decoid")
 
-    private val widgetModel = combine(oagRepository.projectId, refresh) { projectId, _ ->
-        projectId
-    }
-        .map { oagRepository.getWidget(it ?: "") }
-
     val widgetState: Flow<WidgetState> = combine(oagRepository.projectId, refresh) { projectId, _ ->
         projectId
     }
         .onStart { WidgetState.Loading }
         .mapNotNull { it }
         .map { projectId ->
-            oagRepository.getWidget(projectId ?: "")
+            projectId to oagRepository.getWidget(projectId)
         }
         .flowOn(ioDispatcher)
-        .map { widgetModel ->
+        .map { (projectId, widgetModel) ->
             when {
                 widgetModel == null -> WidgetState.Error
-//                project.history.last().rating == Rating.Unrated -> WidgetState.RateYesterday(project.history.last().album.images.maxBy { it.height }.url)
+                widgetModel.newAlbumAvailable -> WidgetState.RateYesterday(projectId = projectId, widgetModel.currentCoverUrl)
                 else -> {
-//                    val currentAlbum = project.currentAlbum
                     WidgetState.TodaysAlbum(
                         coverUrl = widgetModel.currentCoverUrl,
                         artist = widgetModel.currentAlbumArtist,
@@ -53,7 +47,6 @@ class WidgetViewModel @Inject constructor(
                 }
             }
         }
-
 
     init {
         viewModelScope.launch {
@@ -70,7 +63,7 @@ class WidgetViewModel @Inject constructor(
 sealed interface WidgetState {
     data object Loading : WidgetState
     data object Error : WidgetState
-    data class RateYesterday(val coverUrl: String) : WidgetState
+    data class RateYesterday(val projectId: String, val coverUrl: String) : WidgetState
     data class TodaysAlbum(val coverUrl: String, val artist: String, val album: String) : WidgetState
 
 }

@@ -36,13 +36,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.glance.appwidget.GlanceAppWidgetManager
-import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.work.WorkManager
 import coil.compose.AsyncImage
 import dagger.hilt.android.AndroidEntryPoint
 import dk.clausr.worker.UpdateWidgetWorker
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -71,8 +68,10 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         Timber.i("Widget ID: $appWidgetId")
+        val glanceId = manager.getGlanceIdBy(appWidgetId)
 
-        vm.setWidgetId(appWidgetId)
+
+//        vm.setWidgetId(appWidgetId)
         setResult(Activity.RESULT_CANCELED)
 
         updateView()
@@ -87,38 +86,6 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
     private fun updateView() {
         Timber.i("Update view")
 
-        // Discover the GlanceAppWidget
-        val appWidgetManager = AppWidgetManager.getInstance(this@AlbumWidgetConfigurationActivity)
-        val receivers = appWidgetManager.installedProviders
-            .filter { it.provider.packageName == packageName }
-            .map { it.provider.className }
-
-        Timber.d("Receivers: $receivers")
-        val coroutineScope = CoroutineScope(SupervisorJob())
-
-        receivers.mapNotNull { receiverName ->
-            val receiverClass = Class.forName(receiverName)
-            if (!GlanceAppWidgetReceiver::class.java.isAssignableFrom(receiverClass)) {
-                return@mapNotNull null
-            }
-            val receiver = receiverClass.getDeclaredConstructor()
-                .newInstance() as GlanceAppWidgetReceiver
-            val provider = receiver.glanceAppWidget.javaClass
-
-            coroutineScope.launch {
-                val sizes = manager.getGlanceIds(provider).flatMap { id ->
-                    manager.getAppWidgetSizes(id)
-                }
-                Timber.d("Sizes: ${sizes.joinToString { it.toString() }}")
-//                ProviderData(
-//                    provider = provider,
-//                    receiver = receiver.javaClass,
-//                    appWidgets = manager.getGlanceIds(provider).map { id ->
-//                        AppWidgetDesc(appWidgetId = id, sizes = manager.getAppWidgetSizes(id))
-//                    })
-
-            }
-        }
 
         setContent {
             val widget by vm.widget.collectAsState()
@@ -134,7 +101,8 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
                 val resultValue = Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
 
                 WorkManager.getInstance(this)
-                    .enqueue(UpdateWidgetWorker.refreshAlbumRepeatedly("decoid"))
+                    .enqueue(UpdateWidgetWorker.refreshAlbumRepeatedly(projectId = "decoid", widgetId = appWidgetId))
+//                    .enqueue(UpdateWidgetWorker.doSomething(projectId = "decoid", widgetId = appWidgetId))
 
                 setResult(Activity.RESULT_OK, resultValue)
                 finish()

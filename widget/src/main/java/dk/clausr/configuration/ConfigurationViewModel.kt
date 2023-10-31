@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.model.Project
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -19,8 +19,7 @@ class ConfigurationViewModel @Inject constructor(
     private val oagRepository: OagRepository,
 ) : ViewModel() {
 
-    private val _projectId: MutableSharedFlow<String?> = MutableSharedFlow(replay = 0)
-    private val _widgetId: MutableSharedFlow<Int> = MutableSharedFlow()
+    private val _projectId: Flow<String?> = oagRepository.projectId.stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(), null)
 
     val widget = _projectId.mapNotNull { it }
         .flatMapLatest { oagRepository.getWidgetFlow(it) }
@@ -41,10 +40,5 @@ class ConfigurationViewModel @Inject constructor(
 
     fun setProjectId(projectId: String) = viewModelScope.launch {
         oagRepository.setProject(projectId)
-        _projectId.emit(projectId)
-    }
-
-    fun setWidgetId(id: Int) = viewModelScope.launch {
-        _widgetId.emit(id)
     }
 }

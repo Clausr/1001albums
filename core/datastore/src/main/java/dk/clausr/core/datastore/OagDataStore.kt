@@ -5,7 +5,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
@@ -24,7 +23,6 @@ class OagDataStore @Inject constructor(
 
     private val PROJECT_ID = stringPreferencesKey("PROJECT_ID")
     private val GROUP_ID = stringPreferencesKey("GROUP_ID")
-    private val WIDGET_MAP = stringSetPreferencesKey("WIDGET_MAP")
 
     val projectId: Flow<String?> = context.dataStore.data.map { preferences ->
         val projectId = preferences[PROJECT_ID]
@@ -50,11 +48,4 @@ class OagDataStore @Inject constructor(
             preferences[GROUP_ID] = newGroupId
         }
     }
-
-//    suspend fun setProjectForWidget(widgetId: Int, projectId: String) {
-//        context.dataStore.edit { preferences ->
-//
-//        }
-//    }
-
 }
