@@ -9,7 +9,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onStart
@@ -23,8 +22,6 @@ class WidgetViewModel @Inject constructor(
     private val viewModelScope = CoroutineScope(ioDispatcher + SupervisorJob())
     private val refresh: MutableSharedFlow<Unit> = MutableSharedFlow(replay = 1)
 
-    val widget = oagRepository.getWidgetFlow("decoid")
-
     val widgetState: Flow<WidgetState> = combine(oagRepository.projectId, refresh) { projectId, _ ->
         projectId
     }
@@ -33,7 +30,6 @@ class WidgetViewModel @Inject constructor(
         .map { projectId ->
             projectId to oagRepository.getWidget(projectId)
         }
-        .flowOn(ioDispatcher)
         .map { (projectId, widgetModel) ->
             when {
                 widgetModel == null -> WidgetState.Error

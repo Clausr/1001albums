@@ -17,8 +17,8 @@ import dk.clausr.core.database.utils.Converters
         AlbumEntity::class,
         WidgetEntity::class,
     ],
-    version = 1,
-    exportSchema = true
+    version = 2,
+    exportSchema = false
 )
 @TypeConverters(
     Converters::class

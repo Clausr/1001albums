@@ -1,7 +1,7 @@
 package dk.clausr.worker
 
 import android.content.Context
-import androidx.glance.appwidget.GlanceAppWidgetManager
+import androidx.glance.appwidget.updateAll
 import androidx.hilt.work.HiltWorker
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
@@ -16,6 +16,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.widget.DailyAlbumWidget
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 @HiltWorker
@@ -24,16 +25,11 @@ class UpdateWidgetWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     private val oagRepository: OagRepository
 ) : CoroutineWorker(appContext, workerParams) {
-
-    private val manager: GlanceAppWidgetManager by lazy {
-        GlanceAppWidgetManager(appContext)
-    }
-
     override suspend fun doWork(): Result {
         val projectId = inputData.getString(ProjectId) ?: return Result.failure()
-        val widgetId = inputData.getInt(WidgetId, -1)
-        if (widgetId == -1) return Result.failure()
+        Timber.d("Do Work with $projectId")
 
+        // Get from backend
         oagRepository.updateDailyAlbum(projectId)
 
         val widget = oagRepository.getWidget(projectId)
@@ -41,46 +37,30 @@ class UpdateWidgetWorker @AssistedInject constructor(
         return if (widget == null) {
             Result.retry()
         } else {
-            val widgetGlanceId = manager.getGlanceIdBy(appWidgetId = widgetId)
+            DailyAlbumWidget().updateAll(appContext)
 
-            DailyAlbumWidget().update(appContext, widgetGlanceId)
-
-//            delay(20_000)
-//            WorkManager.getInstance(appContext)
-//                .enqueueUniqueWork(
-//                    "updateWidgetWork",
-//                    ExistingWorkPolicy.KEEP,
-//                    doSomething(projectId, widgetId))
-
-            Result.success(
-                Data.Builder()
-                    .putString("PROJECT", widget.currentCoverUrl)
-                    .build()
-            )
+            Result.success()
         }
     }
 
     companion object {
         private const val ProjectId = "PROJECT_ID"
-        private const val WidgetId = "WIDGET_ID"
-        fun refreshAlbumRepeatedly(projectId: String, widgetId: Int) = PeriodicWorkRequestBuilder<UpdateWidgetWorker>(30, TimeUnit.MINUTES)
+
+        fun refreshAlbumRepeatedly(projectId: String) = PeriodicWorkRequestBuilder<UpdateWidgetWorker>(30, TimeUnit.MINUTES)
             .setInputData(
                 Data.Builder()
                     .putString(ProjectId, projectId)
-                    .putInt(WidgetId, widgetId)
                     .build()
             )
             .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
             .build()
 
-        fun doSomething(projectId: String, widgetId: Int) = OneTimeWorkRequestBuilder<UpdateWidgetWorker>()
+        fun refreshOneTime(projectId: String) = OneTimeWorkRequestBuilder<UpdateWidgetWorker>()
             .setInputData(
                 Data.Builder()
                     .putString(ProjectId, projectId)
-                    .putInt(WidgetId, widgetId)
                     .build()
             )
-            .addTag("AlbumWidgetWorkThing")
             .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
             .setBackoffCriteria(backoffPolicy = BackoffPolicy.LINEAR, backoffDelay = 10_000, TimeUnit.SECONDS)

@@ -10,7 +10,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
@@ -23,11 +22,11 @@ import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
+import androidx.glance.action.ActionParameters
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.CircularProgressIndicator
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
-import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
 import androidx.glance.layout.Alignment
@@ -56,17 +55,8 @@ import timber.log.Timber
 class DailyAlbumWidget : GlanceAppWidget() {
     override val stateDefinition: GlanceStateDefinition<*> = PreferencesGlanceStateDefinition
 
-
-    override suspend fun provideGlance(context: Context, id: GlanceId) {
-        Timber.d("Provide glance: $id")
-
-        provideContent {
-            MyContent(id)
-        }
-    }
-
-    override suspend fun onDelete(context: Context, glanceId: GlanceId) {
-        super.onDelete(context, glanceId)
+    override suspend fun provideGlance(context: Context, id: GlanceId) = provideContent {
+        MyContent(id)
     }
 
     @Composable
@@ -78,11 +68,10 @@ class DailyAlbumWidget : GlanceAppWidget() {
 
         val widgetState by viewModel.widgetState.collectAsState(initial = WidgetState.Loading)
 
+        Timber.d("widget $glanceId state: $widgetState ")
         when (val state = widgetState) {
-            WidgetState.Error -> {
-                ErrorState {
-                    viewModel.refresh()
-                }
+            WidgetState.Error -> ErrorState {
+                viewModel.refresh()
             }
 
             WidgetState.Loading -> LoadingState {
@@ -92,10 +81,10 @@ class DailyAlbumWidget : GlanceAppWidget() {
             is WidgetState.RateYesterday -> RateYesterdaysAlbum(
                 coverUrl = state.coverUrl,
                 projectId = state.projectId,
-                glanceId
             )
 
-            is WidgetState.TodaysAlbum -> CurrentAlbum(coverUrl = state.coverUrl, artist = state.artist, album = state.album) {
+            is WidgetState.TodaysAlbum -> CurrentAlbum(coverUrl = state.coverUrl) {
+                // If last updated today, go to webpage
                 viewModel.refresh()
             }
         }
@@ -120,100 +109,94 @@ class DailyAlbumWidget : GlanceAppWidget() {
     }
 
     @Composable
-    fun CurrentAlbum(coverUrl: String, artist: String, album: String, refresh: () -> Unit) {
-        val context = LocalContext.current
-        var coverBitmap by remember { mutableStateOf<Bitmap?>(null) }
-
-        LaunchedEffect(coverUrl) {
-            coverBitmap = context.getImage(coverUrl)
-        }
-
-        coverBitmap?.let {
-            Column(modifier = GlanceModifier.fillMaxSize().background(GlanceTheme.colors.background)) {
-                CoverImage(
-                    modifier = GlanceModifier.fillMaxWidth().background(Color.Magenta),
-                    bitmap = it,
-                    onClick = refresh
-                )
-                Text(
-                    modifier = GlanceModifier.fillMaxWidth(),
-                    text = "$artist - $album",
-                    maxLines = 1,
-                    style = TextStyle(
-                        color = ColorProvider(Color.Magenta),
-                        fontSize = TextUnit(24f, TextUnitType.Sp),
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center,
-                    )
-                )
-            }
-        }
-    }
-
-
-    @Composable
-    fun RateYesterdaysAlbum(coverUrl: String, projectId: String, glanceId: GlanceId) {
-        val context = LocalContext.current
-        var coverBitmap by remember(coverUrl) { mutableStateOf<Bitmap?>(null) }
-
-        LaunchedEffect(coverUrl) {
-            coverBitmap = context.getImage(coverUrl)
-        }
-        coverBitmap?.let {
+    fun CurrentAlbum(coverUrl: String, refresh: () -> Unit) {
+        Box(
+            modifier = GlanceModifier.fillMaxSize().clickable(refresh),
+            contentAlignment = Alignment.BottomCenter
+        ) {
             CoverImage(
                 modifier = GlanceModifier.fillMaxSize(),
-                bitmap = it,
-                tint = ColorProvider(GlanceTheme.colors.background.getColor(context).copy(alpha = 0.75f))
+                coverUrl = coverUrl,
+                onClick = refresh
             )
+        }
+    }
 
-            Box(
+
+    @Composable
+    fun RateYesterdaysAlbum(
+        coverUrl: String,
+        projectId: String
+    ) {
+        val context = LocalContext.current
+        CoverImage(
+            modifier = GlanceModifier.fillMaxSize(),
+            coverUrl = coverUrl,
+            tint = ColorProvider(GlanceTheme.colors.background.getColor(context).copy(alpha = 0.75f))
+        )
+
+        Box(
+            modifier = GlanceModifier
+                .fillMaxSize()
+                .clickable {
+                    val intent = Intent(Intent.ACTION_VIEW).apply {
+                        data = "https://1001albumsgenerator.com/$projectId".toUri()
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    }
+                    context.startActivity(intent)
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Click to rate",
                 modifier = GlanceModifier
-                    .fillMaxSize()
-                    .clickable {
-                        val intent = Intent(Intent.ACTION_VIEW).apply {
-                            data = "https://1001albumsgenerator.com/$projectId".toUri()
-                            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                        }
-                        context.startActivity(intent)
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Unrated", modifier = GlanceModifier
-                        .fillMaxWidth(),
-                    style = TextStyle(
-                        color = GlanceTheme.colors.onBackground,
-                        fontSize = TextUnit(24f, TextUnitType.Sp),
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center,
-                    )
+                    .fillMaxWidth(),
+                style = TextStyle(
+                    color = GlanceTheme.colors.onBackground,
+                    fontSize = TextUnit(16f, TextUnitType.Sp),
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
                 )
-            }
+            )
         }
     }
 
     @Composable
-    fun CoverImage(modifier: GlanceModifier = GlanceModifier, bitmap: Bitmap, onClick: (() -> Unit)? = null, tint: ColorProvider? = null) {
-        Image(
-            provider = ImageProvider(bitmap),
-            contentDescription = "Image from Picsum Photos",
-            contentScale = ContentScale.Fit,
-            colorFilter = tint?.let { ColorFilter.tint(it) },
-            modifier = modifier
-                .cornerRadius(16.dp)
-                .apply {
-                    if (onClick != null) {
-                        clickable(onClick)
+    fun CoverImage(
+        modifier: GlanceModifier = GlanceModifier,
+        coverUrl: String,
+        onClick: (() -> Unit)? = null,
+        tint: ColorProvider? = null
+    ) {
+        var coverBitmap by remember { mutableStateOf<Bitmap?>(null) }
+        val context = LocalContext.current
+        LaunchedEffect(coverUrl) {
+            coverBitmap = context.getImage(coverUrl)
+        }
+        coverBitmap?.let {
+            Image(
+                provider = ImageProvider(it),
+                contentDescription = "Image from Picsum Photos",
+                contentScale = ContentScale.Fit,
+                colorFilter = tint?.let { ColorFilter.tint(it) },
+                modifier = modifier
+                    .apply {
+                        if (onClick != null) {
+                            clickable(onClick)
+                        }
                     }
-                }
-        )
+            )
+        }
     }
 
     @Composable
     fun LoadingState(onClick: () -> Unit) {
-        CircularProgressIndicator(modifier = GlanceModifier.clickable {
+        Column(modifier = GlanceModifier.clickable {
             onClick()
-        })
+        }) {
+            CircularProgressIndicator()
+            Text("Loading cover image...")
+        }
     }
 
     private suspend fun Context.getImage(url: String, force: Boolean = false): Bitmap? {
@@ -231,6 +214,9 @@ class DailyAlbumWidget : GlanceAppWidget() {
         }
     }
 }
+
+
+private val projectKey = ActionParameters.Key<String>("ProjectId")
 
 @AndroidEntryPoint
 class AlbumWidgetReceiver : GlanceAppWidgetReceiver() {

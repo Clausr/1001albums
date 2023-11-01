@@ -32,10 +32,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.work.WorkManager
 import coil.compose.AsyncImage
 import dagger.hilt.android.AndroidEntryPoint
@@ -46,11 +45,6 @@ import timber.log.Timber
 @AndroidEntryPoint
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 class AlbumWidgetConfigurationActivity : ComponentActivity() {
-
-    private val manager: GlanceAppWidgetManager by lazy {
-        GlanceAppWidgetManager(this)
-    }
-
     private val appWidgetId: Int by lazy {
         intent?.extras?.getInt(
             AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID
@@ -67,11 +61,6 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Timber.i("Widget ID: $appWidgetId")
-        val glanceId = manager.getGlanceIdBy(appWidgetId)
-
-
-//        vm.setWidgetId(appWidgetId)
         setResult(Activity.RESULT_CANCELED)
 
         updateView()
@@ -86,23 +75,18 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
     private fun updateView() {
         Timber.i("Update view")
 
-
         setContent {
             val widget by vm.widget.collectAsState()
 
             Timber.d("Project: -- widget: $widget")
 
             var projectId by remember(widget?.projectName) { mutableStateOf(widget?.projectName ?: "") }
-            val context = LocalContext.current
-            val coroutineScope = rememberCoroutineScope()
 
             fun closeConfiguration() {
-                Timber.d("Close configuration")
                 val resultValue = Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
 
                 WorkManager.getInstance(this)
-                    .enqueue(UpdateWidgetWorker.refreshAlbumRepeatedly(projectId = "decoid", widgetId = appWidgetId))
-//                    .enqueue(UpdateWidgetWorker.doSomething(projectId = "decoid", widgetId = appWidgetId))
+                    .enqueue(UpdateWidgetWorker.refreshAlbumRepeatedly(projectId = projectId))
 
                 setResult(Activity.RESULT_OK, resultValue)
                 finish()
@@ -138,7 +122,6 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
                         onClick = {
                             if (projectId.isNotBlank()) {
                                 vm.setProjectId(projectId)
-                                Timber.d("Project id: $projectId")
                             }
 
                             scope.launch {
@@ -153,12 +136,24 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
 
                     if (widget != null) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            AsyncImage(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                model = widget?.currentCoverUrl, contentDescription = "Current Album"
+                            Text(
+                                modifier = Modifier.fillMaxWidth(),
+                                text = "Todays album:",
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.titleMedium,
                             )
-                            Text("${widget?.currentAlbumArtist} - ${widget?.currentAlbumTitle}")
+
+                            AsyncImage(
+                                modifier = Modifier.fillMaxWidth(),
+                                model = widget?.currentCoverUrl,
+                                contentDescription = "Current Album"
+                            )
+
+                            Text(
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth(),
+                                text = "${widget?.currentAlbumArtist} - ${widget?.currentAlbumTitle}"
+                            )
                         }
 
                         Button(onClick = ::closeConfiguration) {
