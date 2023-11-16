@@ -12,13 +12,13 @@ import dk.clausr.core.database.model.WidgetEntity
 import dk.clausr.core.database.utils.Converters
 
 @Database(
-    entities = [
-        ProjectEntity::class,
-        AlbumEntity::class,
-        WidgetEntity::class,
-    ],
-    version = 2,
-    exportSchema = false
+        entities = [
+            ProjectEntity::class,
+            AlbumEntity::class,
+            WidgetEntity::class,
+        ],
+        version = 3,
+        exportSchema = false
 )
 @TypeConverters(
     Converters::class

@@ -25,19 +25,19 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class OfflineFirstGroupRepository @Inject constructor(
-    private val networkDataSource: OAGDataSource,
-    @Dispatcher(OagDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
-    private val dataStore: OagDataStore,
-    private val projectDao: ProjectDao,
-    private val widgetDao: WidgetDao,
-    private val albumDao: AlbumDao
+        private val networkDataSource: OAGDataSource,
+        @Dispatcher(OagDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
+        private val dataStore: OagDataStore,
+        private val projectDao: ProjectDao,
+        private val widgetDao: WidgetDao,
+        private val albumDao: AlbumDao
 ) : OagRepository {
     override val projectId: Flow<String?> = dataStore.projectId
 
     override val widget = projectId.mapNotNull { it }
-        .flatMapLatest {
-            widgetDao.getWidgetFlow(it).map { it?.asExternalModel() }
-        }
+            .flatMapLatest {
+                widgetDao.getWidgetFlow(it).map { it?.asExternalModel() }
+            }
 
     override suspend fun getWidget(projectId: String): OAGWidget? = withContext(ioDispatcher) {
         widgetDao.getWidget(projectId)?.asExternalModel()
@@ -66,21 +66,21 @@ class OfflineFirstGroupRepository @Inject constructor(
         val widget = when (lastAlbum?.rating) {
             Rating.Unrated -> {
                 WidgetEntity(
-                    projectName = projectId,
-                    currentAlbumTitle = lastAlbum.album.name,
-                    currentAlbumArtist = lastAlbum.album.artist,
-                    currentCoverUrl = lastAlbum.album.images.maxBy { it.height }.url,
-                    newAlbumAvailable = true
+                        projectName = projectId,
+                        currentAlbumTitle = lastAlbum.album.name,
+                        currentAlbumArtist = lastAlbum.album.artist,
+                        currentCoverUrl = lastAlbum.album.images.maxBy { it.height }.url,
+                        newAlbumAvailable = true
                 )
             }
 
             else -> {
                 WidgetEntity(
-                    projectName = project.name,
-                    currentAlbumTitle = project.currentAlbum.name,
-                    currentAlbumArtist = project.currentAlbum.artist,
-                    currentCoverUrl = project.currentAlbum.images.maxBy { it.height }.url,
-                    newAlbumAvailable = false
+                        projectName = project.name,
+                        currentAlbumTitle = project.currentAlbum.name,
+                        currentAlbumArtist = project.currentAlbum.artist,
+                        currentCoverUrl = project.currentAlbum.images.maxBy { it.height }.url,
+                        newAlbumAvailable = false
                 )
             }
         }
@@ -89,20 +89,20 @@ class OfflineFirstGroupRepository @Inject constructor(
     }
 
     override val project: Flow<Project?> = projectId
-        .mapNotNull { it }
-        .flatMapLatest {
-            projectDao.getProject(it)
-                .map {
-                    it?.asExternalModel()
-                }
-        }
+            .mapNotNull { it }
+            .flatMapLatest {
+                projectDao.getProject(it)
+                        .map {
+                            it?.asExternalModel()
+                        }
+            }
 
     override val albums: Flow<List<Album>> = albumDao.getAlbums()
-        .map { albums ->
-            albums.map { album ->
-                album.asExternalModel()
+            .map { albums ->
+                albums.map { album ->
+                    album.asExternalModel()
+                }
             }
-        }
 
     override suspend fun getProject(projectId: String): Project? {
         val projectRes = networkDataSource.getProject(projectId).getOrThrow()

@@ -1,6 +1,9 @@
 package dk.clausr.feature.overview
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -17,11 +20,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import timber.log.Timber
 
 @Composable
 fun OverviewRoute(
-    viewModel: OverviewViewModel = hiltViewModel(),
+        viewModel: OverviewViewModel = hiltViewModel(),
 ) {
     val projectId by viewModel.projectId.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -29,38 +33,41 @@ fun OverviewRoute(
     Timber.d("ProjectId: $projectId, state: $uiState")
 
     OverviewScreen(
-        state = uiState,
+            state = uiState,
     )
 }
 
 @Composable
 internal fun OverviewScreen(
-    state: OverviewUiState,
-    modifier: Modifier = Modifier
+        state: OverviewUiState,
+        modifier: Modifier = Modifier
 ) {
 
     when (state) {
         OverviewUiState.Error -> Text("Error")
         OverviewUiState.Loading -> CircularProgressIndicator()
         is OverviewUiState.Success -> {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)) {
                 item {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text("Project name:", style = MaterialTheme.typography.labelLarge)
-                            Text(state.project.name)
-                        }
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Text("Project name:", style = MaterialTheme.typography.labelLarge)
+                        Text(state.project.name)
                     }
                 }
 
                 items(state.albums) { album ->
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(text = "${album.artist} - ${album.name}")
-
+                    Card() {
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            AsyncImage(model = album.images.firstOrNull(), contentDescription = "cover")
+                            Column(modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp, horizontal = 8.dp)) {
+                                Text(text = album.artist, style = MaterialTheme.typography.labelLarge)
+                                Text(text = album.name)
+                            }
+                        }
                     }
                 }
             }
@@ -73,6 +80,6 @@ internal fun OverviewScreen(
 @Composable
 private fun OverviewPreview() {
     OverviewScreen(
-        state = OverviewUiState.Loading
+            state = OverviewUiState.Loading
     )
 }

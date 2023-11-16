@@ -29,7 +29,6 @@ class OverviewViewModel @Inject constructor(
         )
 
     val uiState = combine(oagRepository.project, oagRepository.albums) { project, albums ->
-//        .map {
         if (project != null) {
             OverviewUiState.Success(project, albums)
         } else {
