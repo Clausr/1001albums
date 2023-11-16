@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         CoroutineScope(Dispatchers.IO).launch {
-            DailyAlbumWidget().updateAll(applicationContext)
+            DailyAlbumWidget.updateAll(applicationContext)
         }
 
         setContent {

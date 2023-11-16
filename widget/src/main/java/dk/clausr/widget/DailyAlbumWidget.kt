@@ -22,7 +22,6 @@ import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
-import androidx.glance.action.ActionParameters
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.CircularProgressIndicator
 import androidx.glance.appwidget.GlanceAppWidget
@@ -50,25 +49,31 @@ import coil.request.ImageRequest
 import coil.request.SuccessResult
 import dagger.hilt.EntryPoints
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
+import dk.clausr.core.data.repository.OagRepository
+import dk.clausr.worker.UpdateWidgetWorker
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
 
-class DailyAlbumWidget : GlanceAppWidget() {
+object DailyAlbumWidget : GlanceAppWidget() {
     override val stateDefinition: GlanceStateDefinition<*> = PreferencesGlanceStateDefinition
 
     override suspend fun provideGlance(context: Context, id: GlanceId) = provideContent {
-        MyContent(id)
+        GlanceTheme {
+            MyContent()
+        }
     }
 
     @Composable
-    fun MyContent(glanceId: GlanceId) {
+    fun MyContent() {
         val context = LocalContext.current
+
         val viewModel = remember {
             EntryPoints.get(context, OagEntryPoint::class.java).vm()
         }
 
         val widgetState by viewModel.widgetState.collectAsState(initial = WidgetState.Loading)
 
-        Timber.d("widget $glanceId state: $widgetState ")
         when (val state = widgetState) {
             WidgetState.Error -> ErrorState {
                 viewModel.refresh()
@@ -83,10 +88,9 @@ class DailyAlbumWidget : GlanceAppWidget() {
                 projectId = state.projectId,
             )
 
-            is WidgetState.TodaysAlbum -> CurrentAlbum(coverUrl = state.coverUrl) {
-                // If last updated today, go to webpage
-                viewModel.refresh()
-            }
+            is WidgetState.TodaysAlbum -> CurrentAlbum(
+                coverUrl = state.coverUrl, projectId = state.projectId
+            )
         }
     }
 
@@ -109,19 +113,28 @@ class DailyAlbumWidget : GlanceAppWidget() {
     }
 
     @Composable
-    fun CurrentAlbum(coverUrl: String, refresh: () -> Unit) {
+    fun CurrentAlbum(coverUrl: String, projectId: String) {
+        val context = LocalContext.current
         Box(
-            modifier = GlanceModifier.fillMaxSize().clickable(refresh),
+            modifier = GlanceModifier.fillMaxSize().clickable {
+                context.openWebsite(projectId)
+            },
             contentAlignment = Alignment.BottomCenter
         ) {
             CoverImage(
                 modifier = GlanceModifier.fillMaxSize(),
-                coverUrl = coverUrl,
-                onClick = refresh
+                coverUrl = coverUrl
             )
         }
     }
 
+    private fun Context.openWebsite(projectId: String) {
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            data = "https://1001albumsgenerator.com/$projectId".toUri()
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        startActivity(intent)
+    }
 
     @Composable
     fun RateYesterdaysAlbum(
@@ -139,11 +152,7 @@ class DailyAlbumWidget : GlanceAppWidget() {
             modifier = GlanceModifier
                 .fillMaxSize()
                 .clickable {
-                    val intent = Intent(Intent.ACTION_VIEW).apply {
-                        data = "https://1001albumsgenerator.com/$projectId".toUri()
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    }
-                    context.startActivity(intent)
+                    context.openWebsite(projectId)
                 },
             contentAlignment = Alignment.Center
         ) {
@@ -165,7 +174,6 @@ class DailyAlbumWidget : GlanceAppWidget() {
     fun CoverImage(
         modifier: GlanceModifier = GlanceModifier,
         coverUrl: String,
-        onClick: (() -> Unit)? = null,
         tint: ColorProvider? = null
     ) {
         var coverBitmap by remember { mutableStateOf<Bitmap?>(null) }
@@ -173,6 +181,7 @@ class DailyAlbumWidget : GlanceAppWidget() {
         LaunchedEffect(coverUrl) {
             coverBitmap = context.getImage(coverUrl)
         }
+
         coverBitmap?.let {
             Image(
                 provider = ImageProvider(it),
@@ -180,18 +189,13 @@ class DailyAlbumWidget : GlanceAppWidget() {
                 contentScale = ContentScale.Fit,
                 colorFilter = tint?.let { ColorFilter.tint(it) },
                 modifier = modifier
-                    .apply {
-                        if (onClick != null) {
-                            clickable(onClick)
-                        }
-                    }
             )
         }
     }
 
     @Composable
     fun LoadingState(onClick: () -> Unit) {
-        Column(modifier = GlanceModifier.clickable {
+        Column(modifier = GlanceModifier.background(GlanceTheme.colors.background).clickable {
             onClick()
         }) {
             CircularProgressIndicator()
@@ -215,15 +219,24 @@ class DailyAlbumWidget : GlanceAppWidget() {
     }
 }
 
-
-private val projectKey = ActionParameters.Key<String>("ProjectId")
-
 @AndroidEntryPoint
 class AlbumWidgetReceiver : GlanceAppWidgetReceiver() {
-    override val glanceAppWidget: GlanceAppWidget = DailyAlbumWidget()
+    override val glanceAppWidget: GlanceAppWidget = DailyAlbumWidget
 
-    override fun onReceive(context: Context, intent: Intent) {
-        super.onReceive(context, intent)
-        Timber.i("onReceive: ${intent.toUri(0)}")
+    @Inject
+    lateinit var oagRepository: OagRepository
+
+    override fun onEnabled(context: Context) {
+        super.onEnabled(context)
+        //Start daily job
+        val projectId =
+            runBlocking { oagRepository.projectId.first() } ?: error("No projectId when starting")
+        UpdateWidgetWorker.start(context, projectId = projectId)
+    }
+
+    override fun onDisabled(context: Context) {
+        super.onDisabled(context)
+        // Stop daily job
+        UpdateWidgetWorker.cancel(context)
     }
 }

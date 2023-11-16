@@ -20,6 +20,10 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/album_app_widget_info" />
+
+            <!--            <meta-data-->
+            <!--                android:name="android.appwidget.provider"-->
+            <!--                android:resource="@xml/album_app_widget_info_2" />-->
         </receiver>
 
         <activity

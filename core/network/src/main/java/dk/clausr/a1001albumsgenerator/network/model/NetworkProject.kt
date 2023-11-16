@@ -1,6 +1,8 @@
 package dk.clausr.a1001albumsgenerator.network.model
 
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
+import java.time.Instant
 
 @Serializable
 data class NetworkProject(
@@ -17,7 +19,7 @@ data class NetworkHistoricAlbum(
     val album: NetworkAlbum,
     val rating: String? = null,
     val review: String,
-    val generatedAt: String, // TODO LocalDateTime
+    @Contextual val generatedAt: Instant,
     val globalRating: Double,
 )
 

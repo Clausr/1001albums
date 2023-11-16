@@ -11,12 +11,15 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dk.clausr.a1001albumsgenerator.network.BuildConfig
 import dk.clausr.a1001albumsgenerator.network.fake.FakeAssetManager
+import dk.clausr.a1001albumsgenerator.utils.InstantSerializer
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
 import okhttp3.Call
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import java.time.Instant
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
@@ -31,6 +34,9 @@ object NetworkModule {
         // TODO Maybe remove this?
         // https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/json.md#lenient-parsing
         isLenient = true
+        serializersModule = SerializersModule {
+            contextual(Instant::class, InstantSerializer)
+        }
     }
 
     @Provides

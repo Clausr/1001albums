@@ -16,7 +16,6 @@ data class ProjectEntity(
     val shareableUrl: String,
 )
 
-
 fun ProjectEntity.asExternalModel(): Project = Project(
     name = name,
     currentAlbum = Album(
@@ -35,10 +34,6 @@ fun ProjectEntity.asExternalModel(): Project = Project(
         tidalId = 0,
         amazonMusicId = "",
         youtubeMusicId = "",
-        votes = null,
-        totalRating = null,
-        averageRating = null,
-        listenedAt = null
     ),
     currentAlbumNotes = currentAlbumNotes,
     history = emptyList(),

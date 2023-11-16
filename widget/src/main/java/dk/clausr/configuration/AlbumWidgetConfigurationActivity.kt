@@ -35,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.work.WorkManager
 import coil.compose.AsyncImage
 import dagger.hilt.android.AndroidEntryPoint
 import dk.clausr.worker.UpdateWidgetWorker
@@ -85,8 +84,7 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
             fun closeConfiguration() {
                 val resultValue = Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
 
-                WorkManager.getInstance(this)
-                    .enqueue(UpdateWidgetWorker.refreshAlbumRepeatedly(projectId = projectId))
+                UpdateWidgetWorker.enqueueUnique(this, projectId = projectId)
 
                 setResult(Activity.RESULT_OK, resultValue)
                 finish()

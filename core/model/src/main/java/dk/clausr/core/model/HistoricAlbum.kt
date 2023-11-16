@@ -1,10 +1,12 @@
 package dk.clausr.core.model
 
+import java.time.Instant
+
 data class HistoricAlbum(
     val album: Album,
     val rating: Rating,
     val review: String,
-    val generatedAt: String, // TODO LocalDateTime
+    val generatedAt: Instant,
     val globalRating: Double,
 )
 

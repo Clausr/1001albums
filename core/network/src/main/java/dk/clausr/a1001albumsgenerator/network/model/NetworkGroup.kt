@@ -33,35 +33,6 @@ enum class NetworkUpdateFrequency {
 @Serializable
 data class NetworkFilteredSelection(val selections: List<String>, val genres: List<String>)
 
-@Serializable
-data class NetworkAlbum(
-    val artist: String,
-    val artistOrigin: String,
-    val images: List<NetworkAlbumImage>,
-    val genres: List<String>,
-    val subGenres: List<String>,
-    val name: String,
-    val slug: String,
-    val releaseDate: String,
-    val globalReviewsUrl: String,
-    val wikipediaUrl: String,
-    val spotifyId: String? = null,
-    val appleMusicId: String? = null,
-    val tidalId: Int? = null,
-    val amazonMusicId: String? = null,
-    val youtubeMusicId: String? = null,
-    val votes: Int? = null,
-    val totalRating: Int? = null,
-    val averageRating: Double? = null,
-    val listenedAt: String? = null, //TOOD DateTime
-) {
-    @Serializable
-    data class NetworkAlbumImage(
-        val width: Int,
-        val height: Int,
-        val url: String,
-    )
-}
 
 @Serializable
 data class NetworkGenre(

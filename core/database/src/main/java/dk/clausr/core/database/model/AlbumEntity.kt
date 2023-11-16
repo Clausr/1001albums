@@ -2,9 +2,11 @@ package dk.clausr.core.database.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import dk.clausr.core.model.Album
 
-
-@Entity(tableName = "albums")
+@Entity(
+    tableName = "albums",
+)
 data class AlbumEntity(
     @PrimaryKey
     val slug: String,
@@ -19,12 +21,22 @@ data class AlbumEntity(
     val tidalId: Int?,
     val amazonMusicId: String?,
     val youtubeMusicId: String?,
-    val votes: Int? = null,
-    val totalRating: Int? = null,
-    val averageRating: Double? = null,
-    val listenedAt: String? = null // TODO: Change to DateTime
 )
 
-//fun AlbumEntity.asExternalModel(): Album = Album(
-//    artist, artistOrigin, images =
-//)
+fun AlbumEntity.asExternalModel(): Album = Album(
+    artist = artist,
+    artistOrigin = artist,
+    images = emptyList(),
+    genres = emptyList(),
+    subGenres = emptyList(),
+    name = name,
+    slug = slug,
+    releaseDate = releaseDate,
+    globalReviewsUrl = globalReviewsUrl,
+    wikipediaUrl = wikipediaUrl,
+    spotifyId = spotifyId,
+    appleMusicId = appleMusicId,
+    tidalId = tidalId,
+    amazonMusicId = amazonMusicId,
+    youtubeMusicId = youtubeMusicId,
+)

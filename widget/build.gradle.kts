@@ -2,6 +2,7 @@ plugins {
     id("a1001albums.android.library.compose")
     id("a1001albums.android.widget")
     id("a1001albums.android.hilt")
+    id("kotlinx-serialization")
 }
 
 android {
@@ -14,7 +15,8 @@ dependencies {
     implementation(project(":core:model"))
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.compose.material.iconsExtended)
-    implementation(libs.androidx.datastore.preferences)
+//    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.androidx.work.ktx)
     implementation(libs.androidx.hilt.work)
