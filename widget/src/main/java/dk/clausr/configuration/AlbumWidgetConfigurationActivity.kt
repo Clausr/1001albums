@@ -37,7 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import dagger.hilt.android.AndroidEntryPoint
-import dk.clausr.worker.UpdateWidgetWorker
+import dk.clausr.worker.SimplifiedWidgetWorker
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -72,19 +72,23 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
     }
 
     private fun updateView() {
-        Timber.i("Update view")
-
         setContent {
             val widget by vm.widget.collectAsState()
 
             Timber.d("Project: -- widget: $widget")
 
-            var projectId by remember(widget?.projectName) { mutableStateOf(widget?.projectName ?: "") }
+            var projectId by remember(widget?.projectName) {
+                mutableStateOf(
+                    widget?.projectName ?: ""
+                )
+            }
 
             fun closeConfiguration() {
-                val resultValue = Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+                val resultValue =
+                    Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
 
-                UpdateWidgetWorker.enqueueUnique(this, projectId = projectId)
+                SimplifiedWidgetWorker.start(this)
+//                UpdateWidgetWorker.start(this, projectId = projectId)
 
                 setResult(Activity.RESULT_OK, resultValue)
                 finish()
@@ -126,8 +130,9 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
                                 keyboardController?.hide()
                             }
 
-                        },
-                        enabled = projectId.isNotBlank() && !projectId.equals(widget?.projectName, ignoreCase = true)
+                        }, enabled = projectId.isNotBlank() && !projectId.equals(
+                            widget?.projectName, ignoreCase = true
+                        )
                     ) {
                         Text("Click to set project")
                     }

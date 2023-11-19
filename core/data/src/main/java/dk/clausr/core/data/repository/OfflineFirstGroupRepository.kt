@@ -16,12 +16,12 @@ import dk.clausr.core.model.OAGWidget
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.Rating
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import javax.inject.Inject
 
 class OfflineFirstGroupRepository @Inject constructor(
@@ -34,17 +34,16 @@ class OfflineFirstGroupRepository @Inject constructor(
 ) : OagRepository {
     override val projectId: Flow<String?> = dataStore.projectId
 
-    override val widget = projectId.mapNotNull { it }
-            .flatMapLatest {
-                widgetDao.getWidgetFlow(it).map { it?.asExternalModel() }
-            }
+    override val widget = projectId.mapNotNull { it }.flatMapLatest {
+            widgetDao.getWidgetFlow(it).map { it?.asExternalModel() }
+        }
 
     override suspend fun getWidget(projectId: String): OAGWidget? = withContext(ioDispatcher) {
         widgetDao.getWidget(projectId)?.asExternalModel()
     }
 
-    override suspend fun setProject(projectId: String) {
-        dataStore.setProject(projectId)
+    override suspend fun setProject(projectId: String) = withContext(Dispatchers.IO) {
+        dataStore.setProjectId(projectId)
 
         updateDailyAlbum(projectId)
     }
@@ -62,7 +61,6 @@ class OfflineFirstGroupRepository @Inject constructor(
 
         val lastAlbum = project.history.lastOrNull()
 
-        Timber.d("Update daily album: ${project.currentAlbum.artist} -- yesterdays: $lastAlbum")
         val widget = when (lastAlbum?.rating) {
             Rating.Unrated -> {
                 WidgetEntity(

@@ -7,6 +7,7 @@ import androidx.datastore.core.Serializer
 import androidx.datastore.dataStore
 import androidx.datastore.dataStoreFile
 import androidx.glance.state.GlanceStateDefinition
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
@@ -31,6 +32,7 @@ object AlbumWidgetDataDefinition : GlanceStateDefinition<SerializedWidgetState> 
     override fun getLocation(context: Context, fileKey: String): File =
         context.dataStoreFile(fileName)
 
+    @OptIn(ExperimentalSerializationApi::class)
     object WidgetStateDataSerializer : Serializer<SerializedWidgetState> {
 
         private val kSerializable = SerializedWidgetState.serializer()

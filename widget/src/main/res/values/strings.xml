@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="widget_description">See the daily album</string>
+    <string name="simplified_widget_description">Simplified version</string>
+
+    <string name="state_not_configured">Widget not configured</string>
+    <string name="state_loading">Loading…</string>
+    <string name="state_new_available">Click to rate</string>
 </resources>

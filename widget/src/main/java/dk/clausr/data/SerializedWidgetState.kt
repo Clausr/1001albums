@@ -15,4 +15,7 @@ sealed class SerializedWidgetState(val projectId: String? = null) {
     @Serializable
     data class Error(val message: String, val currentProjectId: String?) :
         SerializedWidgetState(currentProjectId)
+
+    @Serializable
+    data object NotInitialized : SerializedWidgetState()
 }

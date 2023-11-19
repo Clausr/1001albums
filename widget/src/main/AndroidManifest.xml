@@ -20,15 +20,19 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/album_app_widget_info" />
-
-            <!--            <meta-data-->
-            <!--                android:name="android.appwidget.provider"-->
-            <!--                android:resource="@xml/album_app_widget_info_2" />-->
         </receiver>
 
-        <activity
-            android:name="dk.clausr.WebsiteActivity"
-            android:exported="true" />
+        <receiver
+            android:name=".SimplifiedAlbumWidgetReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/simplified_widget_info" />
+        </receiver>
+
     </application>
 
 </manifest>
