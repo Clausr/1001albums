@@ -17,7 +17,7 @@ internal fun CurrentAlbum(coverUrl: String, projectId: String) {
             context.openWebsite(projectId)
         }, contentAlignment = Alignment.BottomCenter
     ) {
-        DailyAlbumWidget.CoverImage(
+        CoverImage(
             modifier = GlanceModifier.fillMaxSize(), coverUrl = coverUrl
         )
     }

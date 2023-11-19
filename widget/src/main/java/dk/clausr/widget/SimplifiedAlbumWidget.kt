@@ -2,7 +2,6 @@ package dk.clausr.widget
 
 import android.content.Context
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.glance.GlanceId
@@ -25,10 +24,9 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import dagger.hilt.android.AndroidEntryPoint
-import dk.clausr.data.AlbumWidgetDataDefinition
-import dk.clausr.data.SerializedWidgetState
+import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
+import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.extensions.openWebsite
-import dk.clausr.widget.R.string
 import dk.clausr.worker.SimplifiedWidgetWorker
 
 object SimplifiedAlbumWidget : GlanceAppWidget() {
@@ -60,7 +58,7 @@ object SimplifiedAlbumWidget : GlanceAppWidget() {
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
-                            text = stringResource(id = string.state_not_configured),
+                            text = context.getString(R.string.state_not_configured),
                             style = TextStyle(
                                 color = GlanceTheme.colors.onBackground,
                                 fontSize = TextUnit(16f, TextUnitType.Sp),
@@ -71,29 +69,33 @@ object SimplifiedAlbumWidget : GlanceAppWidget() {
                 }
 
                 is SerializedWidgetState.Success -> {
-                    DailyAlbumWidget.CoverImage(
-                        modifier = GlanceModifier.fillMaxSize().clickable {
-                            state.projectId?.let { context.openWebsite(it) }
-                        },
-                        coverUrl = state.data.coverUrl,
-                    )
+                    Box(GlanceModifier.fillMaxSize()) {
+                        CoverImage(
+                            modifier = GlanceModifier.fillMaxSize().clickable {
+                                state.projectId?.let { context.openWebsite(it) }
+                            },
+                            coverUrl = state.data.coverUrl,
+                        )
 
-                    if (state.data.newAvailable) {
-                        Box(
-                            GlanceModifier.fillMaxSize().background(
-                                GlanceTheme.colors.background.getColor(context).copy(alpha = 0.75f)
-                            )
-                        ) {
-                            Text(
-                                text = stringResource(id = string.state_new_available),
-                                modifier = GlanceModifier.fillMaxWidth(),
-                                style = TextStyle(
-                                    color = GlanceTheme.colors.onBackground,
-                                    fontSize = TextUnit(16f, TextUnitType.Sp),
-                                    fontWeight = FontWeight.Bold,
-                                    textAlign = TextAlign.Center,
+                        if (state.data.newAvailable) {
+                            Box(
+                                GlanceModifier.fillMaxSize().background(
+                                    GlanceTheme.colors.background.getColor(context)
+                                        .copy(alpha = 0.75f)
+                                ),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Text(
+                                    text = LocalContext.current.getString(R.string.state_new_available),
+                                    modifier = GlanceModifier.fillMaxWidth(),
+                                    style = TextStyle(
+                                        color = GlanceTheme.colors.onBackground,
+                                        fontSize = TextUnit(16f, TextUnitType.Sp),
+                                        fontWeight = FontWeight.Bold,
+                                        textAlign = TextAlign.Center,
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
                 }

@@ -11,8 +11,6 @@ class AndroidWidgetConventionPlugin : Plugin<Project> {
             }
 
             dependencies {
-                add("implementation", project(":core:data"))
-
                 add("implementation", libs.findLibrary("kotlinx.coroutines.android").get())
                 add("api", libs.findLibrary("glance.appwidget").get())
                 add("implementation", libs.findLibrary("glance.material3").get())

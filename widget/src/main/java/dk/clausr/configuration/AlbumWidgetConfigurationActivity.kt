@@ -9,20 +9,24 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,14 +36,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.glance.appwidget.updateAll
 import coil.compose.AsyncImage
 import dagger.hilt.android.AndroidEntryPoint
+import dk.clausr.core.data_widget.SerializedWidgetState.Error
+import dk.clausr.core.data_widget.SerializedWidgetState.Loading
+import dk.clausr.core.data_widget.SerializedWidgetState.NotInitialized
+import dk.clausr.core.data_widget.SerializedWidgetState.Success
+import dk.clausr.widget.SimplifiedAlbumWidget
 import dk.clausr.worker.SimplifiedWidgetWorker
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 @AndroidEntryPoint
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
@@ -51,11 +62,6 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
     }
 
     private val vm: ConfigurationViewModel by viewModels()
-
-    override fun onResume() {
-        super.onResume()
-        updateView()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,37 +77,51 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
         }
     }
 
+//    private fun setResultOk() {
+//        val resultValue = Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+//        setResult(Activity.RESULT_OK, resultValue)
+//    }
+
+//    override fun onDestroy() {
+//        Timber.d("Activity result was ok? ${}")
+//        super.onDestroy()
+//    }
+
+//    override fun finish() {
+//        super.finish()
+//
+//        if (vm.widgetState.value is Success) {
+//            val resultValue = Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+//            setResult(Activity.RESULT_OK, resultValue)
+//        }
+//        lifecycleScope.launch {
+//            SimplifiedAlbumWidget.updateAll(applicationContext)
+//        }
+//    }
+
     private fun updateView() {
         setContent {
-            val widget by vm.widget.collectAsState()
+            val widgetState by vm.widgetState.collectAsState()
 
-            Timber.d("Project: -- widget: $widget")
+            LaunchedEffect(widgetState) {
+//                if (widgetState is Success) {
+//                    val resultValue = Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+//                    setResult(Activity.RESULT_OK, resultValue)
+//                }
 
-            var projectId by remember(widget?.projectName) {
-                mutableStateOf(
-                    widget?.projectName ?: ""
-                )
             }
 
-            fun closeConfiguration() {
-                val resultValue =
-                    Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-
-                SimplifiedWidgetWorker.start(this)
-//                UpdateWidgetWorker.start(this, projectId = projectId)
-
-                setResult(Activity.RESULT_OK, resultValue)
-                finish()
+            var projectId by remember(widgetState) {
+                mutableStateOf(
+                    widgetState.projectId ?: ""
+                )
             }
 
             val keyboardController = LocalSoftwareKeyboardController.current
             val scope = rememberCoroutineScope()
-            Scaffold(
-                contentWindowInsets = WindowInsets(0, 0, 0, 0),
-                topBar = {
-                    TopAppBar(title = { Text("1001 albums") })
-                }
-            ) { padding ->
+            Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0), topBar = {
+                TopAppBar(title = { Text("1001 albums") })
+            }) { padding ->
                 Column(
                     Modifier
                         .fillMaxSize()
@@ -112,9 +132,7 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    TextField(
-                        modifier = Modifier
-                            .fillMaxWidth(),
+                    TextField(modifier = Modifier.fillMaxWidth(),
                         label = { Text("Project name (username)") },
                         singleLine = true,
                         value = projectId,
@@ -131,36 +149,68 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
                             }
 
                         }, enabled = projectId.isNotBlank() && !projectId.equals(
-                            widget?.projectName, ignoreCase = true
+                            widgetState.projectId, ignoreCase = true
                         )
                     ) {
                         Text("Click to set project")
                     }
 
-                    if (widget != null) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(
-                                modifier = Modifier.fillMaxWidth(),
-                                text = "Todays album:",
-                                textAlign = TextAlign.Center,
-                                style = MaterialTheme.typography.titleMedium,
-                            )
+                    when (val state = widgetState) {
+                        is Error -> Text("Error :( ${state.message}")
+                        is Loading -> CircularProgressIndicator()
+                        NotInitialized -> Text("Project not initialized")
+                        is Success -> {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = "Todays album:",
+                                    textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
 
-                            AsyncImage(
-                                modifier = Modifier.fillMaxWidth(),
-                                model = widget?.currentCoverUrl,
-                                contentDescription = "Current Album"
-                            )
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
 
-                            Text(
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.fillMaxWidth(),
-                                text = "${widget?.currentAlbumArtist} - ${widget?.currentAlbumTitle}"
-                            )
-                        }
+                                    AsyncImage(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .aspectRatio(1f)
+                                            .background(MaterialTheme.colorScheme.primaryContainer)
+                                            .alpha(if (state.data.newAvailable) 0.25f else 1f),
+                                        model = state.data.coverUrl,
 
-                        Button(onClick = ::closeConfiguration) {
-                            Text("Apply changes")
+                                        contentDescription = "Current Album"
+                                    )
+                                    if (state.data.newAvailable) {
+                                        Text(
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier.fillMaxSize(),
+                                            text = "New album available.\n\nRate this album to get the latest cover",
+                                            style = MaterialTheme.typography.labelLarge.copy(
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+
+                            Button(onClick = {
+                                val resultValue = Intent().putExtra(
+                                    AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId
+                                )
+                                setResult(Activity.RESULT_OK, resultValue)
+
+                                scope.launch {
+                                    SimplifiedAlbumWidget.updateAll(applicationContext)
+                                }
+                                SimplifiedWidgetWorker.start(this@AlbumWidgetConfigurationActivity)
+
+                                finish()
+                            }) {
+                                Text("Apply changes")
+                            }
                         }
                     }
                 }

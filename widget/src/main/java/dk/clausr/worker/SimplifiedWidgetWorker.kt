@@ -17,13 +17,10 @@ import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import dk.clausr.core.data.repository.OagRepository
-import dk.clausr.core.model.AlbumWidgetData
-import dk.clausr.core.model.Rating
-import dk.clausr.data.AlbumWidgetDataDefinition
-import dk.clausr.data.SerializedWidgetState.Loading
-import dk.clausr.data.SerializedWidgetState.NotInitialized
-import dk.clausr.data.SerializedWidgetState.Success
-import dk.clausr.extensions.getCoverUrl
+import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
+import dk.clausr.core.data_widget.SerializedWidgetState.Loading
+import dk.clausr.core.data_widget.SerializedWidgetState.NotInitialized
+import dk.clausr.core.data_widget.SerializedWidgetState.Success
 import dk.clausr.widget.SimplifiedAlbumWidget
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -62,14 +59,14 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
             workerResult = if (project == null) {
                 Result.retry()
             } else {
-                dataStore.updateData { _ ->
-                    val latestAlbum = project.history.lastOrNull()
-                    val newAlbumAvailable = latestAlbum?.rating == Rating.Unrated
-                    val albumToUse = if (newAlbumAvailable) latestAlbum?.album
-                        ?: project.currentAlbum else project.currentAlbum
-
-                    Success(AlbumWidgetData(albumToUse.getCoverUrl(), newAlbumAvailable), projectId)
-                }
+//                dataStore.updateData { _ ->
+//                    val latestAlbum = project.history.lastOrNull()
+//                    val newAlbumAvailable = latestAlbum?.rating == Rating.Unrated
+//                    val albumToUse = if (newAlbumAvailable) latestAlbum?.album
+//                        ?: project.currentAlbum else project.currentAlbum
+//
+//                    Success(AlbumWidgetData(albumToUse.getCoverUrl(), newAlbumAvailable), projectId)
+//                }
                 Result.success()
             }
         }

@@ -1,8 +1,7 @@
-package dk.clausr.data
+package dk.clausr.core.data_widget
 
 import dk.clausr.core.model.AlbumWidgetData
 import kotlinx.serialization.Serializable
-
 @Serializable
 sealed class SerializedWidgetState(val projectId: String? = null) {
     @Serializable
@@ -17,5 +16,5 @@ sealed class SerializedWidgetState(val projectId: String? = null) {
         SerializedWidgetState(currentProjectId)
 
     @Serializable
-    data object NotInitialized : SerializedWidgetState()
+    data object NotInitialized : SerializedWidgetState(null)
 }

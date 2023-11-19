@@ -1,4 +1,4 @@
-package dk.clausr.data
+package dk.clausr.core.data_widget
 
 import android.content.Context
 import androidx.datastore.core.CorruptionException
@@ -7,6 +7,7 @@ import androidx.datastore.core.Serializer
 import androidx.datastore.dataStore
 import androidx.datastore.dataStoreFile
 import androidx.glance.state.GlanceStateDefinition
+import dk.clausr.core.data_widget.SerializedWidgetState.Loading
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
@@ -38,7 +39,7 @@ object AlbumWidgetDataDefinition : GlanceStateDefinition<SerializedWidgetState> 
         private val kSerializable = SerializedWidgetState.serializer()
 
         override val defaultValue: SerializedWidgetState
-            get() = SerializedWidgetState.Loading(currentProjectId = null)
+            get() = Loading(currentProjectId = null)
 
         private val json = Json {
             serializersModule = SerializersModule {
