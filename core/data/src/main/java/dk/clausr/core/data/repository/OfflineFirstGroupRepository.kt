@@ -20,8 +20,10 @@ import dk.clausr.core.model.AlbumWidgetData
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.Rating
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
@@ -38,20 +40,11 @@ class OfflineFirstGroupRepository @Inject constructor(
     private val widgetDataStore: DataStore<SerializedWidgetState>,
 ) : OagRepository {
     override val projectId: Flow<String?> = dataStore.projectId
-
-//    override val widget = projectId.mapNotNull { it }.flatMapLatest {
-//        widgetDao.getWidgetFlow(it).map { it?.asExternalModel() }
-//    }
-
-//    override suspend fun getWidget(projectId: String): OAGWidget? = withContext(ioDispatcher) {
-//        widgetDao.getWidget(projectId)?.asExternalModel()
-//    }
+    override val widgetState = widgetDataStore.data
 
     override suspend fun setProject(projectId: String): Project? = withContext(Dispatchers.IO) {
         dataStore.setProjectId(projectId)
         getProject(projectId)
-//        updateDailyAlbum(projectId)
-//        Unit
     }
 
     override suspend fun updateDailyAlbum(projectId: String) {
@@ -92,8 +85,6 @@ class OfflineFirstGroupRepository @Inject constructor(
         widgetDao.insert(widget)
     }
 
-//    override val project: Flow<Project?> = widgetDataStore.data.map { it }
-
     override val project: Flow<Project?> = projectId.mapNotNull { it }.flatMapLatest {
         projectDao.getProject(it).map {
             it?.asExternalModel()
@@ -119,23 +110,31 @@ class OfflineFirstGroupRepository @Inject constructor(
         val project = projectRes?.asExternalModel()
 
         if (project != null) {
-            widgetDataStore.updateData { _ ->
-                val latestAlbum = project.history.lastOrNull()
-                val newAlbumAvailable = latestAlbum?.rating == Rating.Unrated
-                val albumToUse = if (newAlbumAvailable) {
-                    latestAlbum?.album ?: project.currentAlbum
-                } else project.currentAlbum
-
-                Success(
-                    AlbumWidgetData(
-                        albumToUse.images.maxBy { it.height }.url, newAlbumAvailable
-                    ), projectId
-                )
-            }
+            updateWidgetData(project)
         }
 
         return project
     }
 
-    override val widgetState = widgetDataStore.data
+    private suspend fun updateWidgetData(project: Project) {
+        widgetDataStore.updateData { _ ->
+            val latestAlbum = project.history.lastOrNull()
+            val newAlbumAvailable = latestAlbum?.rating == Rating.Unrated
+            val albumToUse = if (newAlbumAvailable) {
+                latestAlbum?.album ?: project.currentAlbum
+            } else project.currentAlbum
+
+            Success(
+                AlbumWidgetData(
+                    albumToUse.images.maxBy { it.height }.url, newAlbumAvailable
+                ), project.name
+            )
+        }
+    }
+
+    override suspend fun updateProject(): Project? {
+        val projectId = CoroutineScope(Dispatchers.IO).run { projectId.first() } ?: return null
+
+        return getProject(projectId)
+    }
 }

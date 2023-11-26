@@ -27,6 +27,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.extensions.openWebsite
+import dk.clausr.worker.BurstUpdateWorker
 import dk.clausr.worker.SimplifiedWidgetWorker
 
 object SimplifiedAlbumWidget : GlanceAppWidget() {
@@ -73,6 +74,10 @@ object SimplifiedAlbumWidget : GlanceAppWidget() {
                         CoverImage(
                             modifier = GlanceModifier.fillMaxSize().clickable {
                                 state.projectId?.let { context.openWebsite(it) }
+
+                                if (state.data.newAvailable) {
+                                    BurstUpdateWorker.enqueueBurstUpdate(context)
+                                }
                             },
                             coverUrl = state.data.coverUrl,
                         )

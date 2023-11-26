@@ -59,14 +59,6 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
             workerResult = if (project == null) {
                 Result.retry()
             } else {
-//                dataStore.updateData { _ ->
-//                    val latestAlbum = project.history.lastOrNull()
-//                    val newAlbumAvailable = latestAlbum?.rating == Rating.Unrated
-//                    val albumToUse = if (newAlbumAvailable) latestAlbum?.album
-//                        ?: project.currentAlbum else project.currentAlbum
-//
-//                    Success(AlbumWidgetData(albumToUse.getCoverUrl(), newAlbumAvailable), projectId)
-//                }
                 Result.success()
             }
         }
@@ -98,9 +90,8 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
                 .setRequiresBatteryNotLow(true).build()
 
         private fun periodicWorkSync() = PeriodicWorkRequestBuilder<SimplifiedWidgetWorker>(
-            repeatInterval = Duration.ofMinutes(15)
+            repeatInterval = Duration.ofHours(2)
         )
-//            PeriodicWorkRequestBuilder<SimplifiedWidgetWorker>(repeatInterval = Duration.ofHours(2))
             .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, Duration.ofMinutes(10))
             .setConstraints(periodicConstraints).addTag("Periodic").build()
 

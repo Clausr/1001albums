@@ -18,4 +18,6 @@ interface OagRepository {
 
     //    suspend fun getWidget(projectId: String): OAGWidget?
     suspend fun updateDailyAlbum(projectId: String)
+
+    suspend fun updateProject(): Project?
 }
