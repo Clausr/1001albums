@@ -5,14 +5,12 @@ import dk.clausr.a1001albumsgenerator.network.OAGDataSource
 import dk.clausr.core.common.network.Dispatcher
 import dk.clausr.core.common.network.OagDispatchers
 import dk.clausr.core.data.model.asExternalModel
-import dk.clausr.core.data.model.toEntity
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.data_widget.SerializedWidgetState.Loading
 import dk.clausr.core.data_widget.SerializedWidgetState.Success
 import dk.clausr.core.database.dao.AlbumDao
 import dk.clausr.core.database.dao.ProjectDao
 import dk.clausr.core.database.dao.WidgetDao
-import dk.clausr.core.database.model.WidgetEntity
 import dk.clausr.core.database.model.asExternalModel
 import dk.clausr.core.datastore.OagDataStore
 import dk.clausr.core.model.Album
@@ -45,44 +43,6 @@ class OfflineFirstGroupRepository @Inject constructor(
     override suspend fun setProject(projectId: String): Project? = withContext(Dispatchers.IO) {
         dataStore.setProjectId(projectId)
         getProject(projectId)
-    }
-
-    override suspend fun updateDailyAlbum(projectId: String) {
-        val projectRes = networkDataSource.getProject(projectId).getOrThrow()
-        val project = projectRes?.asExternalModel() ?: return
-
-        projectDao.insertProject(projectRes.toEntity())
-
-        albumDao.insertAlbums(projectRes.history.map {
-            it.album.toEntity()
-        })
-        albumDao.insert(projectRes.currentAlbum.toEntity())
-
-        val lastAlbum = project.history.lastOrNull()
-
-        val widget = when (lastAlbum?.rating) {
-            Rating.Unrated -> {
-                WidgetEntity(
-                    projectName = projectId,
-                    currentAlbumTitle = lastAlbum.album.name,
-                    currentAlbumArtist = lastAlbum.album.artist,
-                    currentCoverUrl = lastAlbum.album.images.maxBy { it.height }.url,
-                    newAlbumAvailable = true
-                )
-            }
-
-            else -> {
-                WidgetEntity(
-                    projectName = project.name,
-                    currentAlbumTitle = project.currentAlbum.name,
-                    currentAlbumArtist = project.currentAlbum.artist,
-                    currentCoverUrl = project.currentAlbum.images.maxBy { it.height }.url,
-                    newAlbumAvailable = false
-                )
-            }
-        }
-
-        widgetDao.insert(widget)
     }
 
     override val project: Flow<Project?> = projectId.mapNotNull { it }.flatMapLatest {

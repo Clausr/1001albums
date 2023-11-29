@@ -90,7 +90,7 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
                 .setRequiresBatteryNotLow(true).build()
 
         private fun periodicWorkSync() = PeriodicWorkRequestBuilder<SimplifiedWidgetWorker>(
-            repeatInterval = Duration.ofHours(2)
+            repeatInterval = Duration.ofHours(1)
         )
             .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, Duration.ofMinutes(10))
             .setConstraints(periodicConstraints).addTag("Periodic").build()

@@ -26,7 +26,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -77,39 +76,17 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
         }
     }
 
-//    private fun setResultOk() {
-//        val resultValue = Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-//        setResult(Activity.RESULT_OK, resultValue)
-//    }
-
-//    override fun onDestroy() {
-//        Timber.d("Activity result was ok? ${}")
-//        super.onDestroy()
-//    }
-
-//    override fun finish() {
-//        super.finish()
-//
-//        if (vm.widgetState.value is Success) {
-//            val resultValue = Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-//            setResult(Activity.RESULT_OK, resultValue)
-//        }
-//        lifecycleScope.launch {
-//            SimplifiedAlbumWidget.updateAll(applicationContext)
-//        }
-//    }
-
     private fun updateView() {
         setContent {
             val widgetState by vm.widgetState.collectAsState()
 
-            LaunchedEffect(widgetState) {
-//                if (widgetState is Success) {
-//                    val resultValue = Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-//                    setResult(Activity.RESULT_OK, resultValue)
-//                }
-
-            }
+//            LaunchedEffect(widgetState) {
+////                if (widgetState is Success) {
+////                    val resultValue = Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+////                    setResult(Activity.RESULT_OK, resultValue)
+////                }
+//
+//            }
 
             var projectId by remember(widgetState) {
                 mutableStateOf(
