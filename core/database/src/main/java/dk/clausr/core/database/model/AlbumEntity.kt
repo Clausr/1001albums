@@ -11,7 +11,7 @@ data class AlbumEntity(
     @PrimaryKey
     val slug: String,
     val artist: String,
-    val artistOrigin: String,
+    val artistOrigin: String?,
     val name: String,
     val releaseDate: String,
     val globalReviewsUrl: String,

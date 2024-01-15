@@ -2,7 +2,7 @@ package dk.clausr.core.model
 
 data class Album(
     val artist: String,
-    val artistOrigin: String,
+    val artistOrigin: String?,
     val images: List<AlbumImage>,
     val genres: List<String>,
     val subGenres: List<String>,

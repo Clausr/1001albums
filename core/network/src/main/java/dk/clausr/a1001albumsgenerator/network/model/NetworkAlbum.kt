@@ -7,7 +7,7 @@ import java.time.Instant
 @Serializable
 data class NetworkAlbum(
     val artist: String,
-    val artistOrigin: String,
+    val artistOrigin: String? = null,
     val images: List<NetworkAlbumImage>,
     val genres: List<String>,
     val subGenres: List<String>,
