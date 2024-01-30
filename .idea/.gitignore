@@ -1,0 +1,18 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+
+# Exclude non-user-specific stuff
+!/.name
+!codeInsightSettings.xml
+!codeStyles/
+!copyright/
+!dataSources.xml
+!encodings.xml
+!externalDependencies.xml
+!file.template.settings.xml
+!fileTemplates/
+!icon.svg
+!runConfigurations/
+!scopes/
+!vcs.xml
