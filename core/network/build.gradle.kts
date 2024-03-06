@@ -8,12 +8,6 @@ plugins {
 android {
     namespace = "dk.clausr.a1001albumsgenerator.network"
 
-    testOptions {
-        unitTests {
-            isIncludeAndroidResources = true
-        }
-    }
-
     buildFeatures {
         buildConfig = true
     }
