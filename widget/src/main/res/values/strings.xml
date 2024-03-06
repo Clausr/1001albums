@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="config_toolbar_title">1001 Widget configuration</string>
     <string name="widget_description">See the daily album</string>
     <string name="simplified_widget_description">Simplified version</string>
 
     <string name="state_not_configured">Widget not configured</string>
     <string name="state_loading">Loading…</string>
     <string name="state_new_available">Click to rate</string>
+
+    <string name="config_project_input_label">Project name (username)</string>
+    <string name="config_set_project_button_title">Set project</string>
+    <string name="config_set_project_done_button_title">Project set</string>
+    <string name="configuration_todays_album_title">Todays album</string>
+    <string name="configuration_new_album_available">New album available.\n\nRate this album to get the latest cover</string>
+    <string name="configuration_state_not_initialized">Project not initialized</string>
+    <string name="album_cover_a11y">Cover of todays album</string>
 </resources>

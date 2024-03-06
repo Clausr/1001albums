@@ -48,7 +48,7 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
 
         val projectId: String? = runBlocking { oagRepository.projectId.first() }
 
-        if (projectId == null) {
+        if (projectId.isNullOrBlank()) {
             dataStore.updateData {
                 NotInitialized
             }
@@ -83,7 +83,7 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
             )
         }
 
-        private const val periodicSync = "SimplifiedPeriodicSyncWorker"
+        private const val PERIODIC_SYNC = "SimplifiedPeriodicSyncWorker"
 
         private val periodicConstraints =
             Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED)
@@ -100,12 +100,12 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
             policy: ExistingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.UPDATE,
         ) {
             WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-                periodicSync, policy, periodicWorkSync()
+                PERIODIC_SYNC, policy, periodicWorkSync()
             )
         }
 
         fun cancel(context: Context) {
-            WorkManager.getInstance(context).cancelUniqueWork(periodicSync)
+            WorkManager.getInstance(context).cancelUniqueWork(PERIODIC_SYNC)
         }
     }
 }
