@@ -55,7 +55,6 @@ import dk.clausr.core.data_widget.SerializedWidgetState.Success
 import dk.clausr.widget.R
 import dk.clausr.widget.SimplifiedAlbumWidget
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 @AndroidEntryPoint
 @OptIn(ExperimentalMaterial3Api::class)
@@ -95,7 +94,7 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
 
             val setProjectButtonEnabled by remember(projectId) {
                 mutableStateOf(
-                    projectId.isBlank() && !projectId.equals(
+                    projectId.isNotBlank() && !projectId.equals(
                         widgetState.projectId, ignoreCase = true
                     )
                 )
@@ -162,7 +161,6 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
                         Text(stringResource(id = buttonTextRes))
                     }
 
-                    Timber.d("State: $widgetState")
                     when (val state = widgetState) {
                         is Error -> Text("Error :( ${state.message}")
                         is Loading -> CircularProgressIndicator()

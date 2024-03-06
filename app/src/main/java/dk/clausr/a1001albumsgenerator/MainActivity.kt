@@ -9,7 +9,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
 import dk.clausr.a1001albumsgenerator.ui.theme._1001AlbumsGeneratorTheme
-import dk.clausr.feature.overview.OverviewRoute
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -24,7 +23,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    OverviewRoute()
+//                    OverviewRoute()
                 }
             }
         }
