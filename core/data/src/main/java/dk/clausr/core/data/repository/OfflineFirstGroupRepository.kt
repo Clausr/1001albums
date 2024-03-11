@@ -78,7 +78,7 @@ class OfflineFirstGroupRepository @Inject constructor(
 
     private suspend fun updateWidgetData(project: Project) {
         widgetDataStore.updateData { _ ->
-            val latestAlbum = project.history.lastOrNull()
+            val latestAlbum = project.history.firstOrNull { it.rating == Rating.Unrated }
             val newAlbumAvailable = latestAlbum?.rating == Rating.Unrated
             val albumToUse = if (newAlbumAvailable) {
                 latestAlbum?.album ?: project.currentAlbum
