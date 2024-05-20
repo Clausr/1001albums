@@ -29,12 +29,14 @@ import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.extensions.openWebsite
 import dk.clausr.worker.BurstUpdateWorker
 import dk.clausr.worker.SimplifiedWidgetWorker
+import timber.log.Timber
 
 object SimplifiedAlbumWidget : GlanceAppWidget() {
     override val stateDefinition: GlanceStateDefinition<SerializedWidgetState> =
         AlbumWidgetDataDefinition
 
     override suspend fun provideGlance(context: Context, id: GlanceId) = provideContent {
+        Timber.d("Provide content")
         GlanceTheme {
             AlbumWidget()
         }

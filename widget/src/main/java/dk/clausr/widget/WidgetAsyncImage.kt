@@ -24,7 +24,9 @@ import coil.request.SuccessResult
 
 @Composable
 fun CoverImage(
-    modifier: GlanceModifier = GlanceModifier, coverUrl: String, tint: ColorProvider? = null
+    modifier: GlanceModifier = GlanceModifier,
+    coverUrl: String,
+    tint: ColorProvider? = null
 ) {
     var coverBitmap by remember { mutableStateOf<Bitmap?>(null) }
     val context = LocalContext.current

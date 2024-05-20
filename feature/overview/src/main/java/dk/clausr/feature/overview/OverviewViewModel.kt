@@ -9,7 +9,6 @@ import dk.clausr.core.model.Project
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -28,7 +27,7 @@ class OverviewViewModel @Inject constructor(
             initialValue = null
         )
 
-    val uiState = combine(oagRepository.project, oagRepository.albums) { project, albums ->
+    val uiState = OverviewUiState.Loading /*combine(oagRepository.project, oagRepository.albums) { project, albums ->
         if (project != null) {
             OverviewUiState.Success(project, albums)
         } else {
@@ -39,7 +38,7 @@ class OverviewViewModel @Inject constructor(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = OverviewUiState.Loading
-        )
+        )*/
 
     init {
         viewModelScope.launch(Dispatchers.IO) {

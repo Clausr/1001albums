@@ -15,6 +15,7 @@ import dagger.assisted.AssistedInject
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.model.Rating
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 
 @HiltWorker
 class BurstUpdateWorker @AssistedInject constructor(
@@ -23,23 +24,32 @@ class BurstUpdateWorker @AssistedInject constructor(
     private val oagRepository: OagRepository,
 ) : CoroutineWorker(appContext, workerParameters) {
 
+    val project = oagRepository.project
+
     override suspend fun doWork(): Result {
-        val updatedProject = oagRepository.updateProject()
         var retryNumber = workerParameters.inputData.getInt(retryDataKey, 0)
 
-        return if (updatedProject == null) {
-            Result.failure()
-        } else {
-            if (retryNumber >= maxRetries) {
-                Result.failure()
-            } else if (updatedProject.history.lastOrNull()?.rating == Rating.Unrated) {
-                retryNumber++
-                delay(25_000)
-                enqueueBurstUpdate(appContext, retryNumber)
+        var res = Result.retry()
 
+        project.collectLatest { updatedProject ->
+            res = if (updatedProject == null) {
                 Result.failure()
-            } else Result.success()
+            } else {
+                if (retryNumber >= maxRetries) {
+                    Result.failure()
+                } else if (updatedProject.history.lastOrNull()?.rating == Rating.Unrated) {
+                    retryNumber++
+                    delay(25_000)
+                    enqueueBurstUpdate(appContext, retryNumber)
+
+                    Result.failure()
+                } else Result.success()
+            }
         }
+
+        oagRepository.updateProject()
+
+        return res
     }
 
     companion object {

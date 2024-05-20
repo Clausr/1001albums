@@ -8,14 +8,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.SerializedWidgetState
-import dk.clausr.core.model.Project
 import dk.clausr.widget.SimplifiedAlbumWidget
 import dk.clausr.worker.SimplifiedWidgetWorker
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,17 +28,10 @@ class ConfigurationViewModel @Inject constructor(
         initialValue = SerializedWidgetState.Loading(null)
     )
 
-    private val mutableProject = MutableStateFlow<Project?>(null)
-    val project: StateFlow<Project?> = mutableProject.stateIn(
-        scope = viewModelScope, started = SharingStarted.Lazily, initialValue = null
-    )
-
     fun setProjectId(projectId: String) = viewModelScope.launch {
-        val newProject = oagRepository.setProject(projectId)
-        mutableProject.emit(newProject)
-        if (newProject != null) {
-            SimplifiedWidgetWorker.start(context)
-        }
+        Timber.d("Config VM : setProjectId $projectId")
+        oagRepository.setProject(projectId)
+        SimplifiedWidgetWorker.start(context)
     }
 
     fun finish() = viewModelScope.launch {

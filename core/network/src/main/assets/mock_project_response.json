@@ -1,582 +1,221 @@
 {
   "shareableUrl": "https://1001albumsgenerator.com/shares/651ef5d68a53974fd9aa7335",
   "currentAlbum": {
-    "artist": "George Michael",
-    "artistOrigin": "uk",
+    "artist": "Jimi Hendrix",
+    "artistOrigin": "us",
     "images": [
       {
         "height": 640,
-        "url": "https://i.scdn.co/image/b0918e54e212d316e08952621867fbaa296ca2b3",
+        "url": "https://i.scdn.co/image/7727ed79cfb246f9a1f706d3583b5b259a099a7f",
         "width": 640
       },
       {
         "height": 300,
-        "url": "https://i.scdn.co/image/3bf5a8a009d4cd25caef6ba565fa53e2c40a58bb",
+        "url": "https://i.scdn.co/image/4b9994763bc8efbd74bd6b6429e111ad167523b7",
         "width": 300
       },
       {
         "height": 64,
-        "url": "https://i.scdn.co/image/3459ae5e760756dfaa7e0302c9eb34e15667b5ad",
+        "url": "https://i.scdn.co/image/d1211cda3ed4af2fac83212a5c08b19bf5013e37",
         "width": 64
       }
     ],
     "genres": [
-      "pop"
+      "rock",
+      "hard-rock",
+      "psychedelic-rock"
     ],
-    "subGenres": [],
-    "name": "Faith",
-    "slug": "faith",
-    "releaseDate": "1987",
-    "globalReviewsUrl": "https://1001albumsgenerator.com/albums/34K1Kvskt9arWy8E1Gz3Lw/faith",
-    "wikipediaUrl": "https://en.wikipedia.org/wiki/Faith_(George_Michael_album)",
-    "spotifyId": "34K1Kvskt9arWy8E1Gz3Lw",
-    "appleMusicId": "395918916",
-    "tidalId": 4841933,
-    "amazonMusicId": "B004K7BJHW",
-    "youtubeMusicId": "OLAK5uy_mmh-u17hyzW3TavEi9E5GAXPqr5fGLhe8"
+    "subGenres": [
+      "acid-rock",
+      "album-rock",
+      "blues-rock",
+      "classic-rock",
+      "hard-rock",
+      "proto-metal",
+      "psychedelic-rock",
+      "rock"
+    ],
+    "name": "Axis: Bold As Love",
+    "slug": "axis-bold-as-love",
+    "releaseDate": "1967",
+    "globalReviewsUrl": "https://1001albumsgenerator.com/albums/3uFZf8rykoHo7XMIQVYW6r/axis-bold-as-love",
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Axis:_Bold_as_Love",
+    "spotifyId": "3uFZf8rykoHo7XMIQVYW6r",
+    "appleMusicId": "357222341",
+    "tidalId": 3246760,
+    "amazonMusicId": "B003BG4KHE",
+    "youtubeMusicId": "OLAK5uy_m5PNszxxDF63BXZ__Jpm7fo93JZixHHLc",
+    "qobuzId": "0884977412833"
   },
   "currentAlbumNotes": "",
   "history": [
     {
       "album": {
-        "artist": "Black Sabbath",
-        "artistOrigin": "uk",
-        "images": [
-          {
-            "height": 640,
-            "url": "https://i.scdn.co/image/ab67616d0000b2731311a92b0ca83a5154c5a5e7",
-            "width": 640
-          },
-          {
-            "height": 300,
-            "url": "https://i.scdn.co/image/ab67616d00001e021311a92b0ca83a5154c5a5e7",
-            "width": 300
-          },
-          {
-            "height": 64,
-            "url": "https://i.scdn.co/image/ab67616d000048511311a92b0ca83a5154c5a5e7",
-            "width": 64
-          }
-        ],
-        "genres": [
-          "metal"
-        ],
-        "subGenres": [
-          "album-rock",
-          "birmingham-metal",
-          "classic-rock",
-          "hard-rock",
-          "metal",
-          "rock",
-          "stoner-rock",
-          "uk-doom-metal"
-        ],
-        "name": "Black Sabbath",
-        "slug": "black-sabbath",
-        "releaseDate": "1970",
-        "globalReviewsUrl": "https://1001albumsgenerator.com/albums/2T6jeELx5BqH4GMLObBy10/black-sabbath",
-        "wikipediaUrl": "https://en.wikipedia.org/wiki/Black_Sabbath_(album)",
-        "spotifyId": "2T6jeELx5BqH4GMLObBy10",
-        "appleMusicId": "787645011",
-        "tidalId": 34450059,
-        "amazonMusicId": "B06XCR83RN",
-        "youtubeMusicId": "OLAK5uy_l7sDmWvP2VNWTdhZ453bIhVOBGeNh8lJU"
-      },
-      "rating": null,
-      "review": "",
-      "generatedAt": "2023-10-05T03:00:36.142Z",
-      "globalRating": 3.76
-    },
-    {
-      "album": {
-        "artist": "Common",
+        "artist": "Johnny Cash",
         "artistOrigin": "us",
         "images": [
           {
             "height": 640,
-            "url": "https://i.scdn.co/image/6eb89c0ada50ad46200bf471b3bd23d0531092dc",
-            "width": 630
-          },
-          {
-            "height": 300,
-            "url": "https://i.scdn.co/image/f8b0234e7ab63757a22f1de462e8ae93bcc00f10",
-            "width": 295
-          },
-          {
-            "height": 64,
-            "url": "https://i.scdn.co/image/ec4926c34d065690c81540ac17222bd6b22693bc",
-            "width": 63
-          }
-        ],
-        "genres": [
-          "hip-hop",
-          "soul"
-        ],
-        "subGenres": [
-          "alternative-hip-hop",
-          "chicago-rap",
-          "conscious-hip-hop",
-          "gangster-rap",
-          "hardcore-hip-hop",
-          "hip-hop",
-          "neo-soul",
-          "political-hip-hop",
-          "rap"
-        ],
-        "name": "Be",
-        "slug": "be",
-        "releaseDate": "2005",
-        "globalReviewsUrl": "https://1001albumsgenerator.com/albums/4oVpqMqd0A1GPW3RkypqXw/be",
-        "wikipediaUrl": "https://en.wikipedia.org/wiki/Be_(Common_album)",
-        "spotifyId": "4oVpqMqd0A1GPW3RkypqXw",
-        "appleMusicId": "1440726298",
-        "tidalId": 590724,
-        "amazonMusicId": "B001NCRBJW",
-        "youtubeMusicId": "OLAK5uy_mH_mCIUIhW9S18hASYpR8G9lIEPDup2gk"
-      },
-      "rating": 2,
-      "review": "",
-      "generatedAt": "2023-10-06T09:41:41.597Z",
-      "globalRating": 3.39
-    },
-    {
-      "album": {
-        "artist": "The Clash",
-        "artistOrigin": "uk",
-        "images": [
-          {
-            "height": 640,
-            "url": "https://i.scdn.co/image/a522c89d9d23539071d1f4b334dc2d50cabc3693",
+            "url": "https://i.scdn.co/image/ab67616d0000b2734a04593b7c149dc7b725683e",
             "width": 640
           },
           {
             "height": 300,
-            "url": "https://i.scdn.co/image/84ca0f9564ae1eff9163a6a1dfae2a10b1d60a6a",
+            "url": "https://i.scdn.co/image/ab67616d00001e024a04593b7c149dc7b725683e",
             "width": 300
           },
           {
             "height": 64,
-            "url": "https://i.scdn.co/image/f5dd8399a2d82d776c9da3832b562b532c288201",
+            "url": "https://i.scdn.co/image/ab67616d000048514a04593b7c149dc7b725683e",
             "width": 64
           }
         ],
         "genres": [
-          "punk"
+          "country"
         ],
         "subGenres": [
-          "classic-rock",
-          "permanent-wave",
-          "punk",
-          "rock"
+          "arkansas-country",
+          "outlaw-country"
         ],
-        "name": "London Calling",
-        "slug": "london-calling",
-        "releaseDate": "1979",
-        "globalReviewsUrl": "https://1001albumsgenerator.com/albums/6FCzvataOZh68j8OKzOt9a/london-calling",
-        "wikipediaUrl": "https://en.wikipedia.org/wiki/London_Calling_(album)",
-        "spotifyId": "6FCzvataOZh68j8OKzOt9a",
-        "appleMusicId": "684811762",
-        "tidalId": 21785493,
-        "amazonMusicId": "B00EQRJLQC",
-        "youtubeMusicId": "OLAK5uy_keWoQUGetv5n5E7f2Zrg36XPMeLcKNXl4"
+        "name": "At Folsom Prison",
+        "slug": "at-folsom-prison",
+        "releaseDate": "1968",
+        "globalReviewsUrl": "https://1001albumsgenerator.com/albums/4TJIdlY9hGSSTO1kUs1neh/at-folsom-prison",
+        "wikipediaUrl": "https://en.wikipedia.org/wiki/At_Folsom_Prison",
+        "spotifyId": "4TJIdlY9hGSSTO1kUs1neh",
+        "appleMusicId": "825516828",
+        "tidalId": 26481300,
+        "amazonMusicId": "B00IP3JAK0",
+        "youtubeMusicId": "OLAK5uy_n7dNlWoNFVi4NUOAiin25wHvrL5GHQVDI",
+        "qobuzId": "0886444492690"
       },
-      "rating": 5,
-      "review": "",
-      "generatedAt": "2023-10-07T03:15:35.129Z",
-      "globalRating": 4
+      "rating": 4,
+      "review": "Lidt ligesom dem anden plade i fængslet. Det er sgu bare noget musik der er nemt at høre.",
+      "generatedAt": "2024-03-07T04:15:07.159Z",
+      "globalRating": 3.97
     },
     {
       "album": {
-        "artist": "Sly & The Family Stone",
-        "artistOrigin": "us",
-        "images": [
-          {
-            "height": 640,
-            "url": "https://i.scdn.co/image/178278f98ca9e59338bcbab3620ce8755ca78ec5",
-            "width": 640
-          },
-          {
-            "height": 300,
-            "url": "https://i.scdn.co/image/17be8c2064a5d0e4d9f5e5ba24d403040ffc5e29",
-            "width": 300
-          },
-          {
-            "height": 64,
-            "url": "https://i.scdn.co/image/b843934aa6a415b0f8dcd1bd68405ea361a0be26",
-            "width": 64
-          }
-        ],
-        "genres": [
-          "rock",
-          "soul",
-          "funk"
-        ],
-        "subGenres": [
-          "classic-soul",
-          "funk",
-          "funk-rock",
-          "psychedelic-soul",
-          "soul"
-        ],
-        "name": "Stand!",
-        "slug": "stand",
-        "releaseDate": "1969",
-        "globalReviewsUrl": "https://1001albumsgenerator.com/albums/7iwS1r6JHYJe9xpPjzmWqD/stand",
-        "wikipediaUrl": "https://en.wikipedia.org/wiki/Stand!",
-        "spotifyId": "7iwS1r6JHYJe9xpPjzmWqD",
-        "appleMusicId": "216551517",
-        "tidalId": 1277469,
-        "amazonMusicId": "B00138CS0I",
-        "youtubeMusicId": "OLAK5uy_kNnrk66bTQf9O0VcAZzfQT7UhuLsbzaKE"
-      },
-      "rating": 3,
-      "review": "",
-      "generatedAt": "2023-10-08T03:15:08.665Z",
-      "globalRating": 3.42
-    },
-    {
-      "album": {
-        "artist": "Daft Punk",
+        "artist": "Rush",
         "artistOrigin": "other",
         "images": [
           {
             "height": 640,
-            "url": "https://i.scdn.co/image/c40036110e2c683d0a7e5239a6e1a7909ae6d241",
+            "url": "https://i.scdn.co/image/ab67616d0000b273ae89fb5c4c8d65809e0c8ed4",
             "width": 640
           },
           {
             "height": 300,
-            "url": "https://i.scdn.co/image/2d08bcbf8a088a15d67d0892795a7798d61b5f30",
+            "url": "https://i.scdn.co/image/ab67616d00001e02ae89fb5c4c8d65809e0c8ed4",
             "width": 300
           },
           {
             "height": 64,
-            "url": "https://i.scdn.co/image/5a753d786a79871ae2da7cd6078d94281bd16e91",
+            "url": "https://i.scdn.co/image/ab67616d00004851ae89fb5c4c8d65809e0c8ed4",
             "width": 64
           }
         ],
         "genres": [
-          "electronica"
-        ],
-        "subGenres": [
-          "electro",
-          "filter-house"
-        ],
-        "name": "Homework",
-        "slug": "homework",
-        "releaseDate": "1997",
-        "globalReviewsUrl": "https://1001albumsgenerator.com/albums/5uRdvUR7xCnHmUW8n64n9y/homework",
-        "wikipediaUrl": "https://en.wikipedia.org/wiki/Homework_(Daft_Punk_album)",
-        "spotifyId": "5uRdvUR7xCnHmUW8n64n9y",
-        "appleMusicId": "696884422",
-        "tidalId": 161010,
-        "amazonMusicId": "B000SNW0HA",
-        "youtubeMusicId": "OLAK5uy_mfg6NA2Q6rWf2THgxCy4kLKAu7gSy0OrA"
-      },
-      "rating": 3,
-      "review": "Not great all the way through..",
-      "generatedAt": "2023-10-09T03:15:08.639Z",
-      "globalRating": 3.36
-    },
-    {
-      "album": {
-        "artist": "Gorillaz",
-        "artistOrigin": "uk",
-        "images": [
-          {
-            "height": 640,
-            "url": "https://i.scdn.co/image/ab67616d0000b273f6c46838e4425ea96e2562fe",
-            "width": 640
-          },
-          {
-            "height": 300,
-            "url": "https://i.scdn.co/image/ab67616d00001e02f6c46838e4425ea96e2562fe",
-            "width": 300
-          },
-          {
-            "height": 64,
-            "url": "https://i.scdn.co/image/ab67616d00004851f6c46838e4425ea96e2562fe",
-            "width": 64
-          }
-        ],
-        "genres": [
-          "rock"
-        ],
-        "subGenres": [
-          "alternative-hip-hop"
-        ],
-        "name": "Gorillaz",
-        "slug": "gorillaz",
-        "releaseDate": "2001",
-        "globalReviewsUrl": "https://1001albumsgenerator.com/albums/4tUxQkrduOE8sfgwJ5BI2F/gorillaz",
-        "wikipediaUrl": "https://en.wikipedia.org/wiki/Gorillaz_(album)",
-        "spotifyId": "4tUxQkrduOE8sfgwJ5BI2F",
-        "appleMusicId": "850576570",
-        "tidalId": 1404355,
-        "amazonMusicId": "B004SBQTHU",
-        "youtubeMusicId": "OLAK5uy_ktGXrd2wOfjJqSIXO2Lnm7vPpsfNBxZd0"
-      },
-      "rating": 4,
-      "review": "“That’s The Second Album I Ever Bought!”",
-      "generatedAt": "2023-10-10T03:15:08.563Z",
-      "globalRating": 3.54
-    },
-    {
-      "album": {
-        "artist": "The Smiths",
-        "artistOrigin": "uk",
-        "images": [
-          {
-            "height": 640,
-            "url": "https://i.scdn.co/image/db5376a4c54a790c0900616ea6db6d1248cc7e2d",
-            "width": 640
-          },
-          {
-            "height": 300,
-            "url": "https://i.scdn.co/image/36e45af1c5002653d4aa16a568364cb300fe4390",
-            "width": 300
-          },
-          {
-            "height": 64,
-            "url": "https://i.scdn.co/image/fff3ec63cb40f7381ea0c320c7180de7dad84d4e",
-            "width": 64
-          }
-        ],
-        "genres": [
-          "new-wave",
-          "post-punk",
-          "indie"
-        ],
-        "subGenres": [
-          "madchester",
-          "new-wave",
-          "permanent-wave",
-          "rock",
-          "uk-post-punk"
-        ],
-        "name": "Strangeways, Here We Come",
-        "slug": "strangeways-here-we-come",
-        "releaseDate": "1987",
-        "globalReviewsUrl": "https://1001albumsgenerator.com/albums/7jfexk2w5aDI25njkN0UGg/strangeways-here-we-come",
-        "wikipediaUrl": "https://en.wikipedia.org/wiki/Strangeways,_Here_We_Come_(album)",
-        "spotifyId": "7jfexk2w5aDI25njkN0UGg",
-        "appleMusicId": "799980711",
-        "tidalId": 7915601,
-        "amazonMusicId": "B005TLY90W",
-        "youtubeMusicId": "OLAK5uy_kLC_MYptqRPlguLCpEOir2xT-0nM5IDFk"
-      },
-      "rating": 3,
-      "review": "All over the place, but enjoyable?",
-      "generatedAt": "2023-10-11T03:15:08.171Z",
-      "globalRating": 3.47
-    },
-    {
-      "album": {
-        "artist": "Motörhead",
-        "artistOrigin": "uk",
-        "images": [
-          {
-            "height": 640,
-            "url": "https://i.scdn.co/image/ab67616d0000b273bb7d33186e4a26421c6a77ae",
-            "width": 640
-          },
-          {
-            "height": 300,
-            "url": "https://i.scdn.co/image/ab67616d00001e02bb7d33186e4a26421c6a77ae",
-            "width": 300
-          },
-          {
-            "height": 64,
-            "url": "https://i.scdn.co/image/ab67616d00004851bb7d33186e4a26421c6a77ae",
-            "width": 64
-          }
-        ],
-        "genres": [
-          "metal",
           "hard-rock"
         ],
         "subGenres": [
           "album-rock",
-          "alternative-metal",
+          "art-rock",
+          "canadian-metal",
+          "classic-canadian-rock",
+          "classic-rock",
           "hard-rock",
           "metal",
-          "rock",
-          "speed-metal"
+          "progressive-rock",
+          "rock"
         ],
-        "name": "Ace of Spades",
-        "slug": "ace-of-spades",
-        "releaseDate": "1980",
-        "globalReviewsUrl": "https://1001albumsgenerator.com/albums/0sbAKeTchIsRqECNFjPHSf/ace-of-spades",
-        "wikipediaUrl": "https://en.wikipedia.org/wiki/Ace_of_Spades_(album)",
-        "spotifyId": "0sbAKeTchIsRqECNFjPHSf",
-        "appleMusicId": "1141599504",
-        "tidalId": 63761722,
-        "amazonMusicId": "B08L9J6KG1",
-        "youtubeMusicId": "OLAK5uy_lIx4Iql7VCe1fFkFWCyZUXEZOzEJ0igJc"
+        "name": "2112",
+        "slug": "2112",
+        "releaseDate": "1976",
+        "globalReviewsUrl": "https://1001albumsgenerator.com/albums/3eBrvZnagmIDbdgse7cjI6/2112",
+        "wikipediaUrl": "https://en.wikipedia.org/wiki/2112_(album)",
+        "spotifyId": "3eBrvZnagmIDbdgse7cjI6",
+        "appleMusicId": "1445876680",
+        "tidalId": 77648209,
+        "amazonMusicId": "B00AL3OD7C",
+        "youtubeMusicId": "OLAK5uy_mSLYy6VbBM2AKoINMY7nZHFSkH8VkCBv0",
+        "qobuzId": "0060254718789"
       },
-      "rating": 4,
-      "review": "Så blev der skruet op til 11! Mangler mere Lemmy i mit liv. Rip",
-      "generatedAt": "2023-10-12T03:15:08.012Z",
-      "globalRating": 3.3
+      "rating": 3,
+      "review": "Den var ganske fin! ",
+      "generatedAt": "2024-03-08T04:15:08.087Z",
+      "globalRating": 3.39
     },
     {
       "album": {
-        "artist": "Little Simz",
-        "artistOrigin": "uk",
-        "images": [
-          {
-            "height": 640,
-            "url": "https://i.scdn.co/image/ab67616d0000b2731c54fc953531d5da04232deb",
-            "width": 640
-          },
-          {
-            "height": 300,
-            "url": "https://i.scdn.co/image/ab67616d00001e021c54fc953531d5da04232deb",
-            "width": 300
-          },
-          {
-            "height": 64,
-            "url": "https://i.scdn.co/image/ab67616d000048511c54fc953531d5da04232deb",
-            "width": 64
-          }
-        ],
-        "genres": [
-          "hip-hop"
-        ],
-        "subGenres": [
-          "escape-room",
-          "trap-queen"
-        ],
-        "name": "GREY Area",
-        "slug": "grey-area",
-        "releaseDate": "2019",
-        "globalReviewsUrl": "https://1001albumsgenerator.com/albums/4Wwm4xg2748zhYuzDRFTgY/grey-area",
-        "wikipediaUrl": "https://en.wikipedia.org/wiki/Grey_Area_(album)",
-        "spotifyId": "4Wwm4xg2748zhYuzDRFTgY",
-        "appleMusicId": "1444318578",
-        "tidalId": 252759146,
-        "amazonMusicId": "B07KSGPGB1",
-        "youtubeMusicId": "OLAK5uy_l141I-CeV96BaN9hmEz1Vg5F2wSWnv_6M"
-      },
-      "rating": 1,
-      "review": "Sagde mig intet",
-      "generatedAt": "2023-10-13T03:15:10.259Z",
-      "globalRating": 3.3
-    },
-    {
-      "album": {
-        "artist": "Beck",
+        "artist": "Sonic Youth",
         "artistOrigin": "us",
         "images": [
           {
             "height": 640,
-            "url": "https://i.scdn.co/image/ab67616d0000b27342b1d9121baa3c313a0564e5",
+            "url": "https://i.scdn.co/image/ca33b805fa75a12fefa791e30623ec698725d13e",
             "width": 640
           },
           {
             "height": 300,
-            "url": "https://i.scdn.co/image/ab67616d00001e0242b1d9121baa3c313a0564e5",
+            "url": "https://i.scdn.co/image/f6ea84f5943e4c891a25354923b0fd77906fb7d7",
             "width": 300
           },
           {
             "height": 64,
-            "url": "https://i.scdn.co/image/ab67616d0000485142b1d9121baa3c313a0564e5",
+            "url": "https://i.scdn.co/image/a1b41e33edc613049d910678e748bae177dc4a2c",
             "width": 64
           }
         ],
         "genres": [
-          "rock"
+          "rock",
+          "indie"
         ],
         "subGenres": [
           "alternative-rock",
-          "anti-folk",
+          "art-rock",
           "indie-rock",
           "modern-rock",
-          "permanent-wave",
+          "new-wave",
+          "noise-pop",
+          "noise-rock",
+          "post-punk",
           "rock"
         ],
-        "name": "Guero",
-        "slug": "guero",
-        "releaseDate": "2005",
-        "globalReviewsUrl": "https://1001albumsgenerator.com/albums/1R0BP6MeMLigDNaoztxUAZ/guero",
-        "wikipediaUrl": "https://en.wikipedia.org/wiki/Guero",
-        "spotifyId": "1R0BP6MeMLigDNaoztxUAZ",
-        "appleMusicId": "1440809859",
-        "tidalId": 77666324,
-        "amazonMusicId": "B073F9KZJY",
-        "youtubeMusicId": "OLAK5uy_mdsXnTOyrXTGk295F-bA7WxZH3buboMww"
+        "name": "Sister",
+        "slug": "sister",
+        "releaseDate": "1987",
+        "globalReviewsUrl": "https://1001albumsgenerator.com/albums/0apKBDnFXYmhlMYfXt5zCB/sister",
+        "wikipediaUrl": "https://en.wikipedia.org/wiki/Sister_(Sonic_Youth_album)",
+        "spotifyId": "0apKBDnFXYmhlMYfXt5zCB",
+        "appleMusicId": "520274588",
+        "tidalId": 49258724,
+        "amazonMusicId": "B007VB69SS",
+        "youtubeMusicId": "OLAK5uy_nzK8S8Fjd56WvAqDlF0Snr0kNYEFzhIbY",
+        "qobuzId": "igbizi4cr08ta"
       },
-      "rating": "did-not-listen",
       "review": "",
-      "generatedAt": "2023-10-14T03:15:09.575Z",
-      "globalRating": 3.47
+      "generatedAt": "2024-03-09T04:15:08.013Z",
+      "globalRating": 3.02
     },
     {
       "album": {
-        "artist": "Jerry Lee Lewis",
+        "artist": "Ice Cube",
         "artistOrigin": "us",
         "images": [
           {
             "height": 640,
-            "url": "https://i.scdn.co/image/ab67616d0000b27389bf701a4bf3328b3faa848d",
+            "url": "https://i.scdn.co/image/73b8ce6a52e73f5044289d1f64c377ae4bb1fbc2",
             "width": 640
           },
           {
             "height": 300,
-            "url": "https://i.scdn.co/image/ab67616d00001e0289bf701a4bf3328b3faa848d",
+            "url": "https://i.scdn.co/image/b1a70df5d1229cb1ac916f28f3b6a1a32fc9c469",
             "width": 300
           },
           {
             "height": 64,
-            "url": "https://i.scdn.co/image/ab67616d0000485189bf701a4bf3328b3faa848d",
-            "width": 64
-          }
-        ],
-        "genres": [
-          "rock",
-          "rock-and-roll"
-        ],
-        "subGenres": [
-          "adult-standards",
-          "brill-building-pop",
-          "piano-rock",
-          "rock-and-roll",
-          "rockabilly"
-        ],
-        "name": "Live At The Star Club, Hamburg",
-        "slug": "live-at-the-star-club-hamburg",
-        "releaseDate": "1964",
-        "globalReviewsUrl": "https://1001albumsgenerator.com/albums/6pqT4OHQ2QZW77gWehUeLm/live-at-the-star-club-hamburg",
-        "wikipediaUrl": "https://en.wikipedia.org/wiki/Live_at_the_Star_Club,_Hamburg",
-        "spotifyId": "6pqT4OHQ2QZW77gWehUeLm",
-        "appleMusicId": "1444108226",
-        "tidalId": 64743524,
-        "amazonMusicId": "B01LZGACZF",
-        "youtubeMusicId": "OLAK5uy_lQ35MgSKW3LXvBxuMJK8xdJE3SsbAd7dE"
-      },
-      "rating": "did-not-listen",
-      "review": "",
-      "generatedAt": "2023-10-15T03:15:08.451Z",
-      "globalRating": 3.34
-    },
-    {
-      "album": {
-        "artist": "Kanye West",
-        "artistOrigin": "us",
-        "images": [
-          {
-            "height": 640,
-            "url": "https://i.scdn.co/image/205b6692b6b710a322919c7ca9cece2997ac1869",
-            "width": 640
-          },
-          {
-            "height": 300,
-            "url": "https://i.scdn.co/image/2225ea2c7fdb286dfc69ffbc1a67a1b92a9ad3e4",
-            "width": 300
-          },
-          {
-            "height": 64,
-            "url": "https://i.scdn.co/image/27475aefd86ad8eaf6ff52b524ce049fbf44c2a8",
+            "url": "https://i.scdn.co/image/cd62cb09f4022225c8883530e390cb2cfbce031b",
             "width": 64
           }
         ],
@@ -584,353 +223,28 @@
           "hip-hop"
         ],
         "subGenres": [
-          "chicago-rap",
-          "rap"
+          "conscious-hip-hop",
+          "g-funk",
+          "gangster-rap",
+          "hip-hop",
+          "rap",
+          "west-coast-rap"
         ],
-        "name": "My Beautiful Dark Twisted Fantasy",
-        "slug": "my-beautiful-dark-twisted-fantasy",
-        "releaseDate": "2010",
-        "globalReviewsUrl": "https://1001albumsgenerator.com/albums/6LBiuhK7PZKjVXyMfPxPoh/my-beautiful-dark-twisted-fantasy",
-        "wikipediaUrl": "https://en.wikipedia.org/wiki/My_Beautiful_Dark_Twisted_Fantasy",
-        "spotifyId": "6LBiuhK7PZKjVXyMfPxPoh",
-        "appleMusicId": "1440742903",
-        "tidalId": 4875681,
-        "amazonMusicId": "B004BWT0AE",
-        "youtubeMusicId": "OLAK5uy_lh6e__g89bgNq1BF7EM9GMlXMLzwvatgA"
+        "name": "AmeriKKKa's Most Wanted",
+        "slug": "amerikkkas-most-wanted",
+        "releaseDate": "1990",
+        "globalReviewsUrl": "https://1001albumsgenerator.com/albums/0TTt6Qm26MyMKv0EM2BKAa/amerikkkas-most-wanted",
+        "wikipediaUrl": "https://en.wikipedia.org/wiki/AmeriKKKa%27s_Most_Wanted",
+        "spotifyId": "0TTt6Qm26MyMKv0EM2BKAa",
+        "appleMusicId": "1422704616",
+        "tidalId": 44323656,
+        "amazonMusicId": "B000TEPE3K",
+        "youtubeMusicId": "OLAK5uy_nBytLLKxQXM8Q0SS9u2sDwCaLdf7g6QSM",
+        "qobuzId": "0060254727886"
       },
-      "rating": 4,
-      "review": "Fin nok. Pre-full-retard-Ye, men meget lang.... Og slap lige af - så god er du sgu nok heller ikke til at kneppe.",
-      "generatedAt": "2023-10-16T03:15:08.398Z",
-      "globalRating": 3.53
-    },
-    {
-      "album": {
-        "artist": "Giant Sand",
-        "artistOrigin": "us",
-        "images": [
-          {
-            "height": 640,
-            "url": "https://i.scdn.co/image/ab67616d0000b273aad6a20648d2a55355c4275d",
-            "width": 640
-          },
-          {
-            "height": 300,
-            "url": "https://i.scdn.co/image/ab67616d00001e02aad6a20648d2a55355c4275d",
-            "width": 300
-          },
-          {
-            "height": 64,
-            "url": "https://i.scdn.co/image/ab67616d00004851aad6a20648d2a55355c4275d",
-            "width": 64
-          }
-        ],
-        "genres": [
-          "rock"
-        ],
-        "subGenres": [
-          "tucson-indie"
-        ],
-        "name": "Chore of Enchantment",
-        "slug": "chore-of-enchantment",
-        "releaseDate": "2000",
-        "globalReviewsUrl": "https://1001albumsgenerator.com/albums/6IeqtN9QwL5LUyQw1hlzMu/chore-of-enchantment",
-        "wikipediaUrl": "https://en.wikipedia.org/wiki/Chore_of_Enchantment",
-        "spotifyId": "6IeqtN9QwL5LUyQw1hlzMu",
-        "appleMusicId": "1668346488",
-        "tidalId": 273135450,
-        "amazonMusicId": "B0BT46LLBX",
-        "youtubeMusicId": "OLAK5uy_mmIKQZQVnU7ifNjqoiHkSKjJZV1o39FRI"
-      },
-      "rating": 1,
-      "review": "Mehh..",
-      "generatedAt": "2023-10-17T03:15:08.482Z",
-      "globalRating": 2.73
-    },
-    {
-      "album": {
-        "artist": "Kings of Leon",
-        "artistOrigin": "us",
-        "images": [
-          {
-            "height": 640,
-            "url": "https://i.scdn.co/image/ab67616d0000b2738df6e3203adc247218810906",
-            "width": 640
-          },
-          {
-            "height": 300,
-            "url": "https://i.scdn.co/image/ab67616d00001e028df6e3203adc247218810906",
-            "width": 300
-          },
-          {
-            "height": 64,
-            "url": "https://i.scdn.co/image/ab67616d000048518df6e3203adc247218810906",
-            "width": 64
-          }
-        ],
-        "genres": [
-          "rock"
-        ],
-        "subGenres": [
-          "rock",
-          "modern-rock"
-        ],
-        "name": "Aha Shake Heartbreak",
-        "slug": "aha-shake-heartbreak",
-        "releaseDate": "2004",
-        "globalReviewsUrl": "https://1001albumsgenerator.com/albums/3fNRzhnl6WAtghBXEeyaub/aha-shake-heartbreak",
-        "wikipediaUrl": "https://en.wikipedia.org/wiki/Aha_Shake_Heartbreak",
-        "spotifyId": "3fNRzhnl6WAtghBXEeyaub",
-        "appleMusicId": "1482424654",
-        "tidalId": 11987283,
-        "amazonMusicId": "B07YQ7QZHT",
-        "youtubeMusicId": "OLAK5uy_k-xo8KoN_Gwkb5u3ohlD18j6eGjLcTST8"
-      },
-      "rating": 1,
-      "review": "Træls oplevelse.... Simpelthen så ringe..",
-      "generatedAt": "2023-10-18T03:15:08.203Z",
-      "globalRating": 3.07
-    },
-    {
-      "album": {
-        "artist": "The Chemical Brothers",
-        "artistOrigin": "uk",
-        "images": [
-          {
-            "height": 640,
-            "url": "https://i.scdn.co/image/fa566549a74cbab1116ae95f9454768be01ed879",
-            "width": 640
-          },
-          {
-            "height": 300,
-            "url": "https://i.scdn.co/image/aaf526239abff18115f23dc29cad6cf9fcd4f103",
-            "width": 300
-          },
-          {
-            "height": 64,
-            "url": "https://i.scdn.co/image/3e83da88c565ac057c7c8dc92b8d453d33a38ceb",
-            "width": 64
-          }
-        ],
-        "genres": [
-          "electronica"
-        ],
-        "subGenres": [
-          "alternative-dance",
-          "big-beat",
-          "breakbeat",
-          "electronica",
-          "new-rave",
-          "rave"
-        ],
-        "name": "Dig Your Own Hole",
-        "slug": "dig-your-own-hole",
-        "releaseDate": "1997",
-        "globalReviewsUrl": "https://1001albumsgenerator.com/albums/2DYl4Z5qrQrQvEbMj4Alle/dig-your-own-hole",
-        "wikipediaUrl": "https://en.wikipedia.org/wiki/Dig_Your_Own_Hole",
-        "spotifyId": "2DYl4Z5qrQrQvEbMj4Alle",
-        "appleMusicId": "714366008",
-        "tidalId": 1477459,
-        "amazonMusicId": "B073JY54KB",
-        "youtubeMusicId": "OLAK5uy_mK38OMt0vuNZIPhIcYwUtPkBgwArA1A8Q"
-      },
-      "rating": 3,
       "review": "",
-      "generatedAt": "2023-10-19T03:15:08.814Z",
-      "globalRating": 3.15
-    },
-    {
-      "album": {
-        "artist": "Metallica",
-        "artistOrigin": "us",
-        "images": [
-          {
-            "height": 640,
-            "url": "https://i.scdn.co/image/0b4e70e1ecbbe0085e5c169c447b1648cccf9b21",
-            "width": 640
-          },
-          {
-            "height": 300,
-            "url": "https://i.scdn.co/image/acb6fa806b845764a43775310e4378d2c9503f5f",
-            "width": 300
-          },
-          {
-            "height": 64,
-            "url": "https://i.scdn.co/image/cfd297084e8e46f48f123ca87f6d0f1c43db20e8",
-            "width": 64
-          }
-        ],
-        "genres": [
-          "metal"
-        ],
-        "subGenres": [
-          "hard-rock",
-          "metal",
-          "old-school-thrash",
-          "rock",
-          "thrash-metal"
-        ],
-        "name": "...And Justice For All",
-        "slug": "and-justice-for-all",
-        "releaseDate": "1988",
-        "globalReviewsUrl": "https://1001albumsgenerator.com/albums/69oeRoYEpSsNPGVuYRxfoB/and-justice-for-all",
-        "wikipediaUrl": "https://en.wikipedia.org/wiki/...And_Justice_for_All_(album)",
-        "spotifyId": "69oeRoYEpSsNPGVuYRxfoB",
-        "appleMusicId": "1434424163",
-        "tidalId": 166789684,
-        "amazonMusicId": "B07GX486Q8",
-        "youtubeMusicId": "OLAK5uy_nIDGlbzOP5Y7eHdarScFKVlCKk39qf36M"
-      },
-      "rating": 5,
-      "review": "Bare One er 5 stjerner værd ",
-      "generatedAt": "2023-10-20T03:15:09.147Z",
-      "globalRating": 3.47
-    },
-    {
-      "album": {
-        "artist": "Solomon Burke",
-        "artistOrigin": "us",
-        "images": [
-          {
-            "height": 640,
-            "url": "https://i.scdn.co/image/ab67616d0000b27309133b648545410eeba21d0d",
-            "width": 640
-          },
-          {
-            "height": 300,
-            "url": "https://i.scdn.co/image/ab67616d00001e0209133b648545410eeba21d0d",
-            "width": 300
-          },
-          {
-            "height": 64,
-            "url": "https://i.scdn.co/image/ab67616d0000485109133b648545410eeba21d0d",
-            "width": 64
-          }
-        ],
-        "genres": [
-          "soul"
-        ],
-        "subGenres": [
-          "classic-soul",
-          "funk",
-          "soul",
-          "soul-blues",
-          "southern-soul"
-        ],
-        "name": "Rock 'N Soul",
-        "slug": "rock-n-soul",
-        "releaseDate": "1964",
-        "globalReviewsUrl": "https://1001albumsgenerator.com/albums/152R8N9N0ACnWPNOBIO4M8/rock-n-soul",
-        "wikipediaUrl": "https://en.wikipedia.org/wiki/Rock_%27n_Soul_(Solomon_Burke_album)",
-        "spotifyId": "152R8N9N0ACnWPNOBIO4M8",
-        "appleMusicId": "530966861",
-        "tidalId": 16002954,
-        "amazonMusicId": "B008C8PY6C",
-        "youtubeMusicId": "OLAK5uy_kpg2AgJKUjN-EYi9KGIOD7mj7UBpTbzLo"
-      },
-      "rating": 3,
-      "review": "Fin plade. Throwback til kærlighedslivet i '64 😅",
-      "generatedAt": "2023-10-21T03:15:08.908Z",
-      "globalRating": 3.38
-    },
-    {
-      "album": {
-        "artist": "Gillian Welch",
-        "artistOrigin": "us",
-        "images": [
-          {
-            "height": 640,
-            "url": "https://i.scdn.co/image/ab67616d0000b273d4e5749f5a429c70537c4293",
-            "width": 640
-          },
-          {
-            "height": 300,
-            "url": "https://i.scdn.co/image/ab67616d00001e02d4e5749f5a429c70537c4293",
-            "width": 300
-          },
-          {
-            "height": 64,
-            "url": "https://i.scdn.co/image/ab67616d00004851d4e5749f5a429c70537c4293",
-            "width": 64
-          }
-        ],
-        "genres": [
-          "singer-songwriter",
-          "country"
-        ],
-        "subGenres": [
-          "alternative-country",
-          "country-rock",
-          "folk",
-          "folk-rock",
-          "indie-folk",
-          "lilith",
-          "melancholia",
-          "nashville-singer-songwriter",
-          "new-americana",
-          "progressive-bluegrass",
-          "roots-rock",
-          "singer-songwriter"
-        ],
-        "name": "Time (The Revelator)",
-        "slug": "time-the-revelator",
-        "releaseDate": "2001",
-        "globalReviewsUrl": "https://1001albumsgenerator.com/albums/5q1V1otgRVF39cZY2RQab8/time-the-revelator",
-        "wikipediaUrl": "https://en.wikipedia.org/wiki/Time_(The_Revelator)",
-        "spotifyId": "5q1V1otgRVF39cZY2RQab8",
-        "appleMusicId": "79765126",
-        "tidalId": 87328203,
-        "amazonMusicId": "B07C5G7PQF",
-        "youtubeMusicId": "OLAK5uy_kqx5Z3DwC4Wz6UNIQ5sOw6Wu4LPG63d-A"
-      },
-      "rating": 3,
-      "review": "Altså.. Fin nok musik, men ikke noget mindblowingly godt?",
-      "generatedAt": "2023-10-22T03:15:08.281Z",
-      "globalRating": 2.99
-    },
-    {
-      "album": {
-        "artist": "U2",
-        "artistOrigin": "other",
-        "images": [
-          {
-            "height": 640,
-            "url": "https://i.scdn.co/image/ab67616d0000b273673526fcf35ab235e1a9d94c",
-            "width": 640
-          },
-          {
-            "height": 300,
-            "url": "https://i.scdn.co/image/ab67616d00001e02673526fcf35ab235e1a9d94c",
-            "width": 300
-          },
-          {
-            "height": 64,
-            "url": "https://i.scdn.co/image/ab67616d00004851673526fcf35ab235e1a9d94c",
-            "width": 64
-          }
-        ],
-        "genres": [
-          "rock"
-        ],
-        "subGenres": [
-          "irish-rock",
-          "permanent-wave",
-          "rock"
-        ],
-        "name": "War",
-        "slug": "war",
-        "releaseDate": "1983",
-        "globalReviewsUrl": "https://1001albumsgenerator.com/albums/6GaqU0TlYBKHUiSJ0AT9A2/war",
-        "wikipediaUrl": "https://en.wikipedia.org/wiki/War_(U2_album)",
-        "spotifyId": "6GaqU0TlYBKHUiSJ0AT9A2",
-        "appleMusicId": "1440894470",
-        "tidalId": 621713,
-        "amazonMusicId": "B073JSGG8H",
-        "youtubeMusicId": "OLAK5uy_nuez2OLRZURWEwEonP_eKZIjKKP_o93e0"
-      },
-      "rating": 2,
-      "review": "Yeah yeah yeah!! Stærk start, vag efter det. Ret tynd lyd?",
-      "generatedAt": "2023-10-23T03:15:07.961Z",
-      "globalRating": 3.47
+      "generatedAt": "2024-03-10T04:15:06.977Z",
+      "globalRating": 2.98
     }
   ],
   "updateFrequency": "dailyWithWeekends",

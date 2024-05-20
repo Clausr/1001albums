@@ -1,7 +1,6 @@
 package dk.clausr.core.data.repository
 
 import dk.clausr.core.data_widget.SerializedWidgetState
-import dk.clausr.core.model.Album
 import dk.clausr.core.model.Project
 import kotlinx.coroutines.flow.Flow
 
@@ -9,10 +8,8 @@ interface OagRepository {
     val projectId: Flow<String?>
     val project: Flow<Project?>
 
-    val albums: Flow<List<Album>>
     val widgetState: Flow<SerializedWidgetState>
 
-    suspend fun setProject(projectId: String): Project?
-    suspend fun getProject(projectId: String): Project?
-    suspend fun updateProject(): Project?
+    suspend fun setProject(projectId: String)
+    suspend fun updateProject()
 }

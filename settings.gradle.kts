@@ -18,7 +18,6 @@ dependencyResolutionManagement {
 rootProject.name = "1001 Albums Generator"
 include(":app")
 include(":core:network")
-include(":core:datastore")
 include(":core:data")
 
 include(":widget")

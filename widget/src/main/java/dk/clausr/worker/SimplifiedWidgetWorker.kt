@@ -54,7 +54,8 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
             }
             workerResult = Result.failure()
         } else {
-            val project = oagRepository.getProject(projectId)
+            val project = runBlocking { oagRepository.project.first() }
+//            val project = oagRepository.getProject(projectId)
 
             workerResult = if (project == null) {
                 Result.retry()

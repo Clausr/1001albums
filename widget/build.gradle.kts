@@ -11,9 +11,9 @@ android {
 
 dependencies {
     implementation(project(":core:data"))
-//    implementation(project(":core:data-widget"))
     implementation(project(":core:common"))
     implementation(project(":core:model"))
+
 
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.compose.material.iconsExtended)
@@ -22,5 +22,4 @@ dependencies {
     implementation(libs.androidx.hilt.work)
     implementation(libs.hilt.ext.work)
     kapt(libs.hilt.ext.compiler)
-
 }

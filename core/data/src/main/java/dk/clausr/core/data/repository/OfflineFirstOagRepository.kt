@@ -8,12 +8,6 @@ import dk.clausr.core.data.model.asExternalModel
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.data_widget.SerializedWidgetState.Loading
 import dk.clausr.core.data_widget.SerializedWidgetState.Success
-import dk.clausr.core.database.dao.AlbumDao
-import dk.clausr.core.database.dao.ProjectDao
-import dk.clausr.core.database.dao.WidgetDao
-import dk.clausr.core.database.model.asExternalModel
-import dk.clausr.core.datastore.OagDataStore
-import dk.clausr.core.model.Album
 import dk.clausr.core.model.AlbumWidgetData
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.Rating
@@ -21,43 +15,47 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import javax.inject.Inject
 
-class OfflineFirstGroupRepository @Inject constructor(
+class OfflineFirstOagRepository @Inject constructor(
     private val networkDataSource: OAGDataSource,
     @Dispatcher(OagDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
-    private val dataStore: OagDataStore,
-    private val projectDao: ProjectDao,
-    private val widgetDao: WidgetDao,
-    private val albumDao: AlbumDao,
     private val widgetDataStore: DataStore<SerializedWidgetState>,
 ) : OagRepository {
-    override val projectId: Flow<String?> = dataStore.projectId
-    override val widgetState = widgetDataStore.data
-
-    override suspend fun setProject(projectId: String): Project? = withContext(Dispatchers.IO) {
-        dataStore.setProjectId(projectId)
-        getProject(projectId)
+    override val widgetState = widgetDataStore.data.map {
+        Timber.d("WidgetState changed: $it")
+        it
     }
 
-    override val project: Flow<Project?> = projectId.mapNotNull { it }.flatMapLatest {
-        projectDao.getProject(it).map {
-            it?.asExternalModel()
+    override val projectId: Flow<String?> = widgetDataStore.data.map {
+        Timber.d("ProjectId: $it")
+        it.projectId
+    }
+
+    override val project: Flow<Project?> = projectId
+        .mapNotNull { it }
+        .distinctUntilChanged()
+        .mapLatest {
+            Timber.d("project flow : $it")
+            getAndUpdateProject(it)
         }
+
+    override suspend fun setProject(projectId: String) = withContext(ioDispatcher) {
+        Timber.d("OfflineFirstRepo - setProject $projectId")
+//        widgetDataStore.updateData { Loading(projectId) }
+        getAndUpdateProject(projectId)
+        Unit
     }
 
-    override val albums: Flow<List<Album>> = albumDao.getAlbums().map { albums ->
-        albums.map { album ->
-            album.asExternalModel()
-        }
-    }
-
-    override suspend fun getProject(projectId: String): Project? {
+    private suspend fun getAndUpdateProject(projectId: String): Project? {
+        Timber.d("getAndUpdateProject")
         widgetDataStore.updateData { oldState ->
             when (oldState) {
                 is Success -> oldState
@@ -77,6 +75,7 @@ class OfflineFirstGroupRepository @Inject constructor(
     }
 
     private suspend fun updateWidgetData(project: Project) {
+        Timber.d("Update widget data")
         widgetDataStore.updateData { _ ->
             val latestAlbum = project.history.firstOrNull { it.rating == Rating.Unrated }
             val newAlbumAvailable = latestAlbum?.rating == Rating.Unrated
@@ -92,9 +91,10 @@ class OfflineFirstGroupRepository @Inject constructor(
         }
     }
 
-    override suspend fun updateProject(): Project? {
-        val projectId = CoroutineScope(Dispatchers.IO).run { projectId.first() } ?: return null
+    override suspend fun updateProject() {
+        Timber.d("Update project")
+        val projectId = CoroutineScope(Dispatchers.IO).run { projectId.first() } ?: return
 
-        return getProject(projectId)
+        getAndUpdateProject(projectId)
     }
 }
