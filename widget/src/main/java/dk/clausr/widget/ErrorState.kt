@@ -17,7 +17,10 @@ import androidx.glance.layout.padding
 @Composable
 internal fun ErrorState(retry: () -> Unit = {}) {
     Box(
-        GlanceModifier.fillMaxSize().background(GlanceTheme.colors.errorContainer).clickable(retry),
+        GlanceModifier
+            .fillMaxSize()
+            .background(GlanceTheme.colors.errorContainer)
+            .clickable(retry),
         contentAlignment = Alignment.Center,
     ) {
         Image(

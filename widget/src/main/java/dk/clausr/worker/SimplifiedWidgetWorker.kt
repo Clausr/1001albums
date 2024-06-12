@@ -18,9 +18,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
-import dk.clausr.core.data_widget.SerializedWidgetState.Loading
-import dk.clausr.core.data_widget.SerializedWidgetState.NotInitialized
-import dk.clausr.core.data_widget.SerializedWidgetState.Success
+import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.widget.SimplifiedAlbumWidget
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -40,8 +38,14 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
         // Don't show a loading spinner if we already have an album, that way it shouldn't flash
         dataStore.updateData { oldState ->
             when (oldState) {
-                is Success -> oldState
-                else -> Loading(oldState.projectId)
+                is SerializedWidgetState.Success -> oldState
+                is SerializedWidgetState.Loading -> SerializedWidgetState.Loading(oldState.currentProjectId)
+                is SerializedWidgetState.Error -> SerializedWidgetState.Error(
+                    oldState.message,
+                    currentProjectId = oldState.currentProjectId
+                )
+
+                is SerializedWidgetState.NotInitialized -> SerializedWidgetState.NotInitialized
             }
         }
         SimplifiedAlbumWidget.updateAll(appContext)
@@ -50,7 +54,7 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
 
         if (projectId.isNullOrBlank()) {
             dataStore.updateData {
-                NotInitialized
+                SerializedWidgetState.NotInitialized
             }
             workerResult = Result.failure()
         } else {

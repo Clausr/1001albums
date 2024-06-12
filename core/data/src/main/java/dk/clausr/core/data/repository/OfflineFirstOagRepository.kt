@@ -6,11 +6,13 @@ import dk.clausr.core.common.network.Dispatcher
 import dk.clausr.core.common.network.OagDispatchers
 import dk.clausr.core.data.model.asExternalModel
 import dk.clausr.core.data_widget.SerializedWidgetState
-import dk.clausr.core.data_widget.SerializedWidgetState.Loading
+import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectId
 import dk.clausr.core.data_widget.SerializedWidgetState.Success
 import dk.clausr.core.model.AlbumWidgetData
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.Rating
+import dk.clausr.core.model.StreamingLink
+import dk.clausr.core.model.StreamingLinks
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -58,8 +60,10 @@ class OfflineFirstOagRepository @Inject constructor(
         Timber.d("getAndUpdateProject")
         widgetDataStore.updateData { oldState ->
             when (oldState) {
-                is Success -> oldState
-                else -> Loading(oldState.projectId)
+                is SerializedWidgetState.Success -> oldState
+                is SerializedWidgetState.Error -> oldState
+                is SerializedWidgetState.Loading -> oldState
+                is SerializedWidgetState.NotInitialized -> oldState
             }
         }
 
@@ -85,7 +89,33 @@ class OfflineFirstOagRepository @Inject constructor(
 
             Success(
                 AlbumWidgetData(
-                    albumToUse.images.maxBy { it.height }.url, newAlbumAvailable
+                    coverUrl = albumToUse.images.maxBy { it.height }.url,
+                    newAvailable = newAlbumAvailable,
+                    wikiLink = albumToUse.wikipediaUrl,
+                    streamingLinks = StreamingLinks(
+                        listOfNotNull(
+//                            albumToUse.spotifyId?.let {
+//                                StreamingLink(
+//                                    link = "spotify:album:$it",
+//                                    name = "Spotify"
+//                                )
+//                            },
+//                            albumToUse.appleMusicId?.let {
+//                                StreamingLink(
+//                                    link = "https://music.apple.com/album/$it",
+//                                    name = "Apple music"
+//                                )
+//                            },
+                            albumToUse.tidalId?.let {
+                                StreamingLink(
+                                    link = "https://tidal.com/browse/album/$it",
+                                    name = "Tidal"
+                                )
+                            },
+//                            null,
+//                            null,
+                        )
+                    ),
                 ), project.name
             )
         }

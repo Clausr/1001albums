@@ -9,13 +9,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.core.graphics.drawable.toBitmapOrNull
-import androidx.glance.ColorFilter
 import androidx.glance.GlanceModifier
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
 import androidx.glance.layout.ContentScale
-import androidx.glance.unit.ColorProvider
 import coil.imageLoader
 import coil.request.CachePolicy
 import coil.request.ErrorResult
@@ -26,7 +24,6 @@ import coil.request.SuccessResult
 fun CoverImage(
     modifier: GlanceModifier = GlanceModifier,
     coverUrl: String,
-    tint: ColorProvider? = null
 ) {
     var coverBitmap by remember { mutableStateOf<Bitmap?>(null) }
     val context = LocalContext.current
@@ -37,9 +34,8 @@ fun CoverImage(
     coverBitmap?.let {
         Image(
             provider = ImageProvider(it),
-            contentDescription = "Image from Picsum Photos",
+            contentDescription = null,
             contentScale = ContentScale.Fit,
-            colorFilter = tint?.let { ColorFilter.tint(it) },
             modifier = modifier
         )
     }

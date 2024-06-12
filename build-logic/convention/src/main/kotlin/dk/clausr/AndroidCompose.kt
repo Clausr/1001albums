@@ -14,13 +14,7 @@ internal fun Project.configureAndroidCompose(
     commonExtension: CommonExtension<*, *, *, *, *, *>,
 ) {
     commonExtension.apply {
-        buildFeatures {
-            compose = true
-        }
-
-        composeOptions {
-            kotlinCompilerExtensionVersion = libs.findVersion("androidxComposeCompiler").get().toString()
-        }
+        pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
 
         dependencies {
             val bom = libs.findLibrary("androidx-compose-bom").get()
@@ -30,9 +24,11 @@ internal fun Project.configureAndroidCompose(
     }
 
     tasks.withType<KotlinCompile>().configureEach {
-        kotlinOptions {
-            freeCompilerArgs = freeCompilerArgs + listOf(
-                "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+        compilerOptions {
+            freeCompilerArgs.addAll(
+                listOf(
+                    "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+                )
             )
         }
     }

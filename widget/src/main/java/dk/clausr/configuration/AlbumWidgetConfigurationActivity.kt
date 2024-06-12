@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.glance.appwidget.updateAll
 import coil.compose.AsyncImage
 import dagger.hilt.android.AndroidEntryPoint
+import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectId
 import dk.clausr.core.data_widget.SerializedWidgetState.Error
 import dk.clausr.core.data_widget.SerializedWidgetState.Loading
 import dk.clausr.core.data_widget.SerializedWidgetState.NotInitialized
@@ -88,7 +89,7 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
 
             var projectId by remember(widgetState) {
                 mutableStateOf(
-                    widgetState.projectId ?: ""
+                    widgetState.projectId.orEmpty()
                 )
             }
 
