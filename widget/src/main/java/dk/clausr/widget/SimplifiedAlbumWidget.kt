@@ -17,9 +17,11 @@ import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
+import androidx.glance.action.ActionParameters
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
+import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
@@ -27,7 +29,6 @@ import androidx.glance.currentState
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.Row
-import androidx.glance.layout.RowScope
 import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
@@ -41,7 +42,7 @@ import androidx.glance.text.TextStyle
 import dagger.hilt.android.AndroidEntryPoint
 import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
 import dk.clausr.core.data_widget.SerializedWidgetState
-import dk.clausr.core.model.StreamingLinks
+import dk.clausr.core.model.StreamingLink
 import dk.clausr.extensions.open1001Website
 import dk.clausr.extensions.openSomeActivity
 import dk.clausr.worker.BurstUpdateWorker
@@ -53,10 +54,15 @@ object SimplifiedAlbumWidget : GlanceAppWidget() {
     override val stateDefinition: GlanceStateDefinition<SerializedWidgetState> =
         AlbumWidgetDataDefinition
 
-    override suspend fun provideGlance(context: Context, id: GlanceId) = provideContent {
-        Timber.d("Provide content")
-        GlanceTheme {
-            AlbumWidget()
+    override suspend fun provideGlance(context: Context, id: GlanceId) {
+        // Load data needed to render the AppWidget.
+        // Use `withContext` to switch to another thread for long running
+        // operations.
+
+        provideContent {
+            GlanceTheme {
+                AlbumWidget()
+            }
         }
     }
 
@@ -68,7 +74,6 @@ object SimplifiedAlbumWidget : GlanceAppWidget() {
     ) {
         Timber.e(throwable, "Composition error for glanceId: $glanceId")
         super.onCompositionError(context, glanceId, appWidgetId, throwable)
-
     }
 
     @Composable
@@ -112,94 +117,25 @@ object SimplifiedAlbumWidget : GlanceAppWidget() {
                         }
                     }
 
-                    Box(GlanceModifier
-                        .fillMaxSize()
-                        .clickable {
-                            showLinks = true
-                        }) {
-                        Box(
-                            GlanceModifier
-                                .fillMaxSize(),
-                            contentAlignment = Alignment.BottomCenter,
-                        ) {
-                            CoverImage(
-                                modifier = GlanceModifier
-                                    .fillMaxWidth(),
-//                                    .clickable {
-//                                        state.projectId?.let { context.open1001Website(it) }
-//
-//                                        if (state.data.newAvailable) {
-//                                            BurstUpdateWorker.enqueueBurstUpdate(context)
-//                                        }
-//                                    },
-                                coverUrl = internalState.data.coverUrl,
-                            )
-
-                            if (showLinks) {
-                                Row(
-                                    GlanceModifier
-                                        .background(GlanceTheme.colors.background)
-                                        .padding(vertical = 8.dp, horizontal = 16.dp)
-                                        .cornerRadius(100.dp)
-                                ) {
-                                    Image(
-                                        provider = ImageProvider(R.drawable.ic_wiki),
-                                        contentDescription = "Wikipedia",
-                                        colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground),
-                                        modifier = GlanceModifier
-                                            .clickable {
-                                                context.openSomeActivity(internalState.data.wikiLink)
-                                            })
-
-                                    StreamingServices(internalState.data.streamingLinks)
-//                                    internalState.data.tidalLink?.let {
-//                                        Spacer(GlanceModifier.width(16.dp))
-//                                        Image(
-//                                            provider = ImageProvider(R.drawable.ic_tidal),
-//                                            contentDescription = "Tidal",
-//                                            colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground),
-//                                            modifier = GlanceModifier.clickable {
-//                                                context.openSomeActivity(it)
-//                                            })
-//                                    }
-
-                                    Spacer(GlanceModifier.width(16.dp))
-                                    Image(
-                                        provider = ImageProvider(R.drawable.ic_open_external),
-                                        contentDescription = "Open website",
-                                        colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground),
-                                        modifier = GlanceModifier.clickable {
-                                            context.open1001Website(internalState.currentProjectId)
-
-                                            if (internalState.data.newAvailable) {
-                                                BurstUpdateWorker.enqueueBurstUpdate(context)
-                                            }
-                                        })
-                                }
-                            }
-                        }
+                    Box(
+                        modifier = GlanceModifier
+                            .fillMaxSize()
+                            .clickable {
+                                showLinks = !showLinks
+                            },
+                        contentAlignment = Alignment.BottomCenter,
+                    ) {
+                        AlbumCover(
+                            modifier = GlanceModifier.fillMaxWidth(),
+                            coverUrl = internalState.data.coverUrl,
+                        )
 
                         if (internalState.data.newAvailable) {
-                            Box(
-                                GlanceModifier
-                                    .fillMaxSize()
-                                    .background(
-                                        GlanceTheme.colors.widgetBackground.getColor(context)
-                                            .copy(alpha = 0.75f)
-                                    ),
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                Text(
-                                    text = LocalContext.current.getString(R.string.state_new_available),
-                                    modifier = GlanceModifier.fillMaxWidth(),
-                                    style = TextStyle(
-                                        color = GlanceTheme.colors.onBackground,
-                                        fontSize = TextUnit(16f, TextUnitType.Sp),
-                                        fontWeight = FontWeight.Bold,
-                                        textAlign = TextAlign.Center,
-                                    )
-                                )
-                            }
+                            RatingNudge()
+                        }
+
+                        if (showLinks) {
+                            LinkPill(internalState)
                         }
                     }
                 }
@@ -208,22 +144,99 @@ object SimplifiedAlbumWidget : GlanceAppWidget() {
     }
 
     @Composable
-    fun RowScope.StreamingServices(
-        streamingLinks: StreamingLinks,
-        modifier: GlanceModifier = GlanceModifier,
+    private fun RatingNudge() {
+        val context = LocalContext.current
+
+        Box(
+            GlanceModifier
+                .fillMaxSize()
+                .background(
+                    GlanceTheme.colors.widgetBackground.getColor(context)
+                        .copy(alpha = 0.75f)
+                ),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = LocalContext.current.getString(R.string.state_new_available),
+                modifier = GlanceModifier.fillMaxWidth(),
+                style = TextStyle(
+                    color = GlanceTheme.colors.onBackground,
+                    fontSize = TextUnit(16f, TextUnitType.Sp),
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                )
+            )
+        }
+    }
+
+    @Composable
+    private fun LinkPill(
+        internalState: SerializedWidgetState.Success
     ) {
         val context = LocalContext.current
 
-        streamingLinks.links.forEach { link ->
+        Row(
+            GlanceModifier
+                .background(GlanceTheme.colors.background)
+                .padding(vertical = 8.dp, horizontal = 16.dp)
+                .cornerRadius(100.dp)
+        ) {
+            Image(
+                provider = ImageProvider(R.drawable.ic_wiki),
+                contentDescription = "Wikipedia",
+                colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground),
+                modifier = GlanceModifier
+                    .clickable {
+                        context.openSomeActivity(internalState.data.wikiLink)
+                    })
+
+            internalState.data.streamingLinks.links.forEach { link ->
+                StreamingService(streamingLink = link)
+            }
+
             Spacer(GlanceModifier.width(16.dp))
             Image(
-                provider = ImageProvider(R.drawable.ic_tidal),
-                contentDescription = link.name,
+                provider = ImageProvider(R.drawable.ic_open_external),
+                contentDescription = "Open website",
                 colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground),
                 modifier = GlanceModifier.clickable {
-                    context.openSomeActivity(link.link)
+                    context.open1001Website(internalState.currentProjectId)
+
+                    if (internalState.data.newAvailable) {
+                        BurstUpdateWorker.enqueueBurstUpdate(context)
+                    }
                 })
         }
+    }
+
+    @Composable
+    fun StreamingService(
+        streamingLink: StreamingLink,
+    ) {
+        val context = LocalContext.current
+
+        Spacer(GlanceModifier.width(16.dp))
+        Image(
+            provider = ImageProvider(R.drawable.ic_tidal),
+            contentDescription = streamingLink.name,
+            colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground),
+//            modifier = GlanceModifier.clickable(onClick = actionRunCallback<RefreshAction>()),
+            modifier = GlanceModifier.clickable {
+                context.openSomeActivity(streamingLink.link)
+            }
+        )
+    }
+}
+
+class RefreshAction : ActionCallback {
+    override suspend fun onAction(
+        context: Context,
+        glanceId: GlanceId,
+        parameters: ActionParameters
+    ) {
+        // do some work but offset long-term tasks (e.g a Worker)
+        Timber.d("Refresh ting")
+        SimplifiedAlbumWidget.update(context, glanceId)
     }
 }
 

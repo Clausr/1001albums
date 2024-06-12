@@ -24,7 +24,7 @@ class BurstUpdateWorker @AssistedInject constructor(
     private val oagRepository: OagRepository,
 ) : CoroutineWorker(appContext, workerParameters) {
 
-    val project = oagRepository.project
+    private val project = oagRepository.project
 
     override suspend fun doWork(): Result {
         var retryNumber = workerParameters.inputData.getInt(retryDataKey, 0)

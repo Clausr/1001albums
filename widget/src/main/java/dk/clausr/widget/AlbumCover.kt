@@ -21,12 +21,13 @@ import coil.request.ImageRequest
 import coil.request.SuccessResult
 
 @Composable
-fun CoverImage(
+fun AlbumCover(
     modifier: GlanceModifier = GlanceModifier,
     coverUrl: String,
 ) {
     var coverBitmap by remember { mutableStateOf<Bitmap?>(null) }
     val context = LocalContext.current
+
     LaunchedEffect(coverUrl) {
         coverBitmap = context.getImage(coverUrl)
     }
@@ -42,12 +43,16 @@ fun CoverImage(
 }
 
 private suspend fun Context.getImage(url: String, force: Boolean = false): Bitmap? {
-    val request = ImageRequest.Builder(this).data(url).apply {
-        if (force) {
-            memoryCachePolicy(CachePolicy.DISABLED)
-            diskCachePolicy(CachePolicy.DISABLED)
+    val request = ImageRequest
+        .Builder(this)
+        .data(url)
+        .apply {
+            if (force) {
+                memoryCachePolicy(CachePolicy.DISABLED)
+                diskCachePolicy(CachePolicy.DISABLED)
+            }
         }
-    }.build()
+        .build()
 
     // Request the image to be loaded and throw error if it failed
     return when (val result = imageLoader.execute(request)) {

@@ -109,7 +109,8 @@ class OfflineFirstOagRepository @Inject constructor(
                             albumToUse.tidalId?.let {
                                 StreamingLink(
                                     link = "https://tidal.com/browse/album/$it",
-                                    name = "Tidal"
+                                    name = "Tidal",
+//                                    icon = R.drawable.tidal
                                 )
                             },
 //                            null,

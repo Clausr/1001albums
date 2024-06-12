@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,9 +28,10 @@ class OverviewViewModel @Inject constructor(
             initialValue = null
         )
 
-    val uiState = OverviewUiState.Loading /*combine(oagRepository.project, oagRepository.albums) { project, albums ->
+
+    val uiState = oagRepository.project.map { project ->
         if (project != null) {
-            OverviewUiState.Success(project, albums)
+            OverviewUiState.Success(project, emptyList())
         } else {
             OverviewUiState.Error
         }
@@ -38,7 +40,7 @@ class OverviewViewModel @Inject constructor(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = OverviewUiState.Loading
-        )*/
+        )
 
     init {
         viewModelScope.launch(Dispatchers.IO) {

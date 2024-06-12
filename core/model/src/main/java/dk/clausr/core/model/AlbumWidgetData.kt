@@ -12,12 +12,6 @@ data class AlbumWidgetData(
 
 @Serializable
 data class StreamingLinks(val links: List<StreamingLink>)
-//    val spotify: StreamingLink?,
-//    val appleMusic: StreamingLink?,
-//    val tidal: StreamingLink?,
-//    val amazonMusic: StreamingLink?,
-//    val youtubeMusic: StreamingLink?,
-//)
 
 @Serializable
 data class StreamingLink(
