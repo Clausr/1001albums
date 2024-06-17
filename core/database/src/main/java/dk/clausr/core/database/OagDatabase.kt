@@ -12,21 +12,19 @@ import dk.clausr.core.database.model.WidgetEntity
 import dk.clausr.core.database.utils.Converters
 
 @Database(
-        entities = [
-            ProjectEntity::class,
-            AlbumEntity::class,
-            WidgetEntity::class,
-        ],
-        version = 3,
-        exportSchema = false
+    entities = [
+        ProjectEntity::class,
+        AlbumEntity::class,
+        WidgetEntity::class,
+    ],
+    version = 3,
+    exportSchema = false
 )
 @TypeConverters(
     Converters::class
 )
 abstract class OagDatabase : RoomDatabase() {
-
     abstract fun projectDao(): ProjectDao
     abstract fun albumDao(): AlbumDao
-
     abstract fun widgetDao(): WidgetDao
 }

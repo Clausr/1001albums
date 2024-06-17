@@ -21,16 +21,8 @@ data class NetworkAlbum(
     val tidalId: Int? = null,
     val amazonMusicId: String? = null,
     val youtubeMusicId: String? = null,
-
     @Contextual val generatedAt: Instant? = null,
     @Contextual val listenedAt: Instant? = null,
-
-    //Available for group albums
-    val votes: Int? = null,
-    val totalRating: Int? = null,
-    val averageRating: Double? = null,
-
-    //Available for project albums
     val rating: String? = null,
     val review: String? = null,
     val globalRating: Double? = null,

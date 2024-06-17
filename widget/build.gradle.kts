@@ -3,6 +3,7 @@ plugins {
     id("a1001albums.android.widget")
     id("a1001albums.android.hilt")
     id("kotlinx-serialization")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -21,5 +22,5 @@ dependencies {
     implementation(libs.androidx.work.ktx)
     implementation(libs.androidx.hilt.work)
     implementation(libs.hilt.ext.work)
-    kapt(libs.hilt.ext.compiler)
+    ksp(libs.hilt.ext.compiler)
 }

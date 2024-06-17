@@ -1,6 +1,7 @@
 plugins {
     id("a1001albums.android.library")
     id("a1001albums.android.hilt")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -22,6 +23,5 @@ dependencies {
     api(libs.androidx.hilt.work)
     implementation(libs.hilt.ext.work)
 
-    kapt(libs.hilt.ext.compiler)
-
+    ksp(libs.hilt.ext.compiler)
 }
