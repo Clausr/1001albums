@@ -15,6 +15,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.model.Rating
+import dk.clausr.widget.AlbumCoverWidget2
 import dk.clausr.widget.SimplifiedAlbumWidget
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -54,6 +55,7 @@ class BurstUpdateWorker @AssistedInject constructor(
         oagRepository.updateProject()
 
         SimplifiedAlbumWidget.updateAll(appContext)
+        AlbumCoverWidget2().updateAll(appContext)
 
         return res
     }

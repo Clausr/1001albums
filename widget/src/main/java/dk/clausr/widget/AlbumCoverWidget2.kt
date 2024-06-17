@@ -13,14 +13,19 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
+import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
+import androidx.glance.action.action
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
+import androidx.glance.appwidget.components.CircleIconButton
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
+import androidx.glance.layout.Column
+import androidx.glance.layout.Row
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.text.FontWeight
@@ -50,6 +55,7 @@ class AlbumCoverWidget2 : GlanceAppWidget() {
     }
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
+        Timber.d("GlanceID: $id")
         val appContext = context.applicationContext
         val hiltEntryPoint =
             EntryPointAccessors.fromApplication(appContext, AlbumCoverWidgetEntryPoint::class.java)
@@ -58,7 +64,8 @@ class AlbumCoverWidget2 : GlanceAppWidget() {
 
         Timber.d("repo.... ${repo.widgetState}")
         provideContent {
-            val state: SerializedWidgetState by repo.widgetState.collectAsState(initial = SerializedWidgetState.NotInitialized)
+            val state: SerializedWidgetState by repo.widgetState
+                .collectAsState(initial = SerializedWidgetState.NotInitialized)
             GlanceTheme {
                 Content(state = state)
             }
@@ -71,10 +78,10 @@ class AlbumCoverWidget2 : GlanceAppWidget() {
 fun Content(
     state: SerializedWidgetState,
 ) {
+    Timber.d("Widget state: $state")
     Box(
         modifier = GlanceModifier
             .fillMaxSize()
-//            .background(GlanceTheme.colors.widgetBackground)
     ) {
         when (state) {
             is SerializedWidgetState.Loading -> {
@@ -114,6 +121,7 @@ fun Content(
 private fun ShowAlbumCover(
     state: SerializedWidgetState.Success,
 ) {
+    val context = LocalContext.current
     var showLinks by remember {
         mutableStateOf(false)
     }
@@ -147,7 +155,11 @@ private fun ShowAlbumCover(
             LinkPill(
                 wikipediaLink = state.data.wikiLink,
                 streamingLinks = state.data.streamingLinks,
-                projectUrl = state.projectUrl ?: ""
+                projectUrl = state.projectUrl ?: "",
+                onForceUpdateWidget = {
+                    Timber.d("Force update widget: ")
+                    SimplifiedWidgetWorker.enqueueUnique(context)
+                }
             )
         }
     }
@@ -157,14 +169,13 @@ private fun ShowAlbumCover(
 private fun RatingNudge() {
     val context = LocalContext.current
 
-    Box(
+    Column(
         GlanceModifier
             .fillMaxSize()
             .background(
                 GlanceTheme.colors.widgetBackground.getColor(context)
                     .copy(alpha = 0.75f)
             ),
-        contentAlignment = Alignment.Center,
     ) {
         Text(
             text = LocalContext.current.getString(R.string.state_new_available),
@@ -176,6 +187,19 @@ private fun RatingNudge() {
                 textAlign = TextAlign.Center,
             )
         )
+        Row(modifier = GlanceModifier.fillMaxWidth()) {
+            for (i in 1..5) {
+                val icon =
+                    if (i == 1) R.drawable.baseline_star_24 else R.drawable.baseline_star_border_24
+                CircleIconButton(
+                    imageProvider = ImageProvider(icon),
+                    contentDescription = null,
+                    onClick = action {
+
+                    }
+                )
+            }
+        }
     }
 }
 

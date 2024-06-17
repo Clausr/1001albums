@@ -25,6 +25,7 @@ fun LinkPill(
     wikipediaLink: String,
     streamingLinks: StreamingLinks,
     projectUrl: String,
+    onForceUpdateWidget: () -> Unit = {},
 ) {
     val context = LocalContext.current
 
@@ -53,6 +54,16 @@ fun LinkPill(
             contentDescription = "Open website",
             colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground),
             modifier = GlanceModifier.clickableOpenUrl(projectUrl)
+        )
+
+        Spacer(GlanceModifier.width(16.dp))
+        Image(
+            provider = ImageProvider(R.drawable.ic_wikipedia),
+            contentDescription = "Update widget",
+            colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground),
+            modifier = GlanceModifier.clickable {
+                onForceUpdateWidget()
+            }
         )
     }
 }

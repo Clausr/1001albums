@@ -1,6 +1,5 @@
 package dk.clausr.configuration
 
-import android.app.Activity
 import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.os.Bundle
@@ -55,7 +54,6 @@ import dk.clausr.core.data_widget.SerializedWidgetState.NotInitialized
 import dk.clausr.core.data_widget.SerializedWidgetState.Success
 import dk.clausr.widget.AlbumCoverWidget2
 import dk.clausr.widget.R
-import dk.clausr.widget.SimplifiedAlbumWidget
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -73,7 +71,7 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        setResult(Activity.RESULT_CANCELED)
+        setResult(RESULT_CANCELED)
 
         updateView()
 
@@ -206,7 +204,6 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
 
                             Button(onClick = {
                                 scope.launch {
-                                    SimplifiedAlbumWidget.updateAll(this@AlbumWidgetConfigurationActivity)
                                     AlbumCoverWidget2().updateAll(this@AlbumWidgetConfigurationActivity)
                                 }
                                 finish()
@@ -221,7 +218,7 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
     }
 
     override fun finish() {
-        super.finish()
         vm.finish()
+        super.finish()
     }
 }

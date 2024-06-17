@@ -19,6 +19,7 @@ import dagger.assisted.AssistedInject
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
 import dk.clausr.core.data_widget.SerializedWidgetState
+import dk.clausr.widget.AlbumCoverWidget2
 import dk.clausr.widget.SimplifiedAlbumWidget
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -50,6 +51,8 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
         }
 
         SimplifiedAlbumWidget.updateAll(appContext)
+        AlbumCoverWidget2().updateAll(appContext)
+
 
         val projectId: String? = runBlocking { oagRepository.projectId.first() }
 
@@ -70,6 +73,7 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
         }
 
         SimplifiedAlbumWidget.updateAll(appContext)
+        AlbumCoverWidget2().updateAll(appContext)
 
         return workerResult
     }
@@ -77,11 +81,14 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
     companion object {
         private const val simplifiedWorkerUniqueName = "simplifiedWorkerUniqueName"
 
-        fun startSingle() =
+        private fun startSingle() =
             OneTimeWorkRequestBuilder<SimplifiedWidgetWorker>()
                 .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                .addTag("SingleWorkForSimplified").setConstraints(
-                    Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+                .addTag("SingleWorkForSimplified")
+                .setConstraints(
+                    Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                        .build()
                 ).build()
 
         fun enqueueUnique(context: Context) {
@@ -89,6 +96,7 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
                 simplifiedWorkerUniqueName, ExistingWorkPolicy.REPLACE, startSingle()
             )
         }
+
 
         private const val PERIODIC_SYNC = "SimplifiedPeriodicSyncWorker"
 
