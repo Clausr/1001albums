@@ -27,5 +27,13 @@ sealed interface SerializedWidgetState {
                 is Error -> currentProjectId
                 NotInitialized -> null
             }
+
+        val SerializedWidgetState.projectUrl: String?
+            get() = when (this) {
+                is Error -> "https://1001albumsgenerator.com/$projectId"
+                is Loading -> "https://1001albumsgenerator.com/$projectId"
+                is Success -> "https://1001albumsgenerator.com/$projectId"
+                NotInitialized -> null
+            }
     }
 }

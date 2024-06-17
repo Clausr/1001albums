@@ -7,7 +7,8 @@ import dk.clausr.core.common.network.OagDispatchers
 import dk.clausr.core.data.model.asExternalModel
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectId
-import dk.clausr.core.data_widget.SerializedWidgetState.Success
+import dk.clausr.core.database.dao.AlbumDao
+import dk.clausr.core.database.model.AlbumEntity
 import dk.clausr.core.model.AlbumWidgetData
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.Rating
@@ -25,11 +26,14 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class OfflineFirstOagRepository @Inject constructor(
     private val networkDataSource: OAGDataSource,
     @Dispatcher(OagDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
     private val widgetDataStore: DataStore<SerializedWidgetState>,
+    private val albumDao: AlbumDao,
 ) : OagRepository {
     override val widgetState = widgetDataStore.data.map {
         Timber.d("WidgetState changed: $it")
@@ -51,32 +55,54 @@ class OfflineFirstOagRepository @Inject constructor(
 
     override suspend fun setProject(projectId: String) = withContext(ioDispatcher) {
         Timber.d("OfflineFirstRepo - setProject $projectId")
-//        widgetDataStore.updateData { Loading(projectId) }
         getAndUpdateProject(projectId)
         Unit
     }
 
-    private suspend fun getAndUpdateProject(projectId: String): Project? {
-        Timber.d("getAndUpdateProject")
-        widgetDataStore.updateData { oldState ->
-            when (oldState) {
-                is SerializedWidgetState.Success -> oldState
-                is SerializedWidgetState.Error -> oldState
-                is SerializedWidgetState.Loading -> oldState
-                is SerializedWidgetState.NotInitialized -> oldState
+    private suspend fun getAndUpdateProject(projectId: String): Project? =
+        withContext(ioDispatcher) {
+            Timber.d("getAndUpdateProject")
+            widgetDataStore.updateData { oldState ->
+                when (oldState) {
+                    is SerializedWidgetState.Success -> oldState
+                    is SerializedWidgetState.Error -> oldState
+                    is SerializedWidgetState.Loading -> oldState
+                    is SerializedWidgetState.NotInitialized -> oldState
+                }
             }
+
+            val projectRes = networkDataSource.getProject(projectId).getOrThrow()
+            val albumEntities = projectRes?.history?.map {
+                val album = it.album
+
+                AlbumEntity(
+                    album.slug,
+                    album.artist,
+                    album.artistOrigin,
+                    album.name,
+                    album.releaseDate,
+                    album.globalReviewsUrl,
+                    album.wikipediaUrl,
+                    album.spotifyId,
+                    album.appleMusicId,
+                    album.tidalId,
+                    album.amazonMusicId,
+                    album.youtubeMusicId
+                )
+            } ?: emptyList()
+
+            Timber.d("Insert albums")
+            albumDao.insertAlbums(albumEntities)
+
+            val project = projectRes?.asExternalModel()
+
+
+            if (project != null) {
+                updateWidgetData(project)
+            }
+
+            project
         }
-
-        val projectRes = networkDataSource.getProject(projectId).getOrThrow()
-
-        val project = projectRes?.asExternalModel()
-
-        if (project != null) {
-            updateWidgetData(project)
-        }
-
-        return project
-    }
 
     private suspend fun updateWidgetData(project: Project) {
         Timber.d("Update widget data")
@@ -87,37 +113,23 @@ class OfflineFirstOagRepository @Inject constructor(
                 latestAlbum?.album ?: project.currentAlbum
             } else project.currentAlbum
 
-            Success(
-                AlbumWidgetData(
+            SerializedWidgetState.Success(
+                data = AlbumWidgetData(
                     coverUrl = albumToUse.images.maxBy { it.height }.url,
                     newAvailable = newAlbumAvailable,
                     wikiLink = albumToUse.wikipediaUrl,
                     streamingLinks = StreamingLinks(
                         listOfNotNull(
-//                            albumToUse.spotifyId?.let {
-//                                StreamingLink(
-//                                    link = "spotify:album:$it",
-//                                    name = "Spotify"
-//                                )
-//                            },
-//                            albumToUse.appleMusicId?.let {
-//                                StreamingLink(
-//                                    link = "https://music.apple.com/album/$it",
-//                                    name = "Apple music"
-//                                )
-//                            },
                             albumToUse.tidalId?.let {
                                 StreamingLink(
                                     link = "https://tidal.com/browse/album/$it",
                                     name = "Tidal",
-//                                    icon = R.drawable.tidal
                                 )
                             },
-//                            null,
-//                            null,
                         )
                     ),
-                ), project.name
+                ),
+                currentProjectId = project.name
             )
         }
     }

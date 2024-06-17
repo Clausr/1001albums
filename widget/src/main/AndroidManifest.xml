@@ -22,6 +22,17 @@
                 android:resource="@xml/simplified_widget_info" />
         </receiver>
 
+        <receiver
+            android:name=".AlbumCoverWidgetReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/album_cover_widget_2" />
+        </receiver>
+
     </application>
 
 </manifest>

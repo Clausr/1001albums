@@ -48,6 +48,7 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
                 is SerializedWidgetState.NotInitialized -> SerializedWidgetState.NotInitialized
             }
         }
+
         SimplifiedAlbumWidget.updateAll(appContext)
 
         val projectId: String? = runBlocking { oagRepository.projectId.first() }
@@ -77,7 +78,8 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
         private const val simplifiedWorkerUniqueName = "simplifiedWorkerUniqueName"
 
         fun startSingle() =
-            OneTimeWorkRequestBuilder<SimplifiedWidgetWorker>().setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            OneTimeWorkRequestBuilder<SimplifiedWidgetWorker>()
+                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .addTag("SingleWorkForSimplified").setConstraints(
                     Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
                 ).build()

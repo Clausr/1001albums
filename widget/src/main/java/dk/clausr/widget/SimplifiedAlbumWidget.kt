@@ -9,31 +9,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
-import androidx.compose.ui.unit.dp
-import androidx.glance.ColorFilter
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
-import androidx.glance.Image
-import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
-import androidx.glance.action.ActionParameters
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
-import androidx.glance.appwidget.action.ActionCallback
-import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
 import androidx.glance.currentState
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
-import androidx.glance.layout.Row
-import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
-import androidx.glance.layout.padding
-import androidx.glance.layout.width
 import androidx.glance.state.GlanceStateDefinition
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
@@ -42,10 +31,7 @@ import androidx.glance.text.TextStyle
 import dagger.hilt.android.AndroidEntryPoint
 import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
 import dk.clausr.core.data_widget.SerializedWidgetState
-import dk.clausr.core.model.StreamingLink
-import dk.clausr.extensions.open1001Website
-import dk.clausr.extensions.openSomeActivity
-import dk.clausr.worker.BurstUpdateWorker
+import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectUrl
 import dk.clausr.worker.SimplifiedWidgetWorker
 import kotlinx.coroutines.delay
 import timber.log.Timber
@@ -53,6 +39,7 @@ import timber.log.Timber
 object SimplifiedAlbumWidget : GlanceAppWidget() {
     override val stateDefinition: GlanceStateDefinition<SerializedWidgetState> =
         AlbumWidgetDataDefinition
+
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         // Load data needed to render the AppWidget.
@@ -81,10 +68,12 @@ object SimplifiedAlbumWidget : GlanceAppWidget() {
         val state = currentState<SerializedWidgetState>()
         val context = LocalContext.current
 
+        Timber.d("State: $state")
+
         Box(
             GlanceModifier.fillMaxSize()
         ) {
-            when (val internalState = state) {
+            when (state) {
                 is SerializedWidgetState.Error -> ErrorState()
                 is SerializedWidgetState.Loading -> LoadingState()
                 is SerializedWidgetState.NotInitialized -> {
@@ -127,15 +116,19 @@ object SimplifiedAlbumWidget : GlanceAppWidget() {
                     ) {
                         AlbumCover(
                             modifier = GlanceModifier.fillMaxWidth(),
-                            coverUrl = internalState.data.coverUrl,
+                            coverUrl = state.data.coverUrl,
                         )
 
-                        if (internalState.data.newAvailable) {
+                        if (state.data.newAvailable) {
                             RatingNudge()
                         }
 
                         if (showLinks) {
-                            LinkPill(internalState)
+                            LinkPill(
+                                wikipediaLink = state.data.wikiLink,
+                                streamingLinks = state.data.streamingLinks,
+                                projectUrl = state.projectUrl ?: ""
+                            )
                         }
                     }
                 }
@@ -169,75 +162,6 @@ object SimplifiedAlbumWidget : GlanceAppWidget() {
         }
     }
 
-    @Composable
-    private fun LinkPill(
-        internalState: SerializedWidgetState.Success
-    ) {
-        val context = LocalContext.current
-
-        Row(
-            GlanceModifier
-                .background(GlanceTheme.colors.background)
-                .padding(vertical = 8.dp, horizontal = 16.dp)
-                .cornerRadius(100.dp)
-        ) {
-            Image(
-                provider = ImageProvider(R.drawable.ic_wiki),
-                contentDescription = "Wikipedia",
-                colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground),
-                modifier = GlanceModifier
-                    .clickable {
-                        context.openSomeActivity(internalState.data.wikiLink)
-                    })
-
-            internalState.data.streamingLinks.links.forEach { link ->
-                StreamingService(streamingLink = link)
-            }
-
-            Spacer(GlanceModifier.width(16.dp))
-            Image(
-                provider = ImageProvider(R.drawable.ic_open_external),
-                contentDescription = "Open website",
-                colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground),
-                modifier = GlanceModifier.clickable {
-                    context.open1001Website(internalState.currentProjectId)
-
-                    if (internalState.data.newAvailable) {
-                        BurstUpdateWorker.enqueueBurstUpdate(context)
-                    }
-                })
-        }
-    }
-
-    @Composable
-    fun StreamingService(
-        streamingLink: StreamingLink,
-    ) {
-        val context = LocalContext.current
-
-        Spacer(GlanceModifier.width(16.dp))
-        Image(
-            provider = ImageProvider(R.drawable.ic_tidal),
-            contentDescription = streamingLink.name,
-            colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground),
-//            modifier = GlanceModifier.clickable(onClick = actionRunCallback<RefreshAction>()),
-            modifier = GlanceModifier.clickable {
-                context.openSomeActivity(streamingLink.link)
-            }
-        )
-    }
-}
-
-class RefreshAction : ActionCallback {
-    override suspend fun onAction(
-        context: Context,
-        glanceId: GlanceId,
-        parameters: ActionParameters
-    ) {
-        // do some work but offset long-term tasks (e.g a Worker)
-        Timber.d("Refresh ting")
-        SimplifiedAlbumWidget.update(context, glanceId)
-    }
 }
 
 @AndroidEntryPoint

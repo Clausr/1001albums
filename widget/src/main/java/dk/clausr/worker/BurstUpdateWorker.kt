@@ -1,6 +1,7 @@
 package dk.clausr.worker
 
 import android.content.Context
+import androidx.glance.appwidget.updateAll
 import androidx.hilt.work.HiltWorker
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
@@ -14,6 +15,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.model.Rating
+import dk.clausr.widget.SimplifiedAlbumWidget
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
@@ -40,14 +42,18 @@ class BurstUpdateWorker @AssistedInject constructor(
                 } else if (updatedProject.history.lastOrNull()?.rating == Rating.Unrated) {
                     retryNumber++
                     delay(25_000)
-                    enqueueBurstUpdate(appContext, retryNumber)
+//                    enqueueBurstUpdate(appContext, retryNumber)
 
                     Result.failure()
-                } else Result.success()
+                } else {
+                    Result.success()
+                }
             }
         }
 
         oagRepository.updateProject()
+
+        SimplifiedAlbumWidget.updateAll(appContext)
 
         return res
     }
@@ -56,12 +62,17 @@ class BurstUpdateWorker @AssistedInject constructor(
         const val retryDataKey = "RetryDataKey"
         const val maxRetries = 10
         fun enqueueBurstUpdate(context: Context, retryNumber: Int = 0) {
-            val burstWorker = OneTimeWorkRequestBuilder<BurstUpdateWorker>().setExpedited(
-                    RUN_AS_NON_EXPEDITED_WORK_REQUEST
-                ).addTag("InitialBurstUpdateWorker$retryNumber")
-                .setInputData(workDataOf(retryDataKey to retryNumber)).setConstraints(
-                    Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-                ).build()
+            val burstWorker = OneTimeWorkRequestBuilder<BurstUpdateWorker>()
+                .setExpedited(RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                .addTag("InitialBurstUpdateWorker_$retryNumber")
+                .setInputData(workDataOf(retryDataKey to retryNumber))
+                .setConstraints(
+                    Constraints
+                        .Builder()
+                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                        .build()
+                )
+                .build()
 
 
             WorkManager.getInstance(context).enqueue(burstWorker)

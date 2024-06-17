@@ -53,6 +53,7 @@ import dk.clausr.core.data_widget.SerializedWidgetState.Error
 import dk.clausr.core.data_widget.SerializedWidgetState.Loading
 import dk.clausr.core.data_widget.SerializedWidgetState.NotInitialized
 import dk.clausr.core.data_widget.SerializedWidgetState.Success
+import dk.clausr.widget.AlbumCoverWidget2
 import dk.clausr.widget.R
 import dk.clausr.widget.SimplifiedAlbumWidget
 import kotlinx.coroutines.launch
@@ -206,6 +207,7 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
                             Button(onClick = {
                                 scope.launch {
                                     SimplifiedAlbumWidget.updateAll(this@AlbumWidgetConfigurationActivity)
+                                    AlbumCoverWidget2().updateAll(this@AlbumWidgetConfigurationActivity)
                                 }
                                 finish()
                             }) {

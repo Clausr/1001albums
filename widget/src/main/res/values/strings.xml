@@ -3,6 +3,7 @@
     <string name="config_toolbar_title">1001 Widget configuration</string>
     <string name="widget_description">See the daily album</string>
     <string name="simplified_widget_description">Simplified version</string>
+    <string name="album_cover_widget_2">Album cover widget 2</string>
 
     <string name="state_not_configured">Widget not configured</string>
     <string name="state_loading">Loading…</string>

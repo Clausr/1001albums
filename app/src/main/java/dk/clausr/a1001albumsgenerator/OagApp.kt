@@ -30,7 +30,6 @@ class OagApp : Application(), Configuration.Provider {
 
     override val workManagerConfiguration: Configuration = Configuration.Builder()
         .setWorkerFactory(EntryPoints.get(this, HiltWorkerFactoryEntryPoint::class.java).workerFactory())
-//        .setWorkerFactory(workerFactory)
         .setMinimumLoggingLevel(android.util.Log.DEBUG)
         .build()
 }
