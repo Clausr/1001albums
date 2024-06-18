@@ -39,6 +39,7 @@ android {
 dependencies {
     implementation(project(":core:network"))
     implementation(project(":widget"))
+    implementation(project(":feature:overview"))
 
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)

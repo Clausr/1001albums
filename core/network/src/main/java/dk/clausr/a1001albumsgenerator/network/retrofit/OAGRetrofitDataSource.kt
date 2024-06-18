@@ -11,11 +11,11 @@ class OAGRetrofitDataSource @Inject constructor(
 ) : OAGDataSource {
     private val api = retrofit.create(OAGRetrofitApi::class.java)
 
-    override suspend fun getProject(projectId: String): Result<NetworkProject?> = try {
+    override suspend fun getProject(projectId: String): Result<NetworkProject> = try {
         val projectResponse = api.getProject(projectId)
 
         if (projectResponse.isSuccessful && projectResponse.body() != null) {
-            Result.success(projectResponse.body())
+            Result.success(projectResponse.body()!!)
         } else Result.failure(Exception("No project response"))
     } catch (e: Exception) {
         Result.failure(e)

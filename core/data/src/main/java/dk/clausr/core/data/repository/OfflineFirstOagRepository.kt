@@ -5,10 +5,11 @@ import dk.clausr.a1001albumsgenerator.network.OAGDataSource
 import dk.clausr.core.common.network.Dispatcher
 import dk.clausr.core.common.network.OagDispatchers
 import dk.clausr.core.data.model.asExternalModel
+import dk.clausr.core.data.model.toEntity
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectId
 import dk.clausr.core.database.dao.AlbumDao
-import dk.clausr.core.database.model.AlbumEntity
+import dk.clausr.core.database.dao.ProjectDao
 import dk.clausr.core.model.AlbumWidgetData
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.Rating
@@ -34,6 +35,7 @@ class OfflineFirstOagRepository @Inject constructor(
     @Dispatcher(OagDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
     private val widgetDataStore: DataStore<SerializedWidgetState>,
     private val albumDao: AlbumDao,
+    private val projectDao: ProjectDao,
 ) : OagRepository {
     override val widgetState = widgetDataStore.data.map {
         Timber.d("WidgetState changed: $it")
@@ -62,43 +64,23 @@ class OfflineFirstOagRepository @Inject constructor(
     private suspend fun getAndUpdateProject(projectId: String): Project? =
         withContext(ioDispatcher) {
             Timber.d("getAndUpdateProject")
-            widgetDataStore.updateData { oldState ->
-                when (oldState) {
-                    is SerializedWidgetState.Success -> oldState
-                    is SerializedWidgetState.Error -> oldState
-                    is SerializedWidgetState.Loading -> oldState
-                    is SerializedWidgetState.NotInitialized -> oldState
+
+            val proj = networkDataSource.getProject(projectId)
+                .onSuccess { networkProject ->
+                    Timber.d("Got project ${networkProject.name} -- ${networkProject.history.size} albums!")
+                    projectDao.insertProject(networkProject.toEntity())
+                    // TODO Maybe not..
+                    albumDao.clearTable()
+                    albumDao.insertAlbums(networkProject.history.map { it.album.toEntity() })
+                    networkProject.asExternalModel()
                 }
-            }
+                .onFailure {
+                    Timber.e(it, "Project failure")
+                    null
+                }
 
-            val projectRes = networkDataSource.getProject(projectId).getOrThrow()
-            val albumEntities = projectRes?.history?.map {
-                val album = it.album
-
-                AlbumEntity(
-                    album.slug,
-                    album.artist,
-                    album.artistOrigin,
-                    album.name,
-                    album.releaseDate,
-                    album.globalReviewsUrl,
-                    album.wikipediaUrl,
-                    album.spotifyId,
-                    album.appleMusicId,
-                    album.tidalId,
-                    album.amazonMusicId,
-                    album.youtubeMusicId
-                )
-            } ?: emptyList()
-
-            Timber.d("Insert albums")
-            albumDao.insertAlbums(albumEntities)
-
-            val project = projectRes?.asExternalModel()
-
-
-            if (project != null) {
-                updateWidgetData(project)
+            val project = proj.getOrNull()?.asExternalModel()?.apply {
+                updateWidgetData(this)
             }
 
             project
