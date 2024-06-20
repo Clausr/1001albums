@@ -18,7 +18,7 @@ data class NetworkProject(
 @Serializable
 data class NetworkHistoricAlbum(
     val album: NetworkAlbum,
-    val rating: String? = null,
+    val rating: String,
     val review: String,
     @Contextual val generatedAt: Instant,
     val globalRating: Double,

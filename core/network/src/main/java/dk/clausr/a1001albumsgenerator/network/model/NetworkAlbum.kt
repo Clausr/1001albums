@@ -1,8 +1,6 @@
 package dk.clausr.a1001albumsgenerator.network.model
 
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import java.time.Instant
 
 @Serializable
 data class NetworkAlbum(
@@ -21,11 +19,6 @@ data class NetworkAlbum(
     val tidalId: Int? = null,
     val amazonMusicId: String? = null,
     val youtubeMusicId: String? = null,
-    @Contextual val generatedAt: Instant? = null,
-    @Contextual val listenedAt: Instant? = null,
-    val rating: String? = null,
-    val review: String? = null,
-    val globalRating: Double? = null,
 ) {
     @Serializable
     data class NetworkAlbumImage(

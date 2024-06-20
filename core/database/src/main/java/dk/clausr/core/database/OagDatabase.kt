@@ -5,9 +5,11 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import dk.clausr.core.database.dao.AlbumDao
 import dk.clausr.core.database.dao.ProjectDao
+import dk.clausr.core.database.dao.RatingDao
 import dk.clausr.core.database.dao.WidgetDao
 import dk.clausr.core.database.model.AlbumEntity
 import dk.clausr.core.database.model.ProjectEntity
+import dk.clausr.core.database.model.RatingEntity
 import dk.clausr.core.database.model.WidgetEntity
 import dk.clausr.core.database.utils.Converters
 
@@ -16,8 +18,9 @@ import dk.clausr.core.database.utils.Converters
         ProjectEntity::class,
         AlbumEntity::class,
         WidgetEntity::class,
+        RatingEntity::class
     ],
-    version = 3,
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(
@@ -27,4 +30,5 @@ abstract class OagDatabase : RoomDatabase() {
     abstract fun projectDao(): ProjectDao
     abstract fun albumDao(): AlbumDao
     abstract fun widgetDao(): WidgetDao
+    abstract fun ratingDao(): RatingDao
 }

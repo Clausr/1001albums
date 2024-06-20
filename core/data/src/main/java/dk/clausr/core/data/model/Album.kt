@@ -36,3 +36,22 @@ fun NetworkAlbum.toEntity(): AlbumEntity = AlbumEntity(
     amazonMusicId = amazonMusicId,
     youtubeMusicId = youtubeMusicId
 )
+
+
+fun AlbumEntity.asExternalModel(): Album = Album(
+    artist = artist,
+    artistOrigin = artist,
+    images = emptyList(),
+    genres = emptyList(),
+    subGenres = emptyList(),
+    name = name,
+    slug = slug,
+    releaseDate = releaseDate,
+    globalReviewsUrl = globalReviewsUrl,
+    wikipediaUrl = wikipediaUrl,
+    spotifyId = spotifyId,
+    appleMusicId = appleMusicId,
+    tidalId = tidalId,
+    amazonMusicId = amazonMusicId,
+    youtubeMusicId = youtubeMusicId,
+)

@@ -11,6 +11,6 @@ interface ProjectDao {
     @Upsert
     suspend fun insertProject(project: ProjectEntity)
 
-    @Query(value = "SELECT * FROM project WHERE name == :name")
-    fun getProject(name: String): Flow<ProjectEntity?>
+    @Query(value = "SELECT * FROM project")
+    fun getProject(): Flow<ProjectEntity?>
 }

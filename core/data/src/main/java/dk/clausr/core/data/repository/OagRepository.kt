@@ -8,6 +8,8 @@ interface OagRepository {
     val projectId: Flow<String?>
     val project: Flow<Project?>
 
+//    val projectWithAlbums: Flow<ProjectWithAlbums?>
+
     val widgetState: Flow<SerializedWidgetState>
 
     suspend fun setProject(projectId: String)

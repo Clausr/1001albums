@@ -6,10 +6,14 @@ import dk.clausr.core.common.network.Dispatcher
 import dk.clausr.core.common.network.OagDispatchers
 import dk.clausr.core.data.model.asExternalModel
 import dk.clausr.core.data.model.toEntity
+import dk.clausr.core.data.model.toRatingEntity
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectId
 import dk.clausr.core.database.dao.AlbumDao
 import dk.clausr.core.database.dao.ProjectDao
+import dk.clausr.core.database.dao.RatingDao
+import dk.clausr.core.database.model.AlbumEntity
+import dk.clausr.core.database.model.RatingEntity
 import dk.clausr.core.model.AlbumWidgetData
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.Rating
@@ -36,6 +40,7 @@ class OfflineFirstOagRepository @Inject constructor(
     private val widgetDataStore: DataStore<SerializedWidgetState>,
     private val albumDao: AlbumDao,
     private val projectDao: ProjectDao,
+    private val ratingDao: RatingDao,
 ) : OagRepository {
     override val widgetState = widgetDataStore.data.map {
         Timber.d("WidgetState changed: $it")
@@ -47,19 +52,30 @@ class OfflineFirstOagRepository @Inject constructor(
         it.projectId
     }
 
+//    override val projectWithAlbums: Flow<ProjectWithAlbums?> = projectId.mapNotNull { it }
+//        .flatMapLatest { projectDao.getProjectWithAlbums(it) }
+//        .map { it.asExternalModel() }
+
     override val project: Flow<Project?> = projectId
         .mapNotNull { it }
         .distinctUntilChanged()
+//        .flatMapLatest {
+//            getProjectWithAlbums(it)
+//        }
+//        .map { it?.asExternalModel() }
         .mapLatest {
             Timber.d("project flow : $it")
+
             getAndUpdateProject(it)
         }
+
 
     override suspend fun setProject(projectId: String) = withContext(ioDispatcher) {
         Timber.d("OfflineFirstRepo - setProject $projectId")
         getAndUpdateProject(projectId)
         Unit
     }
+
 
     private suspend fun getAndUpdateProject(projectId: String): Project? =
         withContext(ioDispatcher) {
@@ -68,10 +84,23 @@ class OfflineFirstOagRepository @Inject constructor(
             val proj = networkDataSource.getProject(projectId)
                 .onSuccess { networkProject ->
                     Timber.d("Got project ${networkProject.name} -- ${networkProject.history.size} albums!")
+
+                    // Insert project into DB
                     projectDao.insertProject(networkProject.toEntity())
-                    // TODO Maybe not..
-                    albumDao.clearTable()
-                    albumDao.insertAlbums(networkProject.history.map { it.album.toEntity() })
+
+                    // Insert current album into DB
+                    albumDao.insert(networkProject.currentAlbum.toEntity())
+
+                    // Insert albums with ratings into DB
+                    val albumEntities = mutableListOf<AlbumEntity>()
+                    val ratingEntities = mutableListOf<RatingEntity>()
+                    for (historicAlbum in networkProject.history) {
+                        albumEntities.add(historicAlbum.album.toEntity())
+                        ratingEntities.add(historicAlbum.toRatingEntity())
+                    }
+                    albumDao.insertAlbums(albumEntities)
+                    ratingDao.insertRatings(ratingEntities)
+
                     networkProject.asExternalModel()
                 }
                 .onFailure {

@@ -6,6 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dk.clausr.core.database.dao.AlbumDao
 import dk.clausr.core.database.dao.ProjectDao
+import dk.clausr.core.database.dao.RatingDao
 import dk.clausr.core.database.dao.WidgetDao
 
 @Module
@@ -25,4 +26,9 @@ object DaosModule {
     fun providesWidgetDao(
         database: OagDatabase
     ): WidgetDao = database.widgetDao()
+
+    @Provides
+    fun providesRatingDao(
+        database: OagDatabase
+    ): RatingDao = database.ratingDao()
 }

@@ -15,7 +15,7 @@ interface AlbumDao {
     suspend fun insert(album: AlbumEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAlbums(albums: List<AlbumEntity>)
+    suspend fun insertAlbums(albums: List<AlbumEntity>)
 
     @Update
     suspend fun update(album: AlbumEntity)
@@ -27,7 +27,7 @@ interface AlbumDao {
     suspend fun clearTable()
 
     @Query("SELECT * FROM albums WHERE slug = :albumId")
-    fun getAlbum(albumId: String): Flow<AlbumEntity?>
+    suspend fun getAlbumBySlug(albumId: String): AlbumEntity?
 
     // Additional queries as needed
     @Query("SELECT * FROM albums")

@@ -18,7 +18,10 @@ class OverviewViewModel @Inject constructor(
 
     val uiState = oagRepository.project.map { project ->
         if (project != null) {
-            OverviewUiState.Success(project = project, albums = project.history.reversed())
+            OverviewUiState.Success(
+                project = project,
+                albums = emptyList(),
+            )
         } else {
             OverviewUiState.Error
         }
