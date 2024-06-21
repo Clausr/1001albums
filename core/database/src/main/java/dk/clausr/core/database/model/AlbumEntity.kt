@@ -15,9 +15,11 @@ data class AlbumEntity(
     val releaseDate: String,
     val globalReviewsUrl: String,
     val wikipediaUrl: String,
+    val imageUrl: String,
     val spotifyId: String?,
     val appleMusicId: String?,
     val tidalId: Int?,
     val amazonMusicId: String?,
     val youtubeMusicId: String?,
 )
+

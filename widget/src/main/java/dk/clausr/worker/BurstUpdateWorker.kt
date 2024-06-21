@@ -14,10 +14,8 @@ import androidx.work.workDataOf
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import dk.clausr.core.data.repository.OagRepository
-import dk.clausr.core.model.Rating
 import dk.clausr.widget.AlbumCoverWidget2
 import dk.clausr.widget.SimplifiedAlbumWidget
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
 @HiltWorker
@@ -38,17 +36,18 @@ class BurstUpdateWorker @AssistedInject constructor(
             res = if (updatedProject == null) {
                 Result.failure()
             } else {
-                if (retryNumber >= maxRetries) {
+//                if (retryNumber >= maxRetries) {
                     Result.failure()
-                } else if (updatedProject.history.lastOrNull()?.rating == Rating.Unrated) {
-                    retryNumber++
-                    delay(25_000)
-//                    enqueueBurstUpdate(appContext, retryNumber)
-
-                    Result.failure()
-                } else {
-                    Result.success()
-                }
+//                }
+//                else if (updatedProject.history.lastOrNull()?.rating == Rating.Unrated) {
+//                    retryNumber++
+//                    delay(25_000)
+////                    enqueueBurstUpdate(appContext, retryNumber)
+//
+//                    Result.failure()
+//                } else {
+//                    Result.success()
+//                }
             }
         }
 

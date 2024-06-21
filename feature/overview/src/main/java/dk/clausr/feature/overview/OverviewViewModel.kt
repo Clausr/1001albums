@@ -7,7 +7,7 @@ import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Project
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
@@ -16,11 +16,11 @@ class OverviewViewModel @Inject constructor(
     oagRepository: OagRepository
 ) : ViewModel() {
 
-    val uiState = oagRepository.project.map { project ->
+    val uiState = combine(oagRepository.project, oagRepository.historicAlbums) { project, albums ->
         if (project != null) {
             OverviewUiState.Success(
                 project = project,
-                albums = emptyList(),
+                albums = albums,
             )
         } else {
             OverviewUiState.Error

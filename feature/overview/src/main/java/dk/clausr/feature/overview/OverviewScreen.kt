@@ -53,7 +53,13 @@ internal fun OverviewScreen(
         Box(modifier = Modifier.padding(innerPadding)) {
             when (state) {
                 OverviewUiState.Error -> Text("Error")
-                OverviewUiState.Loading -> CircularProgressIndicator()
+                OverviewUiState.Loading -> Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+
                 is OverviewUiState.Success -> {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
@@ -67,7 +73,7 @@ internal fun OverviewScreen(
                             }
                         }
 
-                        items(state.albums) { historicAlbum ->
+                        items(state.albums, key = { it.generatedAt }) { historicAlbum ->
                             val album = historicAlbum.album
                             Card(
                                 shape = RoundedCornerShape(
@@ -83,7 +89,7 @@ internal fun OverviewScreen(
                                 ) {
                                     AsyncImage(
                                         modifier = Modifier.width(60.dp),
-                                        model = album.images.maxBy { it.height }.url,
+                                        model = album.imageUrl,
                                         contentDescription = "cover",
                                         contentScale = ContentScale.FillWidth,
                                     )
@@ -122,7 +128,9 @@ internal fun OverviewScreen(
 @Preview
 @Composable
 private fun OverviewPreview() {
-    OverviewScreen(
-        state = OverviewUiState.Loading
-    )
+    MaterialTheme {
+        OverviewScreen(
+            state = OverviewUiState.Loading
+        )
+    }
 }

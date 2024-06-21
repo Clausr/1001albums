@@ -3,7 +3,7 @@ package dk.clausr.core.model
 data class Album(
     val artist: String,
     val artistOrigin: String?,
-    val images: List<AlbumImage>,
+    val imageUrl: String,
     val genres: List<String>,
     val subGenres: List<String>,
     val name: String,
@@ -16,6 +16,7 @@ data class Album(
     val tidalId: Int?,
     val amazonMusicId: String?,
     val youtubeMusicId: String?,
+    val rating: Rating? = null,
 ) {
     data class AlbumImage(
         val width: Int,

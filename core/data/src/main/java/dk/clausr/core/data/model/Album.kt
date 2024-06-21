@@ -7,7 +7,7 @@ import dk.clausr.core.model.Album
 fun NetworkAlbum.asExternalModel(): Album = Album(
     artist = artist,
     artistOrigin = artistOrigin,
-    images = images.asExternalModel(),
+    imageUrl = images.maxBy { it.width }.url,
     genres = genres,
     subGenres = subGenres,
     name = name,
@@ -34,14 +34,15 @@ fun NetworkAlbum.toEntity(): AlbumEntity = AlbumEntity(
     appleMusicId = appleMusicId,
     tidalId = tidalId,
     amazonMusicId = amazonMusicId,
-    youtubeMusicId = youtubeMusicId
+    youtubeMusicId = youtubeMusicId,
+    imageUrl = images.maxBy { it.width }.url,
 )
 
 
 fun AlbumEntity.asExternalModel(): Album = Album(
     artist = artist,
     artistOrigin = artist,
-    images = emptyList(),
+    imageUrl = imageUrl,
     genres = emptyList(),
     subGenres = emptyList(),
     name = name,
