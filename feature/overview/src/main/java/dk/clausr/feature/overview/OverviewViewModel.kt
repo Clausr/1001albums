@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.clausr.core.data.repository.OagRepository
+import dk.clausr.core.model.Album
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Project
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,11 +17,16 @@ class OverviewViewModel @Inject constructor(
     oagRepository: OagRepository
 ) : ViewModel() {
 
-    val uiState = combine(oagRepository.project, oagRepository.historicAlbums) { project, albums ->
+    val uiState = combine(
+        oagRepository.project,
+        oagRepository.currentAlbum,
+        oagRepository.historicAlbums,
+    ) { project, currentAlbum, albums ->
         if (project != null) {
             OverviewUiState.Success(
                 project = project,
-                albums = albums,
+                currentAlbum = currentAlbum,
+                albums = albums.reversed()
             )
         } else {
             OverviewUiState.Error
@@ -35,6 +41,11 @@ class OverviewViewModel @Inject constructor(
 
 sealed interface OverviewUiState {
     data object Loading : OverviewUiState
-    data class Success(val project: Project, val albums: List<HistoricAlbum>) : OverviewUiState
+    data class Success(
+        val project: Project,
+        val currentAlbum: Album?,
+        val albums: List<HistoricAlbum>,
+    ) : OverviewUiState
+
     data object Error : OverviewUiState
 }

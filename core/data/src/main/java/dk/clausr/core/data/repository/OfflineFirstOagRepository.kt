@@ -63,6 +63,13 @@ class OfflineFirstOagRepository @Inject constructor(
         .mapNotNull { it?.asExternalModel() }
         .onEach { getAndUpdateProject(it.name) }
 
+    override val currentAlbum: Flow<Album?> = project
+        .mapNotNull { project ->
+            project?.currentAlbumSlug?.let { currentSlug ->
+                albumDao.getAlbumBySlug(currentSlug)?.asExternalModel()
+            }
+        }
+
     override val historicAlbums: Flow<List<HistoricAlbum>> = albumDao.getAlbums()
         .map { albums ->
             albums.mapNotNull { albumEntity ->

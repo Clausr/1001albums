@@ -7,7 +7,7 @@ import dk.clausr.core.model.UpdateFrequency
 
 fun NetworkProject.asExternalModel(): Project = Project(
     name = name,
-//    currentAlbum = currentAlbum.asExternalModel(),
+    currentAlbumSlug = currentAlbum.slug,
     currentAlbumNotes = currentAlbumNotes,
     updateFrequency = updateFrequency.asExternalModel(),
     shareableUrl = shareableUrl
@@ -24,6 +24,7 @@ fun NetworkProject.toEntity(): ProjectEntity = ProjectEntity(
 
 fun ProjectEntity.asExternalModel(): Project = Project(
     name = name,
+    currentAlbumSlug = currentAlbumSlug,
     currentAlbumNotes = currentAlbumNotes,
     updateFrequency = UpdateFrequency.DailyWithWeekends,
     shareableUrl = shareableUrl,

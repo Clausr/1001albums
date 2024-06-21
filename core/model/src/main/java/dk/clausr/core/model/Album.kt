@@ -16,7 +16,6 @@ data class Album(
     val tidalId: Int?,
     val amazonMusicId: String?,
     val youtubeMusicId: String?,
-    val rating: Rating? = null,
 ) {
     data class AlbumImage(
         val width: Int,
