@@ -2,6 +2,11 @@ package dk.clausr.core.data.repository
 
 import androidx.datastore.core.DataStore
 import dk.clausr.a1001albumsgenerator.network.OAGDataSource
+import dk.clausr.a1001albumsgenerator.network.model.NetworkProject
+import dk.clausr.core.common.model.Result
+import dk.clausr.core.common.model.doOnFailure
+import dk.clausr.core.common.model.doOnSuccess
+import dk.clausr.core.common.model.map
 import dk.clausr.core.common.network.Dispatcher
 import dk.clausr.core.common.network.OagDispatchers
 import dk.clausr.core.data.model.asExternalModel
@@ -23,13 +28,9 @@ import dk.clausr.core.model.AlbumWidgetData
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.Rating
-import dk.clausr.core.model.StreamingLink
-import dk.clausr.core.model.StreamingLinks
+import dk.clausr.core.model.StreamingServices
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
@@ -86,54 +87,54 @@ class OfflineFirstOagRepository @Inject constructor(
         Unit
     }
 
-    private suspend fun getAndUpdateProject(projectId: String): Project? =
+    private suspend fun putNetworkProjectIntoDatabase(networkProject: NetworkProject) {
+        Timber.d("Put network project ${networkProject.name} into database")
+
+        // Insert project into DB
+        projectDao.insertProject(networkProject.toEntity())
+
+        // Insert current album into DB
+        with(networkProject.currentAlbum) {
+            albumDao.insert(this.toEntity())
+            albumImageDao.insertAll(this.toAlbumImageEntities())
+        }
+
+        // Insert albums with ratings into DB
+        val albumEntities = mutableListOf<AlbumEntity>()
+        val ratingEntities = mutableListOf<RatingEntity>()
+        val albumImageEntities = mutableListOf<AlbumImageEntity>()
+        for (historicAlbum in networkProject.history) {
+            albumEntities.add(historicAlbum.album.toEntity())
+            ratingEntities.add(historicAlbum.toRatingEntity())
+            albumImageEntities.addAll(historicAlbum.album.toAlbumImageEntities())
+        }
+        albumDao.insertAlbums(albumEntities)
+        ratingDao.insertRatings(ratingEntities)
+        albumImageDao.insertAll(albumImageEntities)
+    }
+
+    private suspend fun getAndUpdateProject(projectId: String): Result<Project> =
         withContext(ioDispatcher) {
             Timber.d("getAndUpdateProject")
 
-            val proj = networkDataSource.getProject(projectId)
-                .onSuccess { networkProject ->
-                    Timber.d("Got project ${networkProject.name} -- ${networkProject.history.size} albums!")
+            networkDataSource.getProject(projectId)
+                .doOnSuccess { networkProject ->
+                    Timber.d("Got project ${networkProject.name} with ${networkProject.history.size} albums")
+                    putNetworkProjectIntoDatabase(networkProject)
 
-                    // Insert project into DB
-                    projectDao.insertProject(networkProject.toEntity())
-
-                    // Insert current album into DB
-                    with(networkProject.currentAlbum) {
-                        albumDao.insert(this.toEntity())
-                        albumImageDao.insertAll(this.toAlbumImageEntities())
-                    }
-
-                    // Insert albums with ratings into DB
-                    val albumEntities = mutableListOf<AlbumEntity>()
-                    val ratingEntities = mutableListOf<RatingEntity>()
-                    val albumImageEntities = mutableListOf<AlbumImageEntity>()
-                    for (historicAlbum in networkProject.history) {
-                        albumEntities.add(historicAlbum.album.toEntity())
-                        ratingEntities.add(historicAlbum.toRatingEntity())
-                        albumImageEntities.addAll(historicAlbum.album.toAlbumImageEntities())
-                    }
-                    albumDao.insertAlbums(albumEntities)
-                    ratingDao.insertRatings(ratingEntities)
-                    albumImageDao.insertAll(albumImageEntities)
-
-                    networkProject.asExternalModel()
+                    // Update widget
+                    updateWidgetData(
+                        project = networkProject.asExternalModel(),
+                        currentAlbum = networkProject.currentAlbum.asExternalModel(),
+                        historicAlbums = networkProject.history.map { it.asExternalModel() }
+                    )
                 }
-                .onFailure {
-                    Timber.e(it, "Project failure")
-                    null
+                .doOnFailure { message, throwable ->
+                    Timber.e(throwable, message ?: "Project failure")
                 }
-
-            val project = proj.getOrNull()?.asExternalModel()
-
-            proj.getOrNull()?.let {
-                updateWidgetData(
-                    project = it.asExternalModel(),
-                    historicAlbums = it.history.map { it.asExternalModel() },
-                    currentAlbum = it.currentAlbum.asExternalModel(),
-                )
-            }
-
-            project
+                .map {
+                    it.asExternalModel()
+                }
         }
 
     private suspend fun updateWidgetData(
@@ -145,37 +146,24 @@ class OfflineFirstOagRepository @Inject constructor(
         widgetDataStore.updateData { _ ->
             val latestAlbum = historicAlbums.firstOrNull { it.rating == Rating.Unrated }
             val newAlbumAvailable = latestAlbum?.rating == Rating.Unrated
+
             val albumToUse = if (newAlbumAvailable) {
                 latestAlbum?.album ?: currentAlbum
-//                latestAlbum?.album ?: project.currentAlbum
             } else currentAlbum
-//            } else project.currentAlbum
 
             SerializedWidgetState.Success(
                 data = AlbumWidgetData(
                     coverUrl = albumToUse.imageUrl,
                     newAvailable = newAlbumAvailable,
                     wikiLink = albumToUse.wikipediaUrl,
-                    streamingLinks = StreamingLinks(
-                        listOfNotNull(
-                            albumToUse.tidalId?.let {
-                                StreamingLink(
-                                    link = "https://tidal.com/browse/album/$it",
-                                    name = "Tidal",
-                                )
-                            },
-                        )
-                    ),
+                    streamingServices = StreamingServices.from(albumToUse),
                 ),
                 currentProjectId = project.name
             )
         }
     }
 
-    override suspend fun updateProject() {
-        Timber.d("Update project")
-        val projectId = CoroutineScope(Dispatchers.IO).run { projectId.first() } ?: return
-
-        getAndUpdateProject(projectId)
+    override suspend fun updateProject(projectId: String): Result<Unit> {
+        return getAndUpdateProject(projectId).map { Unit }
     }
 }

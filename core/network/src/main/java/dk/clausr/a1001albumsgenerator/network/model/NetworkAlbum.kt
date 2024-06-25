@@ -19,6 +19,8 @@ data class NetworkAlbum(
     val tidalId: Int? = null,
     val amazonMusicId: String? = null,
     val youtubeMusicId: String? = null,
+    val qobuzId: String? = null,
+    val deezerId: String? = null,
 ) {
     @Serializable
     data class NetworkAlbumImage(

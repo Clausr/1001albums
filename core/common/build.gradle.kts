@@ -5,6 +5,10 @@ plugins {
 
 android {
     namespace = "dk.clausr.core.common"
+
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {

@@ -21,5 +21,7 @@ data class AlbumEntity(
     val tidalId: Int?,
     val amazonMusicId: String?,
     val youtubeMusicId: String?,
+    val qobuzId: String?,
+    val deezerId: String?,
 )
 

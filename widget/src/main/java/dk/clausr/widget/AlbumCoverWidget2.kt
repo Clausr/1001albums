@@ -41,6 +41,7 @@ import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectUrl
 import dk.clausr.worker.SimplifiedWidgetWorker
+import dk.clausr.worker.UpdateProjectWorker
 import kotlinx.coroutines.delay
 import timber.log.Timber
 
@@ -154,11 +155,15 @@ private fun ShowAlbumCover(
         if (showLinks) {
             LinkPill(
                 wikipediaLink = state.data.wikiLink,
-                streamingLinks = state.data.streamingLinks,
+                streamingServices = state.data.streamingServices,
                 projectUrl = state.projectUrl ?: "",
                 onForceUpdateWidget = {
                     Timber.d("Force update widget: ")
-                    SimplifiedWidgetWorker.enqueueUnique(context)
+                    UpdateProjectWorker.enqueueUnique(
+                        context = context,
+                        projectId = state.currentProjectId
+                    )
+//                    SimplifiedWidgetWorker.enqueueUnique(context)
                 }
             )
         }

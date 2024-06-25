@@ -126,7 +126,7 @@ object SimplifiedAlbumWidget : GlanceAppWidget() {
                         if (showLinks) {
                             LinkPill(
                                 wikipediaLink = state.data.wikiLink,
-                                streamingLinks = state.data.streamingLinks,
+                                streamingServices = state.data.streamingServices,
                                 projectUrl = state.projectUrl ?: ""
                             )
                         }

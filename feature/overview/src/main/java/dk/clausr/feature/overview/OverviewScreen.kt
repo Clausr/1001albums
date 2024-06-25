@@ -188,7 +188,9 @@ private fun OverviewPreview() {
                     youtubeMusicId = "OLAK5uy_l-gXxtv23EojUteRu5Zq1rKW3InI_bwsU",
                     genres = emptyList(),
                     subGenres = emptyList(),
-                    imageUrl = "https://i.scdn.co/image/ab2eae28bb2a55667ee727711aeccc7f37498414"
+                    imageUrl = "https://i.scdn.co/image/ab2eae28bb2a55667ee727711aeccc7f37498414",
+                    qobuzId = null,
+                    deezerId = null,
                 ),
                 albums = listOf(
                     HistoricAlbum(
@@ -207,7 +209,9 @@ private fun OverviewPreview() {
                             youtubeMusicId = "OLAK5uy_l-gXxtv23EojUteRu5Zq1rKW3InI_bwsU",
                             genres = emptyList(),
                             subGenres = emptyList(),
-                            imageUrl = "https://i.scdn.co/image/ab2eae28bb2a55667ee727711aeccc7f37498414"
+                            imageUrl = "https://i.scdn.co/image/ab2eae28bb2a55667ee727711aeccc7f37498414",
+                            qobuzId = null,
+                            deezerId = null,
                         ),
                         rating = Rating.Rated(5),
                         review = "Fed",

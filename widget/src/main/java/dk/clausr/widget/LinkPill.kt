@@ -15,15 +15,15 @@ import androidx.glance.layout.Row
 import androidx.glance.layout.Spacer
 import androidx.glance.layout.padding
 import androidx.glance.layout.width
-import dk.clausr.core.model.StreamingLink
-import dk.clausr.core.model.StreamingLinks
+import dk.clausr.core.model.StreamingService
+import dk.clausr.core.model.StreamingServices
 import dk.clausr.extensions.clickableOpenUrl
 import dk.clausr.extensions.openSomeActivity
 
 @Composable
 fun LinkPill(
     wikipediaLink: String,
-    streamingLinks: StreamingLinks,
+    streamingServices: StreamingServices,
     projectUrl: String,
     onForceUpdateWidget: () -> Unit = {},
 ) {
@@ -44,8 +44,8 @@ fun LinkPill(
                     context.openSomeActivity(wikipediaLink)
                 })
 
-        streamingLinks.links.forEach { link ->
-            StreamingService(streamingLink = link)
+        streamingServices.services.forEach { link ->
+            StreamingService(streamingService = link)
         }
 
         Spacer(GlanceModifier.width(16.dp))
@@ -70,13 +70,13 @@ fun LinkPill(
 
 @Composable
 fun StreamingService(
-    streamingLink: StreamingLink,
+    streamingService: StreamingService,
 ) {
     Spacer(GlanceModifier.width(16.dp))
     Image(
         provider = ImageProvider(R.drawable.ic_tidal),
-        contentDescription = streamingLink.name,
+        contentDescription = null,
         colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground),
-        modifier = GlanceModifier.clickableOpenUrl(streamingLink.link),
+        modifier = GlanceModifier.clickableOpenUrl(streamingService.streamingLink),
     )
 }

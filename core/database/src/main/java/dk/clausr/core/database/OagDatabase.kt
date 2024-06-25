@@ -23,7 +23,7 @@ import dk.clausr.core.database.utils.Converters
         RatingEntity::class,
         AlbumImageEntity::class
     ],
-    version = 8,
+    version = 9,
     exportSchema = false
 )
 @TypeConverters(

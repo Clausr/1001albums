@@ -21,8 +21,6 @@ import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.widget.AlbumCoverWidget2
 import dk.clausr.widget.SimplifiedAlbumWidget
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 import java.time.Duration
 
 @HiltWorker
@@ -30,40 +28,46 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
     @Assisted private val appContext: Context,
     @Assisted private val workerParameters: WorkerParameters,
     private val oagRepository: OagRepository,
+
 ) : CoroutineWorker(appContext, workerParameters) {
 
     override suspend fun doWork(): Result {
         val workerResult: Result
         val dataStore = AlbumWidgetDataDefinition.getDataStore(appContext)
 
+        var projectId: String? = null
         // Don't show a loading spinner if we already have an album, that way it shouldn't flash
         dataStore.updateData { oldState ->
             when (oldState) {
-                is SerializedWidgetState.Success -> oldState
-                is SerializedWidgetState.Loading -> SerializedWidgetState.Loading(oldState.currentProjectId)
-                is SerializedWidgetState.Error -> SerializedWidgetState.Error(
-                    oldState.message,
-                    currentProjectId = oldState.currentProjectId
-                )
+                is SerializedWidgetState.Success -> {
+                    projectId = oldState.currentProjectId
+                    oldState
+                }
 
-                is SerializedWidgetState.NotInitialized -> SerializedWidgetState.NotInitialized
+                is SerializedWidgetState.Loading -> {
+                    projectId = oldState.currentProjectId
+                    SerializedWidgetState.Loading(oldState.currentProjectId)
+                }
+
+                is SerializedWidgetState.Error -> {
+                    projectId = oldState.currentProjectId
+                    SerializedWidgetState.Error(
+                        oldState.message,
+                        currentProjectId = oldState.currentProjectId
+                    )
+                }
+
+                is SerializedWidgetState.NotInitialized -> {
+                    projectId = null
+                    SerializedWidgetState.NotInitialized
+                }
             }
         }
 
-        SimplifiedAlbumWidget.updateAll(appContext)
-        AlbumCoverWidget2().updateAll(appContext)
-
-
-        val projectId: String? = runBlocking { oagRepository.projectId.first() }
-
         if (projectId.isNullOrBlank()) {
-            dataStore.updateData {
-                SerializedWidgetState.NotInitialized
-            }
             workerResult = Result.failure()
         } else {
-            val project = runBlocking { oagRepository.project.first() }
-//            val project = oagRepository.getProject(projectId)
+            val project = oagRepository.updateProject(projectId!!)
 
             workerResult = if (project == null) {
                 Result.retry()

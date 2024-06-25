@@ -19,7 +19,9 @@ fun NetworkAlbum.asExternalModel(): Album = Album(
     appleMusicId = appleMusicId,
     tidalId = tidalId,
     amazonMusicId = amazonMusicId,
-    youtubeMusicId = youtubeMusicId
+    youtubeMusicId = youtubeMusicId,
+    deezerId = deezerId,
+    qobuzId = qobuzId,
 )
 
 fun NetworkAlbum.toEntity(): AlbumEntity = AlbumEntity(
@@ -36,6 +38,8 @@ fun NetworkAlbum.toEntity(): AlbumEntity = AlbumEntity(
     amazonMusicId = amazonMusicId,
     youtubeMusicId = youtubeMusicId,
     imageUrl = images.maxBy { it.width }.url,
+    deezerId = deezerId,
+    qobuzId = qobuzId,
 )
 
 
@@ -55,4 +59,6 @@ fun AlbumEntity.asExternalModel(): Album = Album(
     tidalId = tidalId,
     amazonMusicId = amazonMusicId,
     youtubeMusicId = youtubeMusicId,
+    deezerId = deezerId,
+    qobuzId = qobuzId,
 )

@@ -13,10 +13,11 @@ import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import dk.clausr.core.common.model.doOnFailure
+import dk.clausr.core.common.model.doOnSuccess
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.widget.AlbumCoverWidget2
 import dk.clausr.widget.SimplifiedAlbumWidget
-import kotlinx.coroutines.flow.collectLatest
 
 @HiltWorker
 class BurstUpdateWorker @AssistedInject constructor(
@@ -28,45 +29,46 @@ class BurstUpdateWorker @AssistedInject constructor(
     private val project = oagRepository.project
 
     override suspend fun doWork(): Result {
+        var result: Result? = null
+
         var retryNumber = workerParameters.inputData.getInt(retryDataKey, 0)
+        val projectId =
+            workerParameters.inputData.getString(projectIdKey) ?: return Result.failure()
 
-        var res = Result.retry()
+        // TODO check retry amount..
 
-        project.collectLatest { updatedProject ->
-            res = if (updatedProject == null) {
-                Result.failure()
-            } else {
-//                if (retryNumber >= maxRetries) {
-                    Result.failure()
-//                }
-//                else if (updatedProject.history.lastOrNull()?.rating == Rating.Unrated) {
-//                    retryNumber++
-//                    delay(25_000)
-////                    enqueueBurstUpdate(appContext, retryNumber)
-//
-//                    Result.failure()
-//                } else {
-//                    Result.success()
-//                }
+        oagRepository.updateProject(projectId)
+            .doOnSuccess {
+                SimplifiedAlbumWidget.updateAll(appContext)
+                AlbumCoverWidget2().updateAll(appContext)
+
+                result = Result.success()
             }
-        }
+            .doOnFailure { _, _ ->
+                result = Result.retry()
+            }
 
-        oagRepository.updateProject()
-
-        SimplifiedAlbumWidget.updateAll(appContext)
-        AlbumCoverWidget2().updateAll(appContext)
-
-        return res
+        return result ?: Result.failure()
     }
 
     companion object {
         const val retryDataKey = "RetryDataKey"
+        const val projectIdKey = "ProjectIdKey"
         const val maxRetries = 10
-        fun enqueueBurstUpdate(context: Context, retryNumber: Int = 0) {
+        fun enqueueBurstUpdate(
+            context: Context,
+            retryNumber: Int = 0,
+            projectId: String,
+        ) {
             val burstWorker = OneTimeWorkRequestBuilder<BurstUpdateWorker>()
                 .setExpedited(RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .addTag("InitialBurstUpdateWorker_$retryNumber")
-                .setInputData(workDataOf(retryDataKey to retryNumber))
+                .setInputData(
+                    workDataOf(
+                        retryDataKey to retryNumber,
+                        projectIdKey to projectId,
+                    )
+                )
                 .setConstraints(
                     Constraints
                         .Builder()

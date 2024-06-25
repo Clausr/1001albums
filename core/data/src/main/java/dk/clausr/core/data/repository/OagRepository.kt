@@ -1,5 +1,6 @@
 package dk.clausr.core.data.repository
 
+import dk.clausr.core.common.model.Result
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.model.Album
 import dk.clausr.core.model.HistoricAlbum
@@ -15,5 +16,5 @@ interface OagRepository {
     val widgetState: Flow<SerializedWidgetState>
 
     suspend fun setProject(projectId: String)
-    suspend fun updateProject()
+    suspend fun updateProject(projectId: String): Result<Unit>
 }

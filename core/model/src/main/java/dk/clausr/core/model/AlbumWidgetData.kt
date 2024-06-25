@@ -7,15 +7,83 @@ data class AlbumWidgetData(
     val coverUrl: String,
     val newAvailable: Boolean,
     val wikiLink: String,
-    val streamingLinks: StreamingLinks,
+    val streamingServices: StreamingServices,
 )
 
 @Serializable
-data class StreamingLinks(val links: List<StreamingLink>)
+data class StreamingServices(val services: List<StreamingService>) {
+    companion object {
+        fun from(album: Album): StreamingServices {
+            return StreamingServices(
+                listOfNotNull(
+                    album.deezerId?.let {
+                        StreamingService(
+                            id = it,
+                            platform = StreamingPlatform.Deezer
+                        )
+                    },
+                    album.amazonMusicId?.let {
+                        StreamingService(
+                            id = it,
+                            platform = StreamingPlatform.AmazonMusic
+                        )
+                    },
+                    album.spotifyId?.let {
+                        StreamingService(
+                            id = it,
+                            platform = StreamingPlatform.Spotify
+                        )
+                    },
+                    album.appleMusicId?.let {
+                        StreamingService(
+                            id = it,
+                            platform = StreamingPlatform.AppleMusic
+                        )
+                    },
+                    album.tidalId?.let {
+                        StreamingService(
+                            id = it.toString(),
+                            platform = StreamingPlatform.Tidal
+                        )
+                    },
+                    album.qobuzId?.let {
+                        StreamingService(
+                            id = it,
+                            platform = StreamingPlatform.Qobuz
+                        )
+                    },
+                    album.youtubeMusicId?.let {
+                        StreamingService(
+                            id = it,
+                            platform = StreamingPlatform.YouTubeMusic
+                        )
+                    }
+                )
+            )
+        }
+    }
+}
+
+enum class StreamingPlatform {
+    AmazonMusic,
+    AppleMusic,
+    Deezer,
+    Spotify,
+    Tidal,
+    YouTubeMusic,
+    Qobuz,
+}
 
 @Serializable
-data class StreamingLink(
-    val link: String,
-//    val icon: Int,
-    val name: String,
-)
+data class StreamingService(val id: String, val platform: StreamingPlatform) {
+    val streamingLink: String
+        get() = when (platform) {
+            StreamingPlatform.Spotify -> "spotify:album:$id"
+            StreamingPlatform.AppleMusic -> "https://music.apple.com/album/$id"
+            StreamingPlatform.Tidal -> "https://tidal.com/browse/album/$id"
+            StreamingPlatform.AmazonMusic -> "https://music.amazon.com/albums/$id"
+            StreamingPlatform.YouTubeMusic -> "https://music.youtube.com/playlist?list=$id"
+            StreamingPlatform.Deezer -> "https://deezer.com/album/$id"
+            StreamingPlatform.Qobuz -> "https://play.qobuz.com/album/$id" // TODO Confirm
+        }
+}

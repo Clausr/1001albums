@@ -4,6 +4,7 @@ import dk.LocalAssetManager
 import dk.clausr.a1001albumsgenerator.network.OAGDataSource
 import dk.clausr.a1001albumsgenerator.network.fake.FakeAssetManager
 import dk.clausr.a1001albumsgenerator.network.model.NetworkProject
+import dk.clausr.core.common.model.Result
 import dk.clausr.core.common.network.Dispatcher
 import dk.clausr.core.common.network.OagDispatchers
 import kotlinx.coroutines.CoroutineDispatcher
@@ -21,6 +22,6 @@ class DemoDataSource @Inject constructor(
 ) : OAGDataSource {
     override suspend fun getProject(projectId: String): Result<NetworkProject> =
         withContext(ioDispatcher) {
-        Result.success(assets.open("mock_project_response.json").use(json::decodeFromStream))
+            Result.Success(assets.open("mock_project_response.json").use(json::decodeFromStream))
     }
 }
