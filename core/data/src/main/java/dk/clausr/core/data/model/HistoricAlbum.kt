@@ -16,7 +16,7 @@ fun NetworkHistoricAlbum.asExternalModel(): HistoricAlbum = HistoricAlbum(
 
 fun NetworkHistoricAlbum.toRatingEntity(): RatingEntity = RatingEntity(
     albumSlug = album.slug,
-    rating = rating,
+    rating = rating ?: "did-not-listen",
     review = review,
     generatedAt = generatedAt,
     globalRating = globalRating,

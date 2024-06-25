@@ -75,7 +75,7 @@ fun StreamingService(
     Spacer(GlanceModifier.width(16.dp))
     Image(
         provider = ImageProvider(R.drawable.ic_tidal),
-        contentDescription = null,
+        contentDescription = streamingService.platform.name,
         colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground),
         modifier = GlanceModifier.clickableOpenUrl(streamingService.streamingLink),
     )

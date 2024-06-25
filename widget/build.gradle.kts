@@ -9,6 +9,10 @@ plugins {
 
 android {
     namespace = "dk.clausr.widget"
+
+    buildFeatures {
+        compose = true
+    }
 }
 
 dependencies {

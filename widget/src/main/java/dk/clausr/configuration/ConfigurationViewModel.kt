@@ -35,7 +35,7 @@ class ConfigurationViewModel @Inject constructor(
         SimplifiedWidgetWorker.start(context)
     }
 
-    fun finish() = viewModelScope.launch {
+    fun updateWidgets() = viewModelScope.launch {
         SimplifiedAlbumWidget.updateAll(context)
         AlbumCoverWidget2().updateAll(context)
     }

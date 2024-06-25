@@ -33,7 +33,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
@@ -62,7 +61,7 @@ class OfflineFirstOagRepository @Inject constructor(
 
     override val project: Flow<Project?> = projectDao.getProject()
         .mapNotNull { it?.asExternalModel() }
-        .onEach { getAndUpdateProject(it.name) }
+//        .onEach { getAndUpdateProject(it.name) }
 
     override val currentAlbum: Flow<Album?> = project
         .mapNotNull { project ->
