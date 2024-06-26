@@ -28,6 +28,7 @@ import dk.clausr.core.model.AlbumWidgetData
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.Rating
+import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -159,6 +160,16 @@ class OfflineFirstOagRepository @Inject constructor(
                 ),
                 currentProjectId = project.name
             )
+        }
+    }
+
+    override suspend fun setPreferredPlatform(platform: StreamingPlatform) {
+        widgetDataStore.updateData { oldData ->
+            if (oldData is SerializedWidgetState.Success) {
+                oldData.copy(data = oldData.data.copy(preferredStreamingPlatform = platform))
+            } else {
+                oldData
+            }
         }
     }
 

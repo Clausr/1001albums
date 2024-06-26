@@ -3,6 +3,7 @@ package dk.clausr.worker
 import android.content.Context
 import androidx.glance.appwidget.updateAll
 import androidx.hilt.work.HiltWorker
+import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.NetworkType
@@ -16,8 +17,9 @@ import dagger.assisted.AssistedInject
 import dk.clausr.core.common.model.doOnFailure
 import dk.clausr.core.common.model.doOnSuccess
 import dk.clausr.core.data.repository.OagRepository
-import dk.clausr.widget.AlbumCoverWidget2
+import dk.clausr.widget.AlbumCoverWidget
 import dk.clausr.widget.SimplifiedAlbumWidget
+import java.util.concurrent.TimeUnit
 
 @HiltWorker
 class BurstUpdateWorker @AssistedInject constructor(
@@ -29,18 +31,18 @@ class BurstUpdateWorker @AssistedInject constructor(
     private val project = oagRepository.project
 
     override suspend fun doWork(): Result {
-        var result: Result? = null
-
         var retryNumber = workerParameters.inputData.getInt(retryDataKey, 0)
+        // Prerequisites
+        if (retryNumber > maxRetries) return Result.failure()
         val projectId =
             workerParameters.inputData.getString(projectIdKey) ?: return Result.failure()
 
-        // TODO check retry amount..
+        var result: Result? = null
 
         oagRepository.updateProject(projectId)
             .doOnSuccess {
                 SimplifiedAlbumWidget.updateAll(appContext)
-                AlbumCoverWidget2().updateAll(appContext)
+                AlbumCoverWidget().updateAll(appContext)
 
                 result = Result.success()
             }
@@ -75,6 +77,7 @@ class BurstUpdateWorker @AssistedInject constructor(
                         .setRequiredNetworkType(NetworkType.CONNECTED)
                         .build()
                 )
+                .setBackoffCriteria(BackoffPolicy.LINEAR, 30, TimeUnit.SECONDS)
                 .build()
 
 

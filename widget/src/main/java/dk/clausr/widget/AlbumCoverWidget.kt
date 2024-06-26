@@ -45,14 +45,14 @@ import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectUrl
 import dk.clausr.extensions.openWithPrefilledRating
+import dk.clausr.worker.BurstUpdateWorker
 import dk.clausr.worker.SimplifiedWidgetWorker
-import dk.clausr.worker.UpdateProjectWorker
 import kotlinx.coroutines.delay
 import timber.log.Timber
 
 // Periodic update thing:
 // https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:glance/glance-appwidget/samples/src/main/java/androidx/glance/appwidget/samples/GlanceAppWidgetSamples.kt;drc=c28b42063433bb0f928a897c0d6ec31b45ba2021;l=114
-class AlbumCoverWidget2 : GlanceAppWidget() {
+class AlbumCoverWidget : GlanceAppWidget() {
     override val stateDefinition: GlanceStateDefinition<SerializedWidgetState> =
         AlbumWidgetDataDefinition
 
@@ -167,13 +167,11 @@ private fun ShowAlbumCover(
             LinkPill(
                 wikipediaLink = state.data.wikiLink,
                 streamingServices = state.data.streamingServices,
+                preferredStreamingPlatform = state.data.preferredStreamingPlatform,
                 projectUrl = state.projectUrl ?: "",
                 onForceUpdateWidget = {
                     Timber.d("Force update widget: ")
-                    UpdateProjectWorker.enqueueUnique(
-                        context = context,
-                        projectId = state.currentProjectId
-                    )
+                    SimplifiedWidgetWorker.enqueueUnique(context)
                 }
             )
         }
@@ -219,6 +217,7 @@ private fun RatingNudge(
                     contentDescription = null,
                     onClick = {
                         context.openWithPrefilledRating(projectId, i)
+                        BurstUpdateWorker.enqueueBurstUpdate(context, projectId = projectId)
                     },
                 )
             }
@@ -229,12 +228,11 @@ private fun RatingNudge(
 @AndroidEntryPoint
 class AlbumCoverWidgetReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget: GlanceAppWidget
-        get() = AlbumCoverWidget2()
+        get() = AlbumCoverWidget()
 
     override fun onEnabled(context: Context) {
         super.onEnabled(context)
         SimplifiedWidgetWorker.start(context)
-
     }
 
     override fun onDisabled(context: Context) {

@@ -5,6 +5,7 @@ import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.model.Album
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Project
+import dk.clausr.core.model.StreamingPlatform
 import kotlinx.coroutines.flow.Flow
 
 interface OagRepository {
@@ -17,4 +18,5 @@ interface OagRepository {
 
     suspend fun setProject(projectId: String)
     suspend fun updateProject(projectId: String): Result<Unit>
+    suspend fun setPreferredPlatform(platform: StreamingPlatform)
 }

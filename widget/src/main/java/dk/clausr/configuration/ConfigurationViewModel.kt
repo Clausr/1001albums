@@ -8,7 +8,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.SerializedWidgetState
-import dk.clausr.widget.AlbumCoverWidget2
+import dk.clausr.core.model.StreamingPlatform
+import dk.clausr.widget.AlbumCoverWidget
 import dk.clausr.widget.SimplifiedAlbumWidget
 import dk.clausr.worker.SimplifiedWidgetWorker
 import kotlinx.coroutines.flow.SharingStarted
@@ -37,6 +38,10 @@ class ConfigurationViewModel @Inject constructor(
 
     fun updateWidgets() = viewModelScope.launch {
         SimplifiedAlbumWidget.updateAll(context)
-        AlbumCoverWidget2().updateAll(context)
+        AlbumCoverWidget().updateAll(context)
+    }
+
+    fun setPreferredStreamingPlatform(platform: StreamingPlatform) = viewModelScope.launch {
+        oagRepository.setPreferredPlatform(platform)
     }
 }

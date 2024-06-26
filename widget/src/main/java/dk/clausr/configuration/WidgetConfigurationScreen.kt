@@ -77,7 +77,7 @@ fun WidgetConfigurationRoute(
             onApplyChanges()
         },
         selectPreferredStreamingPlatform = {
-
+            viewModel.setPreferredStreamingPlatform(it)
         }
     )
 }
@@ -206,9 +206,16 @@ fun WidgetConfigurationScreen(
 
                     Row {
                         state.data.streamingServices.services.forEach { streamingService ->
+                            val buttonColor =
+                                if (state.data.preferredStreamingPlatform == streamingService.platform) {
+                                    IconButtonDefaults.filledIconButtonColors()
+                                } else {
+                                    IconButtonDefaults.iconButtonColors()
+                                }
+
                             IconButton(
                                 onClick = { selectPreferredStreamingPlatform(streamingService.platform) },
-                                colors = IconButtonDefaults.filledIconButtonColors()
+                                colors = buttonColor,
                             ) {
                                 Icon(
                                     painterResource(

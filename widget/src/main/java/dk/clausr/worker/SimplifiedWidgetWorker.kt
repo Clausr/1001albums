@@ -14,15 +14,17 @@ import androidx.work.OutOfQuotaPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import androidx.work.workDataOf
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import dk.clausr.core.common.model.doOnFailure
 import dk.clausr.core.common.model.doOnSuccess
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
-import dk.clausr.core.data_widget.SerializedWidgetState
-import dk.clausr.widget.AlbumCoverWidget2
+import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectId
+import dk.clausr.widget.AlbumCoverWidget
 import dk.clausr.widget.SimplifiedAlbumWidget
+import kotlinx.coroutines.flow.firstOrNull
 import java.time.Duration
 
 @HiltWorker
@@ -36,37 +38,9 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         var workerResult: Result = Result.retry()
         val dataStore = AlbumWidgetDataDefinition.getDataStore(appContext)
+        val projectId: String? = dataStore.data.firstOrNull()?.projectId
 
-        var projectId: String? = null
-        // Don't show a loading spinner if we already have an album, that way it shouldn't flash
-        dataStore.updateData { oldState ->
-            when (oldState) {
-                is SerializedWidgetState.Success -> {
-                    projectId = oldState.currentProjectId
-                    oldState
-                }
-
-                is SerializedWidgetState.Loading -> {
-                    projectId = oldState.currentProjectId
-                    oldState // Don't show loading thing when updating
-//                    SerializedWidgetState.Loading(oldState.currentProjectId)
-                }
-
-                is SerializedWidgetState.Error -> {
-                    projectId = oldState.currentProjectId
-                    SerializedWidgetState.Error(
-                        oldState.message,
-                        currentProjectId = oldState.currentProjectId
-                    )
-                }
-
-                is SerializedWidgetState.NotInitialized -> {
-                    projectId = null
-                    SerializedWidgetState.NotInitialized
-                }
-            }
-        }
-
+        // TODO Look into this actually checking if yesterdays album is rated
         projectId?.let { nnProjectId ->
             oagRepository.updateProject(nnProjectId)
                 .doOnSuccess {
@@ -76,11 +50,11 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
                     workerResult = Result.failure()
                 }
         } ?: run {
-            workerResult = Result.failure()
+            workerResult = Result.failure(workDataOf("error" to "No project id set"))
         }
 
         SimplifiedAlbumWidget.updateAll(appContext)
-        AlbumCoverWidget2().updateAll(appContext)
+        AlbumCoverWidget().updateAll(appContext)
 
         return workerResult
     }
