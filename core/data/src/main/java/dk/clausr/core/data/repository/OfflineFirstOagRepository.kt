@@ -50,7 +50,6 @@ class OfflineFirstOagRepository @Inject constructor(
     private val albumImageDao: AlbumImageDao,
 ) : OagRepository {
     override val widgetState = widgetDataStore.data.map {
-        Timber.d("WidgetState changed: $it")
         it
     }
 
@@ -142,6 +141,7 @@ class OfflineFirstOagRepository @Inject constructor(
         historicAlbums: List<HistoricAlbum>,
     ) {
         Timber.d("Update widget data")
+
         widgetDataStore.updateData { _ ->
             val latestAlbum = historicAlbums.firstOrNull { it.rating == Rating.Unrated }
             val newAlbumAvailable = latestAlbum?.rating == Rating.Unrated

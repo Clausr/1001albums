@@ -7,7 +7,7 @@
 
     <string name="state_not_configured">Widget not configured</string>
     <string name="state_loading">Loading…</string>
-    <string name="state_new_available">Click to rate</string>
+    <string name="state_new_available">How would you rate this?</string>
 
     <string name="config_project_input_label">Project name (username)</string>
     <string name="config_set_project_button_title">Set project</string>

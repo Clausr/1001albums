@@ -30,8 +30,12 @@ class UpdateProjectWorker @AssistedInject constructor(
         var result: Result? = null
         oagRepository.updateProject(projectId)
             .doOnSuccess { result = Result.success() }
-            .doOnFailure { _, _ ->
-                result = Result.failure()
+            .doOnFailure { m, _ ->
+                result = Result.failure(
+                    workDataOf(
+                        "Error" to (m ?: "update failed"),
+                    ),
+                )
             }
 
         return result ?: Result.failure()

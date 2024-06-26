@@ -8,6 +8,7 @@ data class AlbumWidgetData(
     val newAvailable: Boolean,
     val wikiLink: String,
     val streamingServices: StreamingServices,
+    val preferredStreamingPlatform: StreamingPlatform = StreamingPlatform.Tidal,
 )
 
 @Serializable

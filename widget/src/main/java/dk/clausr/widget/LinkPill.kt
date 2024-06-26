@@ -14,10 +14,13 @@ import androidx.glance.background
 import androidx.glance.layout.Row
 import androidx.glance.layout.Spacer
 import androidx.glance.layout.padding
+import androidx.glance.layout.size
 import androidx.glance.layout.width
+import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingService
 import dk.clausr.core.model.StreamingServices
 import dk.clausr.extensions.clickableOpenUrl
+import dk.clausr.extensions.icon
 import dk.clausr.extensions.openSomeActivity
 
 @Composable
@@ -44,9 +47,10 @@ fun LinkPill(
                     context.openSomeActivity(wikipediaLink)
                 })
 
-        streamingServices.services.forEach { link ->
-            StreamingService(streamingService = link)
-        }
+        streamingServices.services.filter { it.platform == StreamingPlatform.Tidal }
+            .forEach { link ->
+                StreamingService(streamingService = link)
+            }
 
         Spacer(GlanceModifier.width(16.dp))
         Image(
@@ -56,14 +60,13 @@ fun LinkPill(
             modifier = GlanceModifier.clickableOpenUrl(projectUrl)
         )
 
-        Spacer(GlanceModifier.width(16.dp))
+        Spacer(GlanceModifier.width(24.dp))
         Image(
-            provider = ImageProvider(R.drawable.ic_wikipedia),
+            provider = ImageProvider(R.drawable.baseline_refresh_24),
             contentDescription = "Update widget",
             colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground),
-            modifier = GlanceModifier.clickable {
-                onForceUpdateWidget()
-            }
+            modifier = GlanceModifier
+                .clickable { onForceUpdateWidget() }
         )
     }
 }
@@ -74,9 +77,11 @@ fun StreamingService(
 ) {
     Spacer(GlanceModifier.width(16.dp))
     Image(
-        provider = ImageProvider(R.drawable.ic_tidal),
+        provider = ImageProvider(streamingService.platform.icon()),
         contentDescription = streamingService.platform.name,
         colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground),
-        modifier = GlanceModifier.clickableOpenUrl(streamingService.streamingLink),
+        modifier = GlanceModifier
+            .size(20.dp)
+            .clickableOpenUrl(streamingService.streamingLink),
     )
 }

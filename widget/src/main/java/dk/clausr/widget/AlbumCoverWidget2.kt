@@ -10,24 +10,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
+import androidx.compose.ui.unit.dp
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
-import androidx.glance.action.action
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.components.CircleIconButton
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
+import androidx.glance.currentState
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.Column
 import androidx.glance.layout.Row
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
+import androidx.glance.layout.padding
+import androidx.glance.state.GlanceStateDefinition
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
@@ -38,8 +41,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import dk.clausr.core.data.repository.OagRepository
+import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectUrl
+import dk.clausr.extensions.openWithPrefilledRating
 import dk.clausr.worker.SimplifiedWidgetWorker
 import dk.clausr.worker.UpdateProjectWorker
 import kotlinx.coroutines.delay
@@ -48,6 +53,8 @@ import timber.log.Timber
 // Periodic update thing:
 // https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:glance/glance-appwidget/samples/src/main/java/androidx/glance/appwidget/samples/GlanceAppWidgetSamples.kt;drc=c28b42063433bb0f928a897c0d6ec31b45ba2021;l=114
 class AlbumCoverWidget2 : GlanceAppWidget() {
+    override val stateDefinition: GlanceStateDefinition<SerializedWidgetState> =
+        AlbumWidgetDataDefinition
 
     @EntryPoint
     @InstallIn(SingletonComponent::class)
@@ -63,10 +70,13 @@ class AlbumCoverWidget2 : GlanceAppWidget() {
 
         val repo = hiltEntryPoint.oagRepository()
 
-        Timber.d("repo.... ${repo.widgetState}")
         provideContent {
+            val currentState = currentState<SerializedWidgetState>()
+
+            Timber.d("Provide content -- currentstate = ${currentState}")
             val state: SerializedWidgetState by repo.widgetState
-                .collectAsState(initial = SerializedWidgetState.NotInitialized)
+                .collectAsState(initial = currentState)
+
             GlanceTheme {
                 Content(state = state)
             }
@@ -90,7 +100,7 @@ fun Content(
             }
 
             is SerializedWidgetState.Success -> {
-                ShowAlbumCover(state)
+                ShowAlbumCover(state, state.currentProjectId)
             }
 
             is SerializedWidgetState.Error -> {
@@ -121,6 +131,7 @@ fun Content(
 @Composable
 private fun ShowAlbumCover(
     state: SerializedWidgetState.Success,
+    projectId: String,
 ) {
     val context = LocalContext.current
     var showLinks by remember {
@@ -149,7 +160,7 @@ private fun ShowAlbumCover(
         )
 
         if (state.data.newAvailable) {
-            RatingNudge()
+            RatingNudge(projectId)
         }
 
         if (showLinks) {
@@ -163,7 +174,6 @@ private fun ShowAlbumCover(
                         context = context,
                         projectId = state.currentProjectId
                     )
-//                    SimplifiedWidgetWorker.enqueueUnique(context)
                 }
             )
         }
@@ -171,7 +181,9 @@ private fun ShowAlbumCover(
 }
 
 @Composable
-private fun RatingNudge() {
+private fun RatingNudge(
+    projectId: String,
+) {
     val context = LocalContext.current
 
     Column(
@@ -181,6 +193,7 @@ private fun RatingNudge() {
                 GlanceTheme.colors.widgetBackground.getColor(context)
                     .copy(alpha = 0.75f)
             ),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = LocalContext.current.getString(R.string.state_new_available),
@@ -192,16 +205,21 @@ private fun RatingNudge() {
                 textAlign = TextAlign.Center,
             )
         )
-        Row(modifier = GlanceModifier.fillMaxWidth()) {
+        Row(
+            modifier = GlanceModifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             for (i in 1..5) {
                 val icon =
                     if (i == 1) R.drawable.baseline_star_24 else R.drawable.baseline_star_border_24
                 CircleIconButton(
                     imageProvider = ImageProvider(icon),
                     contentDescription = null,
-                    onClick = action {
-
-                    }
+                    onClick = {
+                        context.openWithPrefilledRating(projectId, i)
+                    },
                 )
             }
         }

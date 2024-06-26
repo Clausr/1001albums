@@ -1,5 +1,4 @@
 plugins {
-//    id("a1001albums.android.library.compose")
     id("org.jetbrains.kotlin.plugin.compose")
     id("a1001albums.android.widget")
     id("a1001albums.android.hilt")

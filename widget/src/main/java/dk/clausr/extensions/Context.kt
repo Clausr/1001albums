@@ -7,9 +7,9 @@ import androidx.glance.GlanceModifier
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.action.actionStartActivity
 
-fun Context.open1001Website(projectId: String) {
+fun Context.openWithPrefilledRating(projectId: String, rating: Int) {
     val intent = Intent(Intent.ACTION_VIEW).apply {
-        data = "https://1001albumsgenerator.com/$projectId".toUri()
+        data = "https://1001albumsgenerator.com/$projectId?prefilledRating=$rating".toUri()
         flags = Intent.FLAG_ACTIVITY_NEW_TASK
     }
     startActivity(intent)

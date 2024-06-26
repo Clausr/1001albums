@@ -19,6 +19,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -35,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -47,6 +49,8 @@ import dk.clausr.core.data_widget.SerializedWidgetState.Error
 import dk.clausr.core.data_widget.SerializedWidgetState.Loading
 import dk.clausr.core.data_widget.SerializedWidgetState.NotInitialized
 import dk.clausr.core.data_widget.SerializedWidgetState.Success
+import dk.clausr.core.model.StreamingPlatform
+import dk.clausr.extensions.icon
 import dk.clausr.widget.R
 import kotlinx.coroutines.launch
 
@@ -72,6 +76,9 @@ fun WidgetConfigurationRoute(
             viewModel.updateWidgets()
             onApplyChanges()
         },
+        selectPreferredStreamingPlatform = {
+
+        }
     )
 }
 
@@ -82,6 +89,7 @@ fun WidgetConfigurationScreen(
     onUpClicked: () -> Unit,
     onSetProjectId: (String) -> Unit,
     onApplyChanges: () -> Unit,
+    selectPreferredStreamingPlatform: (StreamingPlatform) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var projectId by remember(widgetState) {
@@ -197,10 +205,17 @@ fun WidgetConfigurationScreen(
                     }
 
                     Row {
-
-                        state.data.streamingServices.services.forEach {
-                            Button(onClick = {}) {
-                                Text(it.platform.name)
+                        state.data.streamingServices.services.forEach { streamingService ->
+                            IconButton(
+                                onClick = { selectPreferredStreamingPlatform(streamingService.platform) },
+                                colors = IconButtonDefaults.filledIconButtonColors()
+                            ) {
+                                Icon(
+                                    painterResource(
+                                        id = streamingService.platform.icon()
+                                    ),
+                                    contentDescription = streamingService.platform.name,
+                                )
                             }
                         }
                     }

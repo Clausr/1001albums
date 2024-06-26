@@ -15,7 +15,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
 
-        buildConfigField("String", "BACKEND_URL", "\"https://1001albumsgenerator.com/api/v1/\"")
+        buildConfigField("String", "BACKEND_URL", "\"https://1001albumsgenerator.com/\"")
     }
 
 }

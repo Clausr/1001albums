@@ -5,6 +5,6 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface OAGRetrofitApi {
-    @GET("projects/{projectId}")
+    @GET("api/v1/projects/{projectId}")
     suspend fun getProject(@Path("projectId") projectId: String): NetworkProject
 }

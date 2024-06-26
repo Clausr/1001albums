@@ -16,6 +16,8 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import dk.clausr.core.common.model.doOnFailure
+import dk.clausr.core.common.model.doOnSuccess
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
 import dk.clausr.core.data_widget.SerializedWidgetState
@@ -32,7 +34,7 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
 ) : CoroutineWorker(appContext, workerParameters) {
 
     override suspend fun doWork(): Result {
-        val workerResult: Result
+        var workerResult: Result = Result.retry()
         val dataStore = AlbumWidgetDataDefinition.getDataStore(appContext)
 
         var projectId: String? = null
@@ -46,7 +48,8 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
 
                 is SerializedWidgetState.Loading -> {
                     projectId = oldState.currentProjectId
-                    SerializedWidgetState.Loading(oldState.currentProjectId)
+                    oldState // Don't show loading thing when updating
+//                    SerializedWidgetState.Loading(oldState.currentProjectId)
                 }
 
                 is SerializedWidgetState.Error -> {
@@ -64,16 +67,16 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
             }
         }
 
-        if (projectId.isNullOrBlank()) {
+        projectId?.let { nnProjectId ->
+            oagRepository.updateProject(nnProjectId)
+                .doOnSuccess {
+                    workerResult = Result.success()
+                }
+                .doOnFailure { _, _ ->
+                    workerResult = Result.failure()
+                }
+        } ?: run {
             workerResult = Result.failure()
-        } else {
-            val project = oagRepository.updateProject(projectId!!)
-
-            workerResult = if (project == null) {
-                Result.retry()
-            } else {
-                Result.success()
-            }
         }
 
         SimplifiedAlbumWidget.updateAll(appContext)
