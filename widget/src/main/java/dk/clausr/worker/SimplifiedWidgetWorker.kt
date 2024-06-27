@@ -23,7 +23,6 @@ import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectId
 import dk.clausr.widget.AlbumCoverWidget
-import dk.clausr.widget.SimplifiedAlbumWidget
 import kotlinx.coroutines.flow.firstOrNull
 import java.time.Duration
 
@@ -53,7 +52,6 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
             workerResult = Result.failure(workDataOf("error" to "No project id set"))
         }
 
-        SimplifiedAlbumWidget.updateAll(appContext)
         AlbumCoverWidget().updateAll(appContext)
 
         return workerResult

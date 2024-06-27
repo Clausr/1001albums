@@ -18,7 +18,6 @@ import dk.clausr.core.common.model.doOnFailure
 import dk.clausr.core.common.model.doOnSuccess
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.widget.AlbumCoverWidget
-import dk.clausr.widget.SimplifiedAlbumWidget
 import java.util.concurrent.TimeUnit
 
 @HiltWorker
@@ -41,7 +40,6 @@ class BurstUpdateWorker @AssistedInject constructor(
 
         oagRepository.updateProject(projectId)
             .doOnSuccess {
-                SimplifiedAlbumWidget.updateAll(appContext)
                 AlbumCoverWidget().updateAll(appContext)
 
                 result = Result.success()
