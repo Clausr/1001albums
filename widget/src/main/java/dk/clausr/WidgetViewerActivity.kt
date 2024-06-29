@@ -32,7 +32,7 @@ import androidx.glance.appwidget.runComposition
 import dk.clausr.widget.AlbumCoverWidget
 import kotlinx.coroutines.Dispatchers
 
-class WidgetViewer : ComponentActivity() {
+class WidgetViewerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

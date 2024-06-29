@@ -43,6 +43,8 @@ dependencies {
     implementation(project(":widget"))
     implementation(project(":feature:overview"))
 
+    implementation(libs.material)
+
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.activity.compose)
@@ -50,6 +52,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.hilt.work)
     debugImplementation(libs.androidx.compose.ui.tooling)

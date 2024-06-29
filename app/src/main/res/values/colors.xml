@@ -7,4 +7,11 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+
+    <color name="md_theme_light_primary">#8C4F26</color>
+    <color name="md_theme_light_tertiary">#626033</color>
+
+    <!-- Status bar -->
+    <color name="black30">#4D000000</color>
 </resources>

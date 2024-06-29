@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <application
-        android:name=".OagApp"
+        android:name=".OagApplication"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -18,8 +18,8 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme._1001AlbumsGenerator">
+            android:theme="@style/Theme.Hvordu">
+            <!--            android:theme="@style/Theme._1001AlbumsGenerator">-->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

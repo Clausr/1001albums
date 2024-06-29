@@ -12,7 +12,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @HiltAndroidApp
-class OagApp : Application(), Configuration.Provider {
+class OagApplication : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
 

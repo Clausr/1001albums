@@ -12,17 +12,23 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,24 +45,42 @@ import java.time.Instant
 @Composable
 fun OverviewRoute(
     modifier: Modifier = Modifier,
+    widgetView: @Composable () -> Unit = {},
+    onConfigureWidget: () -> Unit,
     viewModel: OverviewViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     OverviewScreen(
+        widgetView = widgetView,
         modifier = modifier,
         state = uiState,
+        onConfigureWidget = onConfigureWidget,
     )
 }
 
 @Composable
 internal fun OverviewScreen(
     state: OverviewUiState,
-    modifier: Modifier = Modifier
+    widgetView: @Composable () -> Unit = {},
+    onConfigureWidget: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Scaffold(
         modifier = modifier,
+        topBar = {
+            TopAppBar(title = { Text(text = "1001 albums") },
+                actions = {
+                    IconButton(onClick = onConfigureWidget) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "Configure project",
+                        )
+                    }
+                })
+        },
     ) { innerPadding ->
+
         Box(modifier = Modifier.padding(innerPadding)) {
             when (state) {
                 OverviewUiState.Error -> Text("Error")
@@ -71,90 +95,79 @@ internal fun OverviewScreen(
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                        contentPadding = PaddingValues(horizontal = 16.dp),
                     ) {
-                        state.currentAlbum?.let { currentAlbum ->
-                            item {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 16.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    AsyncImage(
-                                        modifier = Modifier,
-                                        model = currentAlbum.imageUrl,
-                                        contentDescription = "cover",
-                                        contentScale = ContentScale.FillWidth,
-                                    )
-                                    Text(
-                                        text = currentAlbum.artist,
-                                        style = MaterialTheme.typography.headlineMedium.copy(
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    )
-                                    Text(text = currentAlbum.name)
-                                }
-                            }
+                        item {
+                            widgetView()
                         }
-
                         if (state.albums.isNotEmpty()) {
                             item {
                                 Text(
-                                    text = "History",
+                                    text = stringResource(
+                                        id = R.string.history_header,
+                                        state.albums.count { it.rating is Rating.Rated },
+                                        state.albums.size
+                                    ),
                                     style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
                                 )
                             }
                         }
                         items(state.albums, key = { it.generatedAt }) { historicAlbum ->
-                            val album = historicAlbum.album
-                            Card(
-                                shape = RoundedCornerShape(
-                                    topStart = 0.dp,
-                                    bottomStart = 0.dp,
-                                    bottomEnd = 8.dp,
-                                    topEnd = 8.dp
-                                )
-                            ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                ) {
-                                    AsyncImage(
-                                        modifier = Modifier
-                                            .width(60.dp)
-                                            .shadow(elevation = 4.dp),
-                                        model = album.imageUrl,
-                                        contentDescription = "cover",
-                                        contentScale = ContentScale.FillWidth,
-                                    )
-                                    Column(
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .padding(vertical = 8.dp, horizontal = 8.dp)
-                                    ) {
-                                        Text(
-                                            text = album.artist,
-                                            style = MaterialTheme.typography.labelLarge
-                                        )
-                                        Text(text = album.name)
-                                    }
-                                    val rating = when (val rating = historicAlbum.rating) {
-                                        Rating.DidNotListen -> "DNL"
-                                        is Rating.Rated -> rating.rating.toString()
-                                        Rating.Unrated -> "Unrated"
-                                    }
-                                    Text(
-                                        modifier = Modifier.padding(end = 16.dp),
-                                        text = rating,
-                                        style = MaterialTheme.typography.headlineMedium
-                                    )
-                                }
-                            }
+                            HistoricAlbumCard(historicAlbum)
                         }
                     }
                 }
             }
+        }
+    }
+
+
+}
+
+@Composable
+private fun HistoricAlbumCard(historicAlbum: HistoricAlbum) {
+    val album = historicAlbum.album
+    Card(
+        shape = RoundedCornerShape(
+            topStart = 0.dp,
+            bottomStart = 0.dp,
+            bottomEnd = 8.dp,
+            topEnd = 8.dp
+        )
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            AsyncImage(
+                modifier = Modifier
+                    .width(60.dp)
+                    .shadow(elevation = 4.dp),
+                model = album.imageUrl,
+                contentDescription = "cover",
+                contentScale = ContentScale.FillWidth,
+            )
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(vertical = 8.dp, horizontal = 8.dp)
+            ) {
+                Text(
+                    text = album.artist,
+                    style = MaterialTheme.typography.labelLarge
+                )
+                Text(text = album.name)
+            }
+            val rating = when (val rating = historicAlbum.rating) {
+                Rating.DidNotListen -> "DNL"
+                is Rating.Rated -> rating.rating.toString()
+                Rating.Unrated -> "Unrated"
+            }
+            Text(
+                modifier = Modifier.padding(end = 16.dp),
+                text = rating,
+                style = MaterialTheme.typography.headlineMedium
+            )
         }
     }
 }
@@ -165,6 +178,7 @@ internal fun OverviewScreen(
 private fun OverviewPreview() {
     MaterialTheme {
         OverviewScreen(
+            onConfigureWidget = {},
             state = OverviewUiState.Success(
                 project = Project(
                     name = "GlanceWidget",

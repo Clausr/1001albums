@@ -13,7 +13,7 @@
         </activity>
 
         <activity
-            android:name="dk.clausr.WidgetViewer"
+            android:name="dk.clausr.WidgetViewerActivity"
             android:exported="true">
 
         </activity>

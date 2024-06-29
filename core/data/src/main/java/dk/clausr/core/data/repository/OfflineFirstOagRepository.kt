@@ -60,8 +60,7 @@ class OfflineFirstOagRepository @Inject constructor(
     }
 
     override val project: Flow<Project?> = projectDao.getProject()
-        .mapNotNull { it?.asExternalModel() }
-//        .onEach { getAndUpdateProject(it.name) }
+        .map { it?.asExternalModel() }
 
     override val currentAlbum: Flow<Album?> = project
         .mapNotNull { project ->
@@ -144,7 +143,7 @@ class OfflineFirstOagRepository @Inject constructor(
         Timber.d("Update widget data")
 
         widgetDataStore.updateData { _ ->
-            val latestAlbum = historicAlbums.firstOrNull { it.rating == Rating.Unrated }
+            val latestAlbum = historicAlbums.lastOrNull { it.rating == Rating.Unrated }
             val newAlbumAvailable = latestAlbum?.rating == Rating.Unrated
 
             val albumToUse = if (newAlbumAvailable) {
