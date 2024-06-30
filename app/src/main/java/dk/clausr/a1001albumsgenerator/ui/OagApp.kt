@@ -10,14 +10,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import dk.clausr.a1001albumsgenerator.MainViewState
 import dk.clausr.a1001albumsgenerator.navigation.OagNavHost
-import dk.clausr.a1001albumsgenerator.ui.theme._1001AlbumsGeneratorTheme
+import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 
 @Composable
 fun OagApp(
     navHostController: NavHostController = rememberNavController(),
     uiState: MainViewState,
 ) {
-    _1001AlbumsGeneratorTheme {
+    OagTheme {
         Scaffold(
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
         ) { padding ->

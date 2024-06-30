@@ -27,8 +27,6 @@ class MainActivityViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = MainViewState.Loading
         )
-
-
 }
 
 sealed interface MainViewState {

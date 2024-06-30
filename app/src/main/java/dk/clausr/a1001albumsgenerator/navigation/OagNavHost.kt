@@ -9,7 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import dk.clausr.a1001albumsgenerator.MainViewState
-import timber.log.Timber
 
 
 @Composable
@@ -30,7 +29,11 @@ fun OagNavHost(
     }
 
     LaunchedEffect(dest) {
-        Timber.d("Dest changed $dest")
+//        Timber.d("Dest changed $dest")
+        dest?.let {
+            navHostController.popBackStack(MainDirections.home(), true)
+            navHostController.navigate(it)
+        }
     }
 
     NavHost(
