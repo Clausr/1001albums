@@ -1,5 +1,10 @@
 package dk.clausr.configuration
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -139,29 +145,31 @@ fun WidgetConfigurationScreen(
                 label = { Text(stringResource(id = R.string.config_project_input_label)) },
                 singleLine = true,
                 value = projectId,
-                onValueChange = { projectId = it })
-
-            Button(
-                onClick = {
-                    if (projectId.isNotBlank()) {
-                        onSetProjectId(projectId)
+                onValueChange = { projectId = it },
+                trailingIcon = {
+                    AnimatedVisibility(
+                        visible = setProjectButtonEnabled,
+                        enter = scaleIn() + fadeIn(),
+                        exit = scaleOut() + fadeOut()
+                    ) {
+                        IconButton(
+                            onClick = {
+                                onSetProjectId(projectId)
+                                scope.launch {
+                                    keyboardController?.hide()
+                                }
+                            },
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = stringResource(
+                                    id = R.string.config_set_project_button_title
+                                )
+                            )
+                        }
                     }
-
-                    scope.launch {
-                        keyboardController?.hide()
-                    }
-
-                },
-                enabled = setProjectButtonEnabled
-            ) {
-                val buttonTextRes = if (setProjectButtonEnabled) {
-                    R.string.config_set_project_button_title
-                } else {
-                    R.string.config_set_project_done_button_title
                 }
-
-                Text(stringResource(id = buttonTextRes))
-            }
+            )
 
             when (val state = widgetState) {
                 is Error -> Text("Error :( ${state.message}")

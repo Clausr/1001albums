@@ -172,7 +172,7 @@ class OfflineFirstOagRepository @Inject constructor(
         }
     }
 
-    override suspend fun updateProject(projectId: String): Result<Unit> {
-        return getAndUpdateProject(projectId).map { Unit }
+    override suspend fun updateProject(projectId: String): Result<Project> {
+        return getAndUpdateProject(projectId)
     }
 }

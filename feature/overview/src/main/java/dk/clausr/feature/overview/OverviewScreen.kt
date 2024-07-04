@@ -62,9 +62,9 @@ fun OverviewRoute(
 @Composable
 internal fun OverviewScreen(
     state: OverviewUiState,
-    widgetView: @Composable () -> Unit = {},
     onConfigureWidget: () -> Unit,
     modifier: Modifier = Modifier,
+    widgetView: @Composable () -> Unit = {},
 ) {
     Scaffold(
         modifier = modifier,

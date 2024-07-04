@@ -40,7 +40,8 @@ class BurstUpdateWorker @AssistedInject constructor(
 
         oagRepository.updateProject(projectId)
             .doOnSuccess {
-                AlbumCoverWidget().updateAll(appContext)
+
+            AlbumCoverWidget().updateAll(appContext)
 
                 result = Result.success()
             }

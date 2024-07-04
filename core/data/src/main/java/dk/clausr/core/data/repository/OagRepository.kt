@@ -17,6 +17,6 @@ interface OagRepository {
     val widgetState: Flow<SerializedWidgetState>
 
     suspend fun setProject(projectId: String)
-    suspend fun updateProject(projectId: String): Result<Unit>
+    suspend fun updateProject(projectId: String): Result<Project>
     suspend fun setPreferredPlatform(platform: StreamingPlatform)
 }
