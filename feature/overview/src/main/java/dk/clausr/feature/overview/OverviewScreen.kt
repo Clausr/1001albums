@@ -1,14 +1,17 @@
 package dk.clausr.feature.overview
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,15 +24,22 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -59,6 +69,7 @@ fun OverviewRoute(
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun OverviewScreen(
     state: OverviewUiState,
@@ -80,8 +91,7 @@ internal fun OverviewScreen(
                 })
         },
     ) { innerPadding ->
-
-        Box(modifier = Modifier.padding(innerPadding)) {
+        Column(modifier = Modifier.padding(innerPadding)) {
             when (state) {
                 OverviewUiState.Error -> Text("Error")
                 OverviewUiState.Loading -> Box(
@@ -92,27 +102,87 @@ internal fun OverviewScreen(
                 }
 
                 is OverviewUiState.Success -> {
+                    var showOnlyDnl by remember {
+                        mutableStateOf(false)
+                    }
+
+                    val history by remember(showOnlyDnl) {
+                        mutableStateOf(state.project.historicAlbums.filter {
+                            if (showOnlyDnl) {
+                                it.rating !is Rating.Rated
+                            } else true
+                        })
+                    }
+
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         contentPadding = PaddingValues(horizontal = 16.dp),
                     ) {
                         item {
-                            widgetView()
-                        }
-                        if (state.albums.isNotEmpty()) {
-                            item {
-                                Text(
-                                    text = stringResource(
-                                        id = R.string.history_header,
-                                        state.albums.count { it.rating is Rating.Rated },
-                                        state.albums.size
-                                    ),
-                                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                                )
+                            state.currentAlbum?.let {
+                                // TODO Create interactions / Prefill rating thing
+                                Column(modifier = Modifier.padding(16.dp)) {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        AsyncImage(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .aspectRatio(1f)
+                                                .background(MaterialTheme.colorScheme.primaryContainer),
+                                            model = it.imageUrl,
+                                            contentDescription = "Cover"
+                                        )
+                                    }
+                                    Text(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 8.dp),
+                                        text = it.artist,
+                                        textAlign = TextAlign.Center,
+                                        style = MaterialTheme.typography.titleLarge,
+                                    )
+                                    Text(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        text = it.name,
+                                        textAlign = TextAlign.Center,
+                                        style = MaterialTheme.typography.titleMedium,
+                                    )
+                                }
                             }
                         }
-                        items(state.albums, key = { it.generatedAt }) { historicAlbum ->
+
+                        if (state.project.historicAlbums.isNotEmpty()) {
+                            item {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        modifier = Modifier.weight(1f),
+                                        text = stringResource(
+                                            id = R.string.history_header,
+                                            if (showOnlyDnl) {
+                                                history.size
+                                            } else {
+                                                history.count { it.rating is Rating.Rated }
+                                            },
+                                            state.project.historicAlbums.size
+                                        ),
+                                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                                    )
+
+                                    TextButton(onClick = { showOnlyDnl = !showOnlyDnl }) {
+                                        Text(if (showOnlyDnl) "Show all" else "Show DNL")
+                                    }
+                                }
+                            }
+                        }
+                        items(
+                            items = history,
+                            key = { it.generatedAt }) { historicAlbum ->
                             HistoricAlbumCard(historicAlbum)
                         }
                     }
@@ -133,7 +203,7 @@ private fun HistoricAlbumCard(historicAlbum: HistoricAlbum) {
             bottomStart = 0.dp,
             bottomEnd = 8.dp,
             topEnd = 8.dp
-        )
+        ),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -141,7 +211,7 @@ private fun HistoricAlbumCard(historicAlbum: HistoricAlbum) {
         ) {
             AsyncImage(
                 modifier = Modifier
-                    .width(60.dp)
+                    .widthIn(max = 100.dp)
                     .shadow(elevation = 4.dp),
                 model = album.imageUrl,
                 contentDescription = "cover",
@@ -157,17 +227,24 @@ private fun HistoricAlbumCard(historicAlbum: HistoricAlbum) {
                     style = MaterialTheme.typography.labelLarge
                 )
                 Text(text = album.name)
+                Text(
+                    text = historicAlbum.review,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.bodySmall.copy(fontStyle = FontStyle.Italic)
+                )
             }
             val rating = when (val rating = historicAlbum.rating) {
-                Rating.DidNotListen -> "DNL"
                 is Rating.Rated -> rating.rating.toString()
                 Rating.Unrated -> "Unrated"
+                Rating.DidNotListen -> "DNL"
             }
             Text(
-                modifier = Modifier.padding(end = 16.dp),
+                modifier = Modifier.padding(horizontal = 16.dp),
                 text = rating,
                 style = MaterialTheme.typography.headlineMedium
             )
+
         }
     }
 }
@@ -185,7 +262,34 @@ private fun OverviewPreview() {
                     currentAlbumSlug = "paranoid",
                     currentAlbumNotes = "",
                     updateFrequency = UpdateFrequency.DailyWithWeekends,
-                    shareableUrl = "https://clausr.dk"
+                    shareableUrl = "https://clausr.dk",
+                    historicAlbums = listOf(
+                        HistoricAlbum(
+                            album = Album(
+                                artist = "Black Sabbath",
+                                artistOrigin = "UK",
+                                name = "Paranoid",
+                                slug = "paranoid",
+                                releaseDate = "1970",
+                                globalReviewsUrl = "https://1001albumsgenerator.com/albums/7DBES3oV6jjAmWob7kJg6P/paranoid",
+                                wikipediaUrl = "https://en.wikipedia.org/wiki/Paranoid_(album)",
+                                spotifyId = "7DBES3oV6jjAmWob7kJg6P",
+                                appleMusicId = "785232473",
+                                tidalId = 34450059,
+                                amazonMusicId = "B073JYN27B",
+                                youtubeMusicId = "OLAK5uy_l-gXxtv23EojUteRu5Zq1rKW3InI_bwsU",
+                                genres = emptyList(),
+                                subGenres = emptyList(),
+                                imageUrl = "https://i.scdn.co/image/ab2eae28bb2a55667ee727711aeccc7f37498414",
+                                qobuzId = null,
+                                deezerId = null,
+                            ),
+                            rating = Rating.Rated(5),
+                            review = "Fed",
+                            generatedAt = Instant.now(),
+                            globalRating = 5.0
+                        ),
+                    ),
                 ),
                 currentAlbum = Album(
                     artist = "Black Sabbath",
@@ -206,33 +310,6 @@ private fun OverviewPreview() {
                     qobuzId = null,
                     deezerId = null,
                 ),
-                albums = listOf(
-                    HistoricAlbum(
-                        album = Album(
-                            artist = "Black Sabbath",
-                            artistOrigin = "UK",
-                            name = "Paranoid",
-                            slug = "paranoid",
-                            releaseDate = "1970",
-                            globalReviewsUrl = "https://1001albumsgenerator.com/albums/7DBES3oV6jjAmWob7kJg6P/paranoid",
-                            wikipediaUrl = "https://en.wikipedia.org/wiki/Paranoid_(album)",
-                            spotifyId = "7DBES3oV6jjAmWob7kJg6P",
-                            appleMusicId = "785232473",
-                            tidalId = 34450059,
-                            amazonMusicId = "B073JYN27B",
-                            youtubeMusicId = "OLAK5uy_l-gXxtv23EojUteRu5Zq1rKW3InI_bwsU",
-                            genres = emptyList(),
-                            subGenres = emptyList(),
-                            imageUrl = "https://i.scdn.co/image/ab2eae28bb2a55667ee727711aeccc7f37498414",
-                            qobuzId = null,
-                            deezerId = null,
-                        ),
-                        rating = Rating.Rated(5),
-                        review = "Fed",
-                        generatedAt = Instant.now(),
-                        globalRating = 5.0
-                    ),
-                )
             )
         )
     }

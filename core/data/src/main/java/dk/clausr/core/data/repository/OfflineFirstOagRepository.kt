@@ -32,12 +32,15 @@ import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.time.measureTimedValue
 
 @Suppress("LongParameterList")
 @Singleton
@@ -59,8 +62,23 @@ class OfflineFirstOagRepository @Inject constructor(
         it.projectId
     }
 
-    override val project: Flow<Project?> = projectDao.getProject()
-        .map { it?.asExternalModel() }
+    override val project: Flow<Project?> =
+        combine(projectDao.getProject(), albumDao.getAlbums()) { project, albums ->
+            val (value, time) = measureTimedValue {
+
+                val history = albums.map { it.asExternalModel() }
+                val ratings = ratingDao.getRatingByAlbumSlugs(albums.map { it.slug })
+
+                val historicAlbums = ratings.map { rating ->
+                    rating.toHistoricAlbum(history.first { it.slug == rating.albumSlug })
+                }
+
+                project?.asExternalModel(historicAlbums.sortedByDescending { it.generatedAt })
+            }
+            Timber.d("Time of getting project.. $time")
+            value
+        }
+//        .map { it?.asExternalModel() }
 
     override val currentAlbum: Flow<Album?> = project
         .mapNotNull { project ->
@@ -77,11 +95,19 @@ class OfflineFirstOagRepository @Inject constructor(
 
                 rating?.toHistoricAlbum(album)
             }
+                .sortedByDescending { it.generatedAt }
         }
 
+
     override suspend fun setProject(projectId: String) = withContext(ioDispatcher) {
-        Timber.d("OfflineFirstRepo - setProject $projectId")
+        Timber.d("Set new project $projectId")
+        widgetDataStore.updateData { SerializedWidgetState.Loading(projectId) }
+        projectDao.clearTable()
+        albumDao.clearTable()
+        ratingDao.clearTable()
+
         getAndUpdateProject(projectId)
+
         Unit
     }
 
@@ -101,10 +127,11 @@ class OfflineFirstOagRepository @Inject constructor(
         val albumEntities = mutableListOf<AlbumEntity>()
         val ratingEntities = mutableListOf<RatingEntity>()
         val albumImageEntities = mutableListOf<AlbumImageEntity>()
+
         for (historicAlbum in networkProject.history) {
             albumEntities.add(historicAlbum.album.toEntity())
-            ratingEntities.add(historicAlbum.toRatingEntity())
             albumImageEntities.addAll(historicAlbum.album.toAlbumImageEntities())
+            ratingEntities.add(historicAlbum.toRatingEntity())
         }
         albumDao.insertAlbums(albumEntities)
         ratingDao.insertRatings(ratingEntities)
@@ -113,8 +140,6 @@ class OfflineFirstOagRepository @Inject constructor(
 
     private suspend fun getAndUpdateProject(projectId: String): Result<Project> =
         withContext(ioDispatcher) {
-            Timber.d("getAndUpdateProject")
-
             networkDataSource.getProject(projectId)
                 .doOnSuccess { networkProject ->
                     Timber.d("Got project ${networkProject.name} with ${networkProject.history.size} albums")
@@ -135,25 +160,31 @@ class OfflineFirstOagRepository @Inject constructor(
                 }
         }
 
+    override suspend fun isLatestAlbumRated(): Boolean {
+        val history = historicAlbums.firstOrNull()
+        val lastAlbum = history?.firstOrNull()
+
+        Timber.d("isLatestAlbumRated ${lastAlbum?.album?.name} -- rating: ${lastAlbum?.rating}")
+
+        return lastAlbum?.rating is Rating.Rated
+    }
+
     private suspend fun updateWidgetData(
         project: Project,
         currentAlbum: Album,
         historicAlbums: List<HistoricAlbum>,
     ) {
         Timber.d("Update widget data")
-
         widgetDataStore.updateData { _ ->
-            val latestAlbum = historicAlbums.lastOrNull { it.rating == Rating.Unrated }
-            val newAlbumAvailable = latestAlbum?.rating == Rating.Unrated
+            val lastUnratedAlbum =
+                historicAlbums.lastOrNull().takeIf { it?.rating == Rating.Unrated }
 
-            val albumToUse = if (newAlbumAvailable) {
-                latestAlbum?.album ?: currentAlbum
-            } else currentAlbum
+            val albumToUse = lastUnratedAlbum?.album ?: currentAlbum
 
             SerializedWidgetState.Success(
                 data = AlbumWidgetData(
                     coverUrl = albumToUse.imageUrl,
-                    newAvailable = newAlbumAvailable,
+                    newAvailable = lastUnratedAlbum != null,
                     wikiLink = albumToUse.wikipediaUrl,
                     streamingServices = StreamingServices.from(albumToUse),
                 ),

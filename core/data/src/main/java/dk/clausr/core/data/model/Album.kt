@@ -42,7 +42,6 @@ fun NetworkAlbum.toEntity(): AlbumEntity = AlbumEntity(
     qobuzId = qobuzId,
 )
 
-
 fun AlbumEntity.asExternalModel(): Album = Album(
     artist = artist,
     artistOrigin = artist,

@@ -217,7 +217,8 @@ private fun RatingNudge(
                     contentDescription = null,
                     onClick = {
                         context.openWithPrefilledRating(projectId, i)
-                        BurstUpdateWorker.enqueueBurstUpdate(context, projectId = projectId)
+                        // Start requesting for changes
+                        BurstUpdateWorker.enqueueUnique(context, projectId = projectId)
                     },
                 )
             }

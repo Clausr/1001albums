@@ -6,6 +6,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
+import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST
@@ -14,10 +15,10 @@ import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import dk.clausr.core.common.model.doOnFailure
 import dk.clausr.core.common.model.doOnSuccess
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.widget.AlbumCoverWidget
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 @HiltWorker
@@ -27,47 +28,43 @@ class BurstUpdateWorker @AssistedInject constructor(
     private val oagRepository: OagRepository,
 ) : CoroutineWorker(appContext, workerParameters) {
 
-    private val project = oagRepository.project
-
     override suspend fun doWork(): Result {
-        var retryNumber = workerParameters.inputData.getInt(retryDataKey, 0)
-        // Prerequisites
-        if (retryNumber > maxRetries) return Result.failure()
+        if (runAttemptCount >= MAX_RETRIES) return Result.failure()
+        Timber.d("Burst do work retry no: $runAttemptCount ")
+
         val projectId =
-            workerParameters.inputData.getString(projectIdKey) ?: return Result.failure()
+            workerParameters.inputData.getString(PROJECT_ID_KEY) ?: return Result.failure()
 
         var result: Result? = null
 
         oagRepository.updateProject(projectId)
             .doOnSuccess {
+                val isLatestAlbumRated = oagRepository.isLatestAlbumRated()
 
-            AlbumCoverWidget().updateAll(appContext)
-
-                result = Result.success()
-            }
-            .doOnFailure { _, _ ->
-                result = Result.retry()
+                if (isLatestAlbumRated) {
+                    AlbumCoverWidget().updateAll(appContext)
+                    result = Result.success()
+                } else {
+                    result = Result.retry()
+                }
             }
 
         return result ?: Result.failure()
     }
 
     companion object {
-        const val retryDataKey = "RetryDataKey"
-        const val projectIdKey = "ProjectIdKey"
-        const val maxRetries = 10
-        fun enqueueBurstUpdate(
-            context: Context,
-            retryNumber: Int = 0,
+        const val PROJECT_ID_KEY = "ProjectIdKey"
+        const val MAX_RETRIES = 10
+        const val BACKOFF_SECONDS_DELAY = 30L
+
+        private fun enqueueBurstUpdate(
             projectId: String,
-        ) {
-            val burstWorker = OneTimeWorkRequestBuilder<BurstUpdateWorker>()
+        ) = OneTimeWorkRequestBuilder<BurstUpdateWorker>()
                 .setExpedited(RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                .addTag("InitialBurstUpdateWorker_$retryNumber")
+            .addTag("BurstUpdateWorkerTag")
                 .setInputData(
                     workDataOf(
-                        retryDataKey to retryNumber,
-                        projectIdKey to projectId,
+                        PROJECT_ID_KEY to projectId,
                     )
                 )
                 .setConstraints(
@@ -76,11 +73,19 @@ class BurstUpdateWorker @AssistedInject constructor(
                         .setRequiredNetworkType(NetworkType.CONNECTED)
                         .build()
                 )
-                .setBackoffCriteria(BackoffPolicy.LINEAR, 30, TimeUnit.SECONDS)
+            .setBackoffCriteria(BackoffPolicy.LINEAR, BACKOFF_SECONDS_DELAY, TimeUnit.SECONDS)
                 .build()
 
-
-            WorkManager.getInstance(context).enqueue(burstWorker)
+        fun enqueueUnique(
+            context: Context,
+            projectId: String,
+        ) {
+            WorkManager.getInstance(context)
+                .enqueueUniqueWork(
+                    "BurstUpdateWorker",
+                    ExistingWorkPolicy.KEEP,
+                    enqueueBurstUpdate(projectId)
+                )
         }
     }
 }

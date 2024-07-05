@@ -8,7 +8,7 @@ import java.time.Instant
 data class RatingEntity(
     @PrimaryKey
     val albumSlug: String,
-    val rating: String,
+    val rating: String?,
     val review: String,
     val generatedAt: Instant,
     val globalRating: Double,

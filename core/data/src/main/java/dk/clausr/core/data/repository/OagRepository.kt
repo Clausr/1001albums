@@ -19,4 +19,5 @@ interface OagRepository {
     suspend fun setProject(projectId: String)
     suspend fun updateProject(projectId: String): Result<Project>
     suspend fun setPreferredPlatform(platform: StreamingPlatform)
+    suspend fun isLatestAlbumRated(): Boolean
 }

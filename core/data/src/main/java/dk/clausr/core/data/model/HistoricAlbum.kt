@@ -14,14 +14,14 @@ fun NetworkHistoricAlbum.asExternalModel(): HistoricAlbum = HistoricAlbum(
     globalRating = globalRating
 )
 
-fun NetworkHistoricAlbum.toRatingEntity(): RatingEntity = RatingEntity(
-    albumSlug = album.slug,
-    rating = rating ?: "did-not-listen",
-    review = review,
-    generatedAt = generatedAt,
-    globalRating = globalRating,
-)
-
+fun NetworkHistoricAlbum.toRatingEntity(): RatingEntity =
+    RatingEntity(
+        albumSlug = album.slug,
+        rating = rating,
+        review = review,
+        generatedAt = generatedAt,
+        globalRating = globalRating,
+    )
 
 fun RatingEntity.toHistoricAlbum(album: Album): HistoricAlbum = HistoricAlbum(
     album = album,
@@ -32,7 +32,7 @@ fun RatingEntity.toHistoricAlbum(album: Album): HistoricAlbum = HistoricAlbum(
 )
 
 private fun String?.mapToRating(): Rating = when (this) {
-    null -> Rating.Unrated
     "did-not-listen" -> Rating.DidNotListen
+    null -> Rating.Unrated
     else -> Rating.Rated(this.toInt())
 }

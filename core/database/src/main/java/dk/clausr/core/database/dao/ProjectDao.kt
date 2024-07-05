@@ -13,4 +13,7 @@ interface ProjectDao {
 
     @Query(value = "SELECT * FROM project")
     fun getProject(): Flow<ProjectEntity?>
+
+    @Query("DELETE FROM project")
+    suspend fun clearTable()
 }

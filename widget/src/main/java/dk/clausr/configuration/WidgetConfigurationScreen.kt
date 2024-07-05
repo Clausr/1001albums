@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -145,6 +146,7 @@ fun WidgetConfigurationScreen(
                 label = { Text(stringResource(id = R.string.config_project_input_label)) },
                 singleLine = true,
                 value = projectId,
+                keyboardActions = KeyboardActions(onDone = { onSetProjectId(projectId) }),
                 onValueChange = { projectId = it },
                 trailingIcon = {
                     AnimatedVisibility(
