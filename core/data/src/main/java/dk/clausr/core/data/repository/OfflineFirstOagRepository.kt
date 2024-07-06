@@ -176,15 +176,20 @@ class OfflineFirstOagRepository @Inject constructor(
     ) {
         Timber.d("Update widget data")
         widgetDataStore.updateData { _ ->
-            val lastUnratedAlbum =
-                historicAlbums.lastOrNull().takeIf { it?.rating == Rating.Unrated }
+            // Find the index of the latest rated album
+            val lastRatedIndex = historicAlbums.indexOfLast { it.rating is Rating.Rated }
+            // Find the first item without a rating after the last rated
+            val firstUnratedAlbum =
+                historicAlbums.drop(lastRatedIndex + 1).firstOrNull { it.rating is Rating.Unrated }
 
-            val albumToUse = lastUnratedAlbum?.album ?: currentAlbum
+            Timber.d("First unrated: ${firstUnratedAlbum?.album?.name}")
+
+            val albumToUse = firstUnratedAlbum?.album ?: currentAlbum
 
             SerializedWidgetState.Success(
                 data = AlbumWidgetData(
                     coverUrl = albumToUse.imageUrl,
-                    newAvailable = lastUnratedAlbum != null,
+                    newAvailable = firstUnratedAlbum != null,
                     wikiLink = albumToUse.wikipediaUrl,
                     streamingServices = StreamingServices.from(albumToUse),
                 ),

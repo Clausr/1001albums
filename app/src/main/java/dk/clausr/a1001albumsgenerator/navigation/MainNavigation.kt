@@ -4,10 +4,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import dk.clausr.WidgetView
 import dk.clausr.configuration.WidgetConfigurationRoute
 import dk.clausr.feature.overview.OverviewRoute
-import dk.clausr.widget.AlbumCoverWidget
 
 object MainDirections {
     private const val PREFIX = "main"
@@ -27,7 +25,6 @@ fun NavGraphBuilder.mainNavigationGraph(
     composable(route = MainDirections.ROUTES.HOME) {
         OverviewRoute(
             modifier = Modifier,
-            widgetView = { WidgetView(widget = AlbumCoverWidget()) },
             onConfigureWidget = {
                 navHostController.navigate(MainDirections.ROUTES.WIDGET_CONFIGURATION)
             }

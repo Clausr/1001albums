@@ -56,14 +56,12 @@ import java.time.Instant
 @Composable
 fun OverviewRoute(
     modifier: Modifier = Modifier,
-    widgetView: @Composable () -> Unit = {},
     onConfigureWidget: () -> Unit,
     viewModel: OverviewViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     OverviewScreen(
-        widgetView = widgetView,
         modifier = modifier,
         state = uiState,
         onConfigureWidget = onConfigureWidget,
@@ -75,7 +73,6 @@ internal fun OverviewScreen(
     state: OverviewUiState,
     onConfigureWidget: () -> Unit,
     modifier: Modifier = Modifier,
-    widgetView: @Composable () -> Unit = {},
 ) {
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),

@@ -11,6 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import androidx.glance.Button
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
@@ -27,9 +28,12 @@ import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.Column
 import androidx.glance.layout.Row
+import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.padding
+import androidx.glance.layout.size
+import androidx.glance.layout.width
 import androidx.glance.state.GlanceStateDefinition
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
@@ -44,6 +48,7 @@ import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectUrl
+import dk.clausr.extensions.openUrlAction
 import dk.clausr.extensions.openWithPrefilledRating
 import dk.clausr.worker.BurstUpdateWorker
 import dk.clausr.worker.SimplifiedWidgetWorker
@@ -153,14 +158,13 @@ private fun ShowAlbumCover(
             },
         contentAlignment = Alignment.BottomCenter,
     ) {
-
         AlbumCover(
             modifier = GlanceModifier.fillMaxSize(),
             coverUrl = state.data.coverUrl
         )
 
         if (state.data.newAvailable) {
-            RatingNudge(projectId)
+            RatingNudge(projectId, projectUrl = state.projectUrl ?: "")
         }
 
         if (showLinks) {
@@ -170,7 +174,6 @@ private fun ShowAlbumCover(
                 preferredStreamingPlatform = state.data.preferredStreamingPlatform,
                 projectUrl = state.projectUrl ?: "",
                 onForceUpdateWidget = {
-                    Timber.d("Force update widget: ")
                     SimplifiedWidgetWorker.enqueueUnique(context)
                 }
             )
@@ -181,6 +184,7 @@ private fun ShowAlbumCover(
 @Composable
 private fun RatingNudge(
     projectId: String,
+    projectUrl: String,
 ) {
     val context = LocalContext.current
 
@@ -210,9 +214,11 @@ private fun RatingNudge(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             for (i in 1..5) {
+                if (i != 1) Spacer(GlanceModifier.width(8.dp))
                 val icon =
                     if (i == 1) R.drawable.baseline_star_24 else R.drawable.baseline_star_border_24
                 CircleIconButton(
+                    modifier = GlanceModifier.size(36.dp),
                     imageProvider = ImageProvider(icon),
                     contentDescription = null,
                     onClick = {
@@ -222,6 +228,12 @@ private fun RatingNudge(
                     },
                 )
             }
+        }
+        Row(
+            GlanceModifier.fillMaxWidth().padding(top = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Button(text = "Did not listen", onClick = openUrlAction(projectUrl))
         }
     }
 }
