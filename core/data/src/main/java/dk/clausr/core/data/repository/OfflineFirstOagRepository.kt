@@ -40,7 +40,6 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.time.measureTimedValue
 
 @Suppress("LongParameterList")
 @Singleton
@@ -64,26 +63,23 @@ class OfflineFirstOagRepository @Inject constructor(
 
     override val project: Flow<Project?> =
         combine(projectDao.getProject(), albumDao.getAlbums()) { project, albums ->
-            val (value, time) = measureTimedValue {
 
-                val history = albums.map { it.asExternalModel() }
-                val ratings = ratingDao.getRatingByAlbumSlugs(albums.map { it.slug })
+            val history = albums.map { it.asExternalModel() }
+            val ratings = ratingDao.getRatingByAlbumSlugs(albums.map { it.slug })
 
-                val historicAlbums = ratings.map { rating ->
-                    rating.toHistoricAlbum(history.first { it.slug == rating.albumSlug })
-                }
-
-                project?.asExternalModel(historicAlbums.sortedByDescending { it.generatedAt })
+            val historicAlbums = ratings.map { rating ->
+                rating.toHistoricAlbum(history.first { it.slug == rating.albumSlug })
             }
-            Timber.d("Time of getting project.. $time")
-            value
+
+            project?.asExternalModel(historicAlbums.sortedByDescending { it.generatedAt })
         }
-//        .map { it?.asExternalModel() }
 
     override val currentAlbum: Flow<Album?> = project
         .mapNotNull { project ->
-            project?.currentAlbumSlug?.let { currentSlug ->
-                albumDao.getAlbumBySlug(currentSlug)?.asExternalModel()
+            project?.historicAlbums?.lastRevealedUnratedAlbum()?.album
+                ?: project?.currentAlbumSlug?.let { currentSlug ->
+                    albumDao.getAlbumBySlug(currentSlug)?.asExternalModel()
+
             }
         }
 
@@ -177,7 +173,7 @@ class OfflineFirstOagRepository @Inject constructor(
         Timber.d("Update widget data")
         widgetDataStore.updateData { _ ->
             val lastRevealedUnratedAlbum = historicAlbums.lastRevealedUnratedAlbum()
-            val albumToUse = lastRevealedUnratedAlbum ?: currentAlbum
+            val albumToUse = lastRevealedUnratedAlbum?.album ?: currentAlbum
 
             SerializedWidgetState.Success(
                 data = AlbumWidgetData(
@@ -196,11 +192,9 @@ class OfflineFirstOagRepository @Inject constructor(
      * currentAlbum is always displayed UNLESS:
      * isRevealed == true AND rating == unrated
      */
-    private fun List<HistoricAlbum>.lastRevealedUnratedAlbum(): Album? {
+    private fun List<HistoricAlbum>.lastRevealedUnratedAlbum(): HistoricAlbum? {
         return this
-            .reversed()
-            .firstOrNull { it.isRevealed && it.rating !is Rating.Rated }
-            ?.album
+            .reversed().firstOrNull { it.isRevealed && it.rating is Rating.Unrated }
     }
 
     override suspend fun setPreferredPlatform(platform: StreamingPlatform) {

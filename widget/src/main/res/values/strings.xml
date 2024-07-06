@@ -11,6 +11,7 @@
 
     <string name="config_project_input_label">Project name (username)</string>
     <string name="config_set_project_button_title">Set project</string>
+    <string name="config_clear_project_button_title">Clear project</string>
     <string name="config_set_project_done_button_title">Project set</string>
     <string name="configuration_todays_album_title">Todays album</string>
     <string name="configuration_new_album_available">New album available.\n\nRate this album to get the latest cover</string>

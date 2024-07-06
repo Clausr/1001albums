@@ -1,10 +1,6 @@
 package dk.clausr.configuration
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +16,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -42,6 +39,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -99,6 +98,9 @@ fun WidgetConfigurationScreen(
     selectPreferredStreamingPlatform: (StreamingPlatform) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val scope = rememberCoroutineScope()
+    val focusRequester = remember { FocusRequester() }
     var projectId by remember(widgetState) {
         mutableStateOf(
             widgetState.projectId.orEmpty()
@@ -112,8 +114,8 @@ fun WidgetConfigurationScreen(
             )
         )
     }
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val scope = rememberCoroutineScope()
+
+
     Scaffold(
         modifier = modifier,
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -142,32 +144,48 @@ fun WidgetConfigurationScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             TextField(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
                 label = { Text(stringResource(id = R.string.config_project_input_label)) },
                 singleLine = true,
                 value = projectId,
                 keyboardActions = KeyboardActions(onDone = { onSetProjectId(projectId) }),
                 onValueChange = { projectId = it },
                 trailingIcon = {
-                    AnimatedVisibility(
-                        visible = setProjectButtonEnabled,
-                        enter = scaleIn() + fadeIn(),
-                        exit = scaleOut() + fadeOut()
-                    ) {
-                        IconButton(
-                            onClick = {
-                                onSetProjectId(projectId)
-                                scope.launch {
-                                    keyboardController?.hide()
-                                }
-                            },
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = stringResource(
-                                    id = R.string.config_set_project_button_title
+                    AnimatedContent(
+                        targetState = setProjectButtonEnabled,
+                    ) { setProjectEnabled ->
+                        if (setProjectEnabled) {
+                            IconButton(
+                                onClick = {
+                                    onSetProjectId(projectId)
+                                    scope.launch {
+                                        keyboardController?.hide()
+                                    }
+                                },
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = stringResource(
+                                        id = R.string.config_set_project_button_title
+                                    )
                                 )
-                            )
+                            }
+                        } else {
+                            IconButton(
+                                onClick = {
+                                    projectId = ""
+                                    focusRequester.requestFocus()
+                                },
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = stringResource(
+                                        id = R.string.config_clear_project_button_title
+                                    )
+                                )
+                            }
                         }
                     }
                 }
