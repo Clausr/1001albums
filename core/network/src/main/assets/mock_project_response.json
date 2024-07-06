@@ -199,6 +199,7 @@
       "review": "",
       "generatedAt": "2024-03-09T04:15:08.013Z",
       "globalRating": 3.02,
+      "rating": 2,
       "revealedAlbum": true
     },
     {
@@ -248,6 +249,7 @@
       "review": "",
       "generatedAt": "2024-03-10T04:15:06.977Z",
       "globalRating": 2.98,
+      "rating": 5,
       "revealedAlbum": true
     }
   ],
