@@ -10,4 +10,5 @@ data class RatingEntity(
     val review: String,
     val generatedAt: Instant,
     val globalRating: Double,
+    val isRevealed: Boolean,
 )

@@ -294,7 +294,8 @@ private fun OverviewPreview() {
                             rating = Rating.Rated(5),
                             review = "Fed",
                             generatedAt = Instant.now(),
-                            globalRating = 5.0
+                            globalRating = 5.0,
+                            isRevealed = true,
                         ),
                     ),
                 ),

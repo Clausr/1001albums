@@ -99,16 +99,16 @@ class OfflineFirstOagRepository @Inject constructor(
         }
 
 
-    override suspend fun setProject(projectId: String) = withContext(ioDispatcher) {
-        Timber.d("Set new project $projectId")
-        widgetDataStore.updateData { SerializedWidgetState.Loading(projectId) }
-        projectDao.clearTable()
-        albumDao.clearTable()
-        ratingDao.clearTable()
+    override suspend fun setProject(projectId: String) {
+        withContext(ioDispatcher) {
+            Timber.d("Set new project $projectId")
+            widgetDataStore.updateData { SerializedWidgetState.Loading(projectId) }
+            projectDao.clearTable()
+            albumDao.clearTable()
+            ratingDao.clearTable()
+        }
 
         getAndUpdateProject(projectId)
-
-        Unit
     }
 
     private suspend fun putNetworkProjectIntoDatabase(networkProject: NetworkProject) {
@@ -176,26 +176,31 @@ class OfflineFirstOagRepository @Inject constructor(
     ) {
         Timber.d("Update widget data")
         widgetDataStore.updateData { _ ->
-            // Find the index of the latest rated album
-            val lastRatedIndex = historicAlbums.indexOfLast { it.rating is Rating.Rated }
-            // Find the first item without a rating after the last rated
-            val firstUnratedAlbum =
-                historicAlbums.drop(lastRatedIndex + 1).firstOrNull { it.rating is Rating.Unrated }
-
-            Timber.d("First unrated: ${firstUnratedAlbum?.album?.name}")
-
-            val albumToUse = firstUnratedAlbum?.album ?: currentAlbum
+            val lastRevealedUnratedAlbum = historicAlbums.lastRevealedUnratedAlbum()
+            val albumToUse = lastRevealedUnratedAlbum ?: currentAlbum
 
             SerializedWidgetState.Success(
                 data = AlbumWidgetData(
+                    newAvailable = lastRevealedUnratedAlbum != null,
                     coverUrl = albumToUse.imageUrl,
-                    newAvailable = firstUnratedAlbum != null,
                     wikiLink = albumToUse.wikipediaUrl,
                     streamingServices = StreamingServices.from(albumToUse),
                 ),
                 currentProjectId = project.name
             )
         }
+    }
+
+    /**
+     * Album to show is defined as follow:
+     * currentAlbum is always displayed UNLESS:
+     * isRevealed == true AND rating == unrated
+     */
+    private fun List<HistoricAlbum>.lastRevealedUnratedAlbum(): Album? {
+        return this
+            .reversed()
+            .firstOrNull { it.isRevealed && it.rating !is Rating.Rated }
+            ?.album
     }
 
     override suspend fun setPreferredPlatform(platform: StreamingPlatform) {

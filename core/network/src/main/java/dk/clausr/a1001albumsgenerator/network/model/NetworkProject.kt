@@ -22,6 +22,8 @@ data class NetworkHistoricAlbum(
     val review: String,
     @Contextual val generatedAt: Instant,
     val globalRating: Double,
+    @SerialName("revealedAlbum")
+    val isRevealed: Boolean,
 )
 
 @Serializable

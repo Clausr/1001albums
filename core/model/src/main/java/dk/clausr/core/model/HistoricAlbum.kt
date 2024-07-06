@@ -8,6 +8,7 @@ data class HistoricAlbum(
     val review: String,
     val generatedAt: Instant,
     val globalRating: Double,
+    val isRevealed: Boolean,
 )
 
 sealed class Rating {

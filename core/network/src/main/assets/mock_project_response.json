@@ -92,7 +92,8 @@
       "rating": 4,
       "review": "Lidt ligesom dem anden plade i fængslet. Det er sgu bare noget musik der er nemt at høre.",
       "generatedAt": "2024-03-07T04:15:07.159Z",
-      "globalRating": 3.97
+      "globalRating": 3.97,
+      "albumRevealed": true
     },
     {
       "album": {
@@ -144,7 +145,8 @@
       "rating": 3,
       "review": "Den var ganske fin! ",
       "generatedAt": "2024-03-08T04:15:08.087Z",
-      "globalRating": 3.39
+      "globalRating": 3.39,
+      "albumRevealed": true
     },
     {
       "album": {
@@ -196,7 +198,8 @@
       },
       "review": "",
       "generatedAt": "2024-03-09T04:15:08.013Z",
-      "globalRating": 3.02
+      "globalRating": 3.02,
+      "albumRevealed": true
     },
     {
       "album": {
@@ -244,7 +247,8 @@
       },
       "review": "",
       "generatedAt": "2024-03-10T04:15:06.977Z",
-      "globalRating": 2.98
+      "globalRating": 2.98,
+      "albumRevealed": true
     }
   ],
   "updateFrequency": "dailyWithWeekends",

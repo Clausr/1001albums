@@ -11,7 +11,8 @@ fun NetworkHistoricAlbum.asExternalModel(): HistoricAlbum = HistoricAlbum(
     rating = rating.mapToRating(),
     review = review,
     generatedAt = generatedAt,
-    globalRating = globalRating
+    globalRating = globalRating,
+    isRevealed = isRevealed,
 )
 
 fun NetworkHistoricAlbum.toRatingEntity(): RatingEntity =
@@ -21,6 +22,7 @@ fun NetworkHistoricAlbum.toRatingEntity(): RatingEntity =
         review = review,
         generatedAt = generatedAt,
         globalRating = globalRating,
+        isRevealed = isRevealed,
     )
 
 fun RatingEntity.toHistoricAlbum(album: Album): HistoricAlbum = HistoricAlbum(
@@ -29,6 +31,7 @@ fun RatingEntity.toHistoricAlbum(album: Album): HistoricAlbum = HistoricAlbum(
     review = review,
     generatedAt = generatedAt,
     globalRating = globalRating,
+    isRevealed = isRevealed,
 )
 
 private fun String?.mapToRating(): Rating = when (this) {
