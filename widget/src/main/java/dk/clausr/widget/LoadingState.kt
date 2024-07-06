@@ -19,7 +19,10 @@ import dk.clausr.widget.R.string
 
 @Composable
 fun LoadingState(onClick: () -> Unit = {}) {
-    Column(modifier = GlanceModifier.background(GlanceTheme.colors.background).clickable {
+    Column(
+        modifier = GlanceModifier
+            .background(GlanceTheme.colors.background)
+            .clickable {
         onClick()
     }) {
         CircularProgressIndicator()

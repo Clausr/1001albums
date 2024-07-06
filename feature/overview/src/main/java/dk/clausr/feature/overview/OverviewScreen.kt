@@ -1,15 +1,16 @@
 package dk.clausr.feature.overview
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
@@ -69,7 +70,6 @@ fun OverviewRoute(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun OverviewScreen(
     state: OverviewUiState,
@@ -78,6 +78,7 @@ internal fun OverviewScreen(
     widgetView: @Composable () -> Unit = {},
 ) {
     Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         modifier = modifier,
         topBar = {
             TopAppBar(title = { Text(text = "1001 albums") },
@@ -117,7 +118,7 @@ internal fun OverviewScreen(
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
-                        contentPadding = PaddingValues(horizontal = 16.dp),
+                        contentPadding = WindowInsets.navigationBars.asPaddingValues(),
                     ) {
                         item {
                             state.currentAlbum?.let {
@@ -157,7 +158,9 @@ internal fun OverviewScreen(
                         if (state.project.historicAlbums.isNotEmpty()) {
                             item {
                                 Row(
-                                    modifier = Modifier.fillMaxWidth(),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
@@ -183,7 +186,10 @@ internal fun OverviewScreen(
                         items(
                             items = history,
                             key = { it.generatedAt }) { historicAlbum ->
-                            HistoricAlbumCard(historicAlbum)
+                            HistoricAlbumCard(
+                                historicAlbum,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
                         }
                     }
                 }
@@ -195,9 +201,13 @@ internal fun OverviewScreen(
 }
 
 @Composable
-private fun HistoricAlbumCard(historicAlbum: HistoricAlbum) {
+private fun HistoricAlbumCard(
+    historicAlbum: HistoricAlbum,
+    modifier: Modifier = Modifier,
+) {
     val album = historicAlbum.album
     Card(
+        modifier = modifier,
         shape = RoundedCornerShape(
             topStart = 0.dp,
             bottomStart = 0.dp,

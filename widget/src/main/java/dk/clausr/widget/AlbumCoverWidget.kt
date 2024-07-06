@@ -96,7 +96,7 @@ fun Content(
     ) {
         when (state) {
             is SerializedWidgetState.Loading -> {
-                LoadingState()
+//                LoadingState()
             }
 
             is SerializedWidgetState.Success -> {

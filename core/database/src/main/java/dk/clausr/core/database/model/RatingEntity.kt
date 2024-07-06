@@ -1,12 +1,10 @@
 package dk.clausr.core.database.model
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 import java.time.Instant
 
-@Entity(tableName = "ratings")
+@Entity(tableName = "ratings", primaryKeys = ["albumSlug", "generatedAt"])
 data class RatingEntity(
-    @PrimaryKey
     val albumSlug: String,
     val rating: String?,
     val review: String,
