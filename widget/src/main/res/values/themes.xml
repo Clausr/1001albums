@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Allows us to override platform level specific attributes in their
+     respective values-vXX folder. -->
+    <style name="Platform.Theme.Oag" parent="Theme.Material3.DayNight">
+        <item name="android:statusBarColor">#4D000000</item>
+    </style>
+    <!-- Base application theme. -->
+    <style name="Theme.Oag" parent="Platform.Theme.Oag"></style>
+
+    <style name="Theme.Oag.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+</resources>

@@ -9,6 +9,7 @@ import dk.clausr.core.model.Project
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,13 +22,14 @@ class OverviewViewModel @Inject constructor(
         oagRepository.currentAlbum,
         oagRepository.historicAlbums,
     ) { project, currentAlbum, albums ->
+        Timber.d("UiState: ${project?.name}: ${currentAlbum?.name} - ${albums?.size}")
         if (project != null) {
             OverviewUiState.Success(
                 project = project,
                 currentAlbum = currentAlbum,
             )
         } else {
-            OverviewUiState.Error
+            OverviewUiState.NoProject
         }
     }
         .stateIn(
@@ -44,5 +46,6 @@ sealed interface OverviewUiState {
         val currentAlbum: Album?,
     ) : OverviewUiState
 
+    data object NoProject : OverviewUiState
     data object Error : OverviewUiState
 }

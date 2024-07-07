@@ -28,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,6 +52,7 @@ import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.Rating
 import dk.clausr.core.model.UpdateFrequency
+import timber.log.Timber
 import java.time.Instant
 
 @Composable
@@ -60,6 +62,13 @@ fun OverviewRoute(
     viewModel: OverviewViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    Timber.d("Overview route running -- $uiState")
+    LaunchedEffect(uiState) {
+        if (uiState is OverviewUiState.NoProject) {
+            onConfigureWidget()
+        }
+    }
 
     OverviewScreen(
         modifier = modifier,
@@ -78,7 +87,8 @@ internal fun OverviewScreen(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         modifier = modifier,
         topBar = {
-            TopAppBar(title = { Text(text = "1001 albums") },
+            TopAppBar(
+                title = { Text(text = "Your project") },
                 actions = {
                     IconButton(onClick = onConfigureWidget) {
                         Icon(
@@ -92,6 +102,9 @@ internal fun OverviewScreen(
         Column(modifier = Modifier.padding(innerPadding)) {
             when (state) {
                 OverviewUiState.Error -> Text("Error")
+                OverviewUiState.NoProject -> {
+                    Text("No project yet mate")
+                }
                 OverviewUiState.Loading -> Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center

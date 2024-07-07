@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -17,6 +18,7 @@ import dk.clausr.a1001albumsgenerator.ui.OagApp
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -24,6 +26,7 @@ class MainActivity : ComponentActivity() {
     private val viewModel: MainActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
@@ -37,9 +40,17 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        splashScreen.setKeepOnScreenCondition {
+            when (uiState) {
+                MainViewState.Loading -> true
+                else -> false
+            }
+        }
+
         setContent {
             val navHostController = rememberNavController()
 
+            Timber.d("UiState: $uiState")
             OagApp(
                 uiState = uiState,
                 navHostController = navHostController,

@@ -6,7 +6,8 @@
 
         <activity
             android:name="dk.clausr.configuration.AlbumWidgetConfigurationActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.Oag.NoActionBar">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
