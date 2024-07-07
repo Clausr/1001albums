@@ -1,10 +1,6 @@
 package dk.clausr.a1001albumsgenerator.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -16,25 +12,14 @@ fun OagNavHost(
     uiState: MainViewState,
     navHostController: NavHostController,
     modifier: Modifier = Modifier,
-    startDestination: String = MainDirections.home(),
 ) {
-    val dest: String? by remember(uiState) {
-        mutableStateOf(
-            when (uiState) {
-                is MainViewState.HasProject -> MainDirections.home()
-                MainViewState.Loading -> null
-                MainViewState.NoProject -> MainDirections.widgetConfiguration()
-            }
-        )
-    }
-
-    LaunchedEffect(dest) {
-//        Timber.d("Dest changed $dest")
-        dest?.let {
-            navHostController.popBackStack(MainDirections.home(), true)
-            navHostController.navigate(it)
+    val startDestination =
+        if (uiState is MainViewState.NoProject) {
+            MainDirections.widgetConfiguration()
+        } else {
+            MainDirections.home()
         }
-    }
+
 
     NavHost(
         navController = navHostController,

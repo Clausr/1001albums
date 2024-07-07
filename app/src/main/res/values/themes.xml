@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <style name="Theme._1001AlbumsGenerator" parent="android:Theme.Material.Light.NoActionBar" />
-
     <!-- Allows us to override platform level specific attributes in their
      respective values-vXX folder. -->
-    <style name="Platform.Theme.Hvordu" parent="Theme.Material3.DayNight">
+    <style name="Platform.Theme.Oag" parent="Theme.Material3.DayNight">
         <!--        <item name="android:statusBarColor">@color/md_theme_light_error</item>-->
         <item name="android:statusBarColor">@color/black30</item>
     </style>
     <!-- Base application theme. -->
-    <style name="Theme.Hvordu" parent="Platform.Theme.Hvordu">
+    <style name="Theme.Oag" parent="Platform.Theme.Oag">
         <item name="colorPrimary">@color/md_theme_light_primary</item>
         <item name="colorAccent">@color/md_theme_light_tertiary</item>
         <item name="colorPrimaryDark">@color/white</item>
     </style>
 
-    <style name="Theme.Hvordu.NoActionBar">
+    <style name="Theme.Oag.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>

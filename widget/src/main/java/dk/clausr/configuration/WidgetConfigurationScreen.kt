@@ -17,7 +17,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -63,7 +62,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun WidgetConfigurationRoute(
     modifier: Modifier = Modifier,
-    onUpClicked: () -> Unit,
     onProjectIdSet: () -> Unit,
     onApplyChanges: () -> Unit,
     viewModel: ConfigurationViewModel = hiltViewModel()
@@ -77,7 +75,6 @@ fun WidgetConfigurationRoute(
             viewModel.setProjectId(it)
             onProjectIdSet()
         },
-        onUpClicked = onUpClicked,
         onApplyChanges = {
             viewModel.updateWidgets()
             onApplyChanges()
@@ -92,7 +89,6 @@ fun WidgetConfigurationRoute(
 @Composable
 fun WidgetConfigurationScreen(
     widgetState: SerializedWidgetState,
-    onUpClicked: () -> Unit,
     onSetProjectId: (String) -> Unit,
     onApplyChanges: () -> Unit,
     selectPreferredStreamingPlatform: (StreamingPlatform) -> Unit,
@@ -122,14 +118,6 @@ fun WidgetConfigurationScreen(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(id = R.string.config_toolbar_title)) },
-                navigationIcon = {
-                    IconButton(onClick = onUpClicked) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Close"
-                        )
-                    }
-                }
             )
         },
     ) { padding ->

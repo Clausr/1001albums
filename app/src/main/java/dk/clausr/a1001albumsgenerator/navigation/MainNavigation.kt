@@ -33,8 +33,14 @@ fun NavGraphBuilder.mainNavigationGraph(
 
     composable(route = MainDirections.ROUTES.WIDGET_CONFIGURATION) {
         WidgetConfigurationRoute(
-            onUpClicked = { navHostController.navigateUp() },
-            onProjectIdSet = { /*TODO*/ },
-            onApplyChanges = { navHostController.navigateUp() })
+            onProjectIdSet = { },
+            onApplyChanges = {
+                navHostController.navigate(MainDirections.home()) {
+                    this.popUpTo(MainDirections.ROUTES.WIDGET_CONFIGURATION) {
+                        inclusive = true
+                    }
+                }
+                navHostController.navigateUp()
+            })
     }
 }
