@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,13 +30,14 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -47,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import dk.clausr.core.model.Album
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Project
@@ -125,6 +127,8 @@ internal fun OverviewScreen(
                         })
                     }
 
+                    val expandedItems = remember { mutableStateListOf<String>() }
+
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -196,9 +200,18 @@ internal fun OverviewScreen(
                         items(
                             items = history,
                             key = { it.generatedAt }) { historicAlbum ->
+                            val slug = historicAlbum.album.slug
                             HistoricAlbumCard(
-                                historicAlbum,
-                                modifier = Modifier.padding(horizontal = 16.dp)
+                                historicAlbum = historicAlbum,
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                expanded = slug in expandedItems,
+                                onClick = {
+                                    if (expandedItems.contains(slug)) {
+                                        expandedItems.remove(slug)
+                                    } else {
+                                        expandedItems.add(slug)
+                                    }
+                                }
                             )
                         }
                     }
@@ -214,10 +227,13 @@ internal fun OverviewScreen(
 private fun HistoricAlbumCard(
     historicAlbum: HistoricAlbum,
     modifier: Modifier = Modifier,
+    expanded: Boolean = false,
+    onClick: () -> Unit,
 ) {
     val album = historicAlbum.album
     Card(
         modifier = modifier,
+//        onClick = onClick,
         shape = RoundedCornerShape(
             topStart = 0.dp,
             bottomStart = 0.dp,
@@ -225,15 +241,16 @@ private fun HistoricAlbumCard(
             topEnd = 8.dp
         ),
     ) {
+        // TODO Either shared transition or something else fancyish
+
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
         ) {
             AsyncImage(
-                modifier = Modifier
-                    .widthIn(max = 100.dp)
-                    .shadow(elevation = 4.dp),
-                model = album.imageUrl,
+                modifier = Modifier.size(100.dp),
+                model = ImageRequest.Builder(
+                    LocalContext.current
+                ).data(album.imageUrl).crossfade(true).build(),
                 contentDescription = "cover",
                 contentScale = ContentScale.FillWidth,
             )
@@ -244,15 +261,29 @@ private fun HistoricAlbumCard(
             ) {
                 Text(
                     text = album.artist,
+                )
+                Text(
+                    text = album.name,
                     style = MaterialTheme.typography.labelLarge
                 )
-                Text(text = album.name)
                 Text(
                     text = historicAlbum.review,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.bodySmall.copy(fontStyle = FontStyle.Italic)
                 )
+
+//                AnimatedContent(targetState = expanded) { isExpanded ->
+//                    if (isExpanded) {
+//                        Row(Modifier.fillMaxWidth()) {
+//                            IconButton(onClick = { /*TODO*/ }) {
+//
+//                            }
+//                        }
+//                    } else {
+//
+//                    }
+//                }
             }
             val rating = when (val rating = historicAlbum.rating) {
                 is Rating.Rated -> rating.rating.toString()
@@ -260,12 +291,14 @@ private fun HistoricAlbumCard(
                 Rating.DidNotListen -> "DNL"
             }
             Text(
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .align(Alignment.CenterVertically),
                 text = rating,
                 style = MaterialTheme.typography.headlineMedium
             )
-
         }
+
     }
 }
 
