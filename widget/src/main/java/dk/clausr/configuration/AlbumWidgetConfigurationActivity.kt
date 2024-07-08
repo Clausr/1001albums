@@ -34,7 +34,13 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
     private fun updateView() {
         setContent {
             WidgetConfigurationRoute(
-                onApplyChanges = { finish() },
+                onApplyChanges = {
+                    val resultValue = Intent().putExtra(
+                        AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId
+                    )
+                    setResult(RESULT_OK, resultValue)
+                    finish()
+                },
                 onProjectIdSet = {
                     val resultValue = Intent().putExtra(
                         AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId

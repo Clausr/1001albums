@@ -163,7 +163,7 @@ private fun ShowAlbumCover(
         )
 
         if (state.data.newAvailable) {
-            RatingNudge(projectId, projectUrl = state.projectUrl ?: "")
+            RatingNudge(projectId)
         }
 
         if (showLinks) {
@@ -183,7 +183,6 @@ private fun ShowAlbumCover(
 @Composable
 private fun RatingNudge(
     projectId: String,
-    projectUrl: String,
 ) {
     val context = LocalContext.current
 
@@ -257,5 +256,4 @@ class AlbumCoverWidgetReceiver : GlanceAppWidgetReceiver() {
         super.onDisabled(context)
         SimplifiedWidgetWorker.cancel(context)
     }
-
 }
