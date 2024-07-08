@@ -204,7 +204,6 @@ fun WidgetConfigurationScreen(
                                     .background(MaterialTheme.colorScheme.primaryContainer)
                                     .alpha(if (state.data.newAvailable) 0.25f else 1f),
                                 model = state.data.coverUrl,
-
                                 contentDescription = stringResource(id = R.string.album_cover_a11y)
                             )
                             if (state.data.newAvailable) {
