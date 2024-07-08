@@ -48,8 +48,7 @@ import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectUrl
-import dk.clausr.extensions.openUrlAction
-import dk.clausr.extensions.openWithPrefilledRating
+import dk.clausr.extensions.openProject
 import dk.clausr.worker.BurstUpdateWorker
 import dk.clausr.worker.SimplifiedWidgetWorker
 import kotlinx.coroutines.delay
@@ -213,16 +212,16 @@ private fun RatingNudge(
                 .padding(top = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            for (i in 1..5) {
-                if (i != 1) Spacer(GlanceModifier.width(8.dp))
+            for (stars in 1..5) {
+                if (stars != 1) Spacer(GlanceModifier.width(8.dp))
                 val icon =
-                    if (i == 1) R.drawable.baseline_star_24 else R.drawable.baseline_star_border_24
+                    if (stars == 1) R.drawable.baseline_star_24 else R.drawable.baseline_star_border_24
                 CircleIconButton(
                     modifier = GlanceModifier.size(36.dp),
                     imageProvider = ImageProvider(icon),
                     contentDescription = null,
                     onClick = {
-                        context.openWithPrefilledRating(projectId, i)
+                        context.openProject(projectId, stars)
                         // Start requesting for changes
                         BurstUpdateWorker.enqueueUnique(context, projectId = projectId)
                     },
@@ -233,7 +232,13 @@ private fun RatingNudge(
             GlanceModifier.fillMaxWidth().padding(top = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Button(text = "Did not listen", onClick = openUrlAction(projectUrl))
+            Button(
+                text = "Did not listen",
+                onClick = {
+                    context.openProject(projectId)
+                    // Start requesting for changes
+                    BurstUpdateWorker.enqueueUnique(context, projectId = projectId)
+                })
         }
     }
 }
