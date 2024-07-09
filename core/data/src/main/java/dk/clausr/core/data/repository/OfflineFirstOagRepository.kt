@@ -170,17 +170,18 @@ class OfflineFirstOagRepository @Inject constructor(
         currentAlbum: Album,
         historicAlbums: List<HistoricAlbum>,
     ) {
-        Timber.d("Update widget data")
-        widgetDataStore.updateData { _ ->
+        widgetDataStore.updateData { old ->
             val lastRevealedUnratedAlbum = historicAlbums.lastRevealedUnratedAlbum()
             val albumToUse = lastRevealedUnratedAlbum?.album ?: currentAlbum
-
+            val oldPreferredPlatform =
+                (old as? SerializedWidgetState.Success)?.data?.preferredStreamingPlatform
             SerializedWidgetState.Success(
                 data = AlbumWidgetData(
                     newAvailable = lastRevealedUnratedAlbum != null,
                     coverUrl = albumToUse.imageUrl,
                     wikiLink = albumToUse.wikipediaUrl,
                     streamingServices = StreamingServices.from(albumToUse),
+                    preferredStreamingPlatform = oldPreferredPlatform ?: StreamingPlatform.None
                 ),
                 currentProjectId = project.name
             )

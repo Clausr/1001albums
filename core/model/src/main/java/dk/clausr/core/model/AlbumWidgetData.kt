@@ -8,7 +8,7 @@ data class AlbumWidgetData(
     val newAvailable: Boolean,
     val wikiLink: String,
     val streamingServices: StreamingServices,
-    val preferredStreamingPlatform: StreamingPlatform = StreamingPlatform.Tidal,
+    val preferredStreamingPlatform: StreamingPlatform,
 )
 
 @Serializable
@@ -66,6 +66,7 @@ data class StreamingServices(val services: List<StreamingService>) {
 }
 
 enum class StreamingPlatform {
+    None,
     AmazonMusic,
     AppleMusic,
     Deezer,
@@ -79,6 +80,7 @@ enum class StreamingPlatform {
 data class StreamingService(val id: String, val platform: StreamingPlatform) {
     val streamingLink: String
         get() = when (platform) {
+            StreamingPlatform.None -> ""
             StreamingPlatform.Spotify -> "spotify:album:$id"
             StreamingPlatform.AppleMusic -> "https://music.apple.com/album/$id"
             StreamingPlatform.Tidal -> "https://tidal.com/browse/album/$id"

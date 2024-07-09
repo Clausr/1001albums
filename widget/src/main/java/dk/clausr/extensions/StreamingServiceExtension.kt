@@ -6,6 +6,7 @@ import dk.clausr.widget.R
 
 @DrawableRes
 fun StreamingPlatform.icon(): Int = when (this) {
+    StreamingPlatform.None -> R.drawable.heart_broken
     StreamingPlatform.AmazonMusic -> R.drawable.ic_amazon_music
     StreamingPlatform.AppleMusic -> R.drawable.ic_apple_music
     StreamingPlatform.Deezer -> R.drawable.ic_deezer_circle

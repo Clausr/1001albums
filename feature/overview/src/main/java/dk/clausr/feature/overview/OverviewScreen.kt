@@ -202,8 +202,8 @@ internal fun OverviewScreen(
                             key = { it.generatedAt }) { historicAlbum ->
                             val slug = historicAlbum.album.slug
                             HistoricAlbumCard(
-                                historicAlbum = historicAlbum,
                                 modifier = Modifier.padding(horizontal = 16.dp),
+                                historicAlbum = historicAlbum,
                                 expanded = slug in expandedItems,
                                 onClick = {
                                     if (expandedItems.contains(slug)) {
