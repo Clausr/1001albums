@@ -52,7 +52,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: release-artifacts
-          path: ${{ steps.releaseApk.outputs.apkfile }}
+          path: ${{ steps.releaseAab.outputs.aabfile }}
 
       - name: Upload Android Release to Play Store
         uses: r0adkll/upload-google-play@v1.1.3
