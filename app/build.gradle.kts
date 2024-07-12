@@ -10,7 +10,7 @@ plugins {
 
 val keystorePropertiesFile = rootProject.file("signing/secrets.properties")
 val keystoreProperties = Properties()
-keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+//keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
 fun getGitCommitCount(): Int {
     val process = Runtime.getRuntime().exec("git rev-list --count HEAD")
@@ -32,11 +32,17 @@ android {
     }
 
     signingConfigs {
+//        val keystoreProperties = Properties()
+//        val keystorePropertiesFile = file("../signing/secrets.properties")
+        if (keystorePropertiesFile.exists()) {
+            keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+        }
+
         create("release") {
             storeFile = rootProject.file("signing/Clausr.keystore")
-            storePassword = keystoreProperties["SIGNING_STORE_PASSWORD"] as String
-            keyAlias = keystoreProperties["GOOGLE_PLAY_SIGNING_KEY_ALIAS"] as String
-            keyPassword = keystoreProperties["SIGNING_KEY_PASSWORD"] as String
+            storePassword = getPropertyOrEnvNullable("SIGNING_STORE_PASSWORD", keystoreProperties)
+            keyAlias = getPropertyOrEnvNullable("GOOGLE_PLAY_SIGNING_KEY_ALIAS", keystoreProperties)
+            keyPassword = getPropertyOrEnvNullable("SIGNING_KEY_PASSWORD", keystoreProperties)
         }
     }
 
@@ -83,4 +89,15 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.hilt.work)
     debugImplementation(libs.androidx.compose.ui.tooling)
+}
+
+private fun getEnvNullable(variableName: String): String {
+    return System.getenv(variableName).takeIf { it.isNotEmpty() } ?: "\"\""
+}
+
+fun getPropertyOrEnvNullable(variableName: String, keystoreProperties: Properties): String {
+    val variable = keystoreProperties[variableName] as String?
+    val output = variable ?: getEnvNullable(variableName)
+
+    return output
 }

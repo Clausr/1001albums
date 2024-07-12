@@ -23,12 +23,6 @@ interface DataModule {
     fun bindsOagRepository(
         repo: OfflineFirstOagRepository
     ): OagRepository
-
-//    @Binds
-//    @Named("simplified")
-//    fun bindsSimplifiedDataDefinition(
-//        dataDefinition: AlbumWidgetDataDefinition
-//    ): GlanceStateDefinition<SerializedWidgetState>
 }
 
 @Module
