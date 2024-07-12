@@ -92,7 +92,7 @@ dependencies {
 }
 
 private fun getEnvNullable(variableName: String): String {
-    return System.getenv(variableName).takeIf { it.isNotEmpty() } ?: "\"\""
+    return System.getenv(variableName)?.takeIf { it.isNotEmpty() } ?: "\"\""
 }
 
 fun getPropertyOrEnvNullable(variableName: String, keystoreProperties: Properties): String {
