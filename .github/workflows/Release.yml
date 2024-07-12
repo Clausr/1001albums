@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - "*"
   workflow_dispatch:
   pull_request:
     branches:
@@ -38,9 +40,6 @@ jobs:
           CI_BUILDID: ${{ github.run_id }}
           CI_PULLREQUESTNUMBER: ${{ github.event.number }}
         run: scripts/version_code.sh
-
-      #      - name: Setup Android SDK
-      #        uses: android-actions/setup-android@v2.0.10
 
       # This will decode the keystore from base 64 text representation that we have stored in secrets
       # and generates and keystore file and gets stored in /android-app path

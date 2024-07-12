@@ -35,12 +35,8 @@ fun describe(): String {
         val hash = (project.properties["CI_SOURCEVERSION"] as String).take(6)
         val buildId = project.properties["CI_BUILDID"]
 
-        if (branch.endsWith("merge")) {
-            branch = "pullrequest-${project.properties["CI_PULLREQUESTNUMBER"]}"
-        }
-
-        branch =
-            branch.replace("[^0-9a-zA-Z-]".toRegex(), "-") // Semver meta only allows 0-9 a-z and -
+        // Semver meta only allows 0-9 a-z and -
+        branch = branch.replace("[^0-9a-zA-Z-]".toRegex(), "-")
 
         val tag = providers.exec {
             commandLine(
