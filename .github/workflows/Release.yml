@@ -36,7 +36,8 @@ jobs:
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
 
         run: |
-          echo $ENCODED_STRING > keystore-b64.txt
+          echo $ENCODED_STRING > keystore-b64.txt 
+          mkdir -p signing
           base64 -d keystore-b64.txt > signing/Clausr.keystore
 
       - name: Build Release bundle
