@@ -10,20 +10,19 @@ plugins {
 
 val keystorePropertiesFile = rootProject.file("signing/secrets.properties")
 val keystoreProperties = Properties()
-//keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
-fun getGitCommitCount(): Int {
-    val process = Runtime.getRuntime().exec("git rev-list --count HEAD")
-    return process.inputStream.bufferedReader().use { it.readText().trim().toInt() }
-}
+apply("${project.rootDir}/gradle/script-git-version.gradle.kts")
 
 android {
     namespace = "dk.clausr.a1001albumsgenerator"
 
     defaultConfig {
         applicationId = "dk.clausr.a1001albumsgenerator"
-        versionCode = getGitCommitCount()
-        versionName = "1.0"
+
+        val gitVersionName: String by extra
+        val gitVersionCode: Int by extra
+        versionName = gitVersionName
+        versionCode = gitVersionCode
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -32,8 +31,6 @@ android {
     }
 
     signingConfigs {
-//        val keystoreProperties = Properties()
-//        val keystorePropertiesFile = file("../signing/secrets.properties")
         if (keystorePropertiesFile.exists()) {
             keystoreProperties.load(FileInputStream(keystorePropertiesFile))
         }

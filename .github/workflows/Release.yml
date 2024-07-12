@@ -2,7 +2,8 @@ name: Release app
 
 on:
   push:
-    branches: main
+    branches:
+      - main
   workflow_dispatch:
 
 concurrency:
@@ -22,9 +23,18 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 17
+          cache: gradle
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v2.0.10
+      - name: Set version code/name
+        env:
+          CI_SOURCEBRANCHNAME: ${{ github.ref_name }}
+          CI_SOURCEVERSION: ${{ github.sha }}
+          CI_BUILDID: ${{ github.run_id }}
+          CI_PULLREQUESTNUMBER: ${{ github.event.number }}
+        run: scripts/version_code.sh
+
+      #      - name: Setup Android SDK
+      #        uses: android-actions/setup-android@v2.0.10
 
       # This will decode the keystore from base 64 text representation that we have stored in secrets
       # and generates and keystore file and gets stored in /android-app path
