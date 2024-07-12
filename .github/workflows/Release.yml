@@ -60,7 +60,7 @@ jobs:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
           packageName: dk.clausr.a1001albumsgenerator
           releaseFiles: app/build/outputs/bundle/prodRelease/app-prod-release.aab
-          debugSymbols: app/build/intermediates/merged_native_libs/prodRelease/out/lib
+          debugSymbols: app/build/intermediates/merged_native_libs/prodRelease/mergeProdReleaseNativeLibs/out/lib
           track: internal
           status: draft
           mappingFile: app/build/outputs/mapping/prodRelease/mapping.txt
