@@ -28,7 +28,8 @@ fun describe(): String {
         )
     }.standardOutput.asText.get().trim()
 
-    val isCiBuild = project.properties["CI_BUILD"] == true
+    val isCiBuild = project.properties["CI_BUILD"]?.toString()?.isNotBlank() == true
+    println("is CI build? $isCiBuild")
     if (isCiBuild) {
         // we're building in our CI
         var branch = project.properties["CI_SOURCEBRANCHNAME"] as String
