@@ -25,6 +25,8 @@ versionCode=$((GITHUB_RUN_NUMBER + 100))
 echo "versionName: $versionName"
 echo "versionCode: $versionCode"
 
+echo "ORG_GRADLE_PROJECT_OAG_VERSION_CODE=$versionCode" >>$GITHUB_ENV
+echo "ORG_GRADLE_PROJECT_OAG_VERSION_NAME=$versionName" >>$GITHUB_ENV
 echo "OAG_VERSION_CODE=$versionCode" >>$GITHUB_ENV
 echo "OAG_VERSION_NAME=$versionName" >>$GITHUB_ENV
 echo "CI_BUILD=true" >>$GITHUB_ENV
