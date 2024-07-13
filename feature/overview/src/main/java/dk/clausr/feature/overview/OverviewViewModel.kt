@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.clausr.core.data.repository.OagRepository
+import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.model.Album
 import dk.clausr.core.model.Project
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,12 +22,14 @@ class OverviewViewModel @Inject constructor(
         oagRepository.project,
         oagRepository.currentAlbum,
         oagRepository.historicAlbums,
-    ) { project, currentAlbum, albums ->
-        Timber.d("UiState: ${project?.name}: ${currentAlbum?.name} - ${albums?.size}")
+        oagRepository.widgetState,
+    ) { project, currentAlbum, albums, widgetState ->
+        Timber.d("UiState: ${project?.name}: ${currentAlbum?.name} - ${albums.size}")
         if (project != null) {
             OverviewUiState.Success(
                 project = project,
                 currentAlbum = currentAlbum,
+                widgetState = widgetState,
             )
         } else {
             OverviewUiState.NoProject
@@ -44,6 +47,7 @@ sealed interface OverviewUiState {
     data class Success(
         val project: Project,
         val currentAlbum: Album?,
+        val widgetState: SerializedWidgetState,
     ) : OverviewUiState
 
     data object NoProject : OverviewUiState

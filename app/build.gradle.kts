@@ -65,6 +65,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:ui"))
     implementation(project(":core:network"))
     implementation(project(":core:data"))
     implementation(project(":core:model"))
@@ -76,16 +77,17 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.activity.compose)
+
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.material3)
+//    implementation(libs.androidx.compose.ui.tooling.preview)
+//    debugImplementation(libs.androidx.compose.ui.tooling)
+//    implementation(libs.androidx.compose.material3)
 
     implementation(libs.androidx.core.splashscreen)
 
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.hilt.work)
-    debugImplementation(libs.androidx.compose.ui.tooling)
 }
 
 private fun getEnvNullable(variableName: String): String {

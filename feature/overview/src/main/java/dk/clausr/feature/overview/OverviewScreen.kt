@@ -1,13 +1,11 @@
 package dk.clausr.feature.overview
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
@@ -41,7 +39,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,12 +46,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.model.Album
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.Rating
+import dk.clausr.core.model.StreamingServices
 import dk.clausr.core.model.UpdateFrequency
-import timber.log.Timber
 import java.time.Instant
 
 @Composable
@@ -65,7 +63,6 @@ fun OverviewRoute(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    Timber.d("Overview route running -- $uiState")
     LaunchedEffect(uiState) {
         if (uiState is OverviewUiState.NoProject) {
             onConfigureWidget()
@@ -137,35 +134,14 @@ internal fun OverviewScreen(
                         item {
                             state.currentAlbum?.let {
                                 // TODO Create interactions / Prefill rating thing
-                                Column(modifier = Modifier.padding(16.dp)) {
-                                    Box(
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        AsyncImage(
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .aspectRatio(1f)
-                                                .background(MaterialTheme.colorScheme.primaryContainer),
-                                            model = it.imageUrl,
-                                            contentDescription = "Cover"
-                                        )
-                                    }
-                                    Text(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(top = 8.dp),
-                                        text = it.artist,
-                                        textAlign = TextAlign.Center,
-                                        style = MaterialTheme.typography.titleLarge,
-                                    )
-                                    Text(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        text = it.name,
-                                        textAlign = TextAlign.Center,
-                                        style = MaterialTheme.typography.titleMedium,
-                                    )
-                                }
+                                BigCurrentAlbum(
+                                    modifier = Modifier.padding(horizontal = 16.dp),
+                                    album = it,
+                                    shouldBeRated = false,
+                                    openLink = {},
+                                    openProject = {},
+                                    streamingService = StreamingServices.from(it).services.first(), // TODO Nahh bruh
+                                )
                             }
                         }
 
@@ -219,8 +195,6 @@ internal fun OverviewScreen(
             }
         }
     }
-
-
 }
 
 @Composable
@@ -364,6 +338,7 @@ private fun OverviewPreview() {
                     qobuzId = null,
                     deezerId = null,
                 ),
+                widgetState = SerializedWidgetState.NotInitialized,
             )
         )
     }

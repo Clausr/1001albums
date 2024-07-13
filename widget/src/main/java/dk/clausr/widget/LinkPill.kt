@@ -15,6 +15,7 @@ import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
 import dk.clausr.extensions.icon
 import dk.clausr.extensions.openUrlAction
+import dk.clausr.a1001albumsgenerator.ui.R as uiR
 
 @Composable
 fun LinkPill(
@@ -31,7 +32,7 @@ fun LinkPill(
                 .cornerRadius(100.dp)
         ) {
             CircleIconButton(
-                imageProvider = ImageProvider(R.drawable.ic_wiki),
+                imageProvider = ImageProvider(uiR.drawable.ic_wiki),
                 contentDescription = "Wikipedia",
                 onClick = openUrlAction(wikipediaLink),
             )
@@ -46,7 +47,7 @@ fun LinkPill(
                 }
 
             CircleIconButton(
-                imageProvider = ImageProvider(R.drawable.ic_open_external),
+                imageProvider = ImageProvider(uiR.drawable.ic_open_external),
                 contentDescription = "Open website",
                 onClick = openUrlAction(projectUrl),
             )

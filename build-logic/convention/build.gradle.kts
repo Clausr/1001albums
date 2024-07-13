@@ -66,6 +66,5 @@ gradlePlugin {
             id = "a1001albums.android.room"
             implementationClass = "AndroidRoomConventionPlugin"
         }
-
     }
 }

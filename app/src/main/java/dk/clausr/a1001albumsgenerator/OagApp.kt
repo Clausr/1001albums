@@ -1,4 +1,4 @@
-package dk.clausr.a1001albumsgenerator.ui
+package dk.clausr.a1001albumsgenerator
 
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import dk.clausr.a1001albumsgenerator.MainViewState
 import dk.clausr.a1001albumsgenerator.navigation.OagNavHost
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 
