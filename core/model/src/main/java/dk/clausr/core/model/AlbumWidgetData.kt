@@ -20,46 +20,46 @@ data class StreamingServices(val services: List<StreamingService>) {
                     album.deezerId?.let {
                         StreamingService(
                             id = it,
-                            platform = StreamingPlatform.Deezer
+                            platform = StreamingPlatform.Deezer,
                         )
                     },
                     album.amazonMusicId?.let {
                         StreamingService(
                             id = it,
-                            platform = StreamingPlatform.AmazonMusic
+                            platform = StreamingPlatform.AmazonMusic,
                         )
                     },
                     album.spotifyId?.let {
                         StreamingService(
                             id = it,
-                            platform = StreamingPlatform.Spotify
+                            platform = StreamingPlatform.Spotify,
                         )
                     },
                     album.appleMusicId?.let {
                         StreamingService(
                             id = it,
-                            platform = StreamingPlatform.AppleMusic
+                            platform = StreamingPlatform.AppleMusic,
                         )
                     },
                     album.tidalId?.let {
                         StreamingService(
                             id = it.toString(),
-                            platform = StreamingPlatform.Tidal
+                            platform = StreamingPlatform.Tidal,
                         )
                     },
                     album.qobuzId?.let {
                         StreamingService(
                             id = it,
-                            platform = StreamingPlatform.Qobuz
+                            platform = StreamingPlatform.Qobuz,
                         )
                     },
                     album.youtubeMusicId?.let {
                         StreamingService(
                             id = it,
-                            platform = StreamingPlatform.YouTubeMusic
+                            platform = StreamingPlatform.YouTubeMusic,
                         )
-                    }
-                )
+                    },
+                ),
             )
         }
     }

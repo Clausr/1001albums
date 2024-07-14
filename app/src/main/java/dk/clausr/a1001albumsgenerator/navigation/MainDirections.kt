@@ -19,15 +19,13 @@ object MainDirections {
     fun widgetConfiguration() = ROUTES.WIDGET_CONFIGURATION
 }
 
-fun NavGraphBuilder.mainNavigationGraph(
-    navHostController: NavHostController,
-) {
+fun NavGraphBuilder.mainNavigationGraph(navHostController: NavHostController) {
     composable(route = MainDirections.ROUTES.HOME) {
         OverviewRoute(
             modifier = Modifier,
             onConfigureWidget = {
                 navHostController.navigate(MainDirections.ROUTES.WIDGET_CONFIGURATION)
-            }
+            },
         )
     }
 
@@ -41,6 +39,7 @@ fun NavGraphBuilder.mainNavigationGraph(
                     }
                 }
                 navHostController.navigateUp()
-            })
+            },
+        )
     }
 }

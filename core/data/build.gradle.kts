@@ -6,7 +6,6 @@ plugins {
 
 android {
     namespace = "dk.clausr.core.data"
-
 }
 
 dependencies {

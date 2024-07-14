@@ -24,14 +24,15 @@ object AlbumWidgetDataDefinition : GlanceStateDefinition<SerializedWidgetState> 
     private val Context.oagDataStore by dataStore(fileName, WidgetStateDataSerializer)
     override suspend fun getDataStore(
         context: Context,
-        fileKey: String
+        fileKey: String,
     ): DataStore<SerializedWidgetState> = context.oagDataStore
 
-    suspend fun getDataStore(context: Context): DataStore<SerializedWidgetState> =
-        getDataStore(context, fileName)
+    suspend fun getDataStore(context: Context): DataStore<SerializedWidgetState> = getDataStore(context, fileName)
 
-    override fun getLocation(context: Context, fileKey: String): File =
-        context.dataStoreFile(fileName)
+    override fun getLocation(
+        context: Context,
+        fileKey: String,
+    ): File = context.dataStoreFile(fileName)
 
     @OptIn(ExperimentalSerializationApi::class)
     object WidgetStateDataSerializer : Serializer<SerializedWidgetState> {
@@ -61,7 +62,10 @@ object AlbumWidgetDataDefinition : GlanceStateDefinition<SerializedWidgetState> 
             }
         }
 
-        override suspend fun writeTo(t: SerializedWidgetState, output: OutputStream) {
+        override suspend fun writeTo(
+            t: SerializedWidgetState,
+            output: OutputStream,
+        ) {
             output.use { stream ->
                 json.encodeToStream(kSerializable, t, stream)
             }

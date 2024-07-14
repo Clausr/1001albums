@@ -5,7 +5,6 @@ plugins {
 
 android {
     namespace = "dk.clausr.feature.overview"
-
 }
 
 dependencies {

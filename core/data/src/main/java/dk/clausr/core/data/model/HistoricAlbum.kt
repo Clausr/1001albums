@@ -15,15 +15,14 @@ fun NetworkHistoricAlbum.asExternalModel(): HistoricAlbum = HistoricAlbum(
     isRevealed = isRevealed,
 )
 
-fun NetworkHistoricAlbum.toRatingEntity(): RatingEntity =
-    RatingEntity(
-        albumSlug = album.slug,
-        rating = rating,
-        review = review,
-        generatedAt = generatedAt,
-        globalRating = globalRating,
-        isRevealed = isRevealed,
-    )
+fun NetworkHistoricAlbum.toRatingEntity(): RatingEntity = RatingEntity(
+    albumSlug = album.slug,
+    rating = rating,
+    review = review,
+    generatedAt = generatedAt,
+    globalRating = globalRating,
+    isRevealed = isRevealed,
+)
 
 fun RatingEntity.toHistoricAlbum(album: Album): HistoricAlbum = HistoricAlbum(
     album = album,

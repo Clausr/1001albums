@@ -1,6 +1,5 @@
 package dk.clausr.core.model
 
-
 data class Project(
     val name: String,
     val currentAlbumSlug: String,

@@ -55,23 +55,21 @@ class BurstUpdateWorker @AssistedInject constructor(
     companion object {
         const val PROJECT_ID_KEY = "ProjectIdKey"
         const val MAX_RETRIES = 10
-        const val BACKOFF_SECONDS_DELAY = 30L
+        private const val BACKOFF_SECONDS_DELAY = 30L
 
-        private fun enqueueBurstUpdate(
-            projectId: String,
-        ) = OneTimeWorkRequestBuilder<BurstUpdateWorker>()
+        private fun enqueueBurstUpdate(projectId: String) = OneTimeWorkRequestBuilder<BurstUpdateWorker>()
             .setExpedited(RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             .addTag("BurstUpdateWorkerTag")
             .setInputData(
                 workDataOf(
                     PROJECT_ID_KEY to projectId,
-                )
+                ),
             )
             .setConstraints(
                 Constraints
                     .Builder()
                     .setRequiredNetworkType(NetworkType.CONNECTED)
-                    .build()
+                    .build(),
             )
             .setBackoffCriteria(BackoffPolicy.LINEAR, BACKOFF_SECONDS_DELAY, TimeUnit.SECONDS)
             .build()
@@ -84,7 +82,7 @@ class BurstUpdateWorker @AssistedInject constructor(
                 .enqueueUniqueWork(
                     "BurstUpdateWorker",
                     ExistingWorkPolicy.KEEP,
-                    enqueueBurstUpdate(projectId)
+                    enqueueBurstUpdate(projectId),
                 )
         }
     }

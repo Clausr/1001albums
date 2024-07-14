@@ -1,6 +1,5 @@
 package dk.clausr
 
-
 import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
@@ -15,9 +14,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 /**
  * Configure base Kotlin with Android options
  */
-internal fun Project.configureKotlinAndroid(
-    commonExtension: CommonExtension<*, *, *, *, *, *>,
-) {
+internal fun Project.configureKotlinAndroid(commonExtension: CommonExtension<*, *, *, *, *, *>) {
     commonExtension.apply {
         compileSdk = Versions.CompileSdk
 
@@ -70,11 +67,11 @@ private fun Project.configureKotlin() {
             allWarningsAsErrors.set(warningsAsErrors.toBoolean())
             freeCompilerArgs.addAll(
                 listOf(
-                "-opt-in=kotlin.RequiresOptIn",
-                // Enable experimental coroutines APIs, including Flow
-                "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-                "-opt-in=kotlinx.coroutines.FlowPreview",
-                )
+                    "-opt-in=kotlin.RequiresOptIn",
+                    // Enable experimental coroutines APIs, including Flow
+                    "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                    "-opt-in=kotlinx.coroutines.FlowPreview",
+                ),
             )
         }
     }

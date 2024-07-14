@@ -26,7 +26,7 @@ class ConfigurationViewModel @Inject constructor(
     val widgetState = oagRepository.widgetState.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = SerializedWidgetState.NotInitialized
+        initialValue = SerializedWidgetState.NotInitialized,
     )
 
     fun setProjectId(projectId: String) = viewModelScope.launch {

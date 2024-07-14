@@ -23,7 +23,6 @@ fun NetworkProject.toEntity(): ProjectEntity = ProjectEntity(
     updateFrequency = updateFrequency.asExternalModel(),
 )
 
-
 fun ProjectEntity.asExternalModel(history: List<HistoricAlbum>): Project = Project(
     name = name,
     currentAlbumSlug = currentAlbumSlug,

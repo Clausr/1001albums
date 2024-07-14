@@ -17,7 +17,7 @@ sealed interface SerializedWidgetState {
         SerializedWidgetState
 
     @Serializable
-    data object NotInitialized : SerializedWidgetState;
+    data object NotInitialized : SerializedWidgetState
 
     companion object {
         val SerializedWidgetState.projectId: String?

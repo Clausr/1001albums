@@ -7,7 +7,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import dk.clausr.a1001albumsgenerator.MainViewState
 
-
 @Composable
 fun OagNavHost(
     uiState: MainViewState,
@@ -19,12 +18,12 @@ fun OagNavHost(
         } else {
             MainDirections.home()
         }
-    }
+    },
 ) {
     NavHost(
         navController = navHostController,
         startDestination = startDestination,
-        modifier = modifier
+        modifier = modifier,
     ) {
         mainNavigationGraph(navHostController)
     }

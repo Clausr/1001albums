@@ -58,43 +58,53 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
     }
 
     companion object {
-        private const val simplifiedWorkerUniqueName = "simplifiedWorkerUniqueName"
+        private const val SIMPLIFIED_WORKER_UNIQUE_NAME = "simplifiedWorkerUniqueName"
 
-        private fun startSingle() =
-            OneTimeWorkRequestBuilder<SimplifiedWidgetWorker>()
-                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                .addTag("SingleWorkForSimplified")
-                .setConstraints(
-                    Constraints.Builder()
-                        .setRequiredNetworkType(NetworkType.CONNECTED)
-                        .build()
-                ).build()
+        private fun startSingle() = OneTimeWorkRequestBuilder<SimplifiedWidgetWorker>()
+            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            .addTag("SingleWorkForSimplified")
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build(),
+            )
+            .build()
 
         fun enqueueUnique(context: Context) {
             WorkManager.getInstance(context).enqueueUniqueWork(
-                simplifiedWorkerUniqueName, ExistingWorkPolicy.REPLACE, startSingle()
+                SIMPLIFIED_WORKER_UNIQUE_NAME,
+                ExistingWorkPolicy.REPLACE,
+                startSingle(),
             )
         }
-
 
         private const val PERIODIC_SYNC = "SimplifiedPeriodicSyncWorker"
 
         private val periodicConstraints =
-            Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED)
-                .setRequiresBatteryNotLow(true).build()
+            Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .setRequiresBatteryNotLow(true)
+                .build()
 
         private fun periodicWorkSync() = PeriodicWorkRequestBuilder<SimplifiedWidgetWorker>(
-            repeatInterval = Duration.ofHours(1)
+            repeatInterval = Duration.ofHours(1),
         )
-            .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, Duration.ofMinutes(10))
-            .setConstraints(periodicConstraints).addTag("Periodic").build()
+            .setBackoffCriteria(
+                backoffPolicy = BackoffPolicy.EXPONENTIAL,
+                duration = Duration.ofMinutes(10),
+            )
+            .setConstraints(periodicConstraints)
+            .addTag("Periodic")
+            .build()
 
         fun start(
             context: Context,
             policy: ExistingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.UPDATE,
         ) {
             WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-                PERIODIC_SYNC, policy, periodicWorkSync()
+                PERIODIC_SYNC,
+                policy,
+                periodicWorkSync(),
             )
         }
 

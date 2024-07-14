@@ -8,20 +8,17 @@ fun List<NetworkAlbum.NetworkAlbumImage>.asExternalModel(): List<Album.AlbumImag
     Album.AlbumImage(
         width = it.width,
         height = it.height,
-        url = it.url
+        url = it.url,
     )
 }
 
-private fun NetworkAlbum.NetworkAlbumImage.toEntity(albumSlug: String): AlbumImageEntity =
-    AlbumImageEntity(
-        albumSlug = albumSlug,
-        height = height,
-        width = width,
-        url = url
-    )
+private fun NetworkAlbum.NetworkAlbumImage.toEntity(albumSlug: String): AlbumImageEntity = AlbumImageEntity(
+    albumSlug = albumSlug,
+    height = height,
+    width = width,
+    url = url,
+)
 
-private fun List<NetworkAlbum.NetworkAlbumImage>.toEntities(albumSlug: String): List<AlbumImageEntity> =
-    map { it.toEntity(albumSlug) }
+private fun List<NetworkAlbum.NetworkAlbumImage>.toEntities(albumSlug: String): List<AlbumImageEntity> = map { it.toEntity(albumSlug) }
 
-fun NetworkAlbum.toAlbumImageEntities(): List<AlbumImageEntity> =
-    images.toEntities(albumSlug = slug)
+fun NetworkAlbum.toAlbumImageEntities(): List<AlbumImageEntity> = images.toEntities(albumSlug = slug)

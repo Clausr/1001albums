@@ -25,7 +25,7 @@ class MainActivityViewModel @Inject constructor(
         .stateIn(
             viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = MainViewState.Loading
+            initialValue = MainViewState.Loading,
         )
 }
 

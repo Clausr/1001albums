@@ -14,9 +14,7 @@ import javax.inject.Singleton
 object DatabaseModule {
     @Provides
     @Singleton
-    fun providesOagDatabase(
-        @ApplicationContext context: Context,
-    ): OagDatabase = Room
+    fun providesOagDatabase(@ApplicationContext context: Context): OagDatabase = Room
         .databaseBuilder(context, OagDatabase::class.java, "oag_database")
         .fallbackToDestructiveMigration()
         .build()

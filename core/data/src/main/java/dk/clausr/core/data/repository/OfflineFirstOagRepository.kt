@@ -132,27 +132,26 @@ class OfflineFirstOagRepository @Inject constructor(
         albumImageDao.insertAll(albumImageEntities)
     }
 
-    private suspend fun getAndUpdateProject(projectId: String): Result<Project> =
-        withContext(ioDispatcher) {
-            networkDataSource.getProject(projectId)
-                .doOnSuccess { networkProject ->
-                    Timber.d("Got project ${networkProject.name} with ${networkProject.history.size} albums")
-                    putNetworkProjectIntoDatabase(networkProject)
+    private suspend fun getAndUpdateProject(projectId: String): Result<Project> = withContext(ioDispatcher) {
+        networkDataSource.getProject(projectId)
+            .doOnSuccess { networkProject ->
+                Timber.d("Got project ${networkProject.name} with ${networkProject.history.size} albums")
+                putNetworkProjectIntoDatabase(networkProject)
 
-                    // Update widget
-                    updateWidgetData(
-                        project = networkProject.asExternalModel(),
-                        currentAlbum = networkProject.currentAlbum.asExternalModel(),
-                        historicAlbums = networkProject.history.map { it.asExternalModel() }
-                    )
-                }
-                .doOnFailure { message, throwable ->
-                    Timber.e(throwable, message ?: "Project failure")
-                }
-                .map {
-                    it.asExternalModel()
-                }
-        }
+                // Update widget
+                updateWidgetData(
+                    project = networkProject.asExternalModel(),
+                    currentAlbum = networkProject.currentAlbum.asExternalModel(),
+                    historicAlbums = networkProject.history.map { it.asExternalModel() },
+                )
+            }
+            .doOnFailure { message, throwable ->
+                Timber.e(throwable, message ?: "Project failure")
+            }
+            .map {
+                it.asExternalModel()
+            }
+    }
 
     override suspend fun isLatestAlbumRated(): Boolean {
         val history = historicAlbums.firstOrNull()
@@ -179,9 +178,9 @@ class OfflineFirstOagRepository @Inject constructor(
                     coverUrl = albumToUse.imageUrl,
                     wikiLink = albumToUse.wikipediaUrl,
                     streamingServices = StreamingServices.from(albumToUse),
-                    preferredStreamingPlatform = oldPreferredPlatform ?: StreamingPlatform.None
+                    preferredStreamingPlatform = oldPreferredPlatform ?: StreamingPlatform.None,
                 ),
-                currentProjectId = project.name
+                currentProjectId = project.name,
             )
         }
     }
@@ -193,7 +192,8 @@ class OfflineFirstOagRepository @Inject constructor(
      */
     private fun List<HistoricAlbum>.lastRevealedUnratedAlbum(): HistoricAlbum? {
         return this
-            .reversed().firstOrNull { it.isRevealed && it.rating is Rating.Unrated }
+            .reversed()
+            .firstOrNull { it.isRevealed && it.rating is Rating.Unrated }
     }
 
     override suspend fun setPreferredPlatform(platform: StreamingPlatform) {

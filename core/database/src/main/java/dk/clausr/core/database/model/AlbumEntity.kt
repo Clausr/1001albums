@@ -24,4 +24,3 @@ data class AlbumEntity(
     val qobuzId: String?,
     val deezerId: String?,
 )
-

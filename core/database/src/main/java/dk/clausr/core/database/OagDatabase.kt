@@ -21,13 +21,13 @@ import dk.clausr.core.database.utils.Converters
         AlbumEntity::class,
         WidgetEntity::class,
         RatingEntity::class,
-        AlbumImageEntity::class
+        AlbumImageEntity::class,
     ],
     version = 12,
-    exportSchema = false
+    exportSchema = false,
 )
 @TypeConverters(
-    Converters::class
+    Converters::class,
 )
 abstract class OagDatabase : RoomDatabase() {
     abstract fun projectDao(): ProjectDao

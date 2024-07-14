@@ -11,7 +11,10 @@ import java.time.Instant
 @Serializer(forClass = Instant::class)
 object InstantSerializer : KSerializer<Instant> {
 
-    override fun serialize(encoder: Encoder, value: Instant) {
+    override fun serialize(
+        encoder: Encoder,
+        value: Instant,
+    ) {
         encoder.encodeString(value.toString())
     }
 

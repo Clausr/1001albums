@@ -4,7 +4,7 @@ import androidx.room.Entity
 
 @Entity(
     tableName = "album_images",
-    primaryKeys = ["albumSlug", "height"]
+    primaryKeys = ["albumSlug", "height"],
 )
 data class AlbumImageEntity(
     val albumSlug: String,

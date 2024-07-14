@@ -7,7 +7,6 @@ plugins {
 
 android {
     namespace = "dk.clausr.core.data_widget"
-
 }
 
 dependencies {

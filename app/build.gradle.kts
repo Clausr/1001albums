@@ -48,7 +48,7 @@ android {
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
             signingConfig = signingConfigs.getByName("release")
         }
@@ -80,9 +80,6 @@ dependencies {
 
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
-//    implementation(libs.androidx.compose.ui.tooling.preview)
-//    debugImplementation(libs.androidx.compose.ui.tooling)
-//    implementation(libs.androidx.compose.material3)
 
     implementation(libs.androidx.core.splashscreen)
 
@@ -94,7 +91,10 @@ private fun getEnvNullable(variableName: String): String {
     return System.getenv(variableName)?.takeIf { it.isNotEmpty() } ?: "\"\""
 }
 
-fun getPropertyOrEnvNullable(variableName: String, keystoreProperties: Properties): String {
+fun getPropertyOrEnvNullable(
+    variableName: String,
+    keystoreProperties: Properties,
+): String {
     val variable = keystoreProperties[variableName] as String?
     val output = variable ?: getEnvNullable(variableName)
 

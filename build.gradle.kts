@@ -11,14 +11,14 @@ plugins {
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.detekt).version(libs.versions.detektPluginVersion.get())
     alias(libs.plugins.detekt.compiler) apply false
-
 }
 
 detekt {
     parallel = true
     buildUponDefaultConfig = true
     source.setFrom(projectDir)
-    config.setFrom("${rootDir}/config/detekt/detekt.yml")
+    config.setFrom("$rootDir/config/detekt/detekt.yml")
+    baseline = file("$projectDir/config/detekt/detekt-baseline.xml")
     enableCompilerPlugin = true
     debug = false
 }
@@ -31,7 +31,6 @@ dependencies {
     detektPlugins(libs.detekt.formatting)
     detektPlugins(libs.detekt.cli)
     detektPlugins(libs.detekt.compose.rules) {
-//        exclude()
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-compiler-embeddable")
     }
 }

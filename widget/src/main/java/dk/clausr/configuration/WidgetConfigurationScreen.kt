@@ -62,6 +62,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun WidgetConfigurationRoute(
     onProjectIdSet: () -> Unit,
+    onApplyChanges: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ConfigurationViewModel = hiltViewModel(),
 ) {
@@ -76,6 +77,7 @@ fun WidgetConfigurationRoute(
         },
         onApplyChanges = {
             viewModel.updateWidgets()
+            onApplyChanges()
         },
         selectPreferredStreamingPlatform = {
             viewModel.setPreferredStreamingPlatform(it)
@@ -181,6 +183,7 @@ fun WidgetConfigurationScreen(
                 is Loading -> CircularProgressIndicator()
                 NotInitialized -> stringResource(id = R.string.configuration_state_not_initialized)
                 is Success -> {
+                    val imageAlpha = if (state.data.newAvailable) 0.25f else 1f
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
                             modifier = Modifier.fillMaxWidth(),
@@ -198,7 +201,7 @@ fun WidgetConfigurationScreen(
                                     .fillMaxSize()
                                     .aspectRatio(1f)
                                     .background(MaterialTheme.colorScheme.primaryContainer)
-                                    .alpha(if (state.data.newAvailable) 0.25f else 1f),
+                                    .alpha(imageAlpha),
                                 model = state.data.coverUrl,
                                 contentDescription = stringResource(id = R.string.album_cover_a11y),
                             )

@@ -20,8 +20,7 @@ class DemoDataSource @Inject constructor(
     private val assets: FakeAssetManager = LocalAssetManager,
     @Dispatcher(OagDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : OAGDataSource {
-    override suspend fun getProject(projectId: String): Result<NetworkProject> =
-        withContext(ioDispatcher) {
-            Result.Success(assets.open("mock_project_response.json").use(json::decodeFromStream))
+    override suspend fun getProject(projectId: String): Result<NetworkProject> = withContext(ioDispatcher) {
+        Result.Success(assets.open("mock_project_response.json").use(json::decodeFromStream))
     }
 }

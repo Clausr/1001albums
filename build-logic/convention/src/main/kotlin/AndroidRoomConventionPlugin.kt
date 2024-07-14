@@ -1,6 +1,5 @@
 import com.google.devtools.ksp.gradle.KspExtension
 import dk.clausr.libs
-
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.InputDirectory

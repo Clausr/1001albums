@@ -5,24 +5,22 @@ import com.android.build.api.dsl.ApplicationProductFlavor
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.ProductFlavor
 
-@Suppress("EnumEntryName")
-enum class FlavorDimension { contentType }
+enum class FlavorDimension { ContentType }
 
-@Suppress("EnumEntryName")
 enum class Flavor(val dimension: FlavorDimension, val applicationIdSuffix: String? = null) {
-    demo(FlavorDimension.contentType, applicationIdSuffix = ".demo"),
-    prod(FlavorDimension.contentType)
+    Demo(FlavorDimension.ContentType, applicationIdSuffix = ".demo"),
+    Prod(FlavorDimension.ContentType),
 }
 
 fun configureFlavors(
     commonExtension: CommonExtension<*, *, *, *, *, *>,
-    flavorConfigurationBlock: ProductFlavor.(flavor: Flavor) -> Unit = {}
+    flavorConfigurationBlock: ProductFlavor.(flavor: Flavor) -> Unit = {},
 ) {
     commonExtension.apply {
-        flavorDimensions += FlavorDimension.contentType.name
+        flavorDimensions += FlavorDimension.ContentType.name
         productFlavors {
             Flavor.values().forEach {
-                create(it.name) {
+                create(it.name.replaceFirstChar(Char::lowercase)) {
                     dimension = it.dimension.name
                     flavorConfigurationBlock(this, it)
                     if (this@apply is ApplicationExtension && this is ApplicationProductFlavor) {

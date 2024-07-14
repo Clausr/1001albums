@@ -9,7 +9,6 @@ import androidx.room.Update
 import dk.clausr.core.database.model.WidgetEntity
 import kotlinx.coroutines.flow.Flow
 
-
 @Dao
 interface WidgetDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)

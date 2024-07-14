@@ -17,7 +17,6 @@ android {
 
         buildConfigField("String", "BACKEND_URL", "\"https://1001albumsgenerator.com/\"")
     }
-
 }
 
 dependencies {

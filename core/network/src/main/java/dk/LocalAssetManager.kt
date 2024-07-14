@@ -6,7 +6,6 @@ import java.io.File
 import java.io.InputStream
 import java.util.Properties
 
-
 /**
  * This class helps with loading Android `/assets` files, especially when running JVM unit tests.
  * It must remain on the root package for an easier [Class.getResource] with relative paths.

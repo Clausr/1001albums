@@ -12,7 +12,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class AlbumWidgetConfigurationActivity : ComponentActivity() {
     private val appWidgetId: Int by lazy {
         intent?.extras?.getInt(
-            AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID
+            AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID,
         ) ?: AppWidgetManager.INVALID_APPWIDGET_ID
     }
 
@@ -36,14 +36,16 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
             WidgetConfigurationRoute(
                 onApplyChanges = {
                     val resultValue = Intent().putExtra(
-                        AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId
+                        AppWidgetManager.EXTRA_APPWIDGET_ID,
+                        appWidgetId,
                     )
                     setResult(RESULT_OK, resultValue)
                     finish()
                 },
                 onProjectIdSet = {
                     val resultValue = Intent().putExtra(
-                        AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId
+                        AppWidgetManager.EXTRA_APPWIDGET_ID,
+                        appWidgetId,
                     )
                     setResult(RESULT_OK, resultValue)
                 },

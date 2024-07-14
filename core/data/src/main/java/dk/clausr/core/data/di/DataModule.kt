@@ -20,9 +20,7 @@ import javax.inject.Singleton
 interface DataModule {
 
     @Binds
-    fun bindsOagRepository(
-        repo: OfflineFirstOagRepository
-    ): OagRepository
+    fun bindsOagRepository(repo: OfflineFirstOagRepository): OagRepository
 }
 
 @Module
@@ -30,9 +28,7 @@ interface DataModule {
 object DataWidgetModule {
     @Provides
     @Singleton
-    fun provideStateDefinition(
-        @ApplicationContext context: Context,
-    ): DataStore<SerializedWidgetState> = runBlocking {
+    fun provideStateDefinition(@ApplicationContext context: Context): DataStore<SerializedWidgetState> = runBlocking {
         AlbumWidgetDataDefinition.getDataStore(context)
     }
 }

@@ -41,23 +41,18 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun providesMockAssetManager(
-        @ApplicationContext context: Context,
-    ): FakeAssetManager = FakeAssetManager(context.assets::open)
+    fun providesMockAssetManager(@ApplicationContext context: Context): FakeAssetManager = FakeAssetManager(context.assets::open)
 
     @Provides
     @Singleton
-    fun okHttpCallFactory(
-
-    ): Call.Factory {
-        val okHttpClient = OkHttpClient.Builder()
-            .readTimeout(15, TimeUnit.SECONDS)
-            .writeTimeout(15, TimeUnit.SECONDS)
-            .connectTimeout(30, TimeUnit.SECONDS)
+    fun okHttpCallFactory(): Call.Factory {
+        val okHttpClient = OkHttpClient.Builder().readTimeout(15, TimeUnit.SECONDS)
+            .writeTimeout(timeout = 15, TimeUnit.SECONDS)
+            .connectTimeout(timeout = 30, TimeUnit.SECONDS)
             .addNetworkInterceptor(
                 HttpLoggingInterceptor().apply {
                     level = HttpLoggingInterceptor.Level.BASIC
-                }
+                },
             )
             .build()
 
@@ -69,12 +64,8 @@ object NetworkModule {
     fun provideRetrofit(
         networkJson: Json,
         okhttpCallFactory: Call.Factory,
-    ): Retrofit = Retrofit.Builder()
-        .baseUrl(BuildConfig.BACKEND_URL)
-        .callFactory(okhttpCallFactory)
-        .addConverterFactory(
-            networkJson.asConverterFactory("application/json".toMediaType()),
-        )
+    ): Retrofit = Retrofit.Builder().baseUrl(BuildConfig.BACKEND_URL).callFactory(okhttpCallFactory)
+        .addConverterFactory(networkJson.asConverterFactory("application/json".toMediaType()))
         .build()
 
     @Provides
@@ -82,8 +73,7 @@ object NetworkModule {
     fun imageLoader(
         okHttpCallFactory: Call.Factory,
         @ApplicationContext application: Context,
-    ): ImageLoader = ImageLoader.Builder(application)
-        .callFactory(okHttpCallFactory)
+    ): ImageLoader = ImageLoader.Builder(application).callFactory(okHttpCallFactory)
         // Assume most content images are versioned urls
         // but some problematic images are fetching each time
 //        .respectCacheHeaders(false)
