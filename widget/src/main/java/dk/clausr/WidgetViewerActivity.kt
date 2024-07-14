@@ -37,7 +37,7 @@ class WidgetViewerActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val widgets = listOf(
-                AlbumCoverWidget()
+                AlbumCoverWidget(),
             )
 
             var selectedWidget by remember {
@@ -47,24 +47,27 @@ class WidgetViewerActivity : ComponentActivity() {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(0.3F)
+                        .fillMaxHeight(fraction = 0.3F),
                 ) {
                     items(widgets) { widget ->
                         Text(
                             text = widget::class.simpleName.orEmpty(),
                             modifier = Modifier
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
-                                .clickable { selectedWidget = widget }
+                                .clickable { selectedWidget = widget },
                         )
                     }
                 }
                 Box(
                     Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(0.7F)
-                        .padding(8.dp)
+                        .fillMaxHeight(fraction = 0.7F)
+                        .padding(8.dp),
                 ) {
-                    WidgetView(selectedWidget, DpSize(500.dp, 500.dp))
+                    WidgetView(
+                        widget = selectedWidget,
+                        size = DpSize(500.dp, 500.dp),
+                    )
                 }
             }
         }
@@ -73,11 +76,18 @@ class WidgetViewerActivity : ComponentActivity() {
 
 @OptIn(ExperimentalGlanceApi::class)
 @Composable
-fun WidgetView(widget: AlbumCoverWidget, size: DpSize = DpSize(500.dp, 500.dp)) {
+fun WidgetView(
+    widget: AlbumCoverWidget,
+    modifier: Modifier = Modifier,
+    size: DpSize = DpSize(500.dp, 500.dp),
+) {
     val context = LocalContext.current
-    val remoteViews by
-    remember(widget, size) { widget.runComposition(context, sizes = listOf(size)) }
-        .collectAsState(null, Dispatchers.Default)
+    val remoteViews by remember(widget, size) {
+        widget.runComposition(
+            context,
+            sizes = listOf(size),
+        )
+    }.collectAsState(null, Dispatchers.Default)
     AndroidView(
         factory = {
             // Using an AWHV is necessary for ListView support, and to properly select a RemoteViews
@@ -85,11 +95,10 @@ fun WidgetView(widget: AlbumCoverWidget, size: DpSize = DpSize(500.dp, 500.dp)) 
             // contain lazy list items, a FrameLayout works fine.
             AppWidgetHostView(context).apply { setFakeAppWidget() }
         },
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         update = { view -> view.updateAppWidget(remoteViews) },
     )
 }
-
 
 /**
  * The hostView requires an AppWidgetProviderInfo to work in certain OS versions. This method uses
@@ -97,17 +106,15 @@ fun WidgetView(widget: AlbumCoverWidget, size: DpSize = DpSize(500.dp, 500.dp)) 
  */
 private fun AppWidgetHostView.setFakeAppWidget() {
     val context = context
-    val info =
-        AppWidgetProviderInfo().apply {
-            initialLayout = androidx.glance.appwidget.R.layout.glance_default_loading_layout
-        }
+    val info = AppWidgetProviderInfo().apply {
+        initialLayout = androidx.glance.appwidget.R.layout.glance_default_loading_layout
+    }
     try {
-        val activityInfo =
-            ActivityInfo().apply {
-                applicationInfo = context.applicationInfo
-                packageName = context.packageName
-                labelRes = applicationInfo.labelRes
-            }
+        val activityInfo = ActivityInfo().apply {
+            applicationInfo = context.applicationInfo
+            packageName = context.packageName
+            labelRes = applicationInfo.labelRes
+        }
 
         info::class.java.getDeclaredField("providerInfo").run {
             isAccessible = true

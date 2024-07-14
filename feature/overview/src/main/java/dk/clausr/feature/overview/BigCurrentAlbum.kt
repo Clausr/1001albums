@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -17,16 +18,59 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
+import dk.clausr.core.data_widget.SerializedWidgetState
+import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectUrl
 import dk.clausr.core.model.Album
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingService
 import dk.clausr.a1001albumsgenerator.ui.R as uiR
+
+// TODO State and album should be together...
+@Composable
+fun BigCurrentAlbum(
+    state: SerializedWidgetState,
+    album: Album,
+    openLink: (url: String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    when (state) {
+        is SerializedWidgetState.Error -> {
+            Box(
+                modifier = modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.errorContainer),
+            )
+        }
+
+        is SerializedWidgetState.Loading -> {
+            Box(
+                modifier = modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+
+        SerializedWidgetState.NotInitialized -> {}
+        is SerializedWidgetState.Success -> {
+            BigCurrentAlbum(
+                modifier = modifier,
+                album = album,
+                shouldBeRated = state.data.newAvailable,
+                openProject = { state.projectUrl?.let(openLink) },
+                openLink = openLink,
+                streamingService = state.data.streamingServices.services.firstOrNull { it.platform == state.data.preferredStreamingPlatform },
+            )
+        }
+    }
+}
 
 @Composable
 fun BigCurrentAlbum(
@@ -34,24 +78,25 @@ fun BigCurrentAlbum(
     shouldBeRated: Boolean,
     openProject: () -> Unit,
     openLink: (url: String) -> Unit,
-    streamingService: StreamingService,
-
+    streamingService: StreamingService?,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
         Box(
             modifier = Modifier.aspectRatio(1f),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             AsyncImage(
                 modifier = Modifier
                     .fillMaxSize()
                     .aspectRatio(1f)
-                    .background(MaterialTheme.colorScheme.primaryContainer),
+                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .blur(if (shouldBeRated) 8.dp else 0.dp),
                 model = album.imageUrl,
-                contentDescription = "Cover"
+                contentDescription = "Cover",
             )
         }
+
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = album.name,
@@ -75,21 +120,27 @@ fun BigCurrentAlbum(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(
                 space = 16.dp,
-                alignment = Alignment.CenterHorizontally
-            )
+                alignment = Alignment.CenterHorizontally,
+            ),
         ) {
-            streamingService.takeIf { it.platform != StreamingPlatform.None && it.streamingLink.isNotBlank() }
+            streamingService.takeIf { it?.platform != StreamingPlatform.None && it?.streamingLink?.isNotBlank() == true }
                 ?.let { streaming ->
                     FilledIconButton(
                         onClick = { openLink(streaming.streamingLink) },
                     ) {
-                        Icon(Icons.Default.PlayArrow, contentDescription = null)
+                        Icon(
+                            imageVector = Icons.Default.PlayArrow,
+                            contentDescription = null,
+                        )
                     }
                 }
             FilledIconButton(
                 onClick = { openLink(album.wikipediaUrl) },
             ) {
-                Icon(painterResource(id = uiR.drawable.ic_wiki), contentDescription = null)
+                Icon(
+                    painterResource(id = uiR.drawable.ic_wiki),
+                    contentDescription = null,
+                )
             }
 
             FilledIconButton(
@@ -97,7 +148,7 @@ fun BigCurrentAlbum(
             ) {
                 Icon(
                     painterResource(id = uiR.drawable.ic_open_external),
-                    contentDescription = null
+                    contentDescription = null,
                 )
             }
         }
@@ -131,7 +182,7 @@ private fun CurrentAlbumPreview() {
                 imageUrl = "https://i.scdn.co/image/ab2eae28bb2a55667ee727711aeccc7f37498414",
                 qobuzId = null,
                 deezerId = null,
-            )
+            ),
         )
     }
 }

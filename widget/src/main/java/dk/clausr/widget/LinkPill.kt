@@ -23,13 +23,17 @@ fun LinkPill(
     wikipediaLink: String,
     streamingServices: StreamingServices,
     projectUrl: String,
+    modifier: GlanceModifier = GlanceModifier,
     onForceUpdateWidget: () -> Unit = {},
 ) {
-    Row(horizontalAlignment = Alignment.CenterHorizontally) {
+    Row(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
         Row(
             GlanceModifier
                 .background(GlanceTheme.colors.background)
-                .cornerRadius(100.dp)
+                .cornerRadius(100.dp),
         ) {
             CircleIconButton(
                 imageProvider = ImageProvider(uiR.drawable.ic_wiki),
@@ -56,7 +60,8 @@ fun LinkPill(
                 CircleIconButton(
                     imageProvider = ImageProvider(R.drawable.baseline_refresh_24),
                     contentDescription = "Update widget",
-                    onClick = { onForceUpdateWidget() })
+                    onClick = { onForceUpdateWidget() },
+                )
             }
         }
     }

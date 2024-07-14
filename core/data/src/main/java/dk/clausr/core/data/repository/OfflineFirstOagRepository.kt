@@ -52,35 +52,34 @@ class OfflineFirstOagRepository @Inject constructor(
     private val ratingDao: RatingDao,
     private val albumImageDao: AlbumImageDao,
 ) : OagRepository {
-    override val widgetState = widgetDataStore.data.map {
-        it
-    }
+    override val widgetState = widgetDataStore.data
 
     override val projectId: Flow<String?> = widgetDataStore.data.map {
         Timber.d("ProjectId: $it")
         it.projectId
     }
 
-    override val project: Flow<Project?> =
-        combine(projectDao.getProject(), albumDao.getAlbums()) { project, albums ->
+    override val project: Flow<Project?> = combine(
+        projectDao.getProject(),
+        albumDao.getAlbums(),
+    ) { project, albums ->
+        val history = albums.map(AlbumEntity::asExternalModel)
+        // TODO Optimize
+        val ratings = ratingDao.getRatingByAlbumSlugs(albums.map(AlbumEntity::slug))
 
-            val history = albums.map { it.asExternalModel() }
-            val ratings = ratingDao.getRatingByAlbumSlugs(albums.map { it.slug })
-
-            val historicAlbums = ratings.map { rating ->
-                rating.toHistoricAlbum(history.first { it.slug == rating.albumSlug })
-            }
-
-            project?.asExternalModel(historicAlbums.sortedByDescending { it.generatedAt })
+        val historicAlbums = ratings.map { rating ->
+            rating.toHistoricAlbum(history.first { it.slug == rating.albumSlug })
         }
+
+        project?.asExternalModel(historicAlbums.sortedByDescending { it.generatedAt })
+    }
 
     override val currentAlbum: Flow<Album?> = project
         .mapNotNull { project ->
             project?.historicAlbums?.lastRevealedUnratedAlbum()?.album
                 ?: project?.currentAlbumSlug?.let { currentSlug ->
                     albumDao.getAlbumBySlug(currentSlug)?.asExternalModel()
-
-            }
+                }
         }
 
     override val historicAlbums: Flow<List<HistoricAlbum>> = albumDao.getAlbums()
@@ -93,7 +92,6 @@ class OfflineFirstOagRepository @Inject constructor(
             }
                 .sortedByDescending { it.generatedAt }
         }
-
 
     override suspend fun setProject(projectId: String) {
         withContext(ioDispatcher) {

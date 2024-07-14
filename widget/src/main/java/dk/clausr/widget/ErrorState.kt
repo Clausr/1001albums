@@ -15,9 +15,12 @@ import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.padding
 
 @Composable
-internal fun ErrorState(retry: () -> Unit = {}) {
+internal fun ErrorState(
+    modifier: GlanceModifier = GlanceModifier,
+    retry: () -> Unit = {},
+) {
     Box(
-        GlanceModifier
+        modifier
             .fillMaxSize()
             .background(GlanceTheme.colors.errorContainer)
             .clickable(retry),
@@ -27,7 +30,7 @@ internal fun ErrorState(retry: () -> Unit = {}) {
             modifier = GlanceModifier.fillMaxSize().padding(20.dp),
             provider = ImageProvider(R.drawable.heart_broken),
             contentDescription = "Error",
-            colorFilter = ColorFilter.tint(GlanceTheme.colors.onErrorContainer)
+            colorFilter = ColorFilter.tint(GlanceTheme.colors.onErrorContainer),
         )
     }
 }

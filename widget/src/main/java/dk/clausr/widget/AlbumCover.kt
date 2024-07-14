@@ -22,8 +22,8 @@ import coil.request.SuccessResult
 
 @Composable
 fun AlbumCover(
-    modifier: GlanceModifier = GlanceModifier,
     coverUrl: String,
+    modifier: GlanceModifier = GlanceModifier,
 ) {
     var coverBitmap by remember { mutableStateOf<Bitmap?>(null) }
     val context = LocalContext.current
@@ -37,12 +37,15 @@ fun AlbumCover(
             provider = ImageProvider(it),
             contentDescription = null,
             contentScale = ContentScale.Fit,
-            modifier = modifier
+            modifier = modifier,
         )
     }
 }
 
-private suspend fun Context.getImage(url: String, force: Boolean = false): Bitmap? {
+private suspend fun Context.getImage(
+    url: String,
+    force: Boolean = false,
+): Bitmap? {
     val request = ImageRequest
         .Builder(this)
         .data(url)

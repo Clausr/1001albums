@@ -77,7 +77,7 @@ enum class StreamingPlatform {
 }
 
 @Serializable
-data class StreamingService(val id: String, val platform: StreamingPlatform) {
+data class StreamingService(private val id: String, val platform: StreamingPlatform) {
     val streamingLink: String
         get() = when (platform) {
             StreamingPlatform.None -> ""

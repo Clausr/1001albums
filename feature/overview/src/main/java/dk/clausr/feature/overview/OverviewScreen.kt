@@ -1,5 +1,7 @@
 package dk.clausr.feature.overview
 
+import android.content.Intent
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,6 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
@@ -51,14 +54,13 @@ import dk.clausr.core.model.Album
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.Rating
-import dk.clausr.core.model.StreamingServices
 import dk.clausr.core.model.UpdateFrequency
 import java.time.Instant
 
 @Composable
 fun OverviewRoute(
-    modifier: Modifier = Modifier,
     onConfigureWidget: () -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: OverviewViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -82,6 +84,7 @@ internal fun OverviewScreen(
     onConfigureWidget: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         modifier = modifier,
@@ -95,7 +98,8 @@ internal fun OverviewScreen(
                             contentDescription = "Configure project",
                         )
                     }
-                })
+                },
+            )
         },
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
@@ -106,7 +110,7 @@ internal fun OverviewScreen(
                 }
                 OverviewUiState.Loading -> Box(
                     modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     CircularProgressIndicator()
                 }
@@ -117,11 +121,15 @@ internal fun OverviewScreen(
                     }
 
                     val history by remember(showOnlyDnl) {
-                        mutableStateOf(state.project.historicAlbums.filter {
-                            if (showOnlyDnl) {
-                                it.rating !is Rating.Rated
-                            } else true
-                        })
+                        mutableStateOf(
+                            state.project.historicAlbums.filter {
+                                if (showOnlyDnl) {
+                                    it.rating !is Rating.Rated
+                                } else {
+                                    true
+                                }
+                            },
+                        )
                     }
 
                     val expandedItems = remember { mutableStateListOf<String>() }
@@ -133,14 +141,17 @@ internal fun OverviewScreen(
                     ) {
                         item {
                             state.currentAlbum?.let {
-                                // TODO Create interactions / Prefill rating thing
                                 BigCurrentAlbum(
                                     modifier = Modifier.padding(horizontal = 16.dp),
+                                    state = state.widgetState,
                                     album = it,
-                                    shouldBeRated = false,
-                                    openLink = {},
-                                    openProject = {},
-                                    streamingService = StreamingServices.from(it).services.first(), // TODO Nahh bruh
+                                    openLink = { url ->
+                                        val urlIntent = Intent(Intent.ACTION_VIEW).apply {
+                                            data = url.toUri()
+                                            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                        }
+                                        context.startActivity(urlIntent)
+                                    },
                                 )
                             }
                         }
@@ -151,7 +162,7 @@ internal fun OverviewScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(horizontal = 16.dp),
-                                    verticalAlignment = Alignment.CenterVertically
+                                    verticalAlignment = Alignment.CenterVertically,
                                 ) {
                                     Text(
                                         modifier = Modifier.weight(1f),
@@ -162,7 +173,7 @@ internal fun OverviewScreen(
                                             } else {
                                                 history.count { it.rating is Rating.Rated }
                                             },
-                                            state.project.historicAlbums.size
+                                            state.project.historicAlbums.size,
                                         ),
                                         style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
                                     )
@@ -175,7 +186,8 @@ internal fun OverviewScreen(
                         }
                         items(
                             items = history,
-                            key = { it.generatedAt }) { historicAlbum ->
+                            key = { it.generatedAt },
+                        ) { historicAlbum ->
                             val slug = historicAlbum.album.slug
                             HistoricAlbumCard(
                                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -187,7 +199,7 @@ internal fun OverviewScreen(
                                     } else {
                                         expandedItems.add(slug)
                                     }
-                                }
+                                },
                             )
                         }
                     }
@@ -207,12 +219,12 @@ private fun HistoricAlbumCard(
     val album = historicAlbum.album
     Card(
         modifier = modifier,
-//        onClick = onClick,
+        onClick = onClick,
         shape = RoundedCornerShape(
             topStart = 0.dp,
             bottomStart = 0.dp,
             bottomEnd = 8.dp,
-            topEnd = 8.dp
+            topEnd = 8.dp,
         ),
     ) {
         // TODO Either shared transition or something else fancyish
@@ -223,7 +235,7 @@ private fun HistoricAlbumCard(
             AsyncImage(
                 modifier = Modifier.size(100.dp),
                 model = ImageRequest.Builder(
-                    LocalContext.current
+                    LocalContext.current,
                 ).data(album.imageUrl).crossfade(true).build(),
                 contentDescription = "cover",
                 contentScale = ContentScale.FillWidth,
@@ -231,33 +243,30 @@ private fun HistoricAlbumCard(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(vertical = 8.dp, horizontal = 8.dp)
+                    .padding(vertical = 8.dp, horizontal = 8.dp),
             ) {
                 Text(
                     text = album.artist,
                 )
                 Text(
                     text = album.name,
-                    style = MaterialTheme.typography.labelLarge
+                    style = MaterialTheme.typography.labelLarge,
                 )
                 Text(
                     text = historicAlbum.review,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.bodySmall.copy(fontStyle = FontStyle.Italic)
+                    style = MaterialTheme.typography.bodySmall.copy(fontStyle = FontStyle.Italic),
                 )
 
-//                AnimatedContent(targetState = expanded) { isExpanded ->
-//                    if (isExpanded) {
-//                        Row(Modifier.fillMaxWidth()) {
-//                            IconButton(onClick = { /*TODO*/ }) {
-//
-//                            }
-//                        }
-//                    } else {
-//
-//                    }
-//                }
+                AnimatedContent(targetState = expanded) { isExpanded ->
+                    if (isExpanded) {
+                        Row(Modifier.fillMaxWidth()) {
+                            IconButton(onClick = { /*TODO*/ }) {
+                            }
+                        }
+                    }
+                }
             }
             val rating = when (val rating = historicAlbum.rating) {
                 is Rating.Rated -> rating.rating.toString()
@@ -269,13 +278,11 @@ private fun HistoricAlbumCard(
                     .padding(horizontal = 16.dp)
                     .align(Alignment.CenterVertically),
                 text = rating,
-                style = MaterialTheme.typography.headlineMedium
+                style = MaterialTheme.typography.headlineMedium,
             )
         }
-
     }
 }
-
 
 @Preview
 @Composable
@@ -339,7 +346,7 @@ private fun OverviewPreview() {
                     deezerId = null,
                 ),
                 widgetState = SerializedWidgetState.NotInitialized,
-            )
+            ),
         )
     }
 }

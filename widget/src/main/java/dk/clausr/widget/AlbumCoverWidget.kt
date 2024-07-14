@@ -66,7 +66,10 @@ class AlbumCoverWidget : GlanceAppWidget() {
         fun oagRepository(): OagRepository
     }
 
-    override suspend fun provideGlance(context: Context, id: GlanceId) {
+    override suspend fun provideGlance(
+        context: Context,
+        id: GlanceId,
+    ) {
         Timber.d("GlanceID: $id")
         val appContext = context.applicationContext
         val hiltEntryPoint =
@@ -77,7 +80,7 @@ class AlbumCoverWidget : GlanceAppWidget() {
         provideContent {
             val currentState = currentState<SerializedWidgetState>()
 
-            Timber.d("Provide content -- currentstate = ${currentState}")
+            Timber.d("Provide content -- currentstate = $currentState")
             val state: SerializedWidgetState by repo.widgetState
                 .collectAsState(initial = currentState)
 
@@ -86,17 +89,17 @@ class AlbumCoverWidget : GlanceAppWidget() {
             }
         }
     }
-
 }
 
 @Composable
 fun Content(
     state: SerializedWidgetState,
+    modifier: GlanceModifier = GlanceModifier,
 ) {
     Timber.d("Widget state: $state")
     Box(
-        modifier = GlanceModifier
-            .fillMaxSize()
+        modifier = modifier
+            .fillMaxSize(),
     ) {
         when (state) {
             is SerializedWidgetState.Loading -> {
@@ -114,7 +117,7 @@ fun Content(
             SerializedWidgetState.NotInitialized -> {
                 Box(
                     GlanceModifier.fillMaxSize().background(
-                        GlanceTheme.colors.background
+                        GlanceTheme.colors.background,
                     ),
                     contentAlignment = Alignment.Center,
                 ) {
@@ -122,9 +125,9 @@ fun Content(
                         text = LocalContext.current.getString(R.string.state_not_configured),
                         style = TextStyle(
                             color = GlanceTheme.colors.onBackground,
-                            fontSize = TextUnit(16f, TextUnitType.Sp),
+                            fontSize = TextUnit(value = 16f, TextUnitType.Sp),
                             fontWeight = FontWeight.Bold,
-                        )
+                        ),
                     )
                 }
             }
@@ -136,6 +139,7 @@ fun Content(
 private fun ShowAlbumCover(
     state: SerializedWidgetState.Success,
     projectId: String,
+    modifier: GlanceModifier = GlanceModifier,
 ) {
     val context = LocalContext.current
     var showLinks by remember {
@@ -150,7 +154,7 @@ private fun ShowAlbumCover(
     }
 
     Box(
-        modifier = GlanceModifier
+        modifier = modifier
             .fillMaxSize()
             .clickable {
                 showLinks = !showLinks
@@ -159,7 +163,7 @@ private fun ShowAlbumCover(
     ) {
         AlbumCover(
             modifier = GlanceModifier.fillMaxSize(),
-            coverUrl = state.data.coverUrl
+            coverUrl = state.data.coverUrl,
         )
 
         if (state.data.newAvailable) {
@@ -174,7 +178,7 @@ private fun ShowAlbumCover(
                 projectUrl = state.projectUrl ?: "",
                 onForceUpdateWidget = {
                     SimplifiedWidgetWorker.enqueueUnique(context)
-                }
+                },
             )
         }
     }
@@ -183,15 +187,16 @@ private fun ShowAlbumCover(
 @Composable
 private fun RatingNudge(
     projectId: String,
+    modifier: GlanceModifier = GlanceModifier,
 ) {
     val context = LocalContext.current
 
     Column(
-        GlanceModifier
+        modifier
             .fillMaxSize()
             .background(
                 GlanceTheme.colors.widgetBackground.getColor(context)
-                    .copy(alpha = 0.75f)
+                    .copy(alpha = 0.75f),
             ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -200,16 +205,16 @@ private fun RatingNudge(
             modifier = GlanceModifier.fillMaxWidth(),
             style = TextStyle(
                 color = GlanceTheme.colors.onBackground,
-                fontSize = TextUnit(16f, TextUnitType.Sp),
+                fontSize = TextUnit(value = 16f, TextUnitType.Sp),
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
-            )
+            ),
         )
         Row(
             modifier = GlanceModifier
                 .fillMaxWidth()
                 .padding(top = 8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             for (stars in 1..5) {
                 if (stars != 1) Spacer(GlanceModifier.width(8.dp))
@@ -229,7 +234,7 @@ private fun RatingNudge(
         }
         Row(
             GlanceModifier.fillMaxWidth().padding(top = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Button(
                 text = "Did not listen",
@@ -237,7 +242,8 @@ private fun RatingNudge(
                     context.openProject(projectId)
                     // Start requesting for changes
                     BurstUpdateWorker.enqueueUnique(context, projectId = projectId)
-                })
+                },
+            )
         }
     }
 }

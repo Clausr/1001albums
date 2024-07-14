@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+    <ManuallySuppressedIssues>
+        <ID>ModifierMissing:Theme.kt$OagTheme</ID>
+        <ID>ModifierMissing:OagApp.kt$OagApp</ID>
+    </ManuallySuppressedIssues>
+    <CurrentIssues />
+</SmellBaseline>

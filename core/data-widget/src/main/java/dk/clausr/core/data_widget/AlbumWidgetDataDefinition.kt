@@ -13,6 +13,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
 import kotlinx.serialization.modules.SerializersModule
+import timber.log.Timber
 import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
@@ -52,8 +53,10 @@ object AlbumWidgetDataDefinition : GlanceStateDefinition<SerializedWidgetState> 
                     json.decodeFromStream(kSerializable, stream)
                 }
             } catch (exception: SerializationException) {
+                Timber.e(exception, "Could not read location data: ${exception.message}")
                 throw CorruptionException("Could not read location data: ${exception.message}")
             } catch (e: Exception) {
+                Timber.e(e, "Exception")
                 throw e
             }
         }

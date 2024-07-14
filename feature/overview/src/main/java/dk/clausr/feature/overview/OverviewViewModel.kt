@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OverviewViewModel @Inject constructor(
-    oagRepository: OagRepository
+    oagRepository: OagRepository,
 ) : ViewModel() {
 
     val uiState = combine(
@@ -38,7 +38,7 @@ class OverviewViewModel @Inject constructor(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = OverviewUiState.Loading
+            initialValue = OverviewUiState.Loading,
         )
 }
 

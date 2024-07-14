@@ -13,8 +13,8 @@ import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 
 @Composable
 fun OagApp(
-    navHostController: NavHostController = rememberNavController(),
     uiState: MainViewState,
+    navHostController: NavHostController = rememberNavController(),
 ) {
     OagTheme {
         Scaffold(

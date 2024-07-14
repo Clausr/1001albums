@@ -61,10 +61,9 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun WidgetConfigurationRoute(
-    modifier: Modifier = Modifier,
     onProjectIdSet: () -> Unit,
-    onApplyChanges: () -> Unit,
-    viewModel: ConfigurationViewModel = hiltViewModel()
+    modifier: Modifier = Modifier,
+    viewModel: ConfigurationViewModel = hiltViewModel(),
 ) {
     val widgetState by viewModel.widgetState.collectAsState()
 
@@ -77,11 +76,10 @@ fun WidgetConfigurationRoute(
         },
         onApplyChanges = {
             viewModel.updateWidgets()
-            onApplyChanges()
         },
         selectPreferredStreamingPlatform = {
             viewModel.setPreferredStreamingPlatform(it)
-        }
+        },
     )
 }
 
@@ -99,15 +97,15 @@ fun WidgetConfigurationScreen(
     val focusRequester = remember { FocusRequester() }
     var projectId by remember(widgetState) {
         mutableStateOf(
-            widgetState.projectId.orEmpty()
+            widgetState.projectId.orEmpty(),
         )
     }
 
     val setProjectButtonEnabled by remember(projectId) {
         mutableStateOf(
             projectId.isNotBlank() && !projectId.equals(
-                widgetState.projectId, ignoreCase = true
-            )
+                widgetState.projectId, ignoreCase = true,
+            ),
         )
     }
 
@@ -155,8 +153,8 @@ fun WidgetConfigurationScreen(
                                 Icon(
                                     imageVector = Icons.Default.Check,
                                     contentDescription = stringResource(
-                                        id = R.string.config_set_project_button_title
-                                    )
+                                        id = R.string.config_set_project_button_title,
+                                    ),
                                 )
                             }
                         } else {
@@ -169,13 +167,13 @@ fun WidgetConfigurationScreen(
                                 Icon(
                                     imageVector = Icons.Default.Clear,
                                     contentDescription = stringResource(
-                                        id = R.string.config_clear_project_button_title
-                                    )
+                                        id = R.string.config_clear_project_button_title,
+                                    ),
                                 )
                             }
                         }
                     }
-                }
+                },
             )
 
             when (val state = widgetState) {
@@ -193,9 +191,8 @@ fun WidgetConfigurationScreen(
 
                         Box(
                             modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
+                            contentAlignment = Alignment.Center,
                         ) {
-
                             AsyncImage(
                                 modifier = Modifier
                                     .fillMaxSize()
@@ -203,7 +200,7 @@ fun WidgetConfigurationScreen(
                                     .background(MaterialTheme.colorScheme.primaryContainer)
                                     .alpha(if (state.data.newAvailable) 0.25f else 1f),
                                 model = state.data.coverUrl,
-                                contentDescription = stringResource(id = R.string.album_cover_a11y)
+                                contentDescription = stringResource(id = R.string.album_cover_a11y),
                             )
                             if (state.data.newAvailable) {
                                 Text(
@@ -211,8 +208,8 @@ fun WidgetConfigurationScreen(
                                     modifier = Modifier.fillMaxSize(),
                                     text = stringResource(id = R.string.configuration_new_album_available),
                                     style = MaterialTheme.typography.labelLarge.copy(
-                                        fontWeight = FontWeight.Bold
-                                    )
+                                        fontWeight = FontWeight.Bold,
+                                    ),
                                 )
                             }
                         }
@@ -233,7 +230,7 @@ fun WidgetConfigurationScreen(
                             ) {
                                 Icon(
                                     painterResource(
-                                        id = streamingService.platform.icon()
+                                        id = streamingService.platform.icon(),
                                     ),
                                     contentDescription = streamingService.platform.name,
                                 )

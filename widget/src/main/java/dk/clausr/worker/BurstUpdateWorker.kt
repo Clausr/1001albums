@@ -60,21 +60,21 @@ class BurstUpdateWorker @AssistedInject constructor(
         private fun enqueueBurstUpdate(
             projectId: String,
         ) = OneTimeWorkRequestBuilder<BurstUpdateWorker>()
-                .setExpedited(RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            .setExpedited(RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             .addTag("BurstUpdateWorkerTag")
-                .setInputData(
-                    workDataOf(
-                        PROJECT_ID_KEY to projectId,
-                    )
+            .setInputData(
+                workDataOf(
+                    PROJECT_ID_KEY to projectId,
                 )
-                .setConstraints(
-                    Constraints
-                        .Builder()
-                        .setRequiredNetworkType(NetworkType.CONNECTED)
-                        .build()
-                )
+            )
+            .setConstraints(
+                Constraints
+                    .Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build()
+            )
             .setBackoffCriteria(BackoffPolicy.LINEAR, BACKOFF_SECONDS_DELAY, TimeUnit.SECONDS)
-                .build()
+            .build()
 
         fun enqueueUnique(
             context: Context,
