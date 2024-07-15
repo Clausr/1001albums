@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.clausr.core.data.repository.OagRepository
-import dk.clausr.core.data_widget.SerializedWidgetState
+import dk.clausr.core.datawidget.SerializedWidgetState
 import dk.clausr.core.model.Album
 import dk.clausr.core.model.Project
 import kotlinx.coroutines.flow.SharingStarted

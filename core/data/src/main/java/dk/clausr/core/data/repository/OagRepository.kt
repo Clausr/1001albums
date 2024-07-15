@@ -1,7 +1,7 @@
 package dk.clausr.core.data.repository
 
 import dk.clausr.core.common.model.Result
-import dk.clausr.core.data_widget.SerializedWidgetState
+import dk.clausr.core.datawidget.SerializedWidgetState
 import dk.clausr.core.model.Album
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Project

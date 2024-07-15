@@ -45,9 +45,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import dk.clausr.core.data.repository.OagRepository
-import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
-import dk.clausr.core.data_widget.SerializedWidgetState
-import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectUrl
+import dk.clausr.core.datawidget.AlbumWidgetDataDefinition
+import dk.clausr.core.datawidget.SerializedWidgetState
+import dk.clausr.core.datawidget.SerializedWidgetState.Companion.projectUrl
 import dk.clausr.extensions.openProject
 import dk.clausr.worker.BurstUpdateWorker
 import dk.clausr.worker.SimplifiedWidgetWorker

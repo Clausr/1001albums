@@ -1,7 +1,7 @@
 plugins {
     id("a1001albums.android.library")
     id("a1001albums.android.hilt")
-    id("com.google.devtools.ksp")
+    id("kotlinx-serialization")
 }
 
 android {

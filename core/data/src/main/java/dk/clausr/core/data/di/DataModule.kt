@@ -10,8 +10,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data.repository.OfflineFirstOagRepository
-import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
-import dk.clausr.core.data_widget.SerializedWidgetState
+import dk.clausr.core.datawidget.AlbumWidgetDataDefinition
+import dk.clausr.core.datawidget.SerializedWidgetState
 import kotlinx.coroutines.runBlocking
 import javax.inject.Singleton
 

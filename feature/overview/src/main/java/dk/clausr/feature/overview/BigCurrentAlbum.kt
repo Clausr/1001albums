@@ -25,8 +25,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
-import dk.clausr.core.data_widget.SerializedWidgetState
-import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectUrl
+import dk.clausr.core.datawidget.SerializedWidgetState
+import dk.clausr.core.datawidget.SerializedWidgetState.Companion.projectUrl
 import dk.clausr.core.model.Album
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingService

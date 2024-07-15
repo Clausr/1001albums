@@ -14,8 +14,6 @@ import dk.clausr.core.data.model.toAlbumImageEntities
 import dk.clausr.core.data.model.toEntity
 import dk.clausr.core.data.model.toHistoricAlbum
 import dk.clausr.core.data.model.toRatingEntity
-import dk.clausr.core.data_widget.SerializedWidgetState
-import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectId
 import dk.clausr.core.database.dao.AlbumDao
 import dk.clausr.core.database.dao.AlbumImageDao
 import dk.clausr.core.database.dao.ProjectDao
@@ -23,6 +21,8 @@ import dk.clausr.core.database.dao.RatingDao
 import dk.clausr.core.database.model.AlbumEntity
 import dk.clausr.core.database.model.AlbumImageEntity
 import dk.clausr.core.database.model.RatingEntity
+import dk.clausr.core.datawidget.SerializedWidgetState
+import dk.clausr.core.datawidget.SerializedWidgetState.Companion.projectId
 import dk.clausr.core.model.Album
 import dk.clausr.core.model.AlbumWidgetData
 import dk.clausr.core.model.HistoricAlbum

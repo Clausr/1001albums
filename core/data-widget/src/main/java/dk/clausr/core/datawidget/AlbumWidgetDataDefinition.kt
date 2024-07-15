@@ -1,4 +1,4 @@
-package dk.clausr.core.data_widget
+package dk.clausr.core.datawidget
 
 import android.content.Context
 import androidx.datastore.core.CorruptionException
@@ -12,12 +12,10 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
-import kotlinx.serialization.modules.SerializersModule
 import timber.log.Timber
 import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
-import java.time.Instant
 
 object AlbumWidgetDataDefinition : GlanceStateDefinition<SerializedWidgetState> {
     const val fileName = "_ALBUM_WIDGET_DATASTORE_FILE"
@@ -42,11 +40,7 @@ object AlbumWidgetDataDefinition : GlanceStateDefinition<SerializedWidgetState> 
         override val defaultValue: SerializedWidgetState
             get() = SerializedWidgetState.NotInitialized
 
-        private val json = Json {
-            serializersModule = SerializersModule {
-                contextual(Instant::class, InstantSerializer)
-            }
-        }
+        private val json = Json
 
         override suspend fun readFrom(input: InputStream): SerializedWidgetState {
             return try {
@@ -54,7 +48,6 @@ object AlbumWidgetDataDefinition : GlanceStateDefinition<SerializedWidgetState> 
                     json.decodeFromStream(kSerializable, stream)
                 }
             } catch (exception: SerializationException) {
-                Timber.e(exception, "Could not read location data: ${exception.message}")
                 throw CorruptionException("Could not read location data: ${exception.message}")
             } catch (e: Exception) {
                 Timber.e(e, "Exception")

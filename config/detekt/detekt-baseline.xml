@@ -4,7 +4,7 @@
     <ID>ModifierMissing:Theme.kt$OagTheme</ID>
     <ID>ModifierMissing:OagApp.kt$OagApp</ID>
     <ID>SpacingBetweenPackageAndImports:Flavors.kt$</ID>
-    <ID>PackageNaming:InstantSerializer.kt$package dk.clausr.core.data_widget</ID>
+    <ID>SwallowedException:AlbumWidgetDataDefinition.kt$AlbumWidgetDataDefinition.WidgetStateDataSerializer$exception: SerializationException</ID>
   </ManuallySuppressedIssues>
   <CurrentIssues />
 </SmellBaseline>
