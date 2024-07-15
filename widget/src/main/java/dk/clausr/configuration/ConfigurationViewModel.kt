@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dk.clausr.core.data.repository.OagRepository
-import dk.clausr.core.datawidget.SerializedWidgetState
+import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.widget.AlbumCoverWidget
 import dk.clausr.worker.SimplifiedWidgetWorker

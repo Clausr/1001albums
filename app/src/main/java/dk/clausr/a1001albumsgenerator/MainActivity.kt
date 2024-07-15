@@ -17,7 +17,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -49,7 +48,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navHostController = rememberNavController()
 
-            Timber.d("UiState: $uiState")
             OagApp(
                 uiState = uiState,
                 navHostController = navHostController,

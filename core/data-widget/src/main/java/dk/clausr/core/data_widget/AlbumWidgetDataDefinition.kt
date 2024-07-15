@@ -1,4 +1,4 @@
-package dk.clausr.core.datawidget
+package dk.clausr.core.data_widget
 
 import android.content.Context
 import androidx.datastore.core.CorruptionException
@@ -19,7 +19,11 @@ import java.io.OutputStream
 
 object AlbumWidgetDataDefinition : GlanceStateDefinition<SerializedWidgetState> {
     const val fileName = "_ALBUM_WIDGET_DATASTORE_FILE"
-    private val Context.oagDataStore by dataStore(fileName, WidgetStateDataSerializer)
+    private val Context.oagDataStore by dataStore(
+        fileName = fileName,
+        serializer = WidgetStateDataSerializer,
+    )
+
     override suspend fun getDataStore(
         context: Context,
         fileKey: String,

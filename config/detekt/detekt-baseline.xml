@@ -5,6 +5,10 @@
     <ID>ModifierMissing:OagApp.kt$OagApp</ID>
     <ID>SpacingBetweenPackageAndImports:Flavors.kt$</ID>
     <ID>SwallowedException:AlbumWidgetDataDefinition.kt$AlbumWidgetDataDefinition.WidgetStateDataSerializer$exception: SerializationException</ID>
+    <ID>PackageNaming:AlbumWidgetDataDefinition.kt$package dk.clausr.core.data_widget</ID>
+    <ID>PackageNaming:SerializedWidgetState.kt$package dk.clausr.core.data_widget</ID>
+    <ID>PackageName:AlbumWidgetDataDefinition.kt$package dk.clausr.core.data_widget</ID>
+    <ID>PackageName:SerializedWidgetState.kt$package dk.clausr.core.data_widget</ID>
   </ManuallySuppressedIssues>
   <CurrentIssues />
 </SmellBaseline>

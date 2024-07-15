@@ -49,7 +49,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import dk.clausr.core.datawidget.SerializedWidgetState
+import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.model.Album
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Project

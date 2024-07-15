@@ -1,4 +1,4 @@
-package dk.clausr.core.datawidget
+package dk.clausr.core.data_widget
 
 import dk.clausr.core.model.AlbumWidgetData
 import kotlinx.serialization.Serializable

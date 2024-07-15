@@ -20,8 +20,8 @@ import dagger.assisted.AssistedInject
 import dk.clausr.core.common.model.doOnFailure
 import dk.clausr.core.common.model.doOnSuccess
 import dk.clausr.core.data.repository.OagRepository
-import dk.clausr.core.datawidget.AlbumWidgetDataDefinition
-import dk.clausr.core.datawidget.SerializedWidgetState.Companion.projectId
+import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
+import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectId
 import dk.clausr.widget.AlbumCoverWidget
 import kotlinx.coroutines.flow.firstOrNull
 import java.time.Duration
