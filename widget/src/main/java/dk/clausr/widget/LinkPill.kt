@@ -10,16 +10,16 @@ import androidx.glance.appwidget.cornerRadius
 import androidx.glance.background
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Row
+import dk.clausr.a1001albumsgenerator.ui.helper.icon
 import dk.clausr.core.common.BuildConfig
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
-import dk.clausr.extensions.icon
 import dk.clausr.extensions.openUrlAction
 import dk.clausr.a1001albumsgenerator.ui.R as uiR
 
 @Composable
 fun LinkPill(
-    preferredStreamingPlatform: StreamingPlatform,
+    preferredStreamingPlatform: StreamingPlatform?,
     wikipediaLink: String,
     streamingServices: StreamingServices,
     projectUrl: String,

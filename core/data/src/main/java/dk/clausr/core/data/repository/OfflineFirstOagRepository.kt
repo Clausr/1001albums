@@ -178,7 +178,7 @@ class OfflineFirstOagRepository @Inject constructor(
                     coverUrl = albumToUse.imageUrl,
                     wikiLink = albumToUse.wikipediaUrl,
                     streamingServices = StreamingServices.from(albumToUse),
-                    preferredStreamingPlatform = oldPreferredPlatform ?: StreamingPlatform.None,
+                    preferredStreamingPlatform = oldPreferredPlatform,
                 ),
                 currentProjectId = project.name,
             )

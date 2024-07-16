@@ -10,4 +10,5 @@ android {
 dependencies {
     implementation(libs.material)
     api(libs.androidx.compose.material3)
+    implementation(project(":core:model"))
 }

@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="history_header">History (%1$d / %2$d)</string>
+    <string name="rating_unrated">Unrated</string>
+    <string name="rating_did_not_listen">DNL</string>
 </resources>

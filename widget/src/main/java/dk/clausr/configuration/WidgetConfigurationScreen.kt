@@ -48,6 +48,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import dk.clausr.a1001albumsgenerator.ui.helper.icon
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectId
 import dk.clausr.core.data_widget.SerializedWidgetState.Error
@@ -55,7 +56,6 @@ import dk.clausr.core.data_widget.SerializedWidgetState.Loading
 import dk.clausr.core.data_widget.SerializedWidgetState.NotInitialized
 import dk.clausr.core.data_widget.SerializedWidgetState.Success
 import dk.clausr.core.model.StreamingPlatform
-import dk.clausr.extensions.icon
 import dk.clausr.widget.R
 import kotlinx.coroutines.launch
 

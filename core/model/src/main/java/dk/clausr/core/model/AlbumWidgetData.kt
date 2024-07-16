@@ -8,7 +8,7 @@ data class AlbumWidgetData(
     val newAvailable: Boolean,
     val wikiLink: String,
     val streamingServices: StreamingServices,
-    val preferredStreamingPlatform: StreamingPlatform,
+    val preferredStreamingPlatform: StreamingPlatform?,
 )
 
 @Serializable
@@ -66,7 +66,6 @@ data class StreamingServices(val services: List<StreamingService>) {
 }
 
 enum class StreamingPlatform {
-    None,
     AmazonMusic,
     AppleMusic,
     Deezer,
@@ -80,7 +79,6 @@ enum class StreamingPlatform {
 data class StreamingService(private val id: String, val platform: StreamingPlatform) {
     val streamingLink: String
         get() = when (platform) {
-            StreamingPlatform.None -> ""
             StreamingPlatform.Spotify -> "spotify:album:$id"
             StreamingPlatform.AppleMusic -> "https://music.apple.com/album/$id"
             StreamingPlatform.Tidal -> "https://tidal.com/browse/album/$id"
@@ -89,4 +87,8 @@ data class StreamingService(private val id: String, val platform: StreamingPlatf
             StreamingPlatform.Deezer -> "https://deezer.com/album/$id"
             StreamingPlatform.Qobuz -> "https://play.qobuz.com/album/$id" // TODO Confirm
         }
+}
+
+fun Album.getStreaming(platform: StreamingPlatform): StreamingService? {
+    return StreamingServices.from(this).services.firstOrNull { it.platform == platform }
 }

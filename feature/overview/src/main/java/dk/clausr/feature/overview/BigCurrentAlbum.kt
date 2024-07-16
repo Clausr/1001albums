@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
@@ -24,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import dk.clausr.a1001albumsgenerator.ui.helper.icon
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectUrl
@@ -123,17 +122,16 @@ fun BigCurrentAlbum(
                 alignment = Alignment.CenterHorizontally,
             ),
         ) {
-            streamingService.takeIf { it?.platform != StreamingPlatform.None && it?.streamingLink?.isNotBlank() == true }
-                ?.let { streaming ->
-                    FilledIconButton(
-                        onClick = { openLink(streaming.streamingLink) },
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.PlayArrow,
-                            contentDescription = null,
-                        )
-                    }
+            streamingService.takeIf { it?.streamingLink?.isNotBlank() == true }?.let { streaming ->
+                FilledIconButton(
+                    onClick = { openLink(streaming.streamingLink) },
+                ) {
+                    Icon(
+                        painter = painterResource(id = streaming.platform.icon()),
+                        contentDescription = null,
+                    )
                 }
+            }
             FilledIconButton(
                 onClick = { openLink(album.wikipediaUrl) },
             ) {

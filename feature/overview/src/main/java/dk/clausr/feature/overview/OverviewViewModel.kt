@@ -10,6 +10,7 @@ import dk.clausr.core.model.Project
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -40,6 +41,16 @@ class OverviewViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = OverviewUiState.Loading,
         )
+
+    init {
+        viewModelScope.launch {
+            oagRepository.projectId.collect { id ->
+                id?.let {
+                    oagRepository.updateProject(it)
+                }
+            }
+        }
+    }
 }
 
 sealed interface OverviewUiState {
