@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import dk.clausr.a1001albumsgenerator.MainViewState
+import dk.clausr.a1001albumsgenerator.onboarding.onboardingNavigationGraph
 
 @Composable
 fun OagNavHost(
@@ -25,6 +26,7 @@ fun OagNavHost(
         startDestination = startDestination,
         modifier = modifier,
     ) {
+        onboardingNavigationGraph(navHostController)
         mainNavigationGraph(navHostController)
     }
 }

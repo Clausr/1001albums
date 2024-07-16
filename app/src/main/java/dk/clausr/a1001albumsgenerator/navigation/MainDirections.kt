@@ -1,6 +1,5 @@
 package dk.clausr.a1001albumsgenerator.navigation
 
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -22,7 +21,6 @@ object MainDirections {
 fun NavGraphBuilder.mainNavigationGraph(navHostController: NavHostController) {
     composable(route = MainDirections.ROUTES.HOME) {
         OverviewRoute(
-            modifier = Modifier,
             onConfigureWidget = {
                 navHostController.navigate(MainDirections.ROUTES.WIDGET_CONFIGURATION)
             },

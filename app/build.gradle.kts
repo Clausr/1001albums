@@ -71,6 +71,7 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":widget"))
     implementation(project(":feature:overview"))
+    implementation(project(":feature:onboarding"))
 
     implementation(libs.material)
 
