@@ -26,7 +26,12 @@ fun OagNavHost(
         startDestination = startDestination,
         modifier = modifier,
     ) {
-        onboardingNavigationGraph(navHostController)
+        onboardingNavigationGraph(
+            navHostController = navHostController,
+            navigateToMainApp = {
+                navHostController.navigate(MainDirections.home())
+            },
+        )
         mainNavigationGraph(navHostController)
     }
 }
