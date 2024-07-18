@@ -8,7 +8,9 @@ android {
 }
 
 dependencies {
-    implementation(libs.material)
-    api(libs.androidx.compose.material3)
     implementation(project(":core:model"))
+
+    implementation(libs.material)
+    implementation(libs.androidx.navigation.compose)
+    api(libs.androidx.compose.material3)
 }

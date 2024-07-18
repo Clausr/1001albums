@@ -21,8 +21,8 @@ import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 
 @Composable
 internal fun AppScreen(
+    navigateNext: () -> Unit,
     modifier: Modifier = Modifier,
-    clickNext: () -> Unit,
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -35,7 +35,7 @@ internal fun AppScreen(
                             .fillMaxWidth()
                             .padding(end = 16.dp),
                     ) {
-                        Button(onClick = clickNext) {
+                        Button(onClick = navigateNext) {
                             Text(text = stringResource(id = R.string.get_started))
                         }
                     }
@@ -61,8 +61,6 @@ internal fun AppScreen(
 @Composable
 private fun AppScreenPreview() {
     OagTheme {
-        AppScreen {
-
-        }
+        AppScreen(navigateNext = {})
     }
 }

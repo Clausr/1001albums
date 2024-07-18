@@ -93,7 +93,7 @@ class OfflineFirstOagRepository @Inject constructor(
                 .sortedByDescending { it.generatedAt }
         }
 
-    override suspend fun setProject(projectId: String) {
+    override suspend fun setProject(projectId: String): Result<Project> {
         withContext(ioDispatcher) {
             Timber.d("Set new project $projectId")
             widgetDataStore.updateData { SerializedWidgetState.Loading(projectId) }
@@ -102,7 +102,7 @@ class OfflineFirstOagRepository @Inject constructor(
             ratingDao.clearTable()
         }
 
-        getAndUpdateProject(projectId)
+        return getAndUpdateProject(projectId)
     }
 
     private suspend fun putNetworkProjectIntoDatabase(networkProject: NetworkProject) {

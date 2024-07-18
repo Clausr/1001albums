@@ -5,7 +5,7 @@
     <string name="onboarding_title_app">The App</string>
     <string name="onboarding_description_widget">Use the widget on your home screen to look at the albums artwork and to have easy access to its wikipedia page, a link to your preferred streaming platform and for a convenient way to get reminded to rate the last album.</string>
     <string name="onboarding_description_app">This app is an appendix to the wonderful website https://1001albumsgenerator.com/\n\nThe app is a hobby project, where I wanted to show the daily albums cover art on the home screen, because I like cover art.\n\nThe actual app is not as feature complete as the website, so use it as you will, but I recommend using the widget.</string>
-    <string name="onboarding_description_project">To start your journey, you need a user.\n\nYou should create a user on the website and enter the username here.</string>
+    <string name="onboarding_description_project">To start your journey, you need a user.</string>
     <string name="common_previous">Previous</string>
     <string name="get_started">Get started</string>
     <string name="create_user">Create a user</string>

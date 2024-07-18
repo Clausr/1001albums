@@ -22,9 +22,9 @@ import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 
 @Composable
 internal fun WidgetScreen(
-    modifier: Modifier = Modifier,
     navigateUp: () -> Unit,
     navigateNext: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -40,7 +40,7 @@ internal fun WidgetScreen(
                         Button(onClick = navigateUp, colors = ButtonDefaults.textButtonColors()) {
                             Text(text = stringResource(id = R.string.common_previous))
                         }
-                        Button(onClick = {}) {
+                        Button(onClick = navigateNext) {
                             Text(text = stringResource(id = R.string.lets_go))
                         }
                     }

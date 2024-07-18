@@ -16,6 +16,7 @@ class MainActivityViewModel @Inject constructor(
 ) : ViewModel() {
 
     val uiState = oagRepository.project.map {
+        // TODO Combine this with something else.. Streaming platform / is Onboarding
         if (it != null) {
             MainViewState.HasProject(it)
         } else {
