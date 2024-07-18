@@ -1,6 +1,5 @@
 package dk.clausr.a1001albumsgenerator.ui.components
 
-
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable

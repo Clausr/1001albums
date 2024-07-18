@@ -39,12 +39,12 @@ internal fun AppScreen(
                             Text(text = stringResource(id = R.string.get_started))
                         }
                     }
-                }
+                },
             )
         },
         topBar = {
             TopAppBar(title = { Text(text = stringResource(id = R.string.onboarding_title_app)) })
-        }
+        },
     ) {
         Column(
             modifier = Modifier

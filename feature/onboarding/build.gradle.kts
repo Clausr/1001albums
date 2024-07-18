@@ -10,6 +10,3 @@ android {
         compose = true
     }
 }
-
-dependencies {
-}

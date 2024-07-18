@@ -188,7 +188,7 @@ internal fun OverviewScreen(
                                 },
                                 openLink = {
                                     context.openLink(it)
-                                }
+                                },
                             )
                         }
                     }

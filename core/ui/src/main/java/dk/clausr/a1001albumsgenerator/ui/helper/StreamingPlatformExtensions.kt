@@ -4,7 +4,6 @@ import androidx.annotation.DrawableRes
 import dk.clausr.a1001albumsgenerator.ui.R
 import dk.clausr.core.model.StreamingPlatform
 
-
 @DrawableRes
 fun StreamingPlatform.icon(): Int = when (this) {
     StreamingPlatform.AmazonMusic -> R.drawable.ic_amazon_music
