@@ -55,7 +55,6 @@ class OfflineFirstOagRepository @Inject constructor(
     override val widgetState = widgetDataStore.data
 
     override val projectId: Flow<String?> = widgetDataStore.data.map {
-        Timber.d("ProjectId: $it")
         it.projectId
     }
 

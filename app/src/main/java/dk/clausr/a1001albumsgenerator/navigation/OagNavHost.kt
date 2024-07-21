@@ -4,8 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import dk.clausr.a1001albumsgenerator.MainViewState
-import dk.clausr.a1001albumsgenerator.onboarding.OnboardingDirections
-import dk.clausr.a1001albumsgenerator.onboarding.onboardingNavigationGraph
+import dk.clausr.a1001albumsgenerator.onboarding.OnboardingRoute
 
 @Composable
 fun OagNavHost(
@@ -14,25 +13,21 @@ fun OagNavHost(
     modifier: Modifier = Modifier,
 ) {
     if (uiState !is MainViewState.Loading) {
-        val destination = when (uiState) {
-            is MainViewState.HasProject -> {
-                if (uiState.project != null) {
-                    MainDirections.home()
+        when (uiState) {
+            MainViewState.Loading -> {}
+            is MainViewState.Success -> {
+                if (uiState.hasOnboarded) {
+                    dk.clausr.a1001albumsgenerator.ui.components.OagNavHost(
+                        navController = navHostController,
+                        startDestination = MainDirections.home(),
+                        modifier = modifier,
+                    ) {
+                        mainNavigationGraph(navHostController)
+                    }
                 } else {
-                    OnboardingDirections.onboarding()
+                    OnboardingRoute()
                 }
             }
-
-            MainViewState.Loading -> OnboardingDirections.onboarding()
-        }
-
-        dk.clausr.a1001albumsgenerator.ui.components.OagNavHost(
-            navController = navHostController,
-            startDestination = destination,
-            modifier = modifier,
-        ) {
-            onboardingNavigationGraph(navHostController)
-            mainNavigationGraph(navHostController)
         }
     }
 }
