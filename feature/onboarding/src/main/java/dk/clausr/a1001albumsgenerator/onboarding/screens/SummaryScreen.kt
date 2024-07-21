@@ -18,7 +18,7 @@ import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 @Composable
 internal fun SummaryScreen(
     modifier: Modifier = Modifier,
-    onDone: () -> Unit,
+    onNext: () -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -32,7 +32,7 @@ internal fun SummaryScreen(
             modifier = Modifier.fillMaxWidth(),
         )
 
-        Button(onClick = onDone) {
+        Button(onClick = onNext) {
             Text(text = stringResource(id = R.string.lets_go))
         }
     }

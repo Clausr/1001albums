@@ -41,7 +41,7 @@ internal fun ProjectNameScreen(
     modifier: Modifier = Modifier,
     prefilledProjectId: String = "",
     error: String? = null,
-    onProjectIdChanged: (String) -> Unit = {},
+    onChangeProjectId: (String) -> Unit = {},
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val scope = rememberCoroutineScope()
@@ -85,7 +85,7 @@ internal fun ProjectNameScreen(
             keyboardActions = KeyboardActions(onDone = { onSetProjectId(projectId) }),
             onValueChange = {
                 projectId = it
-                onProjectIdChanged(it)
+                onChangeProjectId(it)
                 isError = false
             },
             isError = isError,

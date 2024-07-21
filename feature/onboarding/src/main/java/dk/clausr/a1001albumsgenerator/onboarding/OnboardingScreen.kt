@@ -70,7 +70,7 @@ fun OnboardingRoute(
         modifier = modifier.fillMaxSize(),
         error = error,
         onSetStreamingPlatform = viewModel::setStreamingPlatform,
-        onDone = viewModel::markIntroFlowAsCompleted,
+        onNext = viewModel::markIntroFlowAsCompleted,
         projectId = projectId,
         preferredStreamingPlatform = streamingPlatform,
     )
@@ -83,7 +83,7 @@ internal fun OnboardingScreen(
     error: String?,
     onSetProjectId: (String) -> Unit,
     onSetStreamingPlatform: (StreamingPlatform) -> Unit,
-    onDone: () -> Unit,
+    onNext: () -> Unit,
     modifier: Modifier = Modifier,
     navHostController: NavHostController = rememberNavController(),
 ) {
@@ -127,15 +127,13 @@ internal fun OnboardingScreen(
                 composable(route = "summary") {
                     SummaryScreen(
                         modifier = Modifier.childHazeModifier(hazeState),
-                        onDone = onDone,
+                        onNext = onNext,
                     )
-
                 }
             }
         }
     }
 }
-
 
 @Preview
 @Composable
@@ -145,7 +143,7 @@ private fun AppScreenPreview() {
             modifier = Modifier.fillMaxSize(),
             onSetProjectId = {},
             error = null,
-            onDone = {},
+            onNext = {},
             onSetStreamingPlatform = {},
             projectId = null,
             preferredStreamingPlatform = null,
