@@ -10,3 +10,7 @@ android {
         compose = true
     }
 }
+
+dependencies {
+    implementation(libs.haze)
+}

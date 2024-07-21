@@ -17,6 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -40,14 +41,22 @@ class MainActivity : ComponentActivity() {
 
         splashScreen.setKeepOnScreenCondition {
             when (uiState) {
-                MainViewState.Loading -> true
-                else -> false
+                MainViewState.Loading -> {
+                    Timber.d("Loading")
+                    true
+                }
+
+                is MainViewState.HasProject -> {
+                    Timber.d("Has project now")
+                    false
+                }
             }
         }
 
         setContent {
             val navHostController = rememberNavController()
 
+            Timber.d("SetContent: ${uiState::class.java}")
             OagApp(
                 uiState = uiState,
                 navHostController = navHostController,

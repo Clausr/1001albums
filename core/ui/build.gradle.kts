@@ -12,5 +12,7 @@ dependencies {
 
     implementation(libs.material)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.coil.kt)
+    implementation(libs.coil.kt.compose)
     api(libs.androidx.compose.material3)
 }

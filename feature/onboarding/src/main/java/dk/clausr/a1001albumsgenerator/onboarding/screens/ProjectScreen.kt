@@ -42,6 +42,7 @@ import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.common.android.openLink
 import dk.clausr.core.common.extensions.collectWithLifecycle
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @Composable
 internal fun ProjectRoute(
@@ -73,19 +74,16 @@ internal fun ProjectScreen(
     modifier: Modifier = Modifier,
     error: String? = null,
 ) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val scope = rememberCoroutineScope()
-    val context = LocalContext.current
     var projectId: String by remember {
         mutableStateOf("")
     }
 
-    var isError: Boolean by remember(error) {
-        mutableStateOf(error != null)
-    }
+//    var isError: Boolean by remember(error) {
+//        mutableStateOf(error != null)
+//    }
 
     val setProjectButtonEnabled by remember(projectId, error) {
-        mutableStateOf(projectId.isNotBlank() && !isError)
+        mutableStateOf(projectId.isNotBlank())
     }
 
     Scaffold(
@@ -116,78 +114,111 @@ internal fun ProjectScreen(
             TopAppBar(title = { Text(text = stringResource(id = R.string.onboarding_title_project)) })
         },
     ) {
-        Column(
+        ProjectContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it)
                 .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(text = stringResource(id = R.string.onboarding_description_project))
+            onSetProjectId = { onSetProjectId(it) },
+            error = error,
+            onProjectIdChanged = { projectId = it },
+        )
+    }
+}
 
-            Button(onClick = { context.openLink("https://1001albumsgenerator.com/") }) {
-                Text(stringResource(id = R.string.create_user))
-                Spacer(Modifier.width(4.dp))
-                Icon(painterResource(id = dk.clausr.a1001albumsgenerator.ui.R.drawable.ic_open_external), contentDescription = null)
-            }
+@Composable
+internal fun ProjectContent(
+    onSetProjectId: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    prefilledProjectId: String = "",
+    error: String? = null,
+    onProjectIdChanged: (String) -> Unit = {},
+) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    var projectId: String by remember(prefilledProjectId) {
+        mutableStateOf(prefilledProjectId)
+    }
 
-            Text("then enter it here:")
+    var isError: Boolean by remember(error) {
+        mutableStateOf(error != null)
+    }
+    Timber.d("isError $isError")
 
-            TextField(
-                modifier = Modifier.fillMaxWidth(),
-                label = {
-                    Text("Username")
-                },
-                singleLine = true,
-                value = projectId,
-                keyboardActions = KeyboardActions(onDone = { onSetProjectId(projectId) }),
-                onValueChange = {
-                    projectId = it
-                    isError = false
-                },
-                isError = isError,
-                supportingText = if (isError) {
-                    error?.let { { Text(it) } }
-                } else {
-                    null
-                },
-                trailingIcon = {
-                    AnimatedContent(
-                        targetState = setProjectButtonEnabled,
-                        label = "Icon animation",
-                    ) { setProjectEnabled ->
-                        if (setProjectEnabled) {
-                            IconButton(
-                                onClick = {
-                                    onSetProjectId(projectId)
-                                    scope.launch {
-                                        keyboardController?.hide()
-                                    }
-                                },
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Check,
-                                    contentDescription = null,
-                                )
-                            }
-                        } else {
-                            IconButton(
-                                onClick = {
-                                    projectId = ""
-                                    isError = false
-                                },
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Clear,
-                                    contentDescription = null,
-                                )
-                            }
+    val setProjectButtonEnabled by remember(projectId, error) {
+        mutableStateOf(projectId.isNotBlank() && !isError)
+    }
+
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(text = stringResource(id = R.string.onboarding_description_project))
+
+        Button(onClick = { context.openLink("https://1001albumsgenerator.com/") }) {
+            Text(stringResource(id = R.string.create_user))
+            Spacer(Modifier.width(4.dp))
+            Icon(painterResource(id = dk.clausr.a1001albumsgenerator.ui.R.drawable.ic_open_external), contentDescription = null)
+        }
+
+        Text("then enter it here:")
+
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
+            label = {
+                Text("Username")
+            },
+            singleLine = true,
+            value = projectId,
+            keyboardActions = KeyboardActions(onDone = { onSetProjectId(projectId) }),
+            onValueChange = {
+                projectId = it
+                onProjectIdChanged(it)
+                isError = false
+            },
+            isError = isError,
+            supportingText = if (isError) {
+                error?.let { { Text(it) } }
+            } else {
+                null
+            },
+            trailingIcon = {
+                AnimatedContent(
+                    targetState = setProjectButtonEnabled,
+                    label = "Icon animation",
+                ) { setProjectEnabled ->
+                    if (setProjectEnabled) {
+                        IconButton(
+                            onClick = {
+                                onSetProjectId(projectId)
+                                scope.launch {
+                                    keyboardController?.hide()
+                                }
+                            },
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null,
+                            )
+                        }
+                    } else {
+                        IconButton(
+                            onClick = {
+                                projectId = ""
+                                isError = false
+                            },
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = null,
+                            )
                         }
                     }
-                },
-            )
-        }
+                }
+            },
+        )
     }
 }
 
