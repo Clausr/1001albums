@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,10 +21,8 @@ class OverviewViewModel @Inject constructor(
     val uiState = combine(
         oagRepository.project,
         oagRepository.currentAlbum,
-        oagRepository.historicAlbums,
         oagRepository.widgetState,
-    ) { project, currentAlbum, albums, widgetState ->
-        Timber.d("UiState: ${project?.name}: ${currentAlbum?.name} - ${albums.size}")
+    ) { project, currentAlbum, widgetState ->
         if (project != null) {
             OverviewUiState.Success(
                 project = project,

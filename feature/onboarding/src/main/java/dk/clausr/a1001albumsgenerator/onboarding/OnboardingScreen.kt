@@ -51,6 +51,7 @@ fun OnboardingRoute(
             }
 
             IntroViewEffects.ProjectSet -> {
+                error = null
                 internalNavController.navigate("streamingService")
             }
 

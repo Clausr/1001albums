@@ -6,10 +6,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import dagger.hilt.android.AndroidEntryPoint
+import dk.clausr.a1001albumsgenerator.settings.SettingsRoute
 
 @AndroidEntryPoint
 class AlbumWidgetConfigurationActivity : ComponentActivity() {
+
+    private val viewModel: ConfigurationViewModel by viewModels()
+
     private val appWidgetId: Int by lazy {
         intent?.extras?.getInt(
             AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID,
@@ -33,21 +38,19 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
 
     private fun updateView() {
         setContent {
-            WidgetConfigurationRoute(
-                onApplyChanges = {
+            SettingsRoute(
+                showBack = false,
+                onNavigateUp = {},
+                onClickApply = {
+                    // Start updates and stuff
+                    viewModel.updateWidgets()
+
                     val resultValue = Intent().putExtra(
                         AppWidgetManager.EXTRA_APPWIDGET_ID,
                         appWidgetId,
                     )
                     setResult(RESULT_OK, resultValue)
                     finish()
-                },
-                onProjectIdSet = {
-                    val resultValue = Intent().putExtra(
-                        AppWidgetManager.EXTRA_APPWIDGET_ID,
-                        appWidgetId,
-                    )
-                    setResult(RESULT_OK, resultValue)
                 },
             )
         }

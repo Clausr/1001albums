@@ -20,6 +20,7 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:model"))
     implementation(project(":core:ui"))
+    implementation(project(":feature:onboarding"))
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui.tooling.preview)
