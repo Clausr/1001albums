@@ -62,7 +62,6 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-
     fun markOnboardingAsCompleted() {
         viewModelScope.launch {
             userRepository.setOnboardingCompleted()

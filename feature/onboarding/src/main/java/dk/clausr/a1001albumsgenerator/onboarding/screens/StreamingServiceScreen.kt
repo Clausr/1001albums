@@ -68,7 +68,9 @@ internal fun StreamingServiceScreen(
                             selected = isSelected,
                             onClick = {
                                 selectedPlatform = platform
-                                onSetStreamingPlatform(platform)
+                                if (!showSelectButton) {
+                                    onSetStreamingPlatform(platform)
+                                }
                             },
                         )
                         .padding(
