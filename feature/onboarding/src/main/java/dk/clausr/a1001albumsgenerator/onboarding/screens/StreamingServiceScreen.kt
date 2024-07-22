@@ -34,8 +34,9 @@ internal fun StreamingServiceScreen(
     onSetStreamingPlatform: (StreamingPlatform) -> Unit,
     modifier: Modifier = Modifier,
     preselectedPlatform: StreamingPlatform? = null,
+    showSelectButton: Boolean = true,
 ) {
-    var selectedPlatform: StreamingPlatform? by remember {
+    var selectedPlatform: StreamingPlatform? by remember(preselectedPlatform) {
         mutableStateOf(preselectedPlatform)
     }
 
@@ -65,7 +66,10 @@ internal fun StreamingServiceScreen(
                         .clip(MaterialTheme.shapes.small)
                         .selectable(
                             selected = isSelected,
-                            onClick = { selectedPlatform = platform },
+                            onClick = {
+                                selectedPlatform = platform
+                                onSetStreamingPlatform(platform)
+                            },
                         )
                         .padding(
                             horizontal = 8.dp,
@@ -85,13 +89,15 @@ internal fun StreamingServiceScreen(
             }
         }
 
-        Button(
-            enabled = selectedPlatform != null,
-            onClick = {
-                onSetStreamingPlatform(selectedPlatform!!)
-            },
-        ) {
-            Text("Select")
+        if (showSelectButton) {
+            Button(
+                enabled = selectedPlatform != null,
+                onClick = {
+                    onSetStreamingPlatform(selectedPlatform!!)
+                },
+            ) {
+                Text("Select")
+            }
         }
     }
 }

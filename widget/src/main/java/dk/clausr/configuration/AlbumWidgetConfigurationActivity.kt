@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import dagger.hilt.android.AndroidEntryPoint
+import dk.clausr.a1001albumsgenerator.settings.SettingsRoute
 
 @AndroidEntryPoint
 class AlbumWidgetConfigurationActivity : ComponentActivity() {
@@ -33,21 +34,16 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
 
     private fun updateView() {
         setContent {
-            WidgetConfigurationRoute(
-                onApplyChanges = {
+            SettingsRoute(
+                showBack = false,
+                onNavigateUp = {},
+                onClickApply = {
                     val resultValue = Intent().putExtra(
                         AppWidgetManager.EXTRA_APPWIDGET_ID,
                         appWidgetId,
                     )
                     setResult(RESULT_OK, resultValue)
                     finish()
-                },
-                onProjectIdSet = {
-                    val resultValue = Intent().putExtra(
-                        AppWidgetManager.EXTRA_APPWIDGET_ID,
-                        appWidgetId,
-                    )
-                    setResult(RESULT_OK, resultValue)
                 },
             )
         }

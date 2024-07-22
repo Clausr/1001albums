@@ -3,7 +3,7 @@ package dk.clausr.a1001albumsgenerator.navigation
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import dk.clausr.configuration.WidgetConfigurationRoute
+import dk.clausr.a1001albumsgenerator.settings.SettingsRoute
 import dk.clausr.feature.overview.OverviewRoute
 
 object MainDirections {
@@ -19,25 +19,18 @@ object MainDirections {
 }
 
 fun NavGraphBuilder.mainNavigationGraph(navHostController: NavHostController) {
-    composable(route = MainDirections.ROUTES.HOME) {
+    composable(route = MainDirections.home()) {
         OverviewRoute(
             onConfigureWidget = {
-                navHostController.navigate(MainDirections.ROUTES.WIDGET_CONFIGURATION)
+                navHostController.navigate(MainDirections.widgetConfiguration())
             },
         )
     }
 
-    composable(route = MainDirections.ROUTES.WIDGET_CONFIGURATION) {
-        WidgetConfigurationRoute(
-            onProjectIdSet = { },
-            onApplyChanges = {
-                navHostController.navigate(MainDirections.home()) {
-                    this.popUpTo(MainDirections.ROUTES.WIDGET_CONFIGURATION) {
-                        inclusive = true
-                    }
-                }
-                navHostController.navigateUp()
-            },
+    composable(route = MainDirections.widgetConfiguration()) {
+        SettingsRoute(
+            onNavigateUp = navHostController::navigateUp,
+            onClickApply = navHostController::navigateUp,
         )
     }
 }

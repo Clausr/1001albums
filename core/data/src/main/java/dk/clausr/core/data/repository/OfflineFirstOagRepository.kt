@@ -33,6 +33,7 @@ import dk.clausr.core.model.StreamingServices
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
@@ -56,6 +57,15 @@ class OfflineFirstOagRepository @Inject constructor(
 
     override val projectId: Flow<String?> = widgetDataStore.data.map {
         it.projectId
+    }.distinctUntilChanged()
+
+    override val preferredStreamingPlatform: Flow<StreamingPlatform?> = widgetDataStore.data.map {
+        when (it) {
+            is SerializedWidgetState.Success -> it.data.preferredStreamingPlatform
+            is SerializedWidgetState.Error -> null
+            is SerializedWidgetState.Loading -> null
+            SerializedWidgetState.NotInitialized -> null
+        }
     }
 
     override val project: Flow<Project?> = combine(
