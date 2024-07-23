@@ -86,6 +86,8 @@ dependencies {
 
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.hilt.work)
+
+    implementation(libs.coil.kt)
 }
 
 private fun getEnvNullable(variableName: String): String {

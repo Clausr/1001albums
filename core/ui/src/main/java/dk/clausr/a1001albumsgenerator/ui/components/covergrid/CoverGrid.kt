@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridS
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import coil.compose.AsyncImage
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
@@ -22,7 +23,7 @@ fun CoverGrid(
     modifier: Modifier = Modifier,
     covers: CoverData = CoverData(),
     state: LazyStaggeredGridState = rememberLazyStaggeredGridState(initialFirstVisibleItemIndex = Int.MAX_VALUE / 2),
-    rowCount: Int = 8,
+    rowCount: Int = 6,
 ) {
     LaunchedEffect(Unit) {
         while (true) {
@@ -45,6 +46,7 @@ fun CoverGrid(
             AsyncImage(
                 model = covers.covers[index],
                 contentDescription = null,
+                contentScale = ContentScale.FillHeight,
             )
         }
     }
