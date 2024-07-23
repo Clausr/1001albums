@@ -63,7 +63,7 @@ jobs:
 
       - name: Get release mapping path
         id: releaseMapping
-        run: echo "release_symbols=$(find app/build/outputs/mapping/prodRelease/mapping.txt" >> GITHUB_OUTPUT
+        run: echo "release_symbols=$(find app/build/outputs/mapping/prodRelease/mapping.txt)" >> GITHUB_OUTPUT
 
       - name: Upload Release Build to Artifacts
         uses: actions/upload-artifact@v4
