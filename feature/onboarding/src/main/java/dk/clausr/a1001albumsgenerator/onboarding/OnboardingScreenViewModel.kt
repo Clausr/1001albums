@@ -8,13 +8,13 @@ import dk.clausr.core.common.model.doOnSuccess
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data.repository.UserRepository
 import dk.clausr.core.model.StreamingPlatform
+import dk.clausr.core.network.NetworkError
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,7 +35,7 @@ class OnboardingScreenViewModel @Inject constructor(
         viewModelScope.launch {
             // If user goes back, don't query backend again
             val existingProject = oagRepository.project.firstOrNull()
-            if (existingProject != null && existingProject.name.equals(_projectId.value, ignoreCase = true)) {
+            if (existingProject != null && existingProject.name.equals(projectId, ignoreCase = true)) {
                 sendViewEffect(IntroViewEffects.ProjectSet)
             } else {
                 oagRepository.setProject(projectId)
@@ -43,9 +43,13 @@ class OnboardingScreenViewModel @Inject constructor(
                         sendViewEffect(IntroViewEffects.ProjectSet)
                         this@OnboardingScreenViewModel._projectId.value = projectId
                     }
-                    .doOnFailure { message, throwable ->
-                        Timber.e(throwable, message)
-                        sendViewEffect(IntroViewEffects.ProjectNotFound)
+                    .doOnFailure { error ->
+                        val message = when (error) {
+                            is NetworkError.Generic -> "Something went wrong"
+                            is NetworkError.ProjectNotFound -> "Project not found, try to create one!"
+                            is NetworkError.TooManyRequests -> "Please wait a bit and try again"
+                        }
+                        sendViewEffect(IntroViewEffects.ProjectError(errorMessage = message))
                     }
             }
         }
@@ -75,7 +79,7 @@ class OnboardingScreenViewModel @Inject constructor(
 }
 
 sealed interface IntroViewEffects {
-    data object ProjectNotFound : IntroViewEffects
+    data class ProjectError(val errorMessage: String) : IntroViewEffects
     data object ProjectSet : IntroViewEffects
     data object StreamingServiceSet : IntroViewEffects
     data object OnboardingDone : IntroViewEffects

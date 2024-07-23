@@ -46,7 +46,7 @@ class OagApplication : Application(), Configuration.Provider, ImageLoaderFactory
             .memoryCache(
                 MemoryCache.Builder(this)
                     .maxSizePercent(percent = 0.25)
-                    .build()
+                    .build(),
             )
             .diskCache {
                 DiskCache

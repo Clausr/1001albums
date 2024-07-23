@@ -45,7 +45,7 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
                 .doOnSuccess {
                     workerResult = Result.success()
                 }
-                .doOnFailure { _, _ ->
+                .doOnFailure { _ ->
                     workerResult = Result.failure()
                 }
         } ?: run {
