@@ -78,7 +78,7 @@ jobs:
           path: ${{ steps.releaseMapping.outputs.release_symbols }}
 
   google_play_upload:
-    if: github.ref_type == 'tag'
+    #    if: github.ref_type == 'tag'
     needs: build
     runs-on: ubuntu-latest
 
