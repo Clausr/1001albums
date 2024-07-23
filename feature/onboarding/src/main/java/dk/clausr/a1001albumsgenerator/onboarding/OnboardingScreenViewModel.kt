@@ -55,7 +55,8 @@ class OnboardingScreenViewModel @Inject constructor(
         viewModelScope.launch {
             this@OnboardingScreenViewModel._streamingPlatform.value = streamingPlatform
             oagRepository.setPreferredPlatform(streamingPlatform)
-            sendViewEffect(IntroViewEffects.StreamingServiceSet)
+
+            markIntroFlowAsCompleted()
         }
     }
 
