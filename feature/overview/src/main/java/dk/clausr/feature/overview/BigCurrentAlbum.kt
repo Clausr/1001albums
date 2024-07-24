@@ -8,15 +8,20 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.twotone.Star
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -63,10 +68,12 @@ fun BigCurrentAlbum(
             BigCurrentAlbum(
                 modifier = modifier,
                 album = album,
-                shouldBeRated = state.data.newAvailable,
+                newAlbumAvailable = state.data.newAvailable,
                 openProject = { state.projectUrl?.let(openLink) },
                 openLink = openLink,
                 streamingService = state.data.streamingServices.services.firstOrNull { it.platform == state.data.preferredStreamingPlatform },
+                onRating = { },
+                onDidNotListen = {},
             )
         }
     }
@@ -75,10 +82,12 @@ fun BigCurrentAlbum(
 @Composable
 fun BigCurrentAlbum(
     album: Album,
-    shouldBeRated: Boolean,
+    newAlbumAvailable: Boolean,
     openProject: () -> Unit,
     openLink: (url: String) -> Unit,
     streamingService: StreamingService?,
+    onRating: (rating: Int) -> Unit,
+    onDidNotListen: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -87,13 +96,56 @@ fun BigCurrentAlbum(
             contentAlignment = Alignment.Center,
         ) {
             AsyncImage(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .blur(if (shouldBeRated) 8.dp else 0.dp),
+                modifier = Modifier.fillMaxWidth(),
                 contentScale = ContentScale.FillWidth,
                 model = album.imageUrl,
                 contentDescription = "Cover",
             )
+
+            if (newAlbumAvailable) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background.copy(alpha = 0.75f)),
+                    verticalArrangement = Arrangement.Center,
+                ) {
+                    Text(
+                        text = "How would you rate this?",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                    )
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(
+                            space = 8.dp,
+                            alignment = Alignment.CenterHorizontally,
+                        ),
+                    ) {
+                        for (stars in 1..5) {
+                            val icon = if (stars == 1) Icons.Default.Star else Icons.TwoTone.Star
+
+                            IconButton(onClick = { onRating(stars) }) {
+                                Icon(imageVector = icon, contentDescription = "Rate $stars")
+                            }
+                        }
+                    }
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        horizontalArrangement = Arrangement.Center,
+                    ) {
+                        Button(onClick = {
+                            onDidNotListen()
+                        }) {
+                            Text(text = "Did not listen")
+                        }
+                    }
+                }
+            }
         }
 
         Text(
@@ -158,10 +210,12 @@ fun BigCurrentAlbum(
 private fun CurrentAlbumPreview() {
     OagTheme {
         BigCurrentAlbum(
-            shouldBeRated = false,
+            newAlbumAvailable = false,
             streamingService = StreamingService("id", StreamingPlatform.Spotify),
             openProject = {},
             openLink = {},
+            onDidNotListen = {},
+            onRating = {},
             album = Album(
                 artist = "Black Sabbath",
                 artistOrigin = "UK",
