@@ -18,12 +18,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navigation
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dk.clausr.a1001albumsgenerator.onboarding.components.childHazeModifier
 import dk.clausr.a1001albumsgenerator.onboarding.screens.ProjectNameScreen
 import dk.clausr.a1001albumsgenerator.onboarding.screens.StreamingServiceScreen
-import dk.clausr.a1001albumsgenerator.onboarding.screens.SummaryScreen
 import dk.clausr.a1001albumsgenerator.ui.components.OagNavHost
 import dk.clausr.a1001albumsgenerator.ui.components.covergrid.CoverGrid
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
@@ -46,17 +46,16 @@ fun OnboardingRoute(
 
     viewModel.viewEffect.collectWithLifecycle {
         when (it) {
-            IntroViewEffects.ProjectNotFound -> {
-                error = "Project not found, try to create one!"
+            is IntroViewEffects.ProjectError -> {
+                error = it.errorMessage
             }
 
             IntroViewEffects.ProjectSet -> {
                 error = null
-                internalNavController.navigate("streamingService")
+                internalNavController.navigate(OnboardingDirections.streamingPlatform())
             }
 
-            IntroViewEffects.StreamingServiceSet -> {
-                internalNavController.navigate("summary")
+            IntroViewEffects.StreamingServiceSet -> { /* Not used right now */
             }
 
             IntroViewEffects.OnboardingDone -> {
@@ -71,7 +70,6 @@ fun OnboardingRoute(
         modifier = modifier.fillMaxSize(),
         error = error,
         onSetStreamingPlatform = viewModel::setStreamingPlatform,
-        onNext = viewModel::markIntroFlowAsCompleted,
         projectId = projectId,
         preferredStreamingPlatform = streamingPlatform,
     )
@@ -84,7 +82,6 @@ internal fun OnboardingScreen(
     error: String?,
     onSetProjectId: (String) -> Unit,
     onSetStreamingPlatform: (StreamingPlatform) -> Unit,
-    onNext: () -> Unit,
     modifier: Modifier = Modifier,
     navHostController: NavHostController = rememberNavController(),
 ) {
@@ -97,7 +94,6 @@ internal fun OnboardingScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .haze(state = hazeState),
-            rowCount = 8,
         )
 
         Column(
@@ -106,30 +102,28 @@ internal fun OnboardingScreen(
         ) {
             OagNavHost(
                 navController = navHostController,
-                startDestination = "intro",
+                startDestination = OnboardingDirections.Routes.ROOT,
             ) {
-                composable("intro") {
-                    ProjectNameScreen(
-                        modifier = Modifier.childHazeModifier(hazeState),
-                        prefilledProjectId = projectId.orEmpty(),
-                        onSetProjectId = onSetProjectId,
-                        error = error,
-                    )
-                }
+                navigation(
+                    route = OnboardingDirections.Routes.ROOT,
+                    startDestination = OnboardingDirections.projectName(),
+                ) {
+                    composable(route = OnboardingDirections.projectName()) {
+                        ProjectNameScreen(
+                            modifier = Modifier.childHazeModifier(hazeState),
+                            prefilledProjectId = projectId.orEmpty(),
+                            onSetProjectId = onSetProjectId,
+                            error = error,
+                        )
+                    }
 
-                composable(route = "streamingService") {
-                    StreamingServiceScreen(
-                        modifier = Modifier.childHazeModifier(hazeState),
-                        onSetStreamingPlatform = onSetStreamingPlatform,
-                        preselectedPlatform = preferredStreamingPlatform,
-                    )
-                }
-
-                composable(route = "summary") {
-                    SummaryScreen(
-                        modifier = Modifier.childHazeModifier(hazeState),
-                        onNext = onNext,
-                    )
+                    composable(route = OnboardingDirections.streamingPlatform()) {
+                        StreamingServiceScreen(
+                            modifier = Modifier.childHazeModifier(hazeState),
+                            onSetStreamingPlatform = onSetStreamingPlatform,
+                            preselectedPlatform = preferredStreamingPlatform,
+                        )
+                    }
                 }
             }
         }
@@ -144,7 +138,6 @@ private fun AppScreenPreview() {
             modifier = Modifier.fillMaxSize(),
             onSetProjectId = {},
             error = null,
-            onNext = {},
             onSetStreamingPlatform = {},
             projectId = null,
             preferredStreamingPlatform = null,

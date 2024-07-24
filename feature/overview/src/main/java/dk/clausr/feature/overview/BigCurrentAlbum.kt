@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -87,10 +88,9 @@ fun BigCurrentAlbum(
         ) {
             AsyncImage(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .aspectRatio(1f)
-                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .fillMaxWidth()
                     .blur(if (shouldBeRated) 8.dp else 0.dp),
+                contentScale = ContentScale.FillWidth,
                 model = album.imageUrl,
                 contentDescription = "Cover",
             )

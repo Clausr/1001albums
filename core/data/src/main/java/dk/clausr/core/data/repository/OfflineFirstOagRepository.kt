@@ -30,6 +30,7 @@ import dk.clausr.core.model.Project
 import dk.clausr.core.model.Rating
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
+import dk.clausr.core.network.NetworkError
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -102,7 +103,7 @@ class OfflineFirstOagRepository @Inject constructor(
                 .sortedByDescending { it.generatedAt }
         }
 
-    override suspend fun setProject(projectId: String): Result<Project> {
+    override suspend fun setProject(projectId: String): Result<Project, NetworkError> {
         withContext(ioDispatcher) {
             Timber.d("Set new project $projectId")
             widgetDataStore.updateData { SerializedWidgetState.Loading(projectId) }
@@ -141,7 +142,7 @@ class OfflineFirstOagRepository @Inject constructor(
         albumImageDao.insertAll(albumImageEntities)
     }
 
-    private suspend fun getAndUpdateProject(projectId: String): Result<Project> = withContext(ioDispatcher) {
+    private suspend fun getAndUpdateProject(projectId: String): Result<Project, NetworkError> = withContext(ioDispatcher) {
         networkDataSource.getProject(projectId)
             .doOnSuccess { networkProject ->
                 Timber.d("Got project ${networkProject.name} with ${networkProject.history.size} albums")
@@ -154,8 +155,8 @@ class OfflineFirstOagRepository @Inject constructor(
                     historicAlbums = networkProject.history.map { it.asExternalModel() },
                 )
             }
-            .doOnFailure { message, throwable ->
-                Timber.e(throwable, message ?: "Project failure")
+            .doOnFailure { error ->
+                Timber.e(error.cause, "$error")
             }
             .map {
                 it.asExternalModel()
@@ -215,7 +216,7 @@ class OfflineFirstOagRepository @Inject constructor(
         }
     }
 
-    override suspend fun updateProject(projectId: String): Result<Project> {
+    override suspend fun updateProject(projectId: String): Result<Project, NetworkError> {
         return getAndUpdateProject(projectId)
     }
 }

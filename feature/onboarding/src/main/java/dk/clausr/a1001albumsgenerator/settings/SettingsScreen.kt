@@ -114,7 +114,6 @@ fun SettingsScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .haze(state = hazeState),
-                rowCount = 8,
             )
 
             Column(
