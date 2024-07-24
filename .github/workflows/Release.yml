@@ -71,15 +71,13 @@ jobs:
           path: |
             **/prodRelease/mapping.txt
 
-      - run: ls -R
-
   google_play_upload:
     #    if: github.ref_type == 'tag'
     needs: build
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      #      - uses: actions/checkout@v3
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -99,7 +97,7 @@ jobs:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
           packageName: dk.clausr.a1001albumsgenerator
           releaseFiles: app/build/outputs/bundle/prodRelease/app-prod-release.aab
-          debugSymbols: app/build/intermediates/merged_native_libs/prodRelease/mergeProdReleaseNativeLibs/out/lib
+          #          debugSymbols: app/build/intermediates/merged_native_libs/prodRelease/mergeProdReleaseNativeLibs/out/lib
           track: internal
           status: draft
           mappingFile: app/build/outputs/mapping/prodRelease/mapping.txt
