@@ -77,6 +77,8 @@ jobs:
           name: oag-prod-mapping
           path: ${{ steps.releaseMapping.outputs.release_symbols }}
 
+      - run: ls -R
+
   google_play_upload:
     #    if: github.ref_type == 'tag'
     needs: build
