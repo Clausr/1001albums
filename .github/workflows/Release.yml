@@ -72,13 +72,11 @@ jobs:
             **/prodRelease/mapping.txt
 
   google_play_upload:
-    #    if: github.ref_type == 'tag'
+    if: github.ref_type == 'tag'
     needs: build
     runs-on: ubuntu-latest
 
     steps:
-      #      - uses: actions/checkout@v3
-
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
@@ -89,15 +87,12 @@ jobs:
         with:
           name: oag-prod-mapping
 
-      - run: ls -R
-
       - name: Upload Android Release to Play Store
         uses: r0adkll/upload-google-play@v1.1.3
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
           packageName: dk.clausr.a1001albumsgenerator
           releaseFiles: app/build/outputs/bundle/prodRelease/app-prod-release.aab
-          #          debugSymbols: app/build/intermediates/merged_native_libs/prodRelease/mergeProdReleaseNativeLibs/out/lib
           track: internal
           status: draft
           mappingFile: app/build/outputs/mapping/prodRelease/mapping.txt
