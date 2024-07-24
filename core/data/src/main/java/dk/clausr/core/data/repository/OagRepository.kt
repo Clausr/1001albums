@@ -7,6 +7,7 @@ import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.network.NetworkError
+import dk.clausr.core.ui.CoverData
 import kotlinx.coroutines.flow.Flow
 
 interface OagRepository {
@@ -17,6 +18,8 @@ interface OagRepository {
 
     val widgetState: Flow<SerializedWidgetState>
     val preferredStreamingPlatform: Flow<StreamingPlatform?>
+
+    val albumCovers: Flow<CoverData>
 
     suspend fun setProject(projectId: String): Result<Project, NetworkError>
     suspend fun updateProject(projectId: String): Result<Project, NetworkError>
