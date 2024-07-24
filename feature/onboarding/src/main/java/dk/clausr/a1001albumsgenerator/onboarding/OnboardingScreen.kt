@@ -55,9 +55,6 @@ fun OnboardingRoute(
                 internalNavController.navigate(OnboardingDirections.streamingPlatform())
             }
 
-            IntroViewEffects.StreamingServiceSet -> { /* Not used right now */
-            }
-
             IntroViewEffects.OnboardingDone -> {
                 viewModel.markIntroFlowAsCompleted()
             }

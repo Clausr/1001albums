@@ -8,6 +8,7 @@ import dk.clausr.core.common.model.doOnSuccess
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data.repository.UserRepository
 import dk.clausr.core.model.StreamingPlatform
+import dk.clausr.core.ui.CoverData
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
@@ -28,11 +29,19 @@ class SettingsViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = null,
         )
+
     val streamingPlatform: StateFlow<StreamingPlatform?> = oagRepository.preferredStreamingPlatform.map { it }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = null,
+        )
+
+    val coverData: StateFlow<CoverData> = oagRepository.albumCovers
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = CoverData.default(),
         )
 
     fun setProjectId(projectId: String) {
