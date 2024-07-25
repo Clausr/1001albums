@@ -46,9 +46,8 @@ jobs:
           ENCODED_STRING: ${{ secrets.KEYSTORE_BASE_64 }}
 
         run: |
-          echo "$ENCODED_STRING" | base64 --decode -o keystore-b64.txt
           mkdir -p signing
-          base64 -d keystore-b64.txt > signing/Clausr.keystore
+          echo "$ENCODED_STRING" | base64 --d -o signing/keystore-b64.txt
 
       - name: Build Release bundle
         env:
