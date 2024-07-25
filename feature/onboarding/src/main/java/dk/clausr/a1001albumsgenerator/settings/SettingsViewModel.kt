@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -45,19 +46,18 @@ class SettingsViewModel @Inject constructor(
         )
 
     fun setProjectId(projectId: String) {
+        Timber.d("setProjectId $projectId")
         viewModelScope.launch {
-            // If user goes back, don't query backend again
             val existingProject = oagRepository.project.firstOrNull()
             if (existingProject != null && existingProject.name.equals(projectId, ignoreCase = true)) {
-//                sendViewEffect(IntroViewEffects.ProjectSet)
+                Timber.d("Same as existing project: ${existingProject.name}")
             } else {
                 oagRepository.setProject(projectId)
                     .doOnSuccess {
-//                        sendViewEffect(IntroViewEffects.ProjectSet)
+                        Timber.d("Set project success!")
                     }
                     .doOnFailure { error ->
-//                        Timber.e(error.cause, "Some error..")
-//                        sendViewEffect(IntroViewEffects.ProjectNotFound)
+                        Timber.e(error.cause, "Set project error!")
                     }
             }
         }
@@ -66,7 +66,6 @@ class SettingsViewModel @Inject constructor(
     fun setStreamingPlatform(streamingPlatform: StreamingPlatform) {
         viewModelScope.launch {
             oagRepository.setPreferredPlatform(streamingPlatform)
-//            sendViewEffect(IntroViewEffects.StreamingServiceSet)
         }
     }
 
