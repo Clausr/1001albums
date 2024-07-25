@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.net.toUri
 
-
 fun Context.openProject(
     projectId: String,
     rating: Int? = null,

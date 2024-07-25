@@ -45,6 +45,7 @@ fun BigCurrentAlbum(
     state: SerializedWidgetState,
     album: Album,
     openLink: (url: String) -> Unit,
+    startBurstUpdate: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when (state) {
@@ -79,8 +80,10 @@ fun BigCurrentAlbum(
                 openProject = { state.projectUrl?.let(openLink) },
                 openLink = openLink,
                 streamingService = streamingService,
-                onRating = { stars -> context.openProject(state.currentProjectId, stars) },
-                onDidNotListen = { context.openProject(state.currentProjectId) },
+                onRating = { stars ->
+                    context.openProject(state.currentProjectId, stars)
+                    startBurstUpdate()
+                },
             )
         }
     }
@@ -93,8 +96,7 @@ fun BigCurrentAlbum(
     openProject: () -> Unit,
     openLink: (url: String) -> Unit,
     streamingService: StreamingService?,
-    onRating: (rating: Int) -> Unit,
-    onDidNotListen: () -> Unit,
+    onRating: (rating: Int?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -145,9 +147,7 @@ fun BigCurrentAlbum(
                             .padding(top = 16.dp),
                         horizontalArrangement = Arrangement.Center,
                     ) {
-                        Button(onClick = {
-                            onDidNotListen()
-                        }) {
+                        Button(onClick = { onRating(null) }) {
                             Text(text = "Did not listen")
                         }
                     }
@@ -221,7 +221,6 @@ private fun CurrentAlbumPreview() {
             streamingService = StreamingService("id", StreamingPlatform.Spotify),
             openProject = {},
             openLink = {},
-            onDidNotListen = {},
             onRating = {},
             album = Album(
                 artist = "Black Sabbath",
