@@ -8,22 +8,16 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.twotone.Star
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import dk.clausr.a1001albumsgenerator.ui.helper.icon
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
-import dk.clausr.core.common.extensions.openProject
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectUrl
 import dk.clausr.core.model.Album
@@ -45,7 +38,6 @@ fun BigCurrentAlbum(
     state: SerializedWidgetState,
     album: Album,
     openLink: (url: String) -> Unit,
-    startBurstUpdate: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when (state) {
@@ -54,10 +46,7 @@ fun BigCurrentAlbum(
                 modifier = modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.errorContainer),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(modifier = Modifier.fillMaxWidth(), text = state.message)
-            }
+            )
         }
 
         is SerializedWidgetState.Loading -> {
@@ -71,19 +60,13 @@ fun BigCurrentAlbum(
 
         SerializedWidgetState.NotInitialized -> {}
         is SerializedWidgetState.Success -> {
-            val context = LocalContext.current
-            val streamingService = state.data.streamingServices.services.firstOrNull { it.platform == state.data.preferredStreamingPlatform }
             BigCurrentAlbum(
                 modifier = modifier,
                 album = album,
-                newAlbumAvailable = state.data.newAvailable,
+                shouldBeRated = state.data.newAvailable,
                 openProject = { state.projectUrl?.let(openLink) },
                 openLink = openLink,
-                streamingService = streamingService,
-                onRating = { stars ->
-                    context.openProject(state.currentProjectId, stars)
-                    startBurstUpdate()
-                },
+                streamingService = state.data.streamingServices.services.firstOrNull { it.platform == state.data.preferredStreamingPlatform },
             )
         }
     }
@@ -92,11 +75,10 @@ fun BigCurrentAlbum(
 @Composable
 fun BigCurrentAlbum(
     album: Album,
-    newAlbumAvailable: Boolean,
+    shouldBeRated: Boolean,
     openProject: () -> Unit,
     openLink: (url: String) -> Unit,
     streamingService: StreamingService?,
-    onRating: (rating: Int?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -105,54 +87,13 @@ fun BigCurrentAlbum(
             contentAlignment = Alignment.Center,
         ) {
             AsyncImage(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .blur(if (shouldBeRated) 8.dp else 0.dp),
                 contentScale = ContentScale.FillWidth,
                 model = album.imageUrl,
                 contentDescription = "Cover",
             )
-
-            if (newAlbumAvailable) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background.copy(alpha = 0.75f)),
-                    verticalArrangement = Arrangement.Center,
-                ) {
-                    Text(
-                        text = "How would you rate this?",
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                    )
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(top = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(
-                            space = 8.dp,
-                            alignment = Alignment.CenterHorizontally,
-                        ),
-                    ) {
-                        for (stars in 1..5) {
-                            val icon = if (stars == 1) Icons.Default.Star else Icons.TwoTone.Star
-
-                            IconButton(onClick = { onRating(stars) }) {
-                                Icon(imageVector = icon, contentDescription = "Rate $stars")
-                            }
-                        }
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp),
-                        horizontalArrangement = Arrangement.Center,
-                    ) {
-                        Button(onClick = { onRating(null) }) {
-                            Text(text = "Did not listen")
-                        }
-                    }
-                }
-            }
         }
 
         Text(
@@ -217,11 +158,10 @@ fun BigCurrentAlbum(
 private fun CurrentAlbumPreview() {
     OagTheme {
         BigCurrentAlbum(
-            newAlbumAvailable = true,
+            shouldBeRated = false,
             streamingService = StreamingService("id", StreamingPlatform.Spotify),
             openProject = {},
             openLink = {},
-            onRating = {},
             album = Album(
                 artist = "Black Sabbath",
                 artistOrigin = "UK",

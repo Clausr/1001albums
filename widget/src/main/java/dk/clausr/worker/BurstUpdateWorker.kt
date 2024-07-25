@@ -15,10 +15,8 @@ import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import dk.clausr.core.common.model.doOnFailure
 import dk.clausr.core.common.model.doOnSuccess
 import dk.clausr.core.data.repository.OagRepository
-import dk.clausr.core.network.NetworkError
 import dk.clausr.widget.AlbumCoverWidget
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -47,11 +45,6 @@ class BurstUpdateWorker @AssistedInject constructor(
                     AlbumCoverWidget().updateAll(appContext)
                     result = Result.success()
                 } else {
-                    result = Result.retry()
-                }
-            }
-            .doOnFailure {
-                if (it is NetworkError.TooManyRequests) {
                     result = Result.retry()
                 }
             }
