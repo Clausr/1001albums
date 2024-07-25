@@ -8,12 +8,14 @@ import dk.clausr.core.common.model.doOnSuccess
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data.repository.UserRepository
 import dk.clausr.core.model.StreamingPlatform
+import dk.clausr.core.ui.CoverData
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,6 +30,7 @@ class SettingsViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = null,
         )
+
     val streamingPlatform: StateFlow<StreamingPlatform?> = oagRepository.preferredStreamingPlatform.map { it }
         .stateIn(
             scope = viewModelScope,
@@ -35,20 +38,26 @@ class SettingsViewModel @Inject constructor(
             initialValue = null,
         )
 
+    val coverData: StateFlow<CoverData> = oagRepository.albumCovers
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = CoverData.default(),
+        )
+
     fun setProjectId(projectId: String) {
+        Timber.d("setProjectId $projectId")
         viewModelScope.launch {
-            // If user goes back, don't query backend again
             val existingProject = oagRepository.project.firstOrNull()
             if (existingProject != null && existingProject.name.equals(projectId, ignoreCase = true)) {
-//                sendViewEffect(IntroViewEffects.ProjectSet)
+                Timber.d("Same as existing project: ${existingProject.name}")
             } else {
                 oagRepository.setProject(projectId)
                     .doOnSuccess {
-//                        sendViewEffect(IntroViewEffects.ProjectSet)
+                        Timber.d("Set project success!")
                     }
                     .doOnFailure { error ->
-//                        Timber.e(error.cause, "Some error..")
-//                        sendViewEffect(IntroViewEffects.ProjectNotFound)
+                        Timber.e(error.cause, "Set project error!")
                     }
             }
         }
@@ -57,7 +66,6 @@ class SettingsViewModel @Inject constructor(
     fun setStreamingPlatform(streamingPlatform: StreamingPlatform) {
         viewModelScope.launch {
             oagRepository.setPreferredPlatform(streamingPlatform)
-//            sendViewEffect(IntroViewEffects.StreamingServiceSet)
         }
     }
 

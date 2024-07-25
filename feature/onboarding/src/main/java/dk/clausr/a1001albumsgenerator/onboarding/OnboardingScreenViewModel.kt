@@ -81,6 +81,5 @@ class OnboardingScreenViewModel @Inject constructor(
 sealed interface IntroViewEffects {
     data class ProjectError(val errorMessage: String) : IntroViewEffects
     data object ProjectSet : IntroViewEffects
-    data object StreamingServiceSet : IntroViewEffects
     data object OnboardingDone : IntroViewEffects
 }

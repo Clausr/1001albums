@@ -40,6 +40,7 @@ import dk.clausr.a1001albumsgenerator.onboarding.screens.StreamingServiceScreen
 import dk.clausr.a1001albumsgenerator.ui.components.covergrid.CoverGrid
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.model.StreamingPlatform
+import dk.clausr.core.ui.CoverData
 
 @Composable
 fun SettingsRoute(
@@ -51,7 +52,7 @@ fun SettingsRoute(
 ) {
     val projectId by viewModel.projectId.collectAsState()
     val preferredStreamingPlatform by viewModel.streamingPlatform.collectAsState()
-
+    val covers by viewModel.coverData.collectAsState()
     SettingsScreen(
         modifier = modifier,
         onNavigateUp = onNavigateUp,
@@ -64,6 +65,7 @@ fun SettingsRoute(
             viewModel.markOnboardingAsCompleted()
         },
         showBack = showBack,
+        coverData = covers,
     )
 }
 
@@ -77,6 +79,7 @@ fun SettingsScreen(
     onClickApply: () -> Unit,
     showBack: Boolean,
     modifier: Modifier = Modifier,
+    coverData: CoverData = CoverData.default(),
 ) {
     val hazeState = remember { HazeState() }
 
@@ -114,6 +117,7 @@ fun SettingsScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .haze(state = hazeState),
+                covers = coverData,
             )
 
             Column(

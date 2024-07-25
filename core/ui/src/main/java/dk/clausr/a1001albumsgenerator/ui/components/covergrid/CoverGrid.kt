@@ -17,12 +17,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import coil.compose.AsyncImage
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
+import dk.clausr.core.ui.CoverData
+
+private const val ALBUM_COVERS_TO_SHOW: Int = 1001
 
 @Composable
 fun CoverGrid(
     modifier: Modifier = Modifier,
-    covers: CoverData = CoverData(),
-    state: LazyStaggeredGridState = rememberLazyStaggeredGridState(initialFirstVisibleItemIndex = Int.MAX_VALUE / 2),
+    covers: CoverData = CoverData.default(),
+    state: LazyStaggeredGridState = rememberLazyStaggeredGridState(),
     rowCount: Int = 6,
 ) {
     LaunchedEffect(Unit) {
@@ -40,7 +43,7 @@ fun CoverGrid(
         state = state,
         rows = StaggeredGridCells.Fixed(count = rowCount),
     ) {
-        items(count = Int.MAX_VALUE - 1) {
+        items(count = ALBUM_COVERS_TO_SHOW) {
             val index = it % covers.covers.size
 
             AsyncImage(

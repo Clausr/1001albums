@@ -31,6 +31,7 @@ import dk.clausr.core.model.Rating
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
 import dk.clausr.core.network.NetworkError
+import dk.clausr.core.ui.CoverData
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -218,5 +219,9 @@ class OfflineFirstOagRepository @Inject constructor(
 
     override suspend fun updateProject(projectId: String): Result<Project, NetworkError> {
         return getAndUpdateProject(projectId)
+    }
+
+    override val albumCovers: Flow<CoverData> = albumImageDao.getAlbumCovers().map {
+        CoverData.createCoverDataOrDefault(externalList = it)
     }
 }
