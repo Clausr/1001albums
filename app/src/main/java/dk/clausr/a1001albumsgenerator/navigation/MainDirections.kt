@@ -21,7 +21,7 @@ object MainDirections {
 fun NavGraphBuilder.mainNavigationGraph(navHostController: NavHostController) {
     composable(route = MainDirections.home()) {
         OverviewRoute(
-            navigateToSettings = {
+            onConfigureWidget = {
                 navHostController.navigate(MainDirections.widgetConfiguration())
             },
         )

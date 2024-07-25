@@ -30,7 +30,7 @@ class OverviewViewModel @Inject constructor(
                 widgetState = widgetState,
             )
         } else {
-            OverviewUiState.Error
+            OverviewUiState.NoProject
         }
     }
         .stateIn(
@@ -58,5 +58,6 @@ sealed interface OverviewUiState {
         val widgetState: SerializedWidgetState,
     ) : OverviewUiState
 
+    data object NoProject : OverviewUiState
     data object Error : OverviewUiState
 }

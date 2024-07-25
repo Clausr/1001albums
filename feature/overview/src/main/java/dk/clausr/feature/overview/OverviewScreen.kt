@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -38,7 +39,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dk.clausr.core.common.android.openLink
-import dk.clausr.core.data.workers.UpdateProjectWorker
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.Rating
@@ -48,23 +48,29 @@ import dk.clausr.feature.overview.preview.historicAlbumPreviewData
 
 @Composable
 fun OverviewRoute(
-    navigateToSettings: () -> Unit,
+    onConfigureWidget: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: OverviewViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    LaunchedEffect(uiState) {
+        if (uiState is OverviewUiState.NoProject) {
+            onConfigureWidget()
+        }
+    }
+
     OverviewScreen(
         modifier = modifier,
         state = uiState,
-        navigateToSettings = navigateToSettings,
+        onConfigureWidget = onConfigureWidget,
     )
 }
 
 @Composable
 internal fun OverviewScreen(
     state: OverviewUiState,
-    navigateToSettings: () -> Unit,
+    onConfigureWidget: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -75,7 +81,7 @@ internal fun OverviewScreen(
             TopAppBar(
                 title = { Text(text = "Your project") },
                 actions = {
-                    IconButton(onClick = navigateToSettings) {
+                    IconButton(onClick = onConfigureWidget) {
                         Icon(
                             imageVector = Icons.Default.Settings,
                             contentDescription = "Configure project",
@@ -88,6 +94,9 @@ internal fun OverviewScreen(
         Column(modifier = Modifier.padding(innerPadding)) {
             when (state) {
                 OverviewUiState.Error -> Text("Error")
+                OverviewUiState.NoProject -> {
+                    Text("No project yet mate")
+                }
                 OverviewUiState.Loading -> Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center,
@@ -100,7 +109,7 @@ internal fun OverviewScreen(
                         mutableStateOf(false)
                     }
 
-                    val history by remember(showOnlyDnl, state.project.historicAlbums) {
+                    val history by remember(showOnlyDnl) {
                         mutableStateOf(
                             state.project.historicAlbums.filter {
                                 if (showOnlyDnl) {
@@ -127,9 +136,6 @@ internal fun OverviewScreen(
                                     album = it,
                                     openLink = { url ->
                                         context.openLink(url)
-                                    },
-                                    startBurstUpdate = {
-                                        UpdateProjectWorker.run(context = context, projectId = state.project.name)
                                     },
                                 )
                             }
@@ -197,7 +203,7 @@ internal fun OverviewScreen(
 private fun OverviewPreview() {
     MaterialTheme {
         OverviewScreen(
-            navigateToSettings = {},
+            onConfigureWidget = {},
             state = OverviewUiState.Success(
                 project = Project(
                     name = "GlanceWidget",
