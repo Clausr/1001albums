@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import dk.clausr.a1001albumsgenerator.ui.helper.icon
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
+import dk.clausr.core.common.extensions.openProject
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectUrl
 import dk.clausr.core.model.Album
@@ -51,7 +53,10 @@ fun BigCurrentAlbum(
                 modifier = modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.errorContainer),
-            )
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(modifier = Modifier.fillMaxWidth(), text = state.message)
+            }
         }
 
         is SerializedWidgetState.Loading -> {
@@ -65,15 +70,17 @@ fun BigCurrentAlbum(
 
         SerializedWidgetState.NotInitialized -> {}
         is SerializedWidgetState.Success -> {
+            val context = LocalContext.current
+            val streamingService = state.data.streamingServices.services.firstOrNull { it.platform == state.data.preferredStreamingPlatform }
             BigCurrentAlbum(
                 modifier = modifier,
                 album = album,
                 newAlbumAvailable = state.data.newAvailable,
                 openProject = { state.projectUrl?.let(openLink) },
                 openLink = openLink,
-                streamingService = state.data.streamingServices.services.firstOrNull { it.platform == state.data.preferredStreamingPlatform },
-                onRating = { },
-                onDidNotListen = {},
+                streamingService = streamingService,
+                onRating = { stars -> context.openProject(state.currentProjectId, stars) },
+                onDidNotListen = { context.openProject(state.currentProjectId) },
             )
         }
     }
@@ -210,7 +217,7 @@ fun BigCurrentAlbum(
 private fun CurrentAlbumPreview() {
     OagTheme {
         BigCurrentAlbum(
-            newAlbumAvailable = false,
+            newAlbumAvailable = true,
             streamingService = StreamingService("id", StreamingPlatform.Spotify),
             openProject = {},
             openLink = {},

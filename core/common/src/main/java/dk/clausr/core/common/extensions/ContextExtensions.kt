@@ -1,8 +1,9 @@
-package dk.clausr.extensions
+package dk.clausr.core.common.extensions
 
 import android.content.Context
 import android.content.Intent
 import androidx.core.net.toUri
+
 
 fun Context.openProject(
     projectId: String,

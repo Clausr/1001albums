@@ -44,11 +44,11 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
+import dk.clausr.core.common.extensions.openProject
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectUrl
-import dk.clausr.extensions.openProject
 import dk.clausr.worker.BurstUpdateWorker
 import dk.clausr.worker.SimplifiedWidgetWorker
 import kotlinx.coroutines.delay
@@ -80,7 +80,6 @@ class AlbumCoverWidget : GlanceAppWidget() {
         provideContent {
             val currentState = currentState<SerializedWidgetState>()
 
-            Timber.d("Provide content -- currentstate = $currentState")
             val state: SerializedWidgetState by repo.widgetState
                 .collectAsState(initial = currentState)
 
@@ -116,9 +115,9 @@ fun Content(
 
             SerializedWidgetState.NotInitialized -> {
                 Box(
-                    GlanceModifier.fillMaxSize().background(
-                        GlanceTheme.colors.background,
-                    ),
+                    GlanceModifier
+                        .fillMaxSize()
+                        .background(GlanceTheme.colors.background),
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
