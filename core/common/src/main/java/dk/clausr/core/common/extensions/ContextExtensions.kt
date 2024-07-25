@@ -1,4 +1,4 @@
-package dk.clausr.extensions
+package dk.clausr.core.common.extensions
 
 import android.content.Context
 import android.content.Intent
