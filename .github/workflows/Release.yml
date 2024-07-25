@@ -47,7 +47,7 @@ jobs:
 
         run: |
           mkdir -p signing
-          echo "$ENCODED_STRING" | base64 --d -o signing/keystore-b64.txt
+          echo "$ENCODED_STRING" | base64 --d -o signing/Clausr.keystore
 
       - name: Build Release bundle
         env:
