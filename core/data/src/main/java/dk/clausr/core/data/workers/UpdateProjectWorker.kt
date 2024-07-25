@@ -61,7 +61,6 @@ class UpdateProjectWorker @AssistedInject constructor(
 
         private fun createWorkRequestBuilder(projectId: String): OneTimeWorkRequest.Builder {
             return OneTimeWorkRequestBuilder<UpdateProjectWorker>()
-//                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .setInputData(workDataOf(PROJECT_ID_KEY to projectId))
                 .setConstraints(
                     Constraints.Builder()
@@ -72,7 +71,7 @@ class UpdateProjectWorker @AssistedInject constructor(
                 .setInitialDelay(BACKOFF_SECONDS_DELAY, TimeUnit.SECONDS)
         }
 
-        fun createOneTimeWorkRequest(projectId: String): OneTimeWorkRequest {
+        private fun createOneTimeWorkRequest(projectId: String): OneTimeWorkRequest {
             return createWorkRequestBuilder(projectId).build()
         }
 
