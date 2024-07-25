@@ -1,4 +1,4 @@
-name: Release app
+name: Production app workflow
 
 on:
   push:
@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - name: Checking out branch
