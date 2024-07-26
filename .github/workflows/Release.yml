@@ -1,4 +1,4 @@
-name: Release app
+name: Production app workflow
 
 on:
   push:
@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - name: Checking out branch
@@ -25,11 +25,16 @@ jobs:
           fetch-depth: 0
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: 17
-          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          validate-wrappers: true
+          gradle-home-cache-cleanup: true
 
       - name: Set version code/name
         env:
@@ -46,9 +51,8 @@ jobs:
           ENCODED_STRING: ${{ secrets.KEYSTORE_BASE_64 }}
 
         run: |
-          echo $ENCODED_STRING > keystore-b64.txt 
           mkdir -p signing
-          base64 -d keystore-b64.txt > signing/Clausr.keystore
+          echo "$ENCODED_STRING" | base64 --d -o signing/Clausr.keystore
 
       - name: Build Release bundle
         env:
