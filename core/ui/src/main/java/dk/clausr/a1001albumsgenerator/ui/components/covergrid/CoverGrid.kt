@@ -10,12 +10,17 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyHorizontalStaggeredGri
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import coil.compose.AsyncImage
+import dk.clausr.a1001albumsgenerator.ui.R
+import dk.clausr.a1001albumsgenerator.ui.extensions.forwardingPainter
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.ui.CoverData
 
@@ -49,6 +54,10 @@ fun CoverGrid(
             AsyncImage(
                 model = covers.covers[index],
                 contentDescription = null,
+                placeholder = forwardingPainter(
+                    painterResource(id = R.drawable.album_cover_placeholder),
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
+                ),
                 contentScale = ContentScale.FillHeight,
             )
         }
