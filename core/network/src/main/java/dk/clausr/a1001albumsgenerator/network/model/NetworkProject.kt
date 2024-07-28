@@ -19,11 +19,11 @@ data class NetworkProject(
 data class NetworkHistoricAlbum(
     val album: NetworkAlbum,
     val rating: String? = null,
-    val review: String,
+    val review: String = "",
     @Contextual val generatedAt: Instant,
     val globalRating: Double,
     @SerialName("revealedAlbum")
-    val isRevealed: Boolean,
+    val isRevealed: Boolean = false,
 )
 
 @Serializable
