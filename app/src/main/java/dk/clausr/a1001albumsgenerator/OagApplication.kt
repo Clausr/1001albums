@@ -15,6 +15,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.HiltAndroidApp
 import dagger.hilt.components.SingletonComponent
 import dk.clausr.a1001albumsgenerator.network.BuildConfig
+import io.sentry.SentryLevel
+import io.sentry.android.core.SentryAndroid
+import io.sentry.android.timber.SentryTimberIntegration
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -23,7 +26,22 @@ class OagApplication : Application(), Configuration.Provider, ImageLoaderFactory
     override fun onCreate() {
         super.onCreate()
 
-        Timber.plant(Timber.DebugTree())
+        initTimberAndSentry()
+    }
+
+    private fun initTimberAndSentry() {
+        SentryAndroid.init(this) { options ->
+            if (!BuildConfig.DEBUG) {
+                options.addIntegration(
+                    SentryTimberIntegration(
+                        minEventLevel = SentryLevel.ERROR,
+                        minBreadcrumbLevel = SentryLevel.INFO,
+                    ),
+                )
+            } else {
+                Timber.plant(Timber.DebugTree())
+            }
+        }
     }
 
     @EntryPoint

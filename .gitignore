@@ -10,3 +10,5 @@ local.properties
 *.aab
 *.apk
 /signing
+# Sentry Config File
+sentry.properties
