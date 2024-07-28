@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -49,6 +50,7 @@ class OnboardingScreenViewModel @Inject constructor(
                             is NetworkError.ProjectNotFound -> "Project not found, try to create one!"
                             is NetworkError.TooManyRequests -> "Please wait a bit and try again"
                         }
+                        Timber.e(error.cause, "Could not set project id: $message")
                         sendViewEffect(IntroViewEffects.ProjectError(errorMessage = message))
                     }
             }
