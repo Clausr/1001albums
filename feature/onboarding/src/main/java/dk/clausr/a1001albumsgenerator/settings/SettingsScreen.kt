@@ -1,5 +1,6 @@
 package dk.clausr.a1001albumsgenerator.settings
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -26,8 +29,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -85,6 +91,8 @@ fun SettingsScreen(
     coverData: CoverData = CoverData.default(),
 ) {
     val hazeState = remember { HazeState() }
+    var hideContent by remember { mutableStateOf(false) }
+    val hideContentAlpha by animateFloatAsState(targetValue = if (hideContent) 0f else 1f, label = "Hide content alpha")
 
     Scaffold(
         modifier = modifier,
@@ -110,6 +118,25 @@ fun SettingsScreen(
                         }
                     }
                 },
+                actions = {
+                    IconButton(
+                        onClick = { hideContent = !hideContent },
+                        modifier = Modifier.hazeChild(
+                            state = hazeState,
+                            shape = CircleShape,
+                            style = HazeStyle(
+                                backgroundColor = MaterialTheme.colorScheme.background,
+                                tint = MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
+                            ),
+                        ),
+                    ) {
+                        if (hideContent) {
+                            Icon(imageVector = Icons.Default.VisibilityOff, contentDescription = "Visibility ")
+                        } else {
+                            Icon(imageVector = Icons.Default.Visibility, contentDescription = "Visibility ")
+                        }
+                    }
+                }
             )
         },
         bottomBar = {
@@ -117,6 +144,7 @@ fun SettingsScreen(
             if (showBack) {
                 Row(
                     modifier = Modifier
+                        .alpha(hideContentAlpha)
                         .fillMaxWidth()
                         .navigationBarsPadding(),
                     horizontalArrangement = Arrangement.Center,
@@ -140,6 +168,7 @@ fun SettingsScreen(
 
             Column(
                 modifier = Modifier
+                    .alpha(hideContentAlpha)
                     .padding(it)
                     .padding(horizontal = 16.dp)
                     .verticalScroll(rememberScrollState()),

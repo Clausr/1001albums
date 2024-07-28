@@ -13,4 +13,5 @@ android {
 
 dependencies {
     implementation(libs.haze)
+    implementation(libs.androidx.compose.material.iconsExtended)
 }
