@@ -136,7 +136,7 @@ fun SettingsScreen(
                             Icon(imageVector = Icons.Default.Visibility, contentDescription = "Visibility ")
                         }
                     }
-                }
+                },
             )
         },
         bottomBar = {
