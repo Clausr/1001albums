@@ -45,13 +45,8 @@ class OnboardingScreenViewModel @Inject constructor(
                         this@OnboardingScreenViewModel._projectId.value = projectId
                     }
                     .doOnFailure { error ->
-                        val message = when (error) {
-                            is NetworkError.Generic -> "Something went wrong"
-                            is NetworkError.ProjectNotFound -> "Project not found, try to create one!"
-                            is NetworkError.TooManyRequests -> "Please wait a bit and try again"
-                        }
-                        Timber.e(error.cause, "Could not set project id: $message")
-                        sendViewEffect(IntroViewEffects.ProjectError(errorMessage = message))
+                        Timber.e(error.cause, "Could not set projectId")
+                        sendViewEffect(IntroViewEffects.ProjectError(error = error))
                     }
             }
         }
@@ -81,7 +76,7 @@ class OnboardingScreenViewModel @Inject constructor(
 }
 
 sealed interface IntroViewEffects {
-    data class ProjectError(val errorMessage: String) : IntroViewEffects
+    data class ProjectError(val error: NetworkError) : IntroViewEffects
     data object ProjectSet : IntroViewEffects
     data object OnboardingDone : IntroViewEffects
 }

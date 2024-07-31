@@ -85,35 +85,46 @@ class OfflineFirstOagRepository @Inject constructor(
         project?.asExternalModel(historicAlbums.sortedByDescending { it.generatedAt })
     }
 
-    override val currentAlbum: Flow<Album?> = project
-        .mapNotNull { project ->
-            project?.historicAlbums?.lastRevealedUnratedAlbum()?.album
-                ?: project?.currentAlbumSlug?.let { currentSlug ->
-                    albumDao.getAlbumBySlug(currentSlug)?.asExternalModel()
-                }
+    override val currentAlbum: Flow<Album?> = project.mapNotNull { project ->
+        project?.historicAlbums?.lastRevealedUnratedAlbum()?.album ?: project?.currentAlbumSlug?.let { currentSlug ->
+            albumDao.getAlbumBySlug(currentSlug)?.asExternalModel()
         }
+    }
 
-    override val historicAlbums: Flow<List<HistoricAlbum>> = albumDao.getAlbums()
-        .map { albums ->
-            albums.mapNotNull { albumEntity ->
-                val rating = ratingDao.getRatingByAlbumSlug(albumSlug = albumEntity.slug)
-                val album = albumEntity.asExternalModel()
+    override val historicAlbums: Flow<List<HistoricAlbum>> = albumDao.getAlbums().map { albums ->
+        albums.mapNotNull { albumEntity ->
+            val rating = ratingDao.getRatingByAlbumSlug(albumSlug = albumEntity.slug)
+            val album = albumEntity.asExternalModel()
 
-                rating?.toHistoricAlbum(album)
-            }
-                .sortedByDescending { it.generatedAt }
-        }
+            rating?.toHistoricAlbum(album)
+        }.sortedByDescending { it.generatedAt }
+    }
 
     override suspend fun setProject(projectId: String): Result<Project, NetworkError> {
-        withContext(ioDispatcher) {
-            Timber.d("Set new project $projectId")
-            widgetDataStore.updateData { SerializedWidgetState.Loading(projectId) }
-            projectDao.clearTable()
-            albumDao.clearTable()
-            ratingDao.clearTable()
-        }
+        Timber.d("Set new project $projectId")
+        return networkDataSource.getProject(projectId)
+            .doOnSuccess { networkProject ->
+                widgetDataStore.updateData { oldData ->
+                    val oldPreferredStreamingPlatform = (oldData as? SerializedWidgetState.Success)?.data?.preferredStreamingPlatform
+                    SerializedWidgetState.Loading(projectId, oldPreferredStreamingPlatform)
+                }
+                projectDao.clearTable()
+                albumDao.clearTable()
+                ratingDao.clearTable()
 
-        return getAndUpdateProject(projectId)
+                putNetworkProjectIntoDatabase(networkProject)
+
+                // Update widget
+                updateWidgetData(
+                    project = networkProject.asExternalModel(),
+                    currentAlbum = networkProject.currentAlbum.asExternalModel(),
+                    historicAlbums = networkProject.history.map { it.asExternalModel() },
+                )
+            }
+            .doOnFailure {
+                Timber.w("Could not set new project")
+            }
+            .map(NetworkProject::asExternalModel)
     }
 
     private suspend fun putNetworkProjectIntoDatabase(networkProject: NetworkProject) {
@@ -156,9 +167,9 @@ class OfflineFirstOagRepository @Inject constructor(
                     historicAlbums = networkProject.history.map { it.asExternalModel() },
                 )
             }
-            .doOnFailure { error ->
-                Timber.e(error.cause, "$error")
-            }
+//            .doOnFailure { error ->
+//                Timber.e(error.cause, "$error")
+//            }
             .map {
                 it.asExternalModel()
             }
@@ -181,8 +192,14 @@ class OfflineFirstOagRepository @Inject constructor(
         widgetDataStore.updateData { old ->
             val lastRevealedUnratedAlbum = historicAlbums.lastRevealedUnratedAlbum()
             val albumToUse = lastRevealedUnratedAlbum?.album ?: currentAlbum
-            val oldPreferredPlatform =
-                (old as? SerializedWidgetState.Success)?.data?.preferredStreamingPlatform
+
+            val oldPreferredPlatform = when (old) {
+                is SerializedWidgetState.Loading -> old.previousStreamingPlatform
+                is SerializedWidgetState.Success -> old.data.preferredStreamingPlatform
+                is SerializedWidgetState.Error -> null
+                SerializedWidgetState.NotInitialized -> null
+            }
+
             SerializedWidgetState.Success(
                 data = AlbumWidgetData(
                     newAvailable = lastRevealedUnratedAlbum != null,
@@ -202,9 +219,7 @@ class OfflineFirstOagRepository @Inject constructor(
      * isRevealed == true AND rating == unrated
      */
     private fun List<HistoricAlbum>.lastRevealedUnratedAlbum(): HistoricAlbum? {
-        return this
-            .reversed()
-            .firstOrNull { it.isRevealed && it.rating is Rating.Unrated }
+        return this.reversed().firstOrNull { it.isRevealed && it.rating is Rating.Unrated }
     }
 
     override suspend fun setPreferredPlatform(platform: StreamingPlatform) {
