@@ -49,9 +49,9 @@ internal fun ProjectNameScreen(
         Text("then enter it here:")
 
         ProjectTextField(
-            onSetProjectId = onSetProjectId,
+            onProjectIdChange = onSetProjectId,
             modifier = Modifier.fillMaxWidth(),
-            prefilledProjectId = prefilledProjectId,
+            existingProjectId = prefilledProjectId,
             error = error,
         )
     }

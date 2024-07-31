@@ -1,10 +1,11 @@
 package dk.clausr.a1001albumsgenerator.onboarding.components
 
-import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -17,19 +18,21 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
+import dk.clausr.a1001albumsgenerator.feature.onboarding.R
 import kotlinx.coroutines.launch
 
 @Composable
 fun ProjectTextField(
-    onSetProjectId: (String) -> Unit,
+    onProjectIdChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    prefilledProjectId: String = "",
+    existingProjectId: String = "",
     error: String? = null,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val scope = rememberCoroutineScope()
-    var projectId: String by remember(prefilledProjectId) {
-        mutableStateOf(prefilledProjectId)
+    var projectId: String by remember(existingProjectId) {
+        mutableStateOf(existingProjectId)
     }
 
     var isError: Boolean by remember(error) {
@@ -43,11 +46,15 @@ fun ProjectTextField(
     TextField(
         modifier = modifier,
         label = {
-            Text("Username")
+            Text(stringResource(R.string.username_textfield_label))
         },
         singleLine = true,
         value = projectId,
-        keyboardActions = KeyboardActions(onDone = { onSetProjectId(projectId) }),
+        keyboardActions = KeyboardActions(onDone = {
+            scope.launch {
+                keyboardController?.hide()
+            }
+        }),
         onValueChange = {
             projectId = it
             isError = false
@@ -59,36 +66,24 @@ fun ProjectTextField(
             null
         },
         trailingIcon = {
-            AnimatedContent(
-                targetState = setProjectButtonEnabled,
+            AnimatedVisibility(
+                visible = setProjectButtonEnabled,
+                enter = fadeIn(),
+                exit = fadeOut(),
                 label = "Icon animation",
-            ) { setProjectEnabled ->
-                if (setProjectEnabled) {
-                    IconButton(
-                        onClick = {
-                            onSetProjectId(projectId)
-                            scope.launch {
-                                keyboardController?.hide()
-                            }
-                        },
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = null,
-                        )
-                    }
-                } else {
-                    IconButton(
-                        onClick = {
-                            projectId = ""
-                            isError = false
-                        },
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Clear,
-                            contentDescription = null,
-                        )
-                    }
+            ) {
+                IconButton(
+                    onClick = {
+                        onProjectIdChange(projectId)
+                        scope.launch {
+                            keyboardController?.hide()
+                        }
+                    },
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = null,
+                    )
                 }
             }
         },

@@ -11,4 +11,5 @@
     <string name="create_user">Create a user</string>
     <string name="lets_go">Let\'s go</string>
     <string name="all_set">All set</string>
+    <string name="username_textfield_label">Username</string>
 </resources>

@@ -157,8 +157,8 @@ fun SettingsScreen(
                             ),
                         )
                         .padding(16.dp),
-                    onSetProjectId = onSetProjectId,
-                    prefilledProjectId = projectId.orEmpty(),
+                    onProjectIdChange = onSetProjectId,
+                    existingProjectId = projectId.orEmpty(),
                 )
 
                 StreamingServiceScreen(

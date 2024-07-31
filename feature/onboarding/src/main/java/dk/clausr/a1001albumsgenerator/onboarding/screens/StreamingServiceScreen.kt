@@ -1,5 +1,6 @@
 package dk.clausr.a1001albumsgenerator.onboarding.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dk.clausr.a1001albumsgenerator.onboarding.components.OnboardingTitle
+import dk.clausr.a1001albumsgenerator.ui.extensions.conditional
 import dk.clausr.a1001albumsgenerator.ui.helper.icon
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.model.StreamingPlatform
@@ -64,6 +66,9 @@ internal fun StreamingServiceScreen(
                     Modifier
                         .fillMaxWidth()
                         .clip(MaterialTheme.shapes.small)
+                        .conditional(isSelected) {
+                            background(itemColor.copy(alpha = 0.1f))
+                        }
                         .selectable(
                             selected = isSelected,
                             onClick = {
@@ -86,7 +91,11 @@ internal fun StreamingServiceScreen(
                         painter = painterResource(id = platform.icon()),
                         contentDescription = null,
                     )
-                    Text(text = platform.name, color = itemColor)
+                    Text(
+                        text = platform.name,
+                        color = itemColor,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
                 }
             }
         }
