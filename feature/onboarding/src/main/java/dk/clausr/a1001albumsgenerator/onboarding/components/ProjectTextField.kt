@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import dk.clausr.a1001albumsgenerator.feature.onboarding.R
+import dk.clausr.core.network.NetworkError
 import kotlinx.coroutines.launch
 
 @Composable
@@ -27,7 +28,7 @@ fun ProjectTextField(
     onProjectIdChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     existingProjectId: String = "",
-    error: String? = null,
+    error: NetworkError? = null,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val scope = rememberCoroutineScope()
@@ -40,7 +41,7 @@ fun ProjectTextField(
     }
 
     val setProjectButtonEnabled by remember(projectId, error) {
-        mutableStateOf(projectId.isNotBlank() && !isError)
+        mutableStateOf(projectId.isNotBlank() && (!isError || error is NetworkError.TooManyRequests))
     }
 
     TextField(
@@ -61,7 +62,14 @@ fun ProjectTextField(
         },
         isError = isError,
         supportingText = if (isError) {
-            error?.let { { Text(it) } }
+            val errorText = when (error) {
+                is NetworkError.Generic -> "Something went wrong"
+                is NetworkError.ProjectNotFound -> "Project not found, try to create one!"
+                is NetworkError.TooManyRequests -> "Please wait a bit and try again"
+                null -> null
+            }
+
+            errorText?.let { { Text(it) } }
         } else {
             null
         },

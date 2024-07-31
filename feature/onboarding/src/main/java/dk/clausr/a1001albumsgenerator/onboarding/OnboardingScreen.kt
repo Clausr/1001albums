@@ -29,6 +29,7 @@ import dk.clausr.a1001albumsgenerator.ui.components.covergrid.CoverGrid
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.common.extensions.collectWithLifecycle
 import dk.clausr.core.model.StreamingPlatform
+import dk.clausr.core.network.NetworkError
 
 @Composable
 fun OnboardingRoute(
@@ -37,7 +38,7 @@ fun OnboardingRoute(
 ) {
     val internalNavController = rememberNavController()
 
-    var error: String? by remember {
+    var error: NetworkError? by remember {
         mutableStateOf(null)
     }
 
@@ -47,7 +48,7 @@ fun OnboardingRoute(
     viewModel.viewEffect.collectWithLifecycle {
         when (it) {
             is IntroViewEffects.ProjectError -> {
-                error = it.errorMessage
+                error = it.error
             }
 
             IntroViewEffects.ProjectSet -> {
@@ -76,7 +77,7 @@ fun OnboardingRoute(
 internal fun OnboardingScreen(
     projectId: String?,
     preferredStreamingPlatform: StreamingPlatform?,
-    error: String?,
+    error: NetworkError?,
     onSetProjectId: (String) -> Unit,
     onSetStreamingPlatform: (StreamingPlatform) -> Unit,
     modifier: Modifier = Modifier,

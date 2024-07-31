@@ -26,7 +26,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -42,8 +44,11 @@ import dk.clausr.a1001albumsgenerator.onboarding.screens.StreamingServiceScreen
 import dk.clausr.a1001albumsgenerator.ui.components.covergrid.CoverGrid
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.common.android.openLink
+import dk.clausr.core.common.extensions.collectWithLifecycle
 import dk.clausr.core.model.StreamingPlatform
+import dk.clausr.core.network.NetworkError
 import dk.clausr.core.ui.CoverData
+import timber.log.Timber
 
 @Composable
 fun SettingsRoute(
@@ -56,6 +61,18 @@ fun SettingsRoute(
     val projectId by viewModel.projectId.collectAsState()
     val preferredStreamingPlatform by viewModel.streamingPlatform.collectAsState()
     val covers by viewModel.coverData.collectAsState()
+
+    var error: NetworkError? by remember {
+        mutableStateOf(null)
+    }
+
+    viewModel.viewEffect.collectWithLifecycle {
+        Timber.v("Handle viewEffect: $it")
+        when (it) {
+            is SettingsViewEffect.Error -> error = it.error
+            SettingsViewEffect.ProjectSet -> error = null
+        }
+    }
     SettingsScreen(
         modifier = modifier,
         onNavigateUp = onNavigateUp,
@@ -69,6 +86,7 @@ fun SettingsRoute(
         },
         showBack = showBack,
         coverData = covers,
+        error = error,
     )
 }
 
@@ -81,6 +99,7 @@ fun SettingsScreen(
     onSetProjectId: (String) -> Unit,
     onClickApply: () -> Unit,
     showBack: Boolean,
+    error: NetworkError?,
     modifier: Modifier = Modifier,
     coverData: CoverData = CoverData.default(),
 ) {
@@ -159,6 +178,7 @@ fun SettingsScreen(
                         .padding(16.dp),
                     onProjectIdChange = onSetProjectId,
                     existingProjectId = projectId.orEmpty(),
+                    error = error,
                 )
 
                 StreamingServiceScreen(
@@ -219,6 +239,7 @@ private fun SettingsPreview() {
             onSetProjectId = {},
             onClickApply = {},
             showBack = true,
+            error = null,
         )
     }
 }
