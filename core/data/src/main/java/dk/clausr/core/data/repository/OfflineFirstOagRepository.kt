@@ -10,9 +10,9 @@ import dk.clausr.core.common.model.map
 import dk.clausr.core.common.network.Dispatcher
 import dk.clausr.core.common.network.OagDispatchers
 import dk.clausr.core.data.model.asExternalModel
+import dk.clausr.core.data.model.mapToHistoricAlbum
 import dk.clausr.core.data.model.toAlbumImageEntities
 import dk.clausr.core.data.model.toEntity
-import dk.clausr.core.data.model.toHistoricAlbum
 import dk.clausr.core.data.model.toRatingEntity
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectId
@@ -23,6 +23,7 @@ import dk.clausr.core.database.dao.RatingDao
 import dk.clausr.core.database.model.AlbumEntity
 import dk.clausr.core.database.model.AlbumImageEntity
 import dk.clausr.core.database.model.RatingEntity
+import dk.clausr.core.database.model.RatingWithAlbum
 import dk.clausr.core.model.Album
 import dk.clausr.core.model.AlbumWidgetData
 import dk.clausr.core.model.HistoricAlbum
@@ -72,17 +73,10 @@ class OfflineFirstOagRepository @Inject constructor(
 
     override val project: Flow<Project?> = combine(
         projectDao.getProject(),
-        albumDao.getAlbums(),
+        ratingDao.getRatingsWithAlbums(),
     ) { project, albums ->
-        val history = albums.map(AlbumEntity::asExternalModel)
-        // TODO Optimize
-        val ratings = ratingDao.getRatingByAlbumSlugs(albums.map(AlbumEntity::slug))
-
-        val historicAlbums = ratings.map { rating ->
-            rating.toHistoricAlbum(history.first { it.slug == rating.albumSlug })
-        }
-
-        project?.asExternalModel(historicAlbums.sortedByDescending { it.generatedAt })
+        val historicAlbums = albums.map(RatingWithAlbum::mapToHistoricAlbum)
+        project?.asExternalModel(historicAlbums)
     }
 
     override val currentAlbum: Flow<Album?> = project.mapNotNull { project ->
@@ -91,13 +85,8 @@ class OfflineFirstOagRepository @Inject constructor(
         }
     }
 
-    override val historicAlbums: Flow<List<HistoricAlbum>> = albumDao.getAlbums().map { albums ->
-        albums.mapNotNull { albumEntity ->
-            val rating = ratingDao.getRatingByAlbumSlug(albumSlug = albumEntity.slug)
-            val album = albumEntity.asExternalModel()
-
-            rating?.toHistoricAlbum(album)
-        }.sortedByDescending { it.generatedAt }
+    override val historicAlbums: Flow<List<HistoricAlbum>> = ratingDao.getRatingsWithAlbums().map { ratingsWithAlbum ->
+        ratingsWithAlbum.map(RatingWithAlbum::mapToHistoricAlbum)
     }
 
     override suspend fun setProject(projectId: String): Result<Project, NetworkError> {
