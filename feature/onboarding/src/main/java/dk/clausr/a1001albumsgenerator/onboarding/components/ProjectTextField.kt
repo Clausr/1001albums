@@ -1,10 +1,11 @@
 package dk.clausr.a1001albumsgenerator.onboarding.components
 
-import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -17,19 +18,22 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
+import dk.clausr.a1001albumsgenerator.feature.onboarding.R
+import dk.clausr.core.network.NetworkError
 import kotlinx.coroutines.launch
 
 @Composable
 fun ProjectTextField(
-    onSetProjectId: (String) -> Unit,
+    onProjectIdChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    prefilledProjectId: String = "",
-    error: String? = null,
+    existingProjectId: String = "",
+    error: NetworkError? = null,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val scope = rememberCoroutineScope()
-    var projectId: String by remember(prefilledProjectId) {
-        mutableStateOf(prefilledProjectId)
+    var projectId: String by remember(existingProjectId) {
+        mutableStateOf(existingProjectId)
     }
 
     var isError: Boolean by remember(error) {
@@ -37,58 +41,57 @@ fun ProjectTextField(
     }
 
     val setProjectButtonEnabled by remember(projectId, error) {
-        mutableStateOf(projectId.isNotBlank() && !isError)
+        mutableStateOf(projectId.isNotBlank() && (!isError || error is NetworkError.TooManyRequests))
     }
 
     TextField(
         modifier = modifier,
         label = {
-            Text("Username")
+            Text(stringResource(R.string.username_textfield_label))
         },
         singleLine = true,
         value = projectId,
-        keyboardActions = KeyboardActions(onDone = { onSetProjectId(projectId) }),
+        keyboardActions = KeyboardActions(onDone = {
+            scope.launch {
+                keyboardController?.hide()
+            }
+        }),
         onValueChange = {
             projectId = it
             isError = false
         },
         isError = isError,
         supportingText = if (isError) {
-            error?.let { { Text(it) } }
+            val errorText = when (error) {
+                is NetworkError.Generic -> "Something went wrong"
+                is NetworkError.ProjectNotFound -> "Project not found, try to create one!"
+                is NetworkError.TooManyRequests -> "Please wait a bit and try again"
+                null -> null
+            }
+
+            errorText?.let { { Text(it) } }
         } else {
             null
         },
         trailingIcon = {
-            AnimatedContent(
-                targetState = setProjectButtonEnabled,
+            AnimatedVisibility(
+                visible = setProjectButtonEnabled,
+                enter = fadeIn(),
+                exit = fadeOut(),
                 label = "Icon animation",
-            ) { setProjectEnabled ->
-                if (setProjectEnabled) {
-                    IconButton(
-                        onClick = {
-                            onSetProjectId(projectId)
-                            scope.launch {
-                                keyboardController?.hide()
-                            }
-                        },
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = null,
-                        )
-                    }
-                } else {
-                    IconButton(
-                        onClick = {
-                            projectId = ""
-                            isError = false
-                        },
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Clear,
-                            contentDescription = null,
-                        )
-                    }
+            ) {
+                IconButton(
+                    onClick = {
+                        onProjectIdChange(projectId)
+                        scope.launch {
+                            keyboardController?.hide()
+                        }
+                    },
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = null,
+                    )
                 }
             }
         },

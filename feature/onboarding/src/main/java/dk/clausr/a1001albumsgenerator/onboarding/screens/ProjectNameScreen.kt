@@ -21,13 +21,14 @@ import dk.clausr.a1001albumsgenerator.onboarding.components.OnboardingTitle
 import dk.clausr.a1001albumsgenerator.onboarding.components.ProjectTextField
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.common.android.openLink
+import dk.clausr.core.network.NetworkError
 
 @Composable
 internal fun ProjectNameScreen(
     onSetProjectId: (String) -> Unit,
     modifier: Modifier = Modifier,
     prefilledProjectId: String = "",
-    error: String? = null,
+    error: NetworkError? = null,
 ) {
     val context = LocalContext.current
 
@@ -49,9 +50,9 @@ internal fun ProjectNameScreen(
         Text("then enter it here:")
 
         ProjectTextField(
-            onSetProjectId = onSetProjectId,
+            onProjectIdChange = onSetProjectId,
             modifier = Modifier.fillMaxWidth(),
-            prefilledProjectId = prefilledProjectId,
+            existingProjectId = prefilledProjectId,
             error = error,
         )
     }

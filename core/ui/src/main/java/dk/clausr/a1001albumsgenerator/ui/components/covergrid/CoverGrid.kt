@@ -4,6 +4,7 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.staggeredgrid.LazyHorizontalStaggeredGrid
@@ -58,6 +59,7 @@ fun CoverGrid(
                     painterResource(id = R.drawable.album_cover_placeholder),
                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
                 ),
+                modifier = Modifier.aspectRatio(1f, matchHeightConstraintsFirst = true),
                 contentScale = ContentScale.FillHeight,
             )
         }

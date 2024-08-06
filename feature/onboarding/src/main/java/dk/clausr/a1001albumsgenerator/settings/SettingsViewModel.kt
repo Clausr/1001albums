@@ -8,11 +8,14 @@ import dk.clausr.core.common.model.doOnSuccess
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data.repository.UserRepository
 import dk.clausr.core.model.StreamingPlatform
+import dk.clausr.core.network.NetworkError
 import dk.clausr.core.ui.CoverData
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -23,6 +26,8 @@ class SettingsViewModel @Inject constructor(
     private val oagRepository: OagRepository,
     private val userRepository: UserRepository,
 ) : ViewModel() {
+    private val _viewEffect = Channel<SettingsViewEffect>(Channel.BUFFERED)
+    val viewEffect = _viewEffect.receiveAsFlow()
 
     val projectId: StateFlow<String?> = oagRepository.projectId.map { it }
         .stateIn(
@@ -55,9 +60,11 @@ class SettingsViewModel @Inject constructor(
                 oagRepository.setProject(projectId)
                     .doOnSuccess {
                         Timber.d("Set project success!")
+                        sendViewEffect(SettingsViewEffect.ProjectSet)
                     }
                     .doOnFailure { error ->
-                        Timber.e(error.cause, "Set project error!")
+                        Timber.e(error.cause, "Could not change projectId")
+                        sendViewEffect(SettingsViewEffect.Error(error = error))
                     }
             }
         }
@@ -74,10 +81,15 @@ class SettingsViewModel @Inject constructor(
             userRepository.setOnboardingCompleted()
         }
     }
+
+    private fun sendViewEffect(viewEffect: SettingsViewEffect) {
+        viewModelScope.launch {
+            _viewEffect.send(viewEffect)
+        }
+    }
 }
 
 sealed interface SettingsViewEffect {
+    data class Error(val error: NetworkError) : SettingsViewEffect
     data object ProjectSet : SettingsViewEffect
-    data class ProjectNotSet(val message: String) : SettingsViewEffect
-    data object StreamingPlatformSet : SettingsViewEffect
 }
