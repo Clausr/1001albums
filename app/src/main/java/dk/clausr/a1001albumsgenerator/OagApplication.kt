@@ -15,6 +15,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.HiltAndroidApp
 import dagger.hilt.components.SingletonComponent
 import dk.clausr.a1001albumsgenerator.network.BuildConfig
+import dk.clausr.worker.SimplifiedWidgetWorker
 import io.sentry.SentryLevel
 import io.sentry.android.core.SentryAndroid
 import io.sentry.android.timber.SentryTimberIntegration
@@ -26,7 +27,13 @@ class OagApplication : Application(), Configuration.Provider, ImageLoaderFactory
     override fun onCreate() {
         super.onCreate()
 
+        startWorker()
+
         initTimberAndSentry()
+    }
+
+    private fun startWorker() {
+        SimplifiedWidgetWorker.start(this)
     }
 
     private fun initTimberAndSentry() {

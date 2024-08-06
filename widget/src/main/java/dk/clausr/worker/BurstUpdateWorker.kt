@@ -88,7 +88,7 @@ class BurstUpdateWorker @AssistedInject constructor(
             WorkManager.getInstance(context)
                 .enqueueUniqueWork(
                     "BurstUpdateWorker",
-                    ExistingWorkPolicy.KEEP,
+                    ExistingWorkPolicy.REPLACE,
                     enqueueBurstUpdate(projectId),
                 )
         }
