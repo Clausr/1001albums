@@ -17,7 +17,7 @@ interface AlbumImageDao {
         SELECT DISTINCT ai.url
         FROM album_images ai
         INNER JOIN ratings r ON ai.albumSlug = r.albumSlug
-        WHERE r.rating >= 3 AND ai.height > 200 AND ai.height < 600
+        WHERE r.rating > 3 AND ai.height > 200 AND ai.height < 600
         ORDER BY r.globalRating DESC;
     """,
     )
