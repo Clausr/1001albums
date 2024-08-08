@@ -24,6 +24,7 @@ import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectId
 import dk.clausr.widget.AlbumCoverWidget
 import kotlinx.coroutines.flow.firstOrNull
+import timber.log.Timber
 import java.time.Duration
 
 @HiltWorker
@@ -73,7 +74,7 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
         fun enqueueUnique(context: Context) {
             WorkManager.getInstance(context).enqueueUniqueWork(
                 SIMPLIFIED_WORKER_UNIQUE_NAME,
-                ExistingWorkPolicy.REPLACE,
+                ExistingWorkPolicy.KEEP,
                 startSingle(),
             )
         }
@@ -83,7 +84,6 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
         private val periodicConstraints =
             Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
-                .setRequiresBatteryNotLow(true)
                 .build()
 
         private fun periodicWorkSync() = PeriodicWorkRequestBuilder<SimplifiedWidgetWorker>(
@@ -101,6 +101,7 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
             context: Context,
             policy: ExistingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.UPDATE,
         ) {
+            Timber.d("Periodic update worker started")
             WorkManager.getInstance(context).enqueueUniquePeriodicWork(
                 PERIODIC_SYNC,
                 policy,

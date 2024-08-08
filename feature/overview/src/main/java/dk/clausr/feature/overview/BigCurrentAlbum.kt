@@ -181,6 +181,15 @@ fun BigCurrentAlbum(
                 alignment = Alignment.CenterHorizontally,
             ),
         ) {
+            FilledIconButton(
+                onClick = { openLink(album.wikipediaUrl) },
+            ) {
+                Icon(
+                    painterResource(id = uiR.drawable.ic_wiki),
+                    contentDescription = null,
+                )
+            }
+
             streamingService.takeIf { it?.streamingLink?.isNotBlank() == true }?.let { streaming ->
                 FilledIconButton(
                     onClick = { openLink(streaming.streamingLink) },
@@ -190,14 +199,6 @@ fun BigCurrentAlbum(
                         contentDescription = null,
                     )
                 }
-            }
-            FilledIconButton(
-                onClick = { openLink(album.wikipediaUrl) },
-            ) {
-                Icon(
-                    painterResource(id = uiR.drawable.ic_wiki),
-                    contentDescription = null,
-                )
             }
 
             FilledIconButton(

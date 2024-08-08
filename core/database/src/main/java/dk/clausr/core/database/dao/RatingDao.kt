@@ -4,7 +4,10 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import dk.clausr.core.database.model.RatingEntity
+import dk.clausr.core.database.model.RatingWithAlbum
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface RatingDao {
@@ -14,8 +17,9 @@ interface RatingDao {
     @Query("SELECT * FROM ratings WHERE albumSlug = :albumSlug")
     suspend fun getRatingByAlbumSlug(albumSlug: String): RatingEntity?
 
-    @Query("SELECT * FROM ratings WHERE albumSlug IN (:albumSlugs)")
-    suspend fun getRatingByAlbumSlugs(albumSlugs: List<String>): List<RatingEntity>
+    @Transaction
+    @Query("SELECT * FROM ratings ORDER BY generatedAt DESC")
+    fun getRatingsWithAlbums(): Flow<List<RatingWithAlbum>>
 
     @Query("DELETE FROM ratings")
     suspend fun clearTable()
