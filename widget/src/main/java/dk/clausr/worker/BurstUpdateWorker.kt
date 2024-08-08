@@ -45,6 +45,9 @@ class BurstUpdateWorker @AssistedInject constructor(
 
                 if (isLatestAlbumRated) {
                     AlbumCoverWidget().updateAll(appContext)
+
+                    // (Re)Start recurring poll
+                    SimplifiedWidgetWorker.enqueueUnique(appContext)
                     result = Result.success()
                 } else {
                     result = Result.retry()
@@ -88,7 +91,7 @@ class BurstUpdateWorker @AssistedInject constructor(
             WorkManager.getInstance(context)
                 .enqueueUniqueWork(
                     "BurstUpdateWorker",
-                    ExistingWorkPolicy.REPLACE,
+                    ExistingWorkPolicy.KEEP,
                     enqueueBurstUpdate(projectId),
                 )
         }
