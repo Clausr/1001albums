@@ -228,4 +228,6 @@ class OfflineFirstOagRepository @Inject constructor(
     override val albumCovers: Flow<CoverData> = albumImageDao.getAlbumCovers().map {
         CoverData.createCoverDataOrDefault(externalList = it)
     }
+
+    override fun getHistoricAlbum(slug: String): Flow<HistoricAlbum> = ratingDao.getRatingWithAlbum(slug).map(RatingWithAlbum::mapToHistoricAlbum)
 }

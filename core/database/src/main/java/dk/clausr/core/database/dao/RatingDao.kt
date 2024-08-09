@@ -21,6 +21,10 @@ interface RatingDao {
     @Query("SELECT * FROM ratings ORDER BY generatedAt DESC")
     fun getRatingsWithAlbums(): Flow<List<RatingWithAlbum>>
 
+    @Transaction
+    @Query("SELECT * FROM ratings WHERE albumSlug = :slug")
+    fun getRatingWithAlbum(slug: String): Flow<RatingWithAlbum>
+
     @Query("DELETE FROM ratings")
     suspend fun clearTable()
 }

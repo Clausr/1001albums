@@ -25,4 +25,5 @@ interface OagRepository {
     suspend fun updateProject(projectId: String): Result<Project, NetworkError>
     suspend fun setPreferredPlatform(platform: StreamingPlatform)
     suspend fun isLatestAlbumRated(): Boolean
+    fun getHistoricAlbum(slug: String): Flow<HistoricAlbum>
 }
