@@ -137,6 +137,16 @@ internal fun OverviewScreen(
 
                         if (state.project.historicAlbums.isNotEmpty()) {
                             item {
+                                AlbumRow(
+                                    title = "Did not listen",
+                                    albums = state.didNotListen,
+                                    onClickAlbum = { slug ->
+
+                                    }
+                                )
+                            }
+
+                            item {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -211,6 +221,7 @@ private fun OverviewPreview() {
                 ),
                 currentAlbum = albumPreviewData,
                 widgetState = SerializedWidgetState.NotInitialized,
+                didNotListen = emptyList(),
             ),
         )
     }
