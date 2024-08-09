@@ -6,7 +6,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.model.Album
+import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Project
+import dk.clausr.core.model.Rating
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
@@ -27,6 +29,7 @@ class OverviewViewModel @Inject constructor(
                 project = project,
                 currentAlbum = currentAlbum,
                 widgetState = widgetState,
+                didNotListen = project.historicAlbums.filter { it.rating !is Rating.Rated },
             )
         } else {
             OverviewUiState.Error
@@ -43,6 +46,7 @@ sealed interface OverviewUiState {
     data object Loading : OverviewUiState
     data class Success(
         val project: Project,
+        val didNotListen: List<HistoricAlbum>,
         val currentAlbum: Album?,
         val widgetState: SerializedWidgetState,
     ) : OverviewUiState
