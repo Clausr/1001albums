@@ -49,6 +49,7 @@ import dk.clausr.feature.overview.preview.historicAlbumPreviewData
 @Composable
 fun OverviewRoute(
     navigateToSettings: () -> Unit,
+    navigateToAlbumDetails: (slug: String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: OverviewViewModel = hiltViewModel(),
 ) {
@@ -58,6 +59,7 @@ fun OverviewRoute(
         modifier = modifier,
         state = uiState,
         navigateToSettings = navigateToSettings,
+        navigateToAlbumDetails = navigateToAlbumDetails,
     )
 }
 
@@ -65,6 +67,7 @@ fun OverviewRoute(
 internal fun OverviewScreen(
     state: OverviewUiState,
     navigateToSettings: () -> Unit,
+    navigateToAlbumDetails: (slug: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -140,9 +143,7 @@ internal fun OverviewScreen(
                                 AlbumRow(
                                     title = "Did not listen",
                                     albums = state.didNotListen,
-                                    onClickAlbum = { slug ->
-
-                                    }
+                                    onClickAlbum = navigateToAlbumDetails,
                                 )
                             }
 
@@ -208,6 +209,7 @@ private fun OverviewPreview() {
     MaterialTheme {
         OverviewScreen(
             navigateToSettings = {},
+            navigateToAlbumDetails = {},
             state = OverviewUiState.Success(
                 project = Project(
                     name = "GlanceWidget",

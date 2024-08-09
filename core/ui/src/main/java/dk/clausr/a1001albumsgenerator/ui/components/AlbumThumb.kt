@@ -65,6 +65,7 @@ fun AlbumThumb(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
+
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = artist,
