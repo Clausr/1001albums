@@ -1,9 +1,8 @@
 package dk.clausr.a1001albumsgenerator.ui.components
 
-import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,39 +19,39 @@ fun OagNavHost(
     startDestination: String,
     modifier: Modifier = Modifier,
     contentAlignment: Alignment = Alignment.Center,
-    builder: NavGraphBuilder.() -> Unit,
+    builder: NavGraphBuilder.(sharedTransitionScope: SharedTransitionScope) -> Unit,
 ) {
-    SharedTransitionScope {
+    SharedTransitionLayout {
         NavHost(
             navController = navController,
             startDestination = startDestination,
             modifier = modifier,
             contentAlignment = contentAlignment,
-            enterTransition = {
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Left,
-                    animationSpec = tween(NAVIGATION_ANIMATION_TIME),
-                )
-            },
-            exitTransition = {
-                slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Left,
-                    animationSpec = tween(NAVIGATION_ANIMATION_TIME),
-                )
-            },
-            popEnterTransition = {
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(NAVIGATION_ANIMATION_TIME),
-                )
-            },
-            popExitTransition = {
-                slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(NAVIGATION_ANIMATION_TIME),
-                )
-            },
-            builder = builder,
+//            enterTransition = {
+//                slideIntoContainer(
+//                    AnimatedContentTransitionScope.SlideDirection.Left,
+//                    animationSpec = tween(NAVIGATION_ANIMATION_TIME),
+//                )
+//            },
+//            exitTransition = {
+//                slideOutOfContainer(
+//                    AnimatedContentTransitionScope.SlideDirection.Left,
+//                    animationSpec = tween(NAVIGATION_ANIMATION_TIME),
+//                )
+//            },
+//            popEnterTransition = {
+//                slideIntoContainer(
+//                    AnimatedContentTransitionScope.SlideDirection.Right,
+//                    animationSpec = tween(NAVIGATION_ANIMATION_TIME),
+//                )
+//            },
+//            popExitTransition = {
+//                slideOutOfContainer(
+//                    AnimatedContentTransitionScope.SlideDirection.Right,
+//                    animationSpec = tween(NAVIGATION_ANIMATION_TIME),
+//                )
+//            },
+            builder = { builder(this@SharedTransitionLayout) },
         )
     }
 }

@@ -1,5 +1,7 @@
 package dk.clausr.feature.overview
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -25,8 +27,10 @@ object OverviewDirections {
     fun albumDetails(slug: String) = Routes.ALBUM_DETAILS.navArg(Args.ALBUM_SLUG, slug)
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 fun NavGraphBuilder.overviewGraph(
     navHostController: NavHostController,
+    sharedTransitionScope: SharedTransitionScope,
     navigateToSettings: () -> Unit,
 ) {
     navigation(
@@ -36,9 +40,11 @@ fun NavGraphBuilder.overviewGraph(
         composable(route = OverviewDirections.Routes.OVERVIEW) {
             OverviewRoute(
                 navigateToSettings = navigateToSettings,
+                sharedTransitionScope = sharedTransitionScope,
+                animatedContentScope = this@composable,
                 navigateToAlbumDetails = { slug ->
                     navHostController.navigate(OverviewDirections.albumDetails(slug))
-                }
+                },
             )
         }
 
@@ -48,7 +54,10 @@ fun NavGraphBuilder.overviewGraph(
                 navArgument(OverviewDirections.Args.ALBUM_SLUG) { type = NavType.StringType },
             )
         ) {
-            AlbumDetailsRoute()
+            AlbumDetailsRoute(
+                sharedTransitionScope = sharedTransitionScope,
+                animatedContentScope = this@composable,
+            )
         }
     }
 }
