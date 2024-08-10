@@ -34,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -122,14 +123,15 @@ fun SettingsScreen(
                     if (showBack) {
                         IconButton(
                             onClick = onNavigateUp,
-                            modifier = Modifier.hazeChild(
-                                state = hazeState,
-                                shape = CircleShape,
-                                style = HazeStyle(
-                                    backgroundColor = MaterialTheme.colorScheme.background,
-                                    tint = MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .hazeChild(
+                                    state = hazeState,
+                                    style = HazeStyle(
+                                        backgroundColor = MaterialTheme.colorScheme.background,
+                                        tint = MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
+                                    ),
                                 ),
-                            ),
                         ) {
                             Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back")
                         }
@@ -138,14 +140,15 @@ fun SettingsScreen(
                 actions = {
                     IconButton(
                         onClick = { hideContent = !hideContent },
-                        modifier = Modifier.hazeChild(
-                            state = hazeState,
-                            shape = CircleShape,
-                            style = HazeStyle(
-                                backgroundColor = MaterialTheme.colorScheme.background,
-                                tint = MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .hazeChild(
+                                state = hazeState,
+                                style = HazeStyle(
+                                    backgroundColor = MaterialTheme.colorScheme.background,
+                                    tint = MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
+                                ),
                             ),
-                        ),
                     ) {
                         if (hideContent) {
                             Icon(imageVector = Icons.Default.VisibilityOff, contentDescription = "Visibility ")
@@ -194,9 +197,9 @@ fun SettingsScreen(
                 ProjectTextField(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .clip(shape = MaterialTheme.shapes.medium)
                         .hazeChild(
                             state = hazeState,
-                            shape = MaterialTheme.shapes.medium,
                             style = HazeStyle(
                                 backgroundColor = MaterialTheme.colorScheme.background,
                                 tint = MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
@@ -210,9 +213,9 @@ fun SettingsScreen(
 
                 StreamingServiceScreen(
                     modifier = Modifier
+                        .clip(shape = MaterialTheme.shapes.medium)
                         .hazeChild(
                             state = hazeState,
-                            shape = MaterialTheme.shapes.medium,
                             style = HazeStyle(
                                 backgroundColor = MaterialTheme.colorScheme.background,
                                 tint = MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
@@ -237,9 +240,9 @@ fun SettingsScreen(
                             contentColor = MaterialTheme.colorScheme.onBackground,
                         ),
                         modifier = Modifier
+                            .clip(shape = CircleShape)
                             .hazeChild(
                                 state = hazeState,
-                                shape = CircleShape,
                                 style = HazeStyle(
                                     backgroundColor = MaterialTheme.colorScheme.background,
                                     tint = MaterialTheme.colorScheme.background.copy(alpha = 0.5f),

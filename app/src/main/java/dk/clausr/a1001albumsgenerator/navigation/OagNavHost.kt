@@ -1,5 +1,6 @@
 package dk.clausr.a1001albumsgenerator.navigation
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -7,6 +8,7 @@ import dk.clausr.a1001albumsgenerator.MainViewState
 import dk.clausr.a1001albumsgenerator.onboarding.OnboardingRoute
 import dk.clausr.feature.overview.OverviewDirections
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun OagNavHost(
     uiState: MainViewState,
@@ -23,7 +25,10 @@ fun OagNavHost(
                         startDestination = OverviewDirections.root(),
                         modifier = modifier,
                     ) {
-                        mainNavigationGraph(navHostController)
+                        mainNavigationGraph(
+                            navHostController = navHostController,
+                            sharedTransitionScope = it,
+                        )
                     }
                 } else {
                     OnboardingRoute()
