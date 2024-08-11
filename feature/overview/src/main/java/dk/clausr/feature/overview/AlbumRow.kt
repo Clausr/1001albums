@@ -2,7 +2,6 @@ package dk.clausr.feature.overview
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -24,7 +23,6 @@ fun AlbumRow(
     title: String,
     albums: List<HistoricAlbum>,
     onClickAlbum: (slug: String) -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
     modifier: Modifier = Modifier,
 ) {
@@ -46,7 +44,6 @@ fun AlbumRow(
                 AlbumThumb(
                     album = album,
                     onClick = { onClickAlbum(album.album.slug) },
-                    sharedTransitionScope = sharedTransitionScope,
                     animatedContentScope = animatedContentScope,
                 )
             }
