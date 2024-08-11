@@ -27,7 +27,6 @@ fun OagNavHost(
                     ) {
                         mainNavigationGraph(
                             navHostController = navHostController,
-                            sharedTransitionScope = it,
                         )
                     }
                 } else {

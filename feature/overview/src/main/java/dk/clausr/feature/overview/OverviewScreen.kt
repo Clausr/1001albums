@@ -4,7 +4,6 @@ package dk.clausr.feature.overview
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dk.clausr.a1001albumsgenerator.ui.components.LocalSharedTransitionScope
 import dk.clausr.core.common.android.openLink
 import dk.clausr.core.data.workers.UpdateProjectWorker
 import dk.clausr.core.data_widget.SerializedWidgetState
@@ -51,7 +51,6 @@ import dk.clausr.core.model.Rating
 fun OverviewRoute(
     navigateToSettings: () -> Unit,
     navigateToAlbumDetails: (slug: String) -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
     modifier: Modifier = Modifier,
     viewModel: OverviewViewModel = hiltViewModel(),
@@ -63,7 +62,6 @@ fun OverviewRoute(
         state = uiState,
         navigateToSettings = navigateToSettings,
         navigateToAlbumDetails = navigateToAlbumDetails,
-        sharedTransitionScope = sharedTransitionScope,
         animatedContentScope = animatedContentScope,
     )
 }
@@ -73,12 +71,12 @@ internal fun OverviewScreen(
     state: OverviewUiState,
     navigateToSettings: () -> Unit,
     navigateToAlbumDetails: (slug: String) -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-    with(sharedTransitionScope) {
+
+    with(LocalSharedTransitionScope.current) {
         Scaffold(
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
             modifier = modifier,
@@ -149,21 +147,23 @@ internal fun OverviewScreen(
                             if (state.project.historicAlbums.isNotEmpty()) {
                                 item {
                                     AlbumRow(
-                                        modifier = Modifier
-                                            .sharedElement(
-                                                state = rememberSharedContentState(key = "row"),
-                                                animatedVisibilityScope = animatedContentScope,
-                                            ),
-//                                            .sharedBounds(
-//                                            rememberSharedContentState(key = "bounds"),
-//                                        ),
+                                        modifier = Modifier,
                                         title = "Did not listen",
                                         albums = state.didNotListen,
                                         onClickAlbum = navigateToAlbumDetails,
-                                        sharedTransitionScope = sharedTransitionScope,
                                         animatedContentScope = animatedContentScope,
                                     )
                                 }
+
+//                                item {
+//                                    AlbumRow(
+//                                        title = "Top rated albums",
+//                                        albums = state.topRated,
+//                                        onClickAlbum = navigateToAlbumDetails,
+//                                        sharedTransitionScope = sharedTransitionScope,
+//                                        animatedContentScope = animatedContentScope,
+//                                    )
+//                                }
 
                                 item {
                                     Row(
@@ -197,11 +197,13 @@ internal fun OverviewScreen(
                                 key = { it.generatedAt },
                             ) { historicAlbum ->
                                 val slug = historicAlbum.album.slug
+                                val prefStreamingPlatform = (state.widgetState as? SerializedWidgetState.Success)?.data?.preferredStreamingPlatform
+
                                 HistoricAlbumCard(
                                     modifier = Modifier.padding(horizontal = 16.dp),
                                     historicAlbum = historicAlbum,
                                     expanded = slug in expandedItems,
-                                    preferredStreamingPlatform = (state.widgetState as? SerializedWidgetState.Success)?.data?.preferredStreamingPlatform,
+                                    preferredStreamingPlatform = prefStreamingPlatform,
                                     onClick = {
                                         if (expandedItems.contains(slug)) {
                                             expandedItems.remove(slug)

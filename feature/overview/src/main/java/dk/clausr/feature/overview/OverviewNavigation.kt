@@ -1,7 +1,6 @@
 package dk.clausr.feature.overview
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -30,7 +29,6 @@ object OverviewDirections {
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun NavGraphBuilder.overviewGraph(
     navHostController: NavHostController,
-    sharedTransitionScope: SharedTransitionScope,
     navigateToSettings: () -> Unit,
 ) {
     navigation(
@@ -40,7 +38,6 @@ fun NavGraphBuilder.overviewGraph(
         composable(route = OverviewDirections.Routes.OVERVIEW) {
             OverviewRoute(
                 navigateToSettings = navigateToSettings,
-                sharedTransitionScope = sharedTransitionScope,
                 animatedContentScope = this@composable,
                 navigateToAlbumDetails = { slug ->
                     navHostController.navigate(OverviewDirections.albumDetails(slug))
@@ -55,7 +52,6 @@ fun NavGraphBuilder.overviewGraph(
             )
         ) {
             AlbumDetailsRoute(
-                sharedTransitionScope = sharedTransitionScope,
                 animatedContentScope = this@composable,
             )
         }

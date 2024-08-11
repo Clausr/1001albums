@@ -1,9 +1,5 @@
-@file:OptIn(ExperimentalSharedTransitionApi::class)
-
 package dk.clausr.a1001albumsgenerator.navigation
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -22,13 +18,9 @@ object MainDirections {
     fun widgetConfiguration() = ROUTES.WIDGET_CONFIGURATION
 }
 
-fun NavGraphBuilder.mainNavigationGraph(
-    navHostController: NavHostController,
-    sharedTransitionScope: SharedTransitionScope,
-) {
+fun NavGraphBuilder.mainNavigationGraph(navHostController: NavHostController) {
     overviewGraph(
         navHostController = navHostController,
-        sharedTransitionScope = sharedTransitionScope,
         navigateToSettings = {
             navHostController.navigate(MainDirections.widgetConfiguration())
         }
