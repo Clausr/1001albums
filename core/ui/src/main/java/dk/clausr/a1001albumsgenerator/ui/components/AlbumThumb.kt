@@ -1,10 +1,5 @@
-@file:OptIn(ExperimentalSharedTransitionApi::class)
-
 package dk.clausr.a1001albumsgenerator.ui.components
 
-import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Column
@@ -33,6 +28,7 @@ import dk.clausr.a1001albumsgenerator.ui.extensions.forwardingPainter
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.model.HistoricAlbum
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun AlbumThumb(
     albumSlug: String,
@@ -40,10 +36,10 @@ fun AlbumThumb(
     name: String,
     coverUrl: String,
     onClick: () -> Unit,
-    animatedContentScope: AnimatedVisibilityScope,
     modifier: Modifier = Modifier,
     size: Dp = 120.dp,
 ) {
+    val animatedContentScope = LocalNavAnimatedVisibilityScope.current
     with(LocalSharedTransitionScope.current) {
         Surface(
             modifier = modifier
@@ -117,7 +113,6 @@ fun AlbumThumb(
 fun AlbumThumb(
     album: HistoricAlbum,
     onClick: () -> Unit,
-    animatedContentScope: AnimatedContentScope,
     modifier: Modifier = Modifier,
     size: Dp = 120.dp,
 ) {
@@ -129,7 +124,6 @@ fun AlbumThumb(
         onClick = onClick,
         size = size,
         modifier = modifier,
-        animatedContentScope = animatedContentScope,
     )
 }
 
@@ -137,15 +131,12 @@ fun AlbumThumb(
 @Composable
 private fun AlbumThumbPreview() {
     OagTheme {
-        AnimatedVisibility(visible = true) {
-            AlbumThumb(
-                albumSlug = "slug",
-                artist = "Black Sabbath",
-                name = "Paranoid",
-                coverUrl = "https://i.scdn.co/image/ab2eae28bb2a55667ee727711aeccc7f37498414",
-                onClick = {},
-                animatedContentScope = this@AnimatedVisibility,
-            )
-        }
+        AlbumThumb(
+            albumSlug = "slug",
+            artist = "Black Sabbath",
+            name = "Paranoid",
+            coverUrl = "https://i.scdn.co/image/ab2eae28bb2a55667ee727711aeccc7f37498414",
+            onClick = {},
+        )
     }
 }

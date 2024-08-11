@@ -1,7 +1,5 @@
 package dk.clausr.feature.overview
 
-import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,13 +15,11 @@ import androidx.compose.ui.unit.dp
 import dk.clausr.a1001albumsgenerator.ui.components.AlbumThumb
 import dk.clausr.core.model.HistoricAlbum
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun AlbumRow(
     title: String,
     albums: List<HistoricAlbum>,
     onClickAlbum: (slug: String) -> Unit,
-    animatedContentScope: AnimatedContentScope,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -44,7 +40,6 @@ fun AlbumRow(
                 AlbumThumb(
                     album = album,
                     onClick = { onClickAlbum(album.album.slug) },
-                    animatedContentScope = animatedContentScope,
                 )
             }
         }

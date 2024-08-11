@@ -1,12 +1,11 @@
 package dk.clausr.feature.overview
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import dk.clausr.a1001albumsgenerator.ui.navigation.sharedTransitionComposable
 import dk.clausr.core.common.android.navArg
 import dk.clausr.feature.overview.details.AlbumDetailsRoute
 
@@ -26,7 +25,6 @@ object OverviewDirections {
     fun albumDetails(slug: String) = Routes.ALBUM_DETAILS.navArg(Args.ALBUM_SLUG, slug)
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 fun NavGraphBuilder.overviewGraph(
     navHostController: NavHostController,
     navigateToSettings: () -> Unit,
@@ -35,25 +33,22 @@ fun NavGraphBuilder.overviewGraph(
         route = OverviewDirections.root(),
         startDestination = OverviewDirections.overview(),
     ) {
-        composable(route = OverviewDirections.Routes.OVERVIEW) {
+        sharedTransitionComposable(route = OverviewDirections.Routes.OVERVIEW) {
             OverviewRoute(
                 navigateToSettings = navigateToSettings,
-                animatedContentScope = this@composable,
                 navigateToAlbumDetails = { slug ->
                     navHostController.navigate(OverviewDirections.albumDetails(slug))
                 },
             )
         }
 
-        composable(
+        sharedTransitionComposable(
             route = OverviewDirections.Routes.ALBUM_DETAILS,
             arguments = listOf(
                 navArgument(OverviewDirections.Args.ALBUM_SLUG) { type = NavType.StringType },
             )
         ) {
-            AlbumDetailsRoute(
-                animatedContentScope = this@composable,
-            )
+            AlbumDetailsRoute()
         }
     }
 }

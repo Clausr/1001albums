@@ -30,7 +30,7 @@ class OverviewViewModel @Inject constructor(
                 currentAlbum = currentAlbum,
                 widgetState = widgetState,
                 didNotListen = project.historicAlbums.filter { it.rating !is Rating.Rated },
-                topRated = project.historicAlbums.filter { it.rating == Rating.Rated(5) }
+                topRated = project.historicAlbums.filter { it.rating == Rating.Rated(5) },
             )
         } else {
             OverviewUiState.Error

@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import dk.clausr.a1001albumsgenerator.navigation.OagNavHost
+import dk.clausr.a1001albumsgenerator.navigation.MainAppNavHost
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 
 @Composable
@@ -20,7 +20,7 @@ fun OagApp(
         Scaffold(
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
         ) { padding ->
-            OagNavHost(
+            MainAppNavHost(
                 uiState = uiState,
                 navHostController = navHostController,
                 modifier = Modifier
