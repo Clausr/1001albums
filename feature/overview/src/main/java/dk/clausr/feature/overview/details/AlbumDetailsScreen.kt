@@ -1,6 +1,5 @@
 package dk.clausr.feature.overview.details
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -43,7 +42,6 @@ fun AlbumDetailsRoute(
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun AlbumDetailsScreen(
     historicAlbum: HistoricAlbum,

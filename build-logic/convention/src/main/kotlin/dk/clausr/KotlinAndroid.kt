@@ -71,7 +71,6 @@ private fun Project.configureKotlin() {
                     // Enable experimental coroutines APIs, including Flow
                     "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
                     "-opt-in=kotlinx.coroutines.FlowPreview",
-                    "-opt-in=androidx.compose.animation.ExperimentalSharedTransitionApi",
                 ),
             )
         }

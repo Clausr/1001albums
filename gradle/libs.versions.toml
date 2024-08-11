@@ -6,6 +6,7 @@ coreKtx = "1.13.1"
 compose-bom = "2024.06.00"
 glanceAppwidget = "1.1.0"
 kotlin = "2.0.10"
+kotlinxCollectionsImmutable = "0.3.7"
 lifecycleRuntimeKtx = "2.8.4"
 materialVersion = "1.12.0"
 okhttp = "4.12.0"
@@ -66,6 +67,7 @@ detekt-compose-rules = { module = "io.nlopez.compose.rules:detekt", version.ref 
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detektPluginVersion" }
 glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glanceAppwidget" }
 glance-material3 = { module = "androidx.glance:glance-material3", version.ref = "glanceAppwidget" }
+kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 material = { module = "com.google.android.material:material", version.ref = "materialVersion" }
 retrofit-core = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }

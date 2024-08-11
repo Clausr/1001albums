@@ -1,8 +1,5 @@
-@file:OptIn(ExperimentalSharedTransitionApi::class)
-
 package dk.clausr.feature.overview
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -48,6 +45,7 @@ import dk.clausr.core.model.Rating
 import dk.clausr.core.model.UpdateFrequency
 import dk.clausr.feature.overview.preview.albumPreviewData
 import dk.clausr.feature.overview.preview.historicAlbumPreviewData
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun OverviewRoute(
@@ -142,7 +140,7 @@ internal fun OverviewScreen(
                             }
                         }
 
-                        if (state.project.historicAlbums.isNotEmpty()) {
+                        if (state.didNotListen.isNotEmpty()) {
                             item {
                                 AlbumRow(
                                     modifier = Modifier,
@@ -151,17 +149,19 @@ internal fun OverviewScreen(
                                     onClickAlbum = navigateToAlbumDetails,
                                 )
                             }
+                        }
 
-//                                item {
-//                                    AlbumRow(
-//                                        title = "Top rated albums",
-//                                        albums = state.topRated,
-//                                        onClickAlbum = navigateToAlbumDetails,
-//                                        sharedTransitionScope = sharedTransitionScope,
-//                                        animatedContentScope = animatedContentScope,
-//                                    )
-//                                }
+                        if (state.topRated.isNotEmpty()) {
+                            item {
+                                AlbumRow(
+                                    title = "Top rated albums",
+                                    albums = state.topRated,
+                                    onClickAlbum = navigateToAlbumDetails,
+                                )
+                            }
+                        }
 
+                        if (state.project.historicAlbums.isNotEmpty()) {
                             item {
                                 Row(
                                     modifier = Modifier
@@ -240,12 +240,12 @@ private fun OverviewPreview() {
                 ),
                 currentAlbum = albumPreviewData,
                 widgetState = SerializedWidgetState.NotInitialized,
-                didNotListen = listOf(
+                didNotListen = persistentListOf(
                     historicAlbumPreviewData(),
                     historicAlbumPreviewData(),
                     historicAlbumPreviewData(),
                 ),
-                topRated = emptyList(),
+                topRated = persistentListOf(),
             ),
         )
     }
