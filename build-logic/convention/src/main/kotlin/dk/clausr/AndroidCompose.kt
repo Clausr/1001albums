@@ -20,6 +20,7 @@ internal fun Project.configureAndroidCompose(commonExtension: CommonExtension<*,
             add("androidTestImplementation", platform(bom))
             add("implementation", libs.findLibrary("androidx.compose.ui.tooling.preview").get())
             add("debugImplementation", libs.findLibrary("androidx.compose.ui.tooling").get())
+            add("implementation", libs.findLibrary("kotlinx.collections.immutable").get())
         }
     }
 
@@ -28,6 +29,7 @@ internal fun Project.configureAndroidCompose(commonExtension: CommonExtension<*,
             freeCompilerArgs.addAll(
                 listOf(
                     "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+                    "-opt-in=androidx.compose.animation.ExperimentalSharedTransitionApi",
                 ),
             )
         }

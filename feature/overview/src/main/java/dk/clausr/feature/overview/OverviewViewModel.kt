@@ -9,6 +9,8 @@ import dk.clausr.core.model.Album
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.Rating
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
@@ -29,8 +31,8 @@ class OverviewViewModel @Inject constructor(
                 project = project,
                 currentAlbum = currentAlbum,
                 widgetState = widgetState,
-                didNotListen = project.historicAlbums.filter { it.rating !is Rating.Rated },
-                topRated = project.historicAlbums.filter { it.rating == Rating.Rated(5) },
+                didNotListen = project.historicAlbums.filter { it.rating !is Rating.Rated }.toImmutableList(),
+                topRated = project.historicAlbums.filter { it.rating == Rating.Rated(5) }.toImmutableList(),
             )
         } else {
             OverviewUiState.Error
@@ -47,10 +49,10 @@ sealed interface OverviewUiState {
     data object Loading : OverviewUiState
     data class Success(
         val project: Project,
-        val didNotListen: List<HistoricAlbum>,
+        val didNotListen: ImmutableList<HistoricAlbum>,
         val currentAlbum: Album?,
         val widgetState: SerializedWidgetState,
-        val topRated: List<HistoricAlbum>,
+        val topRated: ImmutableList<HistoricAlbum>,
     ) : OverviewUiState
 
     data object Error : OverviewUiState

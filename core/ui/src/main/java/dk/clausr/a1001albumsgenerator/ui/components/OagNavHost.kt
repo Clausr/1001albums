@@ -1,9 +1,6 @@
-@file:OptIn(ExperimentalSharedTransitionApi::class)
-
 package dk.clausr.a1001albumsgenerator.ui.components
 
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
@@ -22,7 +19,6 @@ val LocalSharedTransitionScope = compositionLocalOf<SharedTransitionScope> {
     error("No shared transition scope found. Remember to set it at NavHost")
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun OagNavHost(
     navController: NavHostController,

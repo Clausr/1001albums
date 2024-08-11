@@ -14,11 +14,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dk.clausr.a1001albumsgenerator.ui.components.AlbumThumb
 import dk.clausr.core.model.HistoricAlbum
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun AlbumRow(
     title: String,
-    albums: List<HistoricAlbum>,
+    albums: ImmutableList<HistoricAlbum>,
     onClickAlbum: (slug: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
