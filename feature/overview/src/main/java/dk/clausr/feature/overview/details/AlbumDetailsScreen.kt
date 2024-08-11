@@ -1,8 +1,5 @@
-@file:OptIn(ExperimentalSharedTransitionApi::class)
-
 package dk.clausr.feature.overview.details
 
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Column
@@ -24,12 +21,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import dk.clausr.a1001albumsgenerator.ui.components.LocalNavAnimatedVisibilityScope
 import dk.clausr.a1001albumsgenerator.ui.components.LocalSharedTransitionScope
 import dk.clausr.core.model.HistoricAlbum
 
 @Composable
 fun AlbumDetailsRoute(
-    animatedContentScope: AnimatedContentScope,
     modifier: Modifier = Modifier,
     viewModel: AlbumDetailsViewModel = hiltViewModel(),
 ) {
@@ -41,18 +38,18 @@ fun AlbumDetailsRoute(
             AlbumDetailsScreen(
                 modifier = modifier,
                 historicAlbum = internalState.album,
-                animatedContentScope = animatedContentScope,
             )
         }
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun AlbumDetailsScreen(
     historicAlbum: HistoricAlbum,
-    animatedContentScope: AnimatedContentScope,
     modifier: Modifier = Modifier,
 ) {
+    val animatedContentScope = LocalNavAnimatedVisibilityScope.current
     with(LocalSharedTransitionScope.current) {
         Scaffold(
             modifier = modifier
