@@ -1,5 +1,6 @@
 package dk.clausr.feature.overview.details
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -11,18 +12,22 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import dk.clausr.a1001albumsgenerator.ui.components.LocalNavAnimatedVisibilityScope
 import dk.clausr.a1001albumsgenerator.ui.components.LocalSharedTransitionScope
+import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.model.HistoricAlbum
+import dk.clausr.feature.overview.preview.historicAlbumPreviewData
 
 @Composable
 fun AlbumDetailsRoute(
@@ -103,6 +108,23 @@ fun AlbumDetailsScreen(
                     text = historicAlbum.album.artist,
                     textAlign = TextAlign.Center,
                 )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun DetailsPreview() {
+    OagTheme {
+        AnimatedVisibility(visible = true) {
+            SharedTransitionScope {
+                CompositionLocalProvider(
+                    LocalNavAnimatedVisibilityScope provides this@AnimatedVisibility,
+                    LocalSharedTransitionScope provides this
+                ) {
+                    AlbumDetailsScreen(historicAlbum = historicAlbumPreviewData())
+                }
             }
         }
     }

@@ -1,5 +1,9 @@
 package dk.clausr.feature.overview
 
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,6 +41,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dk.clausr.a1001albumsgenerator.ui.components.LocalNavAnimatedVisibilityScope
+import dk.clausr.a1001albumsgenerator.ui.components.LocalSharedTransitionScope
 import dk.clausr.core.common.android.openLink
 import dk.clausr.core.data.workers.UpdateProjectWorker
 import dk.clausr.core.data_widget.SerializedWidgetState
@@ -73,145 +79,152 @@ internal fun OverviewScreen(
 ) {
     val context = LocalContext.current
 
-    Scaffold(
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        modifier = modifier,
-        topBar = {
-            TopAppBar(
-                title = { Text(text = "Your project") },
-                actions = {
-                    IconButton(onClick = navigateToSettings) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = "Configure project",
-                        )
-                    }
-                },
-            )
-        },
-    ) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {
-            when (state) {
-                OverviewUiState.Error -> Text("Error")
-                OverviewUiState.Loading -> Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    CircularProgressIndicator()
+    with(LocalSharedTransitionScope.current) {
+        Scaffold(
+            contentWindowInsets = WindowInsets(0, 0, 0, 0),
+            modifier = modifier,
+            topBar = {
+                with(LocalNavAnimatedVisibilityScope.current) {
+                    TopAppBar(
+                        modifier = Modifier
+                            .renderInSharedTransitionScopeOverlay(zIndexInOverlay = 1f)
+                            .animateEnterExit(enter = fadeIn() + slideInVertically(), exit = fadeOut() + slideOutVertically()),
+                        title = { Text(text = "Your project") },
+                        actions = {
+                            IconButton(onClick = navigateToSettings) {
+                                Icon(
+                                    imageVector = Icons.Default.Settings,
+                                    contentDescription = "Configure project",
+                                )
+                            }
+                        },
+                    )
                 }
-
-                is OverviewUiState.Success -> {
-                    var showOnlyDnl by remember {
-                        mutableStateOf(false)
-                    }
-
-                    val history by remember(showOnlyDnl, state.project.historicAlbums) {
-                        mutableStateOf(
-                            state.project.historicAlbums.filter {
-                                if (showOnlyDnl) {
-                                    it.rating !is Rating.Rated
-                                } else {
-                                    true
-                                }
-                            },
-                        )
-                    }
-
-                    val expandedItems = remember { mutableStateListOf<String>() }
-
-                    LazyColumn(
+            },
+        ) { innerPadding ->
+            Column(modifier = Modifier.padding(innerPadding)) {
+                when (state) {
+                    OverviewUiState.Error -> Text("Error")
+                    OverviewUiState.Loading -> Box(
                         modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        contentPadding = WindowInsets.navigationBars.asPaddingValues(),
+                        contentAlignment = Alignment.Center,
                     ) {
-                        item {
-                            state.currentAlbum?.let {
-                                BigCurrentAlbum(
-                                    modifier = Modifier.padding(horizontal = 16.dp),
-                                    state = state.widgetState,
-                                    album = it,
-                                    openLink = { url ->
-                                        context.openLink(url)
-                                    },
-                                    startBurstUpdate = {
-                                        UpdateProjectWorker.run(context = context, projectId = state.project.name)
-                                    },
-                                )
-                            }
+                        CircularProgressIndicator()
+                    }
+
+                    is OverviewUiState.Success -> {
+                        var showOnlyDnl by remember {
+                            mutableStateOf(false)
                         }
 
-                        if (state.didNotListen.isNotEmpty()) {
-                            item {
-                                AlbumRow(
-                                    modifier = Modifier,
-                                    title = "Did not listen",
-                                    albums = state.didNotListen,
-                                    onClickAlbum = navigateToAlbumDetails,
-                                )
-                            }
-                        }
-
-                        if (state.topRated.isNotEmpty()) {
-                            item {
-                                AlbumRow(
-                                    title = "Top rated albums",
-                                    albums = state.topRated,
-                                    onClickAlbum = navigateToAlbumDetails,
-                                )
-                            }
-                        }
-
-                        if (state.project.historicAlbums.isNotEmpty()) {
-                            item {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 16.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                ) {
-                                    Text(
-                                        modifier = Modifier.weight(1f),
-                                        text = stringResource(
-                                            id = R.string.history_header,
-                                            if (showOnlyDnl) {
-                                                history.size
-                                            } else {
-                                                history.count { it.rating is Rating.Rated }
-                                            },
-                                            state.project.historicAlbums.size,
-                                        ),
-                                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                                    )
-
-                                    TextButton(onClick = { showOnlyDnl = !showOnlyDnl }) {
-                                        Text(if (showOnlyDnl) "Show all" else "Show DNL")
-                                    }
-                                }
-                            }
-                        }
-                        items(
-                            items = history,
-                            key = { it.generatedAt },
-                        ) { historicAlbum ->
-                            val slug = historicAlbum.album.slug
-                            val prefStreamingPlatform = (state.widgetState as? SerializedWidgetState.Success)?.data?.preferredStreamingPlatform
-
-                            HistoricAlbumCard(
-                                modifier = Modifier.padding(horizontal = 16.dp),
-                                historicAlbum = historicAlbum,
-                                expanded = slug in expandedItems,
-                                preferredStreamingPlatform = prefStreamingPlatform,
-                                onClick = {
-                                    if (expandedItems.contains(slug)) {
-                                        expandedItems.remove(slug)
+                        val history by remember(showOnlyDnl, state.project.historicAlbums) {
+                            mutableStateOf(
+                                state.project.historicAlbums.filter {
+                                    if (showOnlyDnl) {
+                                        it.rating !is Rating.Rated
                                     } else {
-                                        expandedItems.add(slug)
+                                        true
                                     }
-                                },
-                                openLink = {
-                                    context.openLink(it)
                                 },
                             )
+                        }
+
+                        val expandedItems = remember { mutableStateListOf<String>() }
+
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            contentPadding = WindowInsets.navigationBars.asPaddingValues(),
+                        ) {
+                            item {
+                                state.currentAlbum?.let {
+                                    BigCurrentAlbum(
+                                        modifier = Modifier.padding(horizontal = 16.dp),
+                                        state = state.widgetState,
+                                        album = it,
+                                        openLink = { url ->
+                                            context.openLink(url)
+                                        },
+                                        startBurstUpdate = {
+                                            UpdateProjectWorker.run(context = context, projectId = state.project.name)
+                                        },
+                                    )
+                                }
+                            }
+
+                            if (state.didNotListen.isNotEmpty()) {
+                                item {
+                                    AlbumRow(
+                                        modifier = Modifier,
+                                        title = "Did not listen",
+                                        albums = state.didNotListen,
+                                        onClickAlbum = navigateToAlbumDetails,
+                                    )
+                                }
+                            }
+
+                            if (state.topRated.isNotEmpty()) {
+                                item {
+                                    AlbumRow(
+                                        title = "Top rated albums",
+                                        albums = state.topRated,
+                                        onClickAlbum = navigateToAlbumDetails,
+                                    )
+                                }
+                            }
+
+                            if (state.project.historicAlbums.isNotEmpty()) {
+                                item {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                    ) {
+                                        Text(
+                                            modifier = Modifier.weight(1f),
+                                            text = stringResource(
+                                                id = R.string.history_header,
+                                                if (showOnlyDnl) {
+                                                    history.size
+                                                } else {
+                                                    history.count { it.rating is Rating.Rated }
+                                                },
+                                                state.project.historicAlbums.size,
+                                            ),
+                                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                                        )
+
+                                        TextButton(onClick = { showOnlyDnl = !showOnlyDnl }) {
+                                            Text(if (showOnlyDnl) "Show all" else "Show DNL")
+                                        }
+                                    }
+                                }
+                            }
+                            items(
+                                items = history,
+                                key = { it.generatedAt },
+                            ) { historicAlbum ->
+                                val slug = historicAlbum.album.slug
+                                val prefStreamingPlatform = (state.widgetState as? SerializedWidgetState.Success)?.data?.preferredStreamingPlatform
+
+                                HistoricAlbumCard(
+                                    modifier = Modifier.padding(horizontal = 16.dp),
+                                    historicAlbum = historicAlbum,
+                                    expanded = slug in expandedItems,
+                                    preferredStreamingPlatform = prefStreamingPlatform,
+                                    onClick = {
+                                        if (expandedItems.contains(slug)) {
+                                            expandedItems.remove(slug)
+                                        } else {
+                                            expandedItems.add(slug)
+                                        }
+                                    },
+                                    openLink = {
+                                        context.openLink(it)
+                                    },
+                                )
+                            }
                         }
                     }
                 }
