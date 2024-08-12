@@ -100,7 +100,8 @@ fun AlbumThumb(
                         .sharedBounds(
                             sharedContentState = rememberSharedContentState(key = "artist-$albumSlug"),
                             animatedVisibilityScope = animatedContentScope,
-                        ),
+
+                            ),
                     text = artist,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
