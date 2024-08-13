@@ -18,5 +18,7 @@ dependencies {
 
     implementation(libs.coil.kt)
     implementation(libs.coil.kt.compose)
+
+    implementation(libs.haze)
     api(libs.androidx.compose.material3)
 }
