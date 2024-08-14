@@ -62,12 +62,12 @@ class OfflineFirstOagRepository @Inject constructor(
         it.projectId
     }.distinctUntilChanged()
 
-    override val preferredStreamingPlatform: Flow<StreamingPlatform?> = widgetDataStore.data.map {
+    override val preferredStreamingPlatform: Flow<StreamingPlatform> = widgetDataStore.data.map {
         when (it) {
             is SerializedWidgetState.Success -> it.data.preferredStreamingPlatform
-            is SerializedWidgetState.Error -> null
-            is SerializedWidgetState.Loading -> null
-            SerializedWidgetState.NotInitialized -> null
+            is SerializedWidgetState.Error -> StreamingPlatform.Undefined
+            is SerializedWidgetState.Loading -> StreamingPlatform.Undefined
+            SerializedWidgetState.NotInitialized -> StreamingPlatform.Undefined
         }
     }
 
@@ -94,7 +94,8 @@ class OfflineFirstOagRepository @Inject constructor(
         return networkDataSource.getProject(projectId)
             .doOnSuccess { networkProject ->
                 widgetDataStore.updateData { oldData ->
-                    val oldPreferredStreamingPlatform = (oldData as? SerializedWidgetState.Success)?.data?.preferredStreamingPlatform
+                    val oldPreferredStreamingPlatform =
+                        (oldData as? SerializedWidgetState.Success)?.data?.preferredStreamingPlatform ?: StreamingPlatform.Undefined
                     SerializedWidgetState.Loading(projectId, oldPreferredStreamingPlatform)
                 }
                 projectDao.clearTable()
@@ -185,8 +186,8 @@ class OfflineFirstOagRepository @Inject constructor(
             val oldPreferredPlatform = when (old) {
                 is SerializedWidgetState.Loading -> old.previousStreamingPlatform
                 is SerializedWidgetState.Success -> old.data.preferredStreamingPlatform
-                is SerializedWidgetState.Error -> null
-                SerializedWidgetState.NotInitialized -> null
+                is SerializedWidgetState.Error -> StreamingPlatform.Undefined
+                SerializedWidgetState.NotInitialized -> StreamingPlatform.Undefined
             }
 
             SerializedWidgetState.Success(

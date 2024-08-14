@@ -16,13 +16,11 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import dk.clausr.a1001albumsgenerator.ui.components.LocalNavAnimatedVisibilityScope
 import dk.clausr.a1001albumsgenerator.ui.components.LocalSharedTransitionScope
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
@@ -70,12 +68,7 @@ fun AlbumDetailsScreen(
                     .padding(paddingValues),
             ) {
                 AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(historicAlbum.album.imageUrl)
-                        .crossfade(true)
-                        .placeholderMemoryCacheKey(historicAlbum.album.slug)
-                        .memoryCacheKey(historicAlbum.album.slug)
-                        .build(),
+                    model = historicAlbum.album.imageUrl,
                     contentDescription = "Album cover",
                     modifier = Modifier
                         .fillMaxWidth()

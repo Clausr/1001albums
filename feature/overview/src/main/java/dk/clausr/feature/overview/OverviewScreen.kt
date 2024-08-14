@@ -44,10 +44,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dk.clausr.a1001albumsgenerator.ui.components.LocalNavAnimatedVisibilityScope
 import dk.clausr.a1001albumsgenerator.ui.components.LocalSharedTransitionScope
 import dk.clausr.core.common.android.openLink
+import dk.clausr.core.common.extensions.formatToDate
 import dk.clausr.core.data.workers.UpdateProjectWorker
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.Rating
+import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.UpdateFrequency
 import dk.clausr.feature.overview.preview.albumPreviewData
 import dk.clausr.feature.overview.preview.historicAlbumPreviewData
@@ -159,6 +161,10 @@ internal fun OverviewScreen(
                                         title = "Did not listen",
                                         albums = state.didNotListen,
                                         onClickAlbum = navigateToAlbumDetails,
+                                        streamingPlatform = state.streamingPlatform,
+                                        tertiaryTextTransform = { historicAlbum ->
+                                            historicAlbum.generatedAt.formatToDate()
+                                        }
                                     )
                                 }
                             }
@@ -169,6 +175,10 @@ internal fun OverviewScreen(
                                         title = "Top rated albums",
                                         albums = state.topRated,
                                         onClickAlbum = navigateToAlbumDetails,
+                                        streamingPlatform = state.streamingPlatform,
+                                        tertiaryTextTransform = { historicAlbum ->
+                                            historicAlbum.generatedAt.formatToDate()
+                                        }
                                     )
                                 }
                             }
@@ -207,6 +217,7 @@ internal fun OverviewScreen(
                             ) { historicAlbum ->
                                 val slug = historicAlbum.album.slug
                                 val prefStreamingPlatform = (state.widgetState as? SerializedWidgetState.Success)?.data?.preferredStreamingPlatform
+                                    ?: StreamingPlatform.Undefined
 
                                 HistoricAlbumCard(
                                     modifier = Modifier.padding(horizontal = 16.dp),
@@ -259,6 +270,7 @@ private fun OverviewPreview() {
                     historicAlbumPreviewData(),
                 ),
                 topRated = persistentListOf(),
+                streamingPlatform = StreamingPlatform.Tidal,
             ),
         )
     }

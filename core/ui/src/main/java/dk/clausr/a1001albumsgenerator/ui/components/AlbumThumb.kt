@@ -21,25 +21,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
-import dk.clausr.a1001albumsgenerator.ui.R
-import dk.clausr.a1001albumsgenerator.ui.extensions.forwardingPainter
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.model.HistoricAlbum
-import dk.clausr.core.model.Rating
 
 @Composable
 fun AlbumThumb(
@@ -47,9 +40,9 @@ fun AlbumThumb(
     artist: String,
     name: String,
     coverUrl: String,
-    rating: Rating,
-    releaseYear: String,
+    tertiaryText: String?,
     onClick: () -> Unit,
+    onClickPlay: (() -> Unit)?,
     modifier: Modifier = Modifier,
     size: Dp = 120.dp,
 ) {
@@ -80,18 +73,8 @@ fun AlbumThumb(
                     contentAlignment = Alignment.BottomEnd,
                 ) {
                     AsyncImage(
-                        model = ImageRequest
-                            .Builder(LocalContext.current)
-                            .data(coverUrl)
-                            .crossfade(true)
-                            .placeholderMemoryCacheKey(albumSlug)
-                            .memoryCacheKey(albumSlug)
-                            .build(),
+                        model = coverUrl,
                         contentDescription = null,
-                        placeholder = forwardingPainter(
-                            painterResource(id = R.drawable.album_cover_placeholder),
-                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
-                        ),
                         modifier = Modifier
                             .haze(hazeState)
                             .size(size)
@@ -102,22 +85,24 @@ fun AlbumThumb(
                             ),
                         contentScale = ContentScale.Crop,
                     )
-                    IconButton(
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .clip(CircleShape)
-                            .hazeChild(
-                                state = hazeState,
-                                style = HazeStyle(
-                                    backgroundColor = MaterialTheme.colorScheme.background,
-                                    blurRadius = 5.dp,
-                                    tint = MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
-                                ),
-                            )
-                            .size(40.dp),
-                        onClick = { /*TODO*/ },
-                    ) {
-                        Icon(imageVector = Icons.Default.PlayArrow, contentDescription = null)
+                    onClickPlay?.let { onClickPlay ->
+                        IconButton(
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .clip(CircleShape)
+                                .hazeChild(
+                                    state = hazeState,
+                                    style = HazeStyle(
+                                        backgroundColor = MaterialTheme.colorScheme.background,
+                                        blurRadius = 5.dp,
+                                        tint = MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
+                                    ),
+                                )
+                                .size(40.dp),
+                            onClick = onClickPlay,
+                        ) {
+                            Icon(imageVector = Icons.Default.PlayArrow, contentDescription = "Play")
+                        }
                     }
                 }
 
@@ -146,14 +131,12 @@ fun AlbumThumb(
                     overflow = TextOverflow.Ellipsis,
                 )
 
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = when (rating) {
-                        Rating.DidNotListen -> releaseYear
-                        is Rating.Rated -> "${rating.rating}⭐"
-                        Rating.Unrated -> releaseYear
-                    },
-                )
+                tertiaryText?.let {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = it,
+                    )
+                }
             }
         }
     }
@@ -163,7 +146,9 @@ fun AlbumThumb(
 fun AlbumThumb(
     album: HistoricAlbum,
     onClick: () -> Unit,
+    onClickPlay: (() -> Unit)?,
     modifier: Modifier = Modifier,
+    tertiaryText: String? = null,
     size: Dp = 120.dp,
 ) {
     AlbumThumb(
@@ -171,9 +156,9 @@ fun AlbumThumb(
         artist = album.album.artist,
         name = album.album.name,
         coverUrl = album.album.imageUrl,
-        rating = album.rating,
-        releaseYear = album.album.releaseDate,
+        tertiaryText = tertiaryText,
         onClick = onClick,
+        onClickPlay = onClickPlay,
         size = size,
         modifier = modifier,
     )
@@ -188,9 +173,9 @@ private fun AlbumThumbPreview() {
             artist = "Black Sabbath",
             name = "Paranoid",
             coverUrl = "https://i.scdn.co/image/ab2eae28bb2a55667ee727711aeccc7f37498414",
-            rating = Rating.Rated(5),
-            releaseYear = "13-37-2024",
+            tertiaryText = "Some tertiary text",
             onClick = {},
+            onClickPlay = {},
         )
     }
 }

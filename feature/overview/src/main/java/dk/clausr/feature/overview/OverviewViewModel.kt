@@ -9,6 +9,7 @@ import dk.clausr.core.model.Album
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.Rating
+import dk.clausr.core.model.StreamingPlatform
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,7 +26,8 @@ class OverviewViewModel @Inject constructor(
         oagRepository.project,
         oagRepository.currentAlbum,
         oagRepository.widgetState,
-    ) { project, currentAlbum, widgetState ->
+        oagRepository.preferredStreamingPlatform,
+    ) { project, currentAlbum, widgetState, platform ->
         if (project != null) {
             OverviewUiState.Success(
                 project = project,
@@ -33,6 +35,7 @@ class OverviewViewModel @Inject constructor(
                 widgetState = widgetState,
                 didNotListen = project.historicAlbums.filter { it.rating !is Rating.Rated }.toImmutableList(),
                 topRated = project.historicAlbums.filter { it.rating == Rating.Rated(5) }.toImmutableList(),
+                streamingPlatform = platform,
             )
         } else {
             OverviewUiState.Error
@@ -53,6 +56,7 @@ sealed interface OverviewUiState {
         val currentAlbum: Album?,
         val widgetState: SerializedWidgetState,
         val topRated: ImmutableList<HistoricAlbum>,
+        val streamingPlatform: StreamingPlatform,
     ) : OverviewUiState
 
     data object Error : OverviewUiState
