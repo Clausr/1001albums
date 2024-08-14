@@ -11,8 +11,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -28,9 +28,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.haze
-import dev.chrisbanes.haze.hazeChild
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.model.HistoricAlbum
 
@@ -85,23 +83,27 @@ fun AlbumThumb(
                             ),
                         contentScale = ContentScale.Crop,
                     )
+
                     onClickPlay?.let { onClickPlay ->
-                        IconButton(
-                            modifier = Modifier
-                                .padding(4.dp)
-                                .clip(CircleShape)
-                                .hazeChild(
-                                    state = hazeState,
-                                    style = HazeStyle(
-                                        backgroundColor = MaterialTheme.colorScheme.background,
-                                        blurRadius = 5.dp,
-                                        tint = MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
-                                    ),
-                                )
-                                .size(40.dp),
-                            onClick = onClickPlay,
-                        ) {
-                            Icon(imageVector = Icons.Default.PlayArrow, contentDescription = "Play")
+                        with(animatedContentScope) {
+                            FilledTonalIconButton(
+                                modifier = Modifier
+                                    .animateEnterExit()
+                                    .padding(4.dp)
+                                    .clip(CircleShape)
+//                                    .hazeChild(
+//                                        state = hazeState,
+//                                        style = HazeStyle(
+//                                            backgroundColor = MaterialTheme.colorScheme.background,
+//                                            blurRadius = 5.dp,
+//                                            tint = MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
+//                                        ),
+//                                    )
+                                    .size(40.dp),
+                                onClick = onClickPlay,
+                            ) {
+                                Icon(imageVector = Icons.Default.PlayArrow, contentDescription = "Play")
+                            }
                         }
                     }
                 }

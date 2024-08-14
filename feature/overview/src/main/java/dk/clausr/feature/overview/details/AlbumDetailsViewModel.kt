@@ -7,9 +7,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.clausr.core.common.android.require
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.model.HistoricAlbum
+import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.feature.overview.OverviewDirections
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
@@ -20,8 +21,8 @@ class AlbumDetailsViewModel @Inject constructor(
 ) : ViewModel() {
     private val albumSlug by savedStateHandle.require<String>(OverviewDirections.Args.ALBUM_SLUG)
 
-    val album = oagRepository.getHistoricAlbum(albumSlug).map {
-        AlbumDetailsViewState.Success(it)
+    val state = combine(oagRepository.getHistoricAlbum(albumSlug), oagRepository.preferredStreamingPlatform) { historicAlbum, streaming ->
+        AlbumDetailsViewState.Success(album = historicAlbum, streamingPlatform = streaming)
     }
         .stateIn(
             scope = viewModelScope,
@@ -31,6 +32,9 @@ class AlbumDetailsViewModel @Inject constructor(
 
     sealed interface AlbumDetailsViewState {
         data object Loading : AlbumDetailsViewState
-        data class Success(val album: HistoricAlbum) : AlbumDetailsViewState
+        data class Success(
+            val album: HistoricAlbum,
+            val streamingPlatform: StreamingPlatform,
+        ) : AlbumDetailsViewState
     }
 }
