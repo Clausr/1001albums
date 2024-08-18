@@ -85,25 +85,19 @@ fun AlbumThumb(
                     )
 
                     onClickPlay?.let { onClickPlay ->
-                        with(animatedContentScope) {
-                            FilledTonalIconButton(
-                                modifier = Modifier
-                                    .animateEnterExit()
-                                    .padding(4.dp)
-                                    .clip(CircleShape)
-//                                    .hazeChild(
-//                                        state = hazeState,
-//                                        style = HazeStyle(
-//                                            backgroundColor = MaterialTheme.colorScheme.background,
-//                                            blurRadius = 5.dp,
-//                                            tint = MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
-//                                        ),
-//                                    )
-                                    .size(40.dp),
-                                onClick = onClickPlay,
-                            ) {
-                                Icon(imageVector = Icons.Default.PlayArrow, contentDescription = "Play")
-                            }
+                        FilledTonalIconButton(
+                            modifier = Modifier
+                                .sharedBounds(
+                                    sharedContentState = rememberSharedContentState(key = "play-$albumSlug"),
+                                    animatedVisibilityScope = animatedContentScope,
+                                    resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
+                                )
+                                .padding(4.dp)
+                                .clip(CircleShape)
+                                .size(40.dp),
+                            onClick = onClickPlay,
+                        ) {
+                            Icon(imageVector = Icons.Default.PlayArrow, contentDescription = "Play")
                         }
                     }
                 }
@@ -114,6 +108,7 @@ fun AlbumThumb(
                         .sharedBounds(
                             sharedContentState = rememberSharedContentState(key = "title-$albumSlug"),
                             animatedVisibilityScope = animatedContentScope,
+                            resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
                         ),
                     text = name,
                     style = MaterialTheme.typography.titleMedium,
@@ -127,6 +122,7 @@ fun AlbumThumb(
                         .sharedBounds(
                             sharedContentState = rememberSharedContentState(key = "artist-$albumSlug"),
                             animatedVisibilityScope = animatedContentScope,
+                            resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
                         ),
                     text = artist,
                     maxLines = 1,

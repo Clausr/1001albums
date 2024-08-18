@@ -100,6 +100,7 @@ fun AlbumDetailsScreen(
                         .sharedBounds(
                             sharedContentState = rememberSharedContentState(key = "title-${historicAlbum.album.slug}"),
                             animatedVisibilityScope = animatedContentScope,
+                            resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
                         ),
                     text = historicAlbum.album.name,
                     style = MaterialTheme.typography.displaySmall,
@@ -112,6 +113,7 @@ fun AlbumDetailsScreen(
                         .sharedBounds(
                             sharedContentState = rememberSharedContentState(key = "artist-${historicAlbum.album.slug}"),
                             animatedVisibilityScope = animatedContentScope,
+                            resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
                         ),
                     text = historicAlbum.album.artist,
                     textAlign = TextAlign.Center,
@@ -121,13 +123,17 @@ fun AlbumDetailsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp)
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = 16.dp)
+                        .sharedBounds(
+                            sharedContentState = rememberSharedContentState(key = "play-${historicAlbum.album.slug}"),
+                            animatedVisibilityScope = animatedContentScope,
+                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(),
+                        ),
                     horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.CenterHorizontally),
                 ) {
                     val context = LocalContext.current
                     StreamingServices.from(historicAlbum.album).getStreamingLinkFor(streamingPlatform)?.let { streamingLink ->
                         FilledTonalButton(
-                            modifier = Modifier,
                             onClick = {
                                 context.openLink(streamingLink)
                             },
@@ -149,7 +155,7 @@ fun AlbumDetailsScreen(
                         Icon(
                             modifier = Modifier.padding(end = 8.dp),
                             painter = painterResource(id = dk.clausr.a1001albumsgenerator.ui.R.drawable.ic_wiki),
-                            contentDescription = "Wikipedia"
+                            contentDescription = "Wikipedia",
                         )
                         Text(text = "Wikipedia")
                     }
@@ -167,9 +173,12 @@ private fun DetailsPreview() {
             SharedTransitionScope {
                 CompositionLocalProvider(
                     LocalNavAnimatedVisibilityScope provides this@AnimatedVisibility,
-                    LocalSharedTransitionScope provides this
+                    LocalSharedTransitionScope provides this,
                 ) {
-                    AlbumDetailsScreen(historicAlbum = historicAlbumPreviewData(), streamingPlatform = StreamingPlatform.Tidal)
+                    AlbumDetailsScreen(
+                        historicAlbum = historicAlbumPreviewData(),
+                        streamingPlatform = StreamingPlatform.Tidal,
+                    )
                 }
             }
         }
