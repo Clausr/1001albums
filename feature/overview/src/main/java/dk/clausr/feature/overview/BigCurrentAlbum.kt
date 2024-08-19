@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.twotone.Star
 import androidx.compose.material3.Button
@@ -29,7 +30,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import dk.clausr.a1001albumsgenerator.ui.helper.icon
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.common.extensions.openProject
 import dk.clausr.core.data_widget.SerializedWidgetState
@@ -159,19 +159,18 @@ fun BigCurrentAlbum(
             modifier = Modifier.fillMaxWidth(),
             text = album.name,
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.displaySmall,
+            style = MaterialTheme.typography.headlineMedium,
         )
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = album.artist,
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.titleLarge,
         )
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = album.releaseDate,
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleMedium,
         )
 
         Row(
@@ -195,7 +194,7 @@ fun BigCurrentAlbum(
                     onClick = { openLink(streaming.streamingLink) },
                 ) {
                     Icon(
-                        painter = painterResource(id = streaming.platform.icon()),
+                        imageVector = Icons.Default.PlayArrow,
                         contentDescription = null,
                     )
                 }

@@ -1,6 +1,7 @@
 package dk.clausr.core.common.extensions
 
 import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -18,4 +19,16 @@ fun LocalDateTime.formatToLocalDate(locale: Locale = Locale.getDefault()): Strin
 fun Instant.formatToDate(): String {
     val formattedDate = this.toLocalDateTime()
     return formattedDate.formatToLocalDate()
+}
+
+fun LocalDate.formatMonthAndYear(
+    locale: Locale = Locale.getDefault(),
+): String {
+    val currentYear = LocalDate.now().year
+    val formatter = if (this.year == currentYear) {
+        DateTimeFormatter.ofPattern("MMMM", locale) // Just the month
+    } else {
+        DateTimeFormatter.ofPattern("MMMM yyyy", locale) // Month and year
+    }
+    return this.format(formatter)
 }

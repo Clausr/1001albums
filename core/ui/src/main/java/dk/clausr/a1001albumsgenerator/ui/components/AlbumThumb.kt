@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -22,11 +21,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
@@ -42,7 +42,6 @@ fun AlbumThumb(
     onClick: () -> Unit,
     onClickPlay: (() -> Unit)?,
     modifier: Modifier = Modifier,
-    size: Dp = 120.dp,
 ) {
     val hazeState = remember { HazeState() }
 
@@ -55,33 +54,35 @@ fun AlbumThumb(
                     animatedVisibilityScope = animatedContentScope,
                     resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
                     clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(4.dp)),
-                )
-                .width(size),
+                ),
             onClick = onClick,
             color = MaterialTheme.colorScheme.background,
             shape = RoundedCornerShape(4.dp),
         ) {
             Column(
-                Modifier
-                    .fillMaxWidth(),
+                Modifier.fillMaxWidth(),
             ) {
                 Box(
-                    modifier = Modifier
-                        .size(size),
+                    modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.BottomEnd,
                 ) {
                     AsyncImage(
-                        model = coverUrl,
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(coverUrl)
+                            .crossfade(true)
+                            .placeholderMemoryCacheKey(albumSlug)
+                            .memoryCacheKey(albumSlug)
+                            .build(),
                         contentDescription = null,
                         modifier = Modifier
                             .haze(hazeState)
-                            .size(size)
+                            .fillMaxWidth()
                             .clip(shape = RoundedCornerShape(4.dp))
                             .sharedElement(
                                 state = rememberSharedContentState(key = "cover-$albumSlug"),
                                 animatedVisibilityScope = animatedContentScope,
                             ),
-                        contentScale = ContentScale.Crop,
+                        contentScale = ContentScale.FillWidth,
                     )
 
                     onClickPlay?.let { onClickPlay ->
@@ -108,7 +109,10 @@ fun AlbumThumb(
                         .sharedBounds(
                             sharedContentState = rememberSharedContentState(key = "title-$albumSlug"),
                             animatedVisibilityScope = animatedContentScope,
-                            resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
+                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(
+                                contentScale = ContentScale.FillHeight,
+                                alignment = Alignment.Center,
+                            ),
                         ),
                     text = name,
                     style = MaterialTheme.typography.titleMedium,
@@ -122,7 +126,10 @@ fun AlbumThumb(
                         .sharedBounds(
                             sharedContentState = rememberSharedContentState(key = "artist-$albumSlug"),
                             animatedVisibilityScope = animatedContentScope,
-                            resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
+                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(
+                                contentScale = ContentScale.FillHeight,
+                                alignment = Alignment.Center,
+                            ),
                         ),
                     text = artist,
                     maxLines = 1,
@@ -131,7 +138,16 @@ fun AlbumThumb(
 
                 tertiaryText?.let {
                     Text(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .sharedBounds(
+                                sharedContentState = rememberSharedContentState(key = "date-$albumSlug"),
+                                animatedVisibilityScope = animatedContentScope,
+                                resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(
+                                    contentScale = ContentScale.FillHeight,
+                                    alignment = Alignment.Center,
+                                ),
+                            ),
                         text = it,
                     )
                 }
@@ -147,7 +163,6 @@ fun AlbumThumb(
     onClickPlay: (() -> Unit)?,
     modifier: Modifier = Modifier,
     tertiaryText: String? = null,
-    size: Dp = 120.dp,
 ) {
     AlbumThumb(
         albumSlug = album.album.slug,
@@ -157,7 +172,6 @@ fun AlbumThumb(
         tertiaryText = tertiaryText,
         onClick = onClick,
         onClickPlay = onClickPlay,
-        size = size,
         modifier = modifier,
     )
 }
