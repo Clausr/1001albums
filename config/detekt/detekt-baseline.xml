@@ -9,6 +9,8 @@
     <ID>PackageNaming:SerializedWidgetState.kt$package dk.clausr.core.data_widget</ID>
     <ID>PackageName:AlbumWidgetDataDefinition.kt$package dk.clausr.core.data_widget</ID>
     <ID>PackageName:SerializedWidgetState.kt$package dk.clausr.core.data_widget</ID>
+    <ID>CompositionLocalAllowlist:OagNavHost.kt$LocalSharedTransitionScope</ID>
+    <ID>CompositionLocalAllowlist:OagNavHost.kt$LocalNavAnimatedVisibilityScope</ID>
   </ManuallySuppressedIssues>
   <CurrentIssues />
 </SmellBaseline>

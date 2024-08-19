@@ -13,4 +13,5 @@ fun StreamingPlatform.icon(): Int = when (this) {
     StreamingPlatform.Tidal -> R.drawable.ic_tidal
     StreamingPlatform.YouTubeMusic -> R.drawable.ic_youtube_music
     StreamingPlatform.Qobuz -> R.drawable.ic_qobuz
+    StreamingPlatform.Undefined -> -1
 }

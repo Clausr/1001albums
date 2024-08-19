@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed interface SerializedWidgetState {
     @Serializable
-    data class Loading(val currentProjectId: String, val previousStreamingPlatform: StreamingPlatform? = null) : SerializedWidgetState
+    data class Loading(val currentProjectId: String, val previousStreamingPlatform: StreamingPlatform) : SerializedWidgetState
 
     @Serializable
     data class Success(val data: AlbumWidgetData, val currentProjectId: String) :

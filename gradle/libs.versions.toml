@@ -6,7 +6,7 @@ coreKtx = "1.13.1"
 compose-bom = "2024.06.00"
 glanceAppwidget = "1.1.0"
 kotlin = "2.0.10"
-kotlin-gradlePlugin = "1.9.0"
+kotlinxCollectionsImmutable = "0.3.7"
 lifecycleRuntimeKtx = "2.8.4"
 materialVersion = "1.12.0"
 okhttp = "4.12.0"
@@ -39,12 +39,16 @@ detektComposeRulesPluginVersion = "0.4.10"
 detektPluginVersion = "1.23.6"
 haze = "0.9.0-alpha06"
 sentry = "4.11.0"
+composeUi = "1.7.0-beta07"
+composeAnimation = "1.7.0-beta07"
 
 [libraries]
 androidx-work-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "androidxWork" }
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
-androidx-compose-ui = { module = "androidx.compose.ui:ui" }
+androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "composeUi" }
+compose_animation = { module = "androidx.compose.animation:animation-android", version.ref = "composeAnimation" }
+compose_animation_core = { module = "androidx.compose.animation:animation-core-android" }
 androidx-compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
 androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
@@ -63,6 +67,7 @@ detekt-compose-rules = { module = "io.nlopez.compose.rules:detekt", version.ref 
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detektPluginVersion" }
 glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glanceAppwidget" }
 glance-material3 = { module = "androidx.glance:glance-material3", version.ref = "glanceAppwidget" }
+kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 material = { module = "com.google.android.material:material", version.ref = "materialVersion" }
 retrofit-core = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }

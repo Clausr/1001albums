@@ -81,6 +81,8 @@ dependencies {
 
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.compose.animation.core)
+    implementation(libs.compose.animation)
 
     implementation(libs.androidx.core.splashscreen)
 

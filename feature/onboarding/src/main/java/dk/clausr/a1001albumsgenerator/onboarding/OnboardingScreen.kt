@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
@@ -24,7 +25,6 @@ import dev.chrisbanes.haze.haze
 import dk.clausr.a1001albumsgenerator.onboarding.components.childHazeModifier
 import dk.clausr.a1001albumsgenerator.onboarding.screens.ProjectNameScreen
 import dk.clausr.a1001albumsgenerator.onboarding.screens.StreamingServiceScreen
-import dk.clausr.a1001albumsgenerator.ui.components.OagNavHost
 import dk.clausr.a1001albumsgenerator.ui.components.covergrid.CoverGrid
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.common.extensions.collectWithLifecycle
@@ -98,7 +98,7 @@ internal fun OnboardingScreen(
             modifier = Modifier.align(Alignment.Center),
             verticalArrangement = Arrangement.spacedBy(32.dp),
         ) {
-            OagNavHost(
+            NavHost(
                 navController = navHostController,
                 startDestination = OnboardingDirections.Routes.ROOT,
             ) {

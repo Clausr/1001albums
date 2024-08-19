@@ -17,7 +17,7 @@ interface OagRepository {
     val currentAlbum: Flow<Album?>
 
     val widgetState: Flow<SerializedWidgetState>
-    val preferredStreamingPlatform: Flow<StreamingPlatform?>
+    val preferredStreamingPlatform: Flow<StreamingPlatform>
 
     val albumCovers: Flow<CoverData>
 
@@ -25,4 +25,5 @@ interface OagRepository {
     suspend fun updateProject(projectId: String): Result<Project, NetworkError>
     suspend fun setPreferredPlatform(platform: StreamingPlatform)
     suspend fun isLatestAlbumRated(): Boolean
+    fun getHistoricAlbum(slug: String): Flow<HistoricAlbum>
 }

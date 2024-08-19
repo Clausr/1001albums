@@ -5,9 +5,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import dk.clausr.a1001albumsgenerator.MainViewState
 import dk.clausr.a1001albumsgenerator.onboarding.OnboardingRoute
+import dk.clausr.a1001albumsgenerator.ui.components.OagNavHost
+import dk.clausr.feature.overview.OverviewDirections
 
 @Composable
-fun OagNavHost(
+fun MainAppNavHost(
     uiState: MainViewState,
     navHostController: NavHostController,
     modifier: Modifier = Modifier,
@@ -17,12 +19,14 @@ fun OagNavHost(
             MainViewState.Loading -> {}
             is MainViewState.Success -> {
                 if (uiState.hasOnboarded) {
-                    dk.clausr.a1001albumsgenerator.ui.components.OagNavHost(
+                    OagNavHost(
                         navController = navHostController,
-                        startDestination = MainDirections.home(),
+                        startDestination = OverviewDirections.root(),
                         modifier = modifier,
                     ) {
-                        mainNavigationGraph(navHostController)
+                        mainNavigationGraph(
+                            navHostController = navHostController,
+                        )
                     }
                 } else {
                     OnboardingRoute()

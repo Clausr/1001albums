@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Card
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
@@ -25,19 +27,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import dk.clausr.a1001albumsgenerator.ui.helper.icon
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Rating
 import dk.clausr.core.model.StreamingPlatform
-import dk.clausr.core.model.getStreaming
+import dk.clausr.core.model.StreamingServices
 import dk.clausr.feature.overview.preview.historicAlbumPreviewData
 import dk.clausr.a1001albumsgenerator.ui.R as uiR
 
 @Composable
 fun HistoricAlbumCard(
     historicAlbum: HistoricAlbum,
-    preferredStreamingPlatform: StreamingPlatform?,
+    preferredStreamingPlatform: StreamingPlatform,
     onClick: () -> Unit,
     openLink: (url: String) -> Unit,
     modifier: Modifier = Modifier,
@@ -93,11 +94,9 @@ fun HistoricAlbumCard(
                             Icon(painterResource(id = uiR.drawable.ic_wiki), contentDescription = null)
                         }
 
-                        preferredStreamingPlatform?.let { preferred ->
-                            album.getStreaming(preferred)?.let { streamingService ->
-                                FilledIconButton(onClick = { openLink(streamingService.streamingLink) }) {
-                                    Icon(painterResource(id = streamingService.platform.icon()), contentDescription = null)
-                                }
+                        StreamingServices.from(album).getStreamingLinkFor(preferredStreamingPlatform)?.let {
+                            FilledIconButton(onClick = { openLink(it) }) {
+                                Icon(imageVector = Icons.Default.PlayArrow, contentDescription = null)
                             }
                         }
                     }

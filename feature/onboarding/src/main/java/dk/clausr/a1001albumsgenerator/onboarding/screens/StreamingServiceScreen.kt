@@ -59,7 +59,7 @@ internal fun StreamingServiceScreen(
                 .fillMaxWidth()
                 .selectableGroup(),
         ) {
-            StreamingPlatform.entries.forEach { platform ->
+            StreamingPlatform.entries.filterNot { it == StreamingPlatform.Undefined }.forEach { platform ->
                 val isSelected = platform == selectedPlatform
                 val itemColor = if (isSelected) MaterialTheme.colorScheme.primary else LocalContentColor.current
                 Row(
