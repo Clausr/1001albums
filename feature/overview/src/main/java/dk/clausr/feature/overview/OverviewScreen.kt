@@ -198,7 +198,7 @@ internal fun OverviewScreen(
                                 grouped.forEach { (date, albums) ->
                                     item(span = { GridItemSpan(maxLineSpan) }) {
                                         Text(
-                                            text = date.formatMonthAndYear(),
+                                            text = date.formatMonthAndYear().replaceFirstChar { it.uppercase() },
                                             modifier = Modifier.padding(top = 16.dp),
                                             style = MaterialTheme.typography.titleLarge,
                                         )
