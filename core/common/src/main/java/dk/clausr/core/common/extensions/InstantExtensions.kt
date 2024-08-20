@@ -21,9 +21,7 @@ fun Instant.formatToDate(): String {
     return formattedDate.formatToLocalDate()
 }
 
-fun LocalDate.formatMonthAndYear(
-    locale: Locale = Locale.getDefault(),
-): String {
+fun LocalDate.formatMonthAndYear(locale: Locale = Locale.getDefault()): String {
     val currentYear = LocalDate.now().year
     val formatter = if (this.year == currentYear) {
         DateTimeFormatter.ofPattern("MMMM", locale) // Just the month

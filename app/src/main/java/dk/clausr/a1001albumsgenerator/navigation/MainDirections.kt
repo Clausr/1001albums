@@ -4,7 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import dk.clausr.a1001albumsgenerator.settings.SettingsRoute
-import dk.clausr.feature.overview.overviewGraph
+import dk.clausr.feature.overview.navigation.overviewGraph
 
 object MainDirections {
     private const val PREFIX = "main"
@@ -23,7 +23,7 @@ fun NavGraphBuilder.mainNavigationGraph(navHostController: NavHostController) {
         navHostController = navHostController,
         navigateToSettings = {
             navHostController.navigate(MainDirections.widgetConfiguration())
-        }
+        },
     )
 
     composable(route = MainDirections.widgetConfiguration()) {
