@@ -8,7 +8,7 @@ import dk.clausr.core.common.android.require
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.StreamingPlatform
-import dk.clausr.feature.overview.OverviewDirections
+import dk.clausr.feature.overview.navigation.OverviewDirections
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn

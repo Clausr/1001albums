@@ -6,7 +6,7 @@ import androidx.navigation.NavHostController
 import dk.clausr.a1001albumsgenerator.MainViewState
 import dk.clausr.a1001albumsgenerator.onboarding.OnboardingRoute
 import dk.clausr.a1001albumsgenerator.ui.components.OagNavHost
-import dk.clausr.feature.overview.OverviewDirections
+import dk.clausr.feature.overview.navigation.OverviewDirections
 
 @Composable
 fun MainAppNavHost(
