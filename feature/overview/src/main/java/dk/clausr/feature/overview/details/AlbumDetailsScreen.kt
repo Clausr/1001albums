@@ -60,6 +60,7 @@ fun AlbumDetailsRoute(
                 modifier = modifier,
                 historicAlbum = internalState.album,
                 streamingPlatform = internalState.streamingPlatform,
+                listName = viewModel.listName ?: "nozhing",
             )
         }
     }
@@ -70,13 +71,14 @@ fun AlbumDetailsScreen(
     historicAlbum: HistoricAlbum,
     streamingPlatform: StreamingPlatform,
     modifier: Modifier = Modifier,
+    listName: String = "List",
 ) {
     val animatedContentScope = LocalNavAnimatedVisibilityScope.current
     with(LocalSharedTransitionScope.current) {
         Scaffold(
             modifier = modifier
                 .sharedBounds(
-                    sharedContentState = rememberSharedContentState(key = "bounds-${historicAlbum.album.slug}"),
+                    sharedContentState = rememberSharedContentState(key = "$listName-bounds-${historicAlbum.album.slug}"),
                     animatedVisibilityScope = animatedContentScope,
                 ),
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -100,7 +102,7 @@ fun AlbumDetailsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .sharedElement(
-                            state = rememberSharedContentState(key = "cover-${historicAlbum.album.slug}"),
+                            state = rememberSharedContentState(key = "$listName-cover-${historicAlbum.album.slug}"),
                             animatedVisibilityScope = animatedContentScope,
                         ),
                     contentScale = ContentScale.FillWidth,
@@ -111,7 +113,7 @@ fun AlbumDetailsScreen(
                         .fillMaxWidth()
                         .padding(top = 8.dp)
                         .sharedBounds(
-                            sharedContentState = rememberSharedContentState(key = "title-${historicAlbum.album.slug}"),
+                            sharedContentState = rememberSharedContentState(key = "$listName-title-${historicAlbum.album.slug}"),
                             animatedVisibilityScope = animatedContentScope,
                             resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(
                                 contentScale = ContentScale.FillWidth,
@@ -127,7 +129,7 @@ fun AlbumDetailsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .sharedBounds(
-                            sharedContentState = rememberSharedContentState(key = "artist-${historicAlbum.album.slug}"),
+                            sharedContentState = rememberSharedContentState(key = "$listName-artist-${historicAlbum.album.slug}"),
                             animatedVisibilityScope = animatedContentScope,
                             resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(
                                 contentScale = ContentScale.FillWidth,
@@ -143,7 +145,7 @@ fun AlbumDetailsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .sharedBounds(
-                            sharedContentState = rememberSharedContentState(key = "date-${historicAlbum.album.slug}"),
+                            sharedContentState = rememberSharedContentState(key = "$listName-date-${historicAlbum.album.slug}"),
                             animatedVisibilityScope = animatedContentScope,
                         ),
                     text = historicAlbum.album.releaseDate,
@@ -156,7 +158,7 @@ fun AlbumDetailsScreen(
                         .padding(top = 16.dp)
                         .padding(horizontal = 16.dp)
                         .sharedBounds(
-                            sharedContentState = rememberSharedContentState(key = "play-${historicAlbum.album.slug}"),
+                            sharedContentState = rememberSharedContentState(key = "$listName-play-${historicAlbum.album.slug}"),
                             animatedVisibilityScope = animatedContentScope,
                             resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(),
                         ),

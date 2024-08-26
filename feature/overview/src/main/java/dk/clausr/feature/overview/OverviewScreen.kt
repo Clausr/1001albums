@@ -55,7 +55,7 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 fun OverviewRoute(
     navigateToSettings: () -> Unit,
-    navigateToAlbumDetails: (slug: String) -> Unit,
+    navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: OverviewViewModel = hiltViewModel(),
 ) {
@@ -73,7 +73,7 @@ fun OverviewRoute(
 internal fun OverviewScreen(
     state: OverviewUiState,
     navigateToSettings: () -> Unit,
-    navigateToAlbumDetails: (slug: String) -> Unit,
+    navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -209,9 +209,10 @@ internal fun OverviewScreen(
 
                                     AlbumThumb(
                                         album = historicAlbum,
-                                        onClick = { navigateToAlbumDetails(historicAlbum.album.slug) },
+                                        onClick = { navigateToAlbumDetails(historicAlbum.album.slug, "history-$date") },
                                         onClickPlay = onClickPlay,
                                         tertiaryText = historicAlbum.generatedAt.formatToDate(),
+                                        listName = "history-$date"
                                     )
                                 }
                             }
@@ -229,7 +230,7 @@ private fun OverviewPreview() {
     MaterialTheme {
         OverviewScreen(
             navigateToSettings = {},
-            navigateToAlbumDetails = {},
+            navigateToAlbumDetails = { _, _ -> },
             state = OverviewUiState.Success(
                 project = Project(
                     name = "GlanceWidget",

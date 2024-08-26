@@ -8,6 +8,7 @@ import androidx.navigation.navigation
 import dk.clausr.a1001albumsgenerator.ui.navigation.sharedTransitionComposable
 import dk.clausr.feature.overview.OverviewRoute
 import dk.clausr.feature.overview.details.AlbumDetailsRoute
+import timber.log.Timber
 
 fun NavGraphBuilder.overviewGraph(
     navHostController: NavHostController,
@@ -20,8 +21,9 @@ fun NavGraphBuilder.overviewGraph(
         sharedTransitionComposable(route = OverviewDirections.Routes.OVERVIEW) {
             OverviewRoute(
                 navigateToSettings = navigateToSettings,
-                navigateToAlbumDetails = { slug ->
-                    navHostController.navigate(OverviewDirections.albumDetails(slug))
+                navigateToAlbumDetails = { slug, listName ->
+                    Timber.d("Navigate to details: $slug - $listName")
+                    navHostController.navigate(OverviewDirections.albumDetails(slug, listName))
                 },
             )
         }
@@ -30,6 +32,7 @@ fun NavGraphBuilder.overviewGraph(
             route = OverviewDirections.Routes.ALBUM_DETAILS,
             arguments = listOf(
                 navArgument(OverviewDirections.Args.ALBUM_SLUG) { type = NavType.StringType },
+                navArgument(OverviewDirections.Args.LIST_NAME) { type = NavType.StringType },
             ),
         ) {
             AlbumDetailsRoute()

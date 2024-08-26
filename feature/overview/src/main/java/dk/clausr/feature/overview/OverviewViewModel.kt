@@ -36,10 +36,10 @@ class OverviewViewModel @Inject constructor(
                 project = project,
                 currentAlbum = currentAlbum,
                 widgetState = widgetState,
-                didNotListen = project.historicAlbums.filter { it.rating !is Rating.Rated }.toImmutableList(),
-                topRated = project.historicAlbums.filter { it.rating == Rating.Rated(5) }.toImmutableList(),
+                didNotListen = project.didNotListenAlbums(),
+                topRated = project.topRatedAlbums(),
                 streamingPlatform = platform,
-                groupedHistory = groupHistory(project),
+                groupedHistory = project.groupedHistory(),
             )
         } else {
             OverviewUiState.Error
@@ -51,8 +51,16 @@ class OverviewViewModel @Inject constructor(
             initialValue = OverviewUiState.Loading,
         )
 
-    private fun groupHistory(project: Project): Map<String, List<HistoricAlbum>> {
-        return project.historicAlbums.groupBy {
+    private fun Project.topRatedAlbums(): ImmutableList<HistoricAlbum> {
+        return historicAlbums.filter { it.rating == Rating.Rated(5) }.toImmutableList()
+    }
+
+    private fun Project.didNotListenAlbums(): ImmutableList<HistoricAlbum> {
+        return historicAlbums.filter { it.rating !is Rating.Rated }.toImmutableList()
+    }
+
+    private fun Project.groupedHistory(): Map<String, List<HistoricAlbum>> {
+        return historicAlbums.groupBy {
             val generated = it.generatedAt.toLocalDateTime()
             val date = LocalDate.of(generated.year, generated.monthValue, 1)
             date.formatMonthAndYear().replaceFirstChar { it.uppercase() }
