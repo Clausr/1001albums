@@ -16,8 +16,9 @@ dependencies {
     implementation(libs.compose.animation)
     implementation(libs.compose.animation.core)
 
-    implementation(libs.coil.kt)
-    implementation(libs.coil.kt.compose)
+    implementation(libs.coil3)
+    implementation(libs.coil3.coil.compose)
+    implementation(libs.coil3.coil.network.okhttp)
 
     implementation(libs.haze)
     api(libs.androidx.compose.material3)

@@ -3,6 +3,7 @@ package dk.clausr.a1001albumsgenerator.ui.components
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -24,8 +25,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.model.HistoricAlbum
 
@@ -63,7 +65,8 @@ fun AlbumThumb(
                     contentAlignment = Alignment.BottomEnd,
                 ) {
                     AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
+                        model = ImageRequest
+                            .Builder(LocalContext.current)
                             .data(coverUrl)
                             .crossfade(true)
                             .placeholderMemoryCacheKey(albumSlug)
@@ -73,6 +76,7 @@ fun AlbumThumb(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(shape = RoundedCornerShape(4.dp))
+                            .aspectRatio(1f)
                             .sharedElement(
                                 state = rememberSharedContentState(key = "$listName-cover-$albumSlug"),
                                 animatedVisibilityScope = animatedContentScope,

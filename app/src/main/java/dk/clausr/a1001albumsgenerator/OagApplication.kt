@@ -3,12 +3,8 @@ package dk.clausr.a1001albumsgenerator
 import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
-import coil.ImageLoader
-import coil.ImageLoaderFactory
-import coil.disk.DiskCache
-import coil.memory.MemoryCache
-import coil.request.CachePolicy
-import coil.util.DebugLogger
+import coil3.ImageLoader
+import coil3.SingletonImageLoader
 import dagger.hilt.EntryPoint
 import dagger.hilt.EntryPoints
 import dagger.hilt.InstallIn
@@ -23,13 +19,20 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @HiltAndroidApp
-class OagApplication : Application(), Configuration.Provider, ImageLoaderFactory {
+class OagApplication : Application(), Configuration.Provider {
+    @Inject
+    lateinit var imageLoader: ImageLoader
+
     override fun onCreate() {
         super.onCreate()
 
         startWorker()
 
         initTimberAndSentry()
+
+        SingletonImageLoader.setSafe {
+            imageLoader
+        }
     }
 
     private fun startWorker() {
@@ -64,25 +67,4 @@ class OagApplication : Application(), Configuration.Provider, ImageLoaderFactory
         .setWorkerFactory(EntryPoints.get(this, HiltWorkerFactoryEntryPoint::class.java).workerFactory())
         .setMinimumLoggingLevel(android.util.Log.DEBUG)
         .build()
-
-    override fun newImageLoader(): ImageLoader {
-        return ImageLoader.Builder(this)
-            .memoryCachePolicy(CachePolicy.ENABLED)
-            .memoryCache(
-                MemoryCache.Builder(this)
-                    .maxSizePercent(percent = 0.25)
-                    .build(),
-            )
-            .diskCache {
-                DiskCache
-                    .Builder()
-                    .directory(cacheDir.resolve("image_cache"))
-                    .maxSizePercent(percent = 0.05)
-                    .build()
-            }
-            .diskCachePolicy(CachePolicy.ENABLED)
-            .crossfade(true)
-            .logger(if (BuildConfig.DEBUG) DebugLogger() else null)
-            .build()
-    }
 }

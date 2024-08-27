@@ -29,7 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.common.extensions.openProject
 import dk.clausr.core.data_widget.SerializedWidgetState
@@ -156,7 +156,9 @@ fun BigCurrentAlbum(
         }
 
         Text(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
             text = album.name,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.headlineMedium,
@@ -174,7 +176,9 @@ fun BigCurrentAlbum(
         )
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(
                 space = 16.dp,
                 alignment = Alignment.CenterHorizontally,

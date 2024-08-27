@@ -135,7 +135,7 @@ internal fun OverviewScreen(
                             ) {
                                 state.currentAlbum?.let {
                                     BigCurrentAlbum(
-                                        modifier = Modifier.padding(horizontal = 16.dp),
+                                        modifier = Modifier.ignoreHorizontalParentPadding(16.dp),
                                         state = state.widgetState,
                                         album = it,
                                         openLink = { url ->
