@@ -8,17 +8,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.core.graphics.drawable.toBitmapOrNull
 import androidx.glance.GlanceModifier
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
 import androidx.glance.layout.ContentScale
-import coil.imageLoader
-import coil.request.CachePolicy
-import coil.request.ErrorResult
-import coil.request.ImageRequest
-import coil.request.SuccessResult
+import coil3.imageLoader
+import coil3.request.CachePolicy
+import coil3.request.ErrorResult
+import coil3.request.ImageRequest
+import coil3.request.SuccessResult
+import coil3.request.allowHardware
+import coil3.toBitmap
 
 @Composable
 fun AlbumCover(
@@ -45,10 +46,11 @@ fun AlbumCover(
 private suspend fun Context.getImage(
     url: String,
     force: Boolean = false,
-): Bitmap? {
+): Bitmap {
     val request = ImageRequest
         .Builder(this)
         .data(url)
+        .allowHardware(false) // TODO Check if there's another way to fix this
         .apply {
             if (force) {
                 memoryCachePolicy(CachePolicy.DISABLED)
@@ -60,6 +62,6 @@ private suspend fun Context.getImage(
     // Request the image to be loaded and throw error if it failed
     return when (val result = imageLoader.execute(request)) {
         is ErrorResult -> throw result.throwable
-        is SuccessResult -> result.drawable.toBitmapOrNull()
+        is SuccessResult -> result.image.toBitmap()
     }
 }

@@ -8,10 +8,11 @@ import dk.clausr.core.common.android.require
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.StreamingPlatform
-import dk.clausr.feature.overview.OverviewDirections
+import dk.clausr.feature.overview.navigation.OverviewDirections
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,6 +21,12 @@ class AlbumDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val albumSlug by savedStateHandle.require<String>(OverviewDirections.Args.ALBUM_SLUG)
+
+    val listName = savedStateHandle.get<String>(OverviewDirections.Args.LIST_NAME)
+
+    init {
+        Timber.i("List name: $listName $albumSlug")
+    }
 
     val state = combine(oagRepository.getHistoricAlbum(albumSlug), oagRepository.preferredStreamingPlatform) { historicAlbum, streaming ->
         AlbumDetailsViewState.Success(album = historicAlbum, streamingPlatform = streaming)

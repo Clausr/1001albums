@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
+import dev.chrisbanes.haze.HazeTint
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 import dk.clausr.a1001albumsgenerator.onboarding.components.ProjectTextField
@@ -129,7 +130,7 @@ fun SettingsScreen(
                                     state = hazeState,
                                     style = HazeStyle(
                                         backgroundColor = MaterialTheme.colorScheme.background,
-                                        tint = MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
+                                        tint = HazeTint.Color(MaterialTheme.colorScheme.background.copy(alpha = 0.5f)),
                                     ),
                                 ),
                         ) {
@@ -146,7 +147,7 @@ fun SettingsScreen(
                                 state = hazeState,
                                 style = HazeStyle(
                                     backgroundColor = MaterialTheme.colorScheme.background,
-                                    tint = MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
+                                    tint = HazeTint.Color(MaterialTheme.colorScheme.background.copy(alpha = 0.5f)),
                                 ),
                             ),
                     ) {
@@ -202,7 +203,7 @@ fun SettingsScreen(
                             state = hazeState,
                             style = HazeStyle(
                                 backgroundColor = MaterialTheme.colorScheme.background,
-                                tint = MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
+                                tint = HazeTint.Color(MaterialTheme.colorScheme.background.copy(alpha = 0.5f)),
                             ),
                         )
                         .padding(16.dp),
@@ -218,7 +219,7 @@ fun SettingsScreen(
                             state = hazeState,
                             style = HazeStyle(
                                 backgroundColor = MaterialTheme.colorScheme.background,
-                                tint = MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
+                                tint = HazeTint.Color(MaterialTheme.colorScheme.background.copy(alpha = 0.5f)),
                             ),
                         )
                         .padding(16.dp),
@@ -245,7 +246,7 @@ fun SettingsScreen(
                                 state = hazeState,
                                 style = HazeStyle(
                                     backgroundColor = MaterialTheme.colorScheme.background,
-                                    tint = MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
+                                    tint = HazeTint.Color(MaterialTheme.colorScheme.background.copy(alpha = 0.5f)),
                                 ),
                             ),
                     ) {

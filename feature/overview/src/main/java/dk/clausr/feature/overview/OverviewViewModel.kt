@@ -3,6 +3,8 @@ package dk.clausr.feature.overview
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dk.clausr.core.common.extensions.formatMonthAndYear
+import dk.clausr.core.common.extensions.toLocalDateTime
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.model.Album
@@ -15,6 +17,7 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,9 +36,10 @@ class OverviewViewModel @Inject constructor(
                 project = project,
                 currentAlbum = currentAlbum,
                 widgetState = widgetState,
-                didNotListen = project.historicAlbums.filter { it.rating !is Rating.Rated }.toImmutableList(),
-                topRated = project.historicAlbums.filter { it.rating == Rating.Rated(5) }.toImmutableList(),
+                didNotListen = project.didNotListenAlbums(),
+                topRated = project.topRatedAlbums(),
                 streamingPlatform = platform,
+                groupedHistory = project.groupedHistory(),
             )
         } else {
             OverviewUiState.Error
@@ -46,6 +50,22 @@ class OverviewViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = OverviewUiState.Loading,
         )
+
+    private fun Project.topRatedAlbums(): ImmutableList<HistoricAlbum> {
+        return historicAlbums.filter { it.rating == Rating.Rated(5) }.toImmutableList()
+    }
+
+    private fun Project.didNotListenAlbums(): ImmutableList<HistoricAlbum> {
+        return historicAlbums.filter { it.rating !is Rating.Rated }.toImmutableList()
+    }
+
+    private fun Project.groupedHistory(): Map<String, List<HistoricAlbum>> {
+        return historicAlbums.groupBy {
+            val generated = it.generatedAt.toLocalDateTime()
+            val date = LocalDate.of(generated.year, generated.monthValue, 1)
+            date.formatMonthAndYear().replaceFirstChar { it.uppercase() }
+        }
+    }
 }
 
 sealed interface OverviewUiState {
@@ -57,6 +77,7 @@ sealed interface OverviewUiState {
         val widgetState: SerializedWidgetState,
         val topRated: ImmutableList<HistoricAlbum>,
         val streamingPlatform: StreamingPlatform,
+        val groupedHistory: Map<String, List<HistoricAlbum>>,
     ) : OverviewUiState
 
     data object Error : OverviewUiState

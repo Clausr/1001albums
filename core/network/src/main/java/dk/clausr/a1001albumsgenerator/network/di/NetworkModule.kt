@@ -1,8 +1,15 @@
 package dk.clausr.a1001albumsgenerator.network.di
 
 import android.content.Context
-import coil.ImageLoader
-import coil.util.DebugLogger
+import coil3.ImageLoader
+import coil3.disk.DiskCache
+import coil3.disk.directory
+import coil3.memory.MemoryCache
+import coil3.network.okhttp.OkHttpNetworkFetcherFactory
+import coil3.request.CachePolicy
+import coil3.request.crossfade
+import coil3.size.Precision
+import coil3.util.DebugLogger
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
@@ -12,6 +19,9 @@ import dagger.hilt.components.SingletonComponent
 import dk.clausr.a1001albumsgenerator.network.BuildConfig
 import dk.clausr.a1001albumsgenerator.network.fake.FakeAssetManager
 import dk.clausr.a1001albumsgenerator.utils.InstantSerializer
+import dk.clausr.core.common.network.Dispatcher
+import dk.clausr.core.common.network.OagDispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import okhttp3.Call
@@ -73,14 +83,26 @@ object NetworkModule {
     fun imageLoader(
         okHttpCallFactory: Call.Factory,
         @ApplicationContext application: Context,
-    ): ImageLoader = ImageLoader.Builder(application).callFactory(okHttpCallFactory)
-        // Assume most content images are versioned urls
-        // but some problematic images are fetching each time
-//        .respectCacheHeaders(false)
-        .apply {
-            if (BuildConfig.DEBUG) {
-                logger(DebugLogger())
-            }
+        @Dispatcher(OagDispatchers.IO) ioDispatcher: CoroutineDispatcher,
+    ): ImageLoader = ImageLoader.Builder(application)
+        .memoryCachePolicy(CachePolicy.ENABLED)
+        .memoryCache(
+            MemoryCache.Builder()
+                .maxSizePercent(percent = 0.25, context = application)
+                .build(),
+        )
+        .diskCachePolicy(CachePolicy.ENABLED)
+        .diskCache {
+            DiskCache
+                .Builder()
+                .directory(application.cacheDir.resolve("image_cache"))
+                .maxSizePercent(percent = 0.05)
+                .build()
         }
+        .components { add(OkHttpNetworkFetcherFactory(okHttpCallFactory)) }
+        .coroutineContext(ioDispatcher)
+        .crossfade(true)
+        .logger(if (BuildConfig.DEBUG) DebugLogger() else null)
+        .precision(Precision.INEXACT)
         .build()
 }

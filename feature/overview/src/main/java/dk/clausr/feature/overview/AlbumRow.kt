@@ -25,7 +25,7 @@ import kotlinx.collections.immutable.ImmutableList
 fun AlbumRow(
     title: String,
     albums: ImmutableList<HistoricAlbum>,
-    onClickAlbum: (slug: String) -> Unit,
+    onClickAlbum: (slug: String, listName: String) -> Unit,
     streamingPlatform: StreamingPlatform,
     tertiaryTextTransform: (HistoricAlbum) -> String?,
     modifier: Modifier = Modifier,
@@ -45,7 +45,10 @@ fun AlbumRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            items(items = albums) { album ->
+            items(
+                items = albums,
+                key = { "$title-${it.album.slug}" },
+            ) { album ->
                 val streamingLink = StreamingServices
                     .from(album.album)
                     .getStreamingLinkFor(streamingPlatform)
@@ -59,9 +62,10 @@ fun AlbumRow(
                 AlbumThumb(
                     modifier = Modifier.width(120.dp),
                     album = album,
-                    onClick = { onClickAlbum(album.album.slug) },
+                    onClick = { onClickAlbum(album.album.slug, title) },
                     onClickPlay = onClickPlay,
                     tertiaryText = tertiaryTextTransform(album),
+                    listName = title,
                 )
             }
         }

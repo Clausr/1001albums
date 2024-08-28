@@ -112,5 +112,4 @@ jobs:
           packageName: dk.clausr.a1001albumsgenerator
           releaseFiles: app/build/outputs/bundle/prodRelease/app-prod-release.aab
           track: internal
-          status: draft
           mappingFile: app/build/outputs/mapping/prodRelease/mapping.txt

@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
+import dev.chrisbanes.haze.HazeTint
 import dev.chrisbanes.haze.hazeChild
 
 @Suppress("ModifierComposable") // TODO Do this in Modifier.Node?
@@ -20,7 +21,7 @@ internal fun Modifier.childHazeModifier(hazeState: HazeState) = Modifier
         shape = MaterialTheme.shapes.medium,
         style = HazeStyle(
             backgroundColor = MaterialTheme.colorScheme.background,
-            tint = MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
+            tint = HazeTint.Color(MaterialTheme.colorScheme.background.copy(alpha = 0.5f)),
         ),
     )
     .padding(all = 16.dp)

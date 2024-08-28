@@ -28,6 +28,10 @@ dependencies {
 
     implementation(libs.material)
 
+    implementation(libs.coil3)
+    implementation(libs.coil3.coil.compose)
+    implementation(libs.coil3.coil.network.okhttp)
+
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.compose.material.iconsExtended)
     implementation(libs.kotlinx.serialization.json)

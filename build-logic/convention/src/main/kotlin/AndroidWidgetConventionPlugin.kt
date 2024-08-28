@@ -14,8 +14,6 @@ class AndroidWidgetConventionPlugin : Plugin<Project> {
                 add("implementation", libs.findLibrary("kotlinx.coroutines.android").get())
                 add("api", libs.findLibrary("glance.appwidget").get())
                 add("implementation", libs.findLibrary("glance.material3").get())
-                add("implementation", libs.findLibrary("coil-kt").get())
-                add("implementation", libs.findLibrary("coil-kt-compose").get())
 
                 add("implementation", libs.findLibrary("activity.compose").get())
                 add("implementation", libs.findLibrary("androidx.compose.material3").get())

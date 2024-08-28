@@ -41,9 +41,7 @@ import dk.clausr.a1001albumsgenerator.ui.components.LocalNavAnimatedVisibilitySc
 import dk.clausr.a1001albumsgenerator.ui.components.LocalSharedTransitionScope
 import dk.clausr.a1001albumsgenerator.ui.extensions.ignoreHorizontalParentPadding
 import dk.clausr.core.common.android.openLink
-import dk.clausr.core.common.extensions.formatMonthAndYear
 import dk.clausr.core.common.extensions.formatToDate
-import dk.clausr.core.common.extensions.toLocalDateTime
 import dk.clausr.core.data.workers.UpdateProjectWorker
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.model.Project
@@ -53,12 +51,11 @@ import dk.clausr.core.model.UpdateFrequency
 import dk.clausr.feature.overview.preview.albumPreviewData
 import dk.clausr.feature.overview.preview.historicAlbumPreviewData
 import kotlinx.collections.immutable.persistentListOf
-import java.time.LocalDate
 
 @Composable
 fun OverviewRoute(
     navigateToSettings: () -> Unit,
-    navigateToAlbumDetails: (slug: String) -> Unit,
+    navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: OverviewViewModel = hiltViewModel(),
 ) {
@@ -76,7 +73,7 @@ fun OverviewRoute(
 internal fun OverviewScreen(
     state: OverviewUiState,
     navigateToSettings: () -> Unit,
-    navigateToAlbumDetails: (slug: String) -> Unit,
+    navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -122,18 +119,13 @@ internal fun OverviewScreen(
                         val prefStreamingPlatform =
                             (state.widgetState as? SerializedWidgetState.Success)?.data?.preferredStreamingPlatform ?: StreamingPlatform.Undefined
 
-                        val grouped = state.project.historicAlbums.groupBy {
-                            val date = it.generatedAt.toLocalDateTime()
-                            LocalDate.of(date.year, date.monthValue, 1)
-                        }
-
                         LazyVerticalGrid(
                             modifier = Modifier.fillMaxSize(),
                             verticalArrangement = Arrangement.spacedBy(16.dp),
                             contentPadding = PaddingValues(
                                 start = 16.dp,
                                 end = 16.dp,
-                                bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+                                bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
                             ),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             columns = GridCells.Fixed(count = 3),
@@ -143,7 +135,7 @@ internal fun OverviewScreen(
                             ) {
                                 state.currentAlbum?.let {
                                     BigCurrentAlbum(
-                                        modifier = Modifier.padding(horizontal = 16.dp),
+                                        modifier = Modifier.ignoreHorizontalParentPadding(16.dp),
                                         state = state.widgetState,
                                         album = it,
                                         openLink = { url ->
@@ -194,35 +186,34 @@ internal fun OverviewScreen(
                                 }
                             }
 
-                            if (grouped.isNotEmpty()) {
-                                grouped.forEach { (date, albums) ->
-                                    item(span = { GridItemSpan(maxLineSpan) }) {
-                                        Text(
-                                            text = date.formatMonthAndYear().replaceFirstChar { it.uppercase() },
-                                            modifier = Modifier.padding(top = 16.dp),
-                                            style = MaterialTheme.typography.titleLarge,
-                                        )
-                                    }
+                            state.groupedHistory.forEach { (date, albums) ->
+                                item(span = { GridItemSpan(maxLineSpan) }) {
+                                    Text(
+                                        text = date,
+                                        modifier = Modifier.padding(top = 16.dp),
+                                        style = MaterialTheme.typography.titleLarge,
+                                    )
+                                }
 
-                                    items(
-                                        items = albums,
-                                        key = { it.generatedAt },
-                                    ) { historicAlbum ->
-                                        val streamingLink = StreamingServices.from(historicAlbum.album).getStreamingLinkFor(prefStreamingPlatform)
+                                items(
+                                    items = albums,
+                                    key = { "history_${it.generatedAt}" },
+                                ) { historicAlbum ->
+                                    val streamingLink = StreamingServices.from(historicAlbum.album).getStreamingLinkFor(prefStreamingPlatform)
 
-                                        val onClickPlay = streamingLink?.let {
-                                            {
-                                                context.openLink(streamingLink)
-                                            }
+                                    val onClickPlay = streamingLink?.let {
+                                        {
+                                            context.openLink(streamingLink)
                                         }
-
-                                        AlbumThumb(
-                                            album = historicAlbum,
-                                            onClick = { navigateToAlbumDetails(historicAlbum.album.slug) },
-                                            onClickPlay = onClickPlay,
-                                            tertiaryText = historicAlbum.generatedAt.formatToDate(),
-                                        )
                                     }
+
+                                    AlbumThumb(
+                                        album = historicAlbum,
+                                        onClick = { navigateToAlbumDetails(historicAlbum.album.slug, "history-$date") },
+                                        onClickPlay = onClickPlay,
+                                        tertiaryText = historicAlbum.generatedAt.formatToDate(),
+                                        listName = "history-$date"
+                                    )
                                 }
                             }
                         }
@@ -239,7 +230,7 @@ private fun OverviewPreview() {
     MaterialTheme {
         OverviewScreen(
             navigateToSettings = {},
-            navigateToAlbumDetails = {},
+            navigateToAlbumDetails = { _, _ -> },
             state = OverviewUiState.Success(
                 project = Project(
                     name = "GlanceWidget",
@@ -260,6 +251,7 @@ private fun OverviewPreview() {
                 ),
                 topRated = persistentListOf(),
                 streamingPlatform = StreamingPlatform.Tidal,
+                groupedHistory = mapOf(),
             ),
         )
     }
