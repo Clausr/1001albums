@@ -3,6 +3,7 @@ package dk.clausr.core.data.repository
 import androidx.datastore.core.DataStore
 import dk.clausr.a1001albumsgenerator.network.OAGDataSource
 import dk.clausr.a1001albumsgenerator.network.model.NetworkProject
+import dk.clausr.a1001albumsgenerator.network.model.NotificationsResponse
 import dk.clausr.core.common.model.Result
 import dk.clausr.core.common.model.doOnFailure
 import dk.clausr.core.common.model.doOnSuccess
@@ -231,4 +232,10 @@ class OfflineFirstOagRepository @Inject constructor(
     }
 
     override fun getHistoricAlbum(slug: String): Flow<HistoricAlbum> = ratingDao.getRatingWithAlbum(slug).map(RatingWithAlbum::mapToHistoricAlbum)
+
+    override suspend fun getNotifications(projectId: String): Result<NotificationsResponse, NetworkError> {
+        Timber.d("Notifications: ${networkDataSource.getNotifications(projectId)}")
+
+        return Result.Failure(NetworkError.Generic())
+    }
 }

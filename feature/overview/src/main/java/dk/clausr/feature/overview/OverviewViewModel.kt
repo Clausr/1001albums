@@ -15,8 +15,10 @@ import dk.clausr.core.model.StreamingPlatform
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -64,6 +66,15 @@ class OverviewViewModel @Inject constructor(
             val generated = it.generatedAt.toLocalDateTime()
             val date = LocalDate.of(generated.year, generated.monthValue, 1)
             date.formatMonthAndYear().replaceFirstChar { it.uppercase() }
+        }
+    }
+
+    init {
+        viewModelScope.launch {
+            oagRepository.project.collectLatest {
+
+                it?.name?.let { oagRepository.getNotifications(it) }
+            }
         }
     }
 }

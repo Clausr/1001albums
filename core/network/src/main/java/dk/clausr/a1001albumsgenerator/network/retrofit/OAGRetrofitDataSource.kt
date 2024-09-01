@@ -2,6 +2,7 @@ package dk.clausr.a1001albumsgenerator.network.retrofit
 
 import dk.clausr.a1001albumsgenerator.network.OAGDataSource
 import dk.clausr.a1001albumsgenerator.network.model.NetworkProject
+import dk.clausr.a1001albumsgenerator.network.model.NotificationsResponse
 import dk.clausr.a1001albumsgenerator.utils.doNetwork
 import dk.clausr.core.common.model.Result
 import dk.clausr.core.network.NetworkError
@@ -15,5 +16,9 @@ class OAGRetrofitDataSource @Inject constructor(
 
     override suspend fun getProject(projectId: String): Result<NetworkProject, NetworkError> = doNetwork {
         api.getProject(projectId)
+    }
+
+    override suspend fun getNotifications(projectId: String): Result<NotificationsResponse, NetworkError> = doNetwork {
+        api.getNotifications(projectId = projectId, read = false)
     }
 }

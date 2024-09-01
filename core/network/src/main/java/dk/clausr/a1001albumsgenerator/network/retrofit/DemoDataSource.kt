@@ -4,6 +4,7 @@ import dk.LocalAssetManager
 import dk.clausr.a1001albumsgenerator.network.OAGDataSource
 import dk.clausr.a1001albumsgenerator.network.fake.FakeAssetManager
 import dk.clausr.a1001albumsgenerator.network.model.NetworkProject
+import dk.clausr.a1001albumsgenerator.network.model.NotificationsResponse
 import dk.clausr.core.common.model.Result
 import dk.clausr.core.common.network.Dispatcher
 import dk.clausr.core.common.network.OagDispatchers
@@ -23,5 +24,10 @@ class DemoDataSource @Inject constructor(
 ) : OAGDataSource {
     override suspend fun getProject(projectId: String): Result<NetworkProject, NetworkError> = withContext(ioDispatcher) {
         Result.Success(assets.open("mock_project_response.json").use(json::decodeFromStream))
+    }
+
+    override suspend fun getNotifications(projectId: String): Result<NotificationsResponse, NetworkError> = withContext(ioDispatcher) {
+        val res: NotificationsResponse = assets.open("mock_notification_response.json").use(json::decodeFromStream)
+        Result.Success(res)
     }
 }

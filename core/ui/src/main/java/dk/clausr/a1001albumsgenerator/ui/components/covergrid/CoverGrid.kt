@@ -56,7 +56,7 @@ fun CoverGrid(
                 modifier = Modifier
                     .aspectRatio(
                         ratio = 1f,
-                        matchHeightConstraintsFirst = true
+                        matchHeightConstraintsFirst = true,
                     ),
                 contentScale = ContentScale.FillHeight,
             )

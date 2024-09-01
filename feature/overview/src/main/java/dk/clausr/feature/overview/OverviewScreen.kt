@@ -212,7 +212,7 @@ internal fun OverviewScreen(
                                         onClick = { navigateToAlbumDetails(historicAlbum.album.slug, "history-$date") },
                                         onClickPlay = onClickPlay,
                                         tertiaryText = historicAlbum.generatedAt.formatToDate(),
-                                        listName = "history-$date"
+                                        listName = "history-$date",
                                     )
                                 }
                             }

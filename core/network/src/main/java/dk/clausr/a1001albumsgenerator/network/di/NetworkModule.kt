@@ -41,7 +41,6 @@ object NetworkModule {
     @Singleton
     fun providesNetworkJson(): Json = Json {
         ignoreUnknownKeys = true
-        // TODO Maybe remove this?
         // https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/json.md#lenient-parsing
         isLenient = true
         serializersModule = SerializersModule {
@@ -61,7 +60,7 @@ object NetworkModule {
             .connectTimeout(timeout = 30, TimeUnit.SECONDS)
             .addNetworkInterceptor(
                 HttpLoggingInterceptor().apply {
-                    level = HttpLoggingInterceptor.Level.BASIC
+                    level = HttpLoggingInterceptor.Level.BODY
                 },
             )
             .build()
