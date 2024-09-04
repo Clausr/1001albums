@@ -1,24 +1,32 @@
 package dk.clausr.feature.overview
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Badge
@@ -27,10 +35,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -46,6 +58,8 @@ import dk.clausr.core.common.android.openLink
 import dk.clausr.core.common.extensions.formatToDate
 import dk.clausr.core.data.workers.UpdateProjectWorker
 import dk.clausr.core.data_widget.SerializedWidgetState
+import dk.clausr.core.model.NotificationData
+import dk.clausr.core.model.NotificationResponse
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
@@ -62,26 +76,29 @@ fun OverviewRoute(
     viewModel: OverviewViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val notifications by viewModel.notifications.collectAsStateWithLifecycle()
 
     OverviewScreen(
         modifier = modifier,
         state = uiState,
         navigateToSettings = navigateToSettings,
         navigateToAlbumDetails = navigateToAlbumDetails,
-        showNotifications = {},
+        notifications = notifications,
     )
 }
 
 @Composable
 internal fun OverviewScreen(
     state: OverviewUiState,
+    notifications: List<NotificationResponse>,
     navigateToSettings: () -> Unit,
-    showNotifications: () -> Unit,
     navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-
+    var showNotifications by remember {
+        mutableStateOf(false)
+    }
     with(LocalSharedTransitionScope.current) {
         Scaffold(
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -95,15 +112,15 @@ internal fun OverviewScreen(
                         title = { Text(text = "Your project") },
                         actions = {
                             Box {
-                                if (state is OverviewUiState.Success && state.notifications.isNotEmpty()) {
+                                if (notifications.isNotEmpty()) {
                                     Badge(
                                         modifier = Modifier
                                             .align(Alignment.TopEnd)
                                             .padding(4.dp),
-                                    ) { Text(text = state.notifications.size.toString()) }
+                                    ) { Text(text = notifications.size.toString()) }
                                 }
                                 IconButton(
-                                    onClick = showNotifications,
+                                    onClick = { showNotifications = true },
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Notifications,
@@ -242,6 +259,85 @@ internal fun OverviewScreen(
                 }
             }
         }
+
+        AnimatedVisibility(
+            visible = showNotifications,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            BackHandler { showNotifications = false }
+
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.2f))
+                    .clickable(interactionSource = null, indication = null, onClick = { showNotifications = false }),
+
+                )
+        }
+
+        AnimatedVisibility(
+            visible = showNotifications,
+            enter = slideInVertically(initialOffsetY = { -it }),
+            exit = slideOutVertically(targetOffsetY = { -it }),
+        ) {
+            Surface(
+                shape = MaterialTheme.shapes.medium.copy(topStart = CornerSize(0.dp), topEnd = CornerSize(0.dp)),
+                shadowElevation = 2.dp,
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .statusBarsPadding()
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = "Notifications",
+                            modifier = Modifier.weight(1f),
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                        IconButton(onClick = { showNotifications = false }) {
+                            Icon(Icons.Default.Close, contentDescription = "Close")
+                        }
+                    }
+
+                    notifications.forEach { notification ->
+                        Column {
+                            Text(text = notification.type.toString(), style = MaterialTheme.typography.labelLarge)
+                            val textToShow: String = when (val data = notification.data) {
+                                is NotificationData.AlbumsRatedData -> {
+                                    "You've rated ${data.numberOfAlbums} albums!"
+                                }
+
+                                is NotificationData.CustomData -> data.body
+                                is NotificationData.DonationPushData -> {
+                                    "Plz donate"
+                                }
+
+                                is NotificationData.GroupAlbumsGeneratedData -> {
+                                    "Your group ${data.groupSlug} has reached ${data.numberOfAlbums} albums!"
+                                }
+
+                                is NotificationData.GroupReviewData -> {
+                                    "${data.projectName} just gave ${data.albumName} ${data.rating} stars!"
+                                }
+
+                                is NotificationData.NewGroupMemberData -> TODO()
+                                is NotificationData.ReviewThumbUpData -> TODO()
+                                is NotificationData.SignupData -> TODO()
+                                NotificationData.Unknown -> TODO()
+                                null -> TODO()
+                            }
+                            Text(textToShow)
+                            Text(text = "at ${notification.createdAt}")
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -273,9 +369,8 @@ private fun OverviewPreview() {
                 topRated = persistentListOf(),
                 streamingPlatform = StreamingPlatform.Tidal,
                 groupedHistory = mapOf(),
-                notifications = emptyList(),
             ),
-            showNotifications = {},
+            notifications = emptyList(),
         )
     }
 }

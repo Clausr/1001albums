@@ -10,7 +10,6 @@ import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.model.Album
 import dk.clausr.core.model.HistoricAlbum
-import dk.clausr.core.model.NotificationResponse
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.Rating
 import dk.clausr.core.model.StreamingPlatform
@@ -30,13 +29,19 @@ class OverviewViewModel @Inject constructor(
     notificationsRepository: NotificationRepository,
 ) : ViewModel() {
 
+    val notifications = notificationsRepository.notifications.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = emptyList()
+    )
+
     val uiState = combine(
         oagRepository.project,
         oagRepository.currentAlbum,
         oagRepository.widgetState,
         oagRepository.preferredStreamingPlatform,
-        notificationsRepository.notifications,
-    ) { project, currentAlbum, widgetState, platform, notifications ->
+
+        ) { project, currentAlbum, widgetState, platform ->
         if (project != null) {
             OverviewUiState.Success(
                 project = project,
@@ -46,7 +51,6 @@ class OverviewViewModel @Inject constructor(
                 topRated = project.topRatedAlbums(),
                 streamingPlatform = platform,
                 groupedHistory = project.groupedHistory(),
-                notifications = notifications,
             )
         } else {
             OverviewUiState.Error
@@ -96,7 +100,6 @@ sealed interface OverviewUiState {
         val topRated: ImmutableList<HistoricAlbum>,
         val streamingPlatform: StreamingPlatform,
         val groupedHistory: Map<String, List<HistoricAlbum>>,
-        val notifications: List<NotificationResponse>,
     ) : OverviewUiState
 
     data object Error : OverviewUiState
