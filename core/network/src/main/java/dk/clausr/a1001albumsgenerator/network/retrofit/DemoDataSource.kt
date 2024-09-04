@@ -4,10 +4,10 @@ import dk.LocalAssetManager
 import dk.clausr.a1001albumsgenerator.network.OAGDataSource
 import dk.clausr.a1001albumsgenerator.network.fake.FakeAssetManager
 import dk.clausr.a1001albumsgenerator.network.model.NetworkProject
-import dk.clausr.a1001albumsgenerator.network.model.NotificationsResponse
 import dk.clausr.core.common.model.Result
 import dk.clausr.core.common.network.Dispatcher
 import dk.clausr.core.common.network.OagDispatchers
+import dk.clausr.core.model.NotificationsResponse
 import dk.clausr.core.network.NetworkError
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext

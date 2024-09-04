@@ -22,5 +22,7 @@ dependencies {
     api(libs.androidx.work.ktx)
     api(libs.androidx.hilt.work)
 
+    implementation(libs.kotlinx.serialization.json)
+
     ksp(libs.hilt.ext.compiler)
 }

@@ -1,6 +1,5 @@
 package dk.clausr.core.data.repository
 
-import dk.clausr.a1001albumsgenerator.network.model.NotificationsResponse
 import dk.clausr.core.common.model.Result
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.model.Album
@@ -27,6 +26,4 @@ interface OagRepository {
     suspend fun setPreferredPlatform(platform: StreamingPlatform)
     suspend fun isLatestAlbumRated(): Boolean
     fun getHistoricAlbum(slug: String): Flow<HistoricAlbum>
-
-    suspend fun getNotifications(projectId: String): Result<NotificationsResponse, NetworkError>
 }

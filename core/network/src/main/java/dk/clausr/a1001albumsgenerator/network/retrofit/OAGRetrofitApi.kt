@@ -1,7 +1,7 @@
 package dk.clausr.a1001albumsgenerator.network.retrofit
 
 import dk.clausr.a1001albumsgenerator.network.model.NetworkProject
-import dk.clausr.a1001albumsgenerator.network.model.NotificationsResponse
+import dk.clausr.core.model.NotificationsResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query

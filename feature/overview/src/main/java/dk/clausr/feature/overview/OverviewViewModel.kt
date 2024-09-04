@@ -5,10 +5,12 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.clausr.core.common.extensions.formatMonthAndYear
 import dk.clausr.core.common.extensions.toLocalDateTime
+import dk.clausr.core.data.repository.NotificationRepository
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.model.Album
 import dk.clausr.core.model.HistoricAlbum
+import dk.clausr.core.model.NotificationResponse
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.Rating
 import dk.clausr.core.model.StreamingPlatform
@@ -25,6 +27,7 @@ import javax.inject.Inject
 @HiltViewModel
 class OverviewViewModel @Inject constructor(
     oagRepository: OagRepository,
+    notificationsRepository: NotificationRepository,
 ) : ViewModel() {
 
     val uiState = combine(
@@ -32,7 +35,8 @@ class OverviewViewModel @Inject constructor(
         oagRepository.currentAlbum,
         oagRepository.widgetState,
         oagRepository.preferredStreamingPlatform,
-    ) { project, currentAlbum, widgetState, platform ->
+        notificationsRepository.notifications,
+    ) { project, currentAlbum, widgetState, platform, notifications ->
         if (project != null) {
             OverviewUiState.Success(
                 project = project,
@@ -42,6 +46,7 @@ class OverviewViewModel @Inject constructor(
                 topRated = project.topRatedAlbums(),
                 streamingPlatform = platform,
                 groupedHistory = project.groupedHistory(),
+                notifications = notifications,
             )
         } else {
             OverviewUiState.Error
@@ -73,7 +78,9 @@ class OverviewViewModel @Inject constructor(
         viewModelScope.launch {
             oagRepository.project.collectLatest {
 
-                it?.name?.let { oagRepository.getNotifications(it) }
+                it?.name?.let {
+                    notificationsRepository.updateNotifications(it)
+                }
             }
         }
     }
@@ -89,6 +96,7 @@ sealed interface OverviewUiState {
         val topRated: ImmutableList<HistoricAlbum>,
         val streamingPlatform: StreamingPlatform,
         val groupedHistory: Map<String, List<HistoricAlbum>>,
+        val notifications: List<NotificationResponse>,
     ) : OverviewUiState
 
     data object Error : OverviewUiState

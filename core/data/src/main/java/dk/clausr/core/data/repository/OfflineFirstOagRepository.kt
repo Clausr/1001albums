@@ -3,7 +3,6 @@ package dk.clausr.core.data.repository
 import androidx.datastore.core.DataStore
 import dk.clausr.a1001albumsgenerator.network.OAGDataSource
 import dk.clausr.a1001albumsgenerator.network.model.NetworkProject
-import dk.clausr.a1001albumsgenerator.network.model.NotificationsResponse
 import dk.clausr.core.common.model.Result
 import dk.clausr.core.common.model.doOnFailure
 import dk.clausr.core.common.model.doOnSuccess
@@ -19,6 +18,7 @@ import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectId
 import dk.clausr.core.database.dao.AlbumDao
 import dk.clausr.core.database.dao.AlbumImageDao
+import dk.clausr.core.database.dao.NotificationDao
 import dk.clausr.core.database.dao.ProjectDao
 import dk.clausr.core.database.dao.RatingDao
 import dk.clausr.core.database.model.AlbumEntity
@@ -56,6 +56,7 @@ class OfflineFirstOagRepository @Inject constructor(
     private val projectDao: ProjectDao,
     private val ratingDao: RatingDao,
     private val albumImageDao: AlbumImageDao,
+    private val notificationDao: NotificationDao,
 ) : OagRepository {
     override val widgetState = widgetDataStore.data
 
@@ -232,10 +233,4 @@ class OfflineFirstOagRepository @Inject constructor(
     }
 
     override fun getHistoricAlbum(slug: String): Flow<HistoricAlbum> = ratingDao.getRatingWithAlbum(slug).map(RatingWithAlbum::mapToHistoricAlbum)
-
-    override suspend fun getNotifications(projectId: String): Result<NotificationsResponse, NetworkError> {
-        Timber.d("Notifications: ${networkDataSource.getNotifications(projectId)}")
-
-        return Result.Failure(NetworkError.Generic())
-    }
 }

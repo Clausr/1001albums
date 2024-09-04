@@ -1,6 +1,15 @@
-package dk.clausr.a1001albumsgenerator.network.model
+package dk.clausr.core.model
 
-import dk.clausr.a1001albumsgenerator.utils.NotificationResponseSerializer
+import dk.clausr.core.model.NotificationType.AlbumsRated
+import dk.clausr.core.model.NotificationType.Custom
+import dk.clausr.core.model.NotificationType.DonationPush
+import dk.clausr.core.model.NotificationType.GroupAlbumsGenerated
+import dk.clausr.core.model.NotificationType.GroupReview
+import dk.clausr.core.model.NotificationType.NewGroupMember
+import dk.clausr.core.model.NotificationType.ReviewThumbUp
+import dk.clausr.core.model.NotificationType.Signup
+import dk.clausr.core.model.NotificationType.Unknown
+import dk.clausr.core.model.serializer.NotificationResponseSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -23,37 +32,58 @@ data class NotificationResponse(
 
 sealed class NotificationType {
     @Serializable
+    @SerialName("groupReview")
     data object GroupReview : NotificationType()
 
     @Serializable
+    @SerialName("custom")
     data object Custom : NotificationType()
 
     @Serializable
+    @SerialName("albumsRated")
     data object AlbumsRated : NotificationType()
 
     @Serializable
+    @SerialName("newGroupMember")
     data object NewGroupMember : NotificationType()
 
     @Serializable
+    @SerialName("groupAlbumsGenerated")
     data object GroupAlbumsGenerated : NotificationType()
 
     @Serializable
+    @SerialName("signup")
     data object Signup : NotificationType()
 
     @Serializable
+    @SerialName("donatePush")
     data object DonationPush : NotificationType()
 
     @Serializable
-    data object ReviewThumpUp : NotificationType()
+    @SerialName("reviewThumpUp")
+    data object ReviewThumbUp : NotificationType()
 
+    @SerialName("unknown")
     data object Unknown : NotificationType()
     // Add other notification types here as needed
 }
 
+val notificationTypeMap: Map<String, NotificationType> = mapOf(
+    "groupReview" to GroupReview,
+    "custom" to Custom,
+    "albumsRated" to AlbumsRated,
+    "newGroupMember" to NewGroupMember,
+    "groupAlbumsGenerated" to GroupAlbumsGenerated,
+    "signup" to Signup,
+    "donatePush" to DonationPush,
+    "reviewThumpUp" to ReviewThumbUp,
+    "unknown" to Unknown,
+)
+
 @Serializable
 sealed class NotificationData {
     @Serializable
-    @SerialName("groupReviewData")
+    @SerialName("groupReview")
     data class GroupReviewData(
         val albumName: String,
         val albumId: String,
@@ -77,13 +107,13 @@ sealed class NotificationData {
     ) : NotificationData()
 
     @Serializable
-    @SerialName("newGroupMemberData")
+    @SerialName("newGroupMember")
     data class NewGroupMemberData(
         val groupSlug: String,
     ) : NotificationData()
 
     @Serializable
-    @SerialName("groupAlbumsGeneratedData")
+    @SerialName("groupAlbumsGenerated")
     data class GroupAlbumsGeneratedData(
         val numberOfAlbums: Int,
         val groupId: String,
@@ -91,19 +121,19 @@ sealed class NotificationData {
     ) : NotificationData()
 
     @Serializable
-    @SerialName("signupData")
+    @SerialName("signup")
     data class SignupData(
         val projectName: String,
     ) : NotificationData()
 
     @Serializable
-    @SerialName("donationPushData")
+    @SerialName("donationPush")
     data class DonationPushData(
         val projectName: String,
     ) : NotificationData()
 
     @Serializable
-    @SerialName("reviewThumpUpData")
+    @SerialName("reviewThumpUp")
     data class ReviewThumbUpData(
         val reviewId: String,
         val albumName: String,
@@ -111,4 +141,7 @@ sealed class NotificationData {
         val thumbsUp: Int,
         val isUserAlbum: Boolean?,
     ) : NotificationData()
+
+    @SerialName("unknown")
+    data object Unknown : NotificationData()
 }

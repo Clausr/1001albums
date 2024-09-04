@@ -19,7 +19,9 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Badge
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -66,6 +68,7 @@ fun OverviewRoute(
         state = uiState,
         navigateToSettings = navigateToSettings,
         navigateToAlbumDetails = navigateToAlbumDetails,
+        showNotifications = {},
     )
 }
 
@@ -73,6 +76,7 @@ fun OverviewRoute(
 internal fun OverviewScreen(
     state: OverviewUiState,
     navigateToSettings: () -> Unit,
+    showNotifications: () -> Unit,
     navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -90,6 +94,23 @@ internal fun OverviewScreen(
                             .animateEnterExit(enter = fadeIn() + slideInVertically(), exit = fadeOut() + slideOutVertically()),
                         title = { Text(text = "Your project") },
                         actions = {
+                            Box {
+                                if (state is OverviewUiState.Success && state.notifications.isNotEmpty()) {
+                                    Badge(
+                                        modifier = Modifier
+                                            .align(Alignment.TopEnd)
+                                            .padding(4.dp),
+                                    ) { Text(text = state.notifications.size.toString()) }
+                                }
+                                IconButton(
+                                    onClick = showNotifications,
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Notifications,
+                                        contentDescription = "Notifications",
+                                    )
+                                }
+                            }
                             IconButton(onClick = navigateToSettings) {
                                 Icon(
                                     imageVector = Icons.Default.Settings,
@@ -252,7 +273,9 @@ private fun OverviewPreview() {
                 topRated = persistentListOf(),
                 streamingPlatform = StreamingPlatform.Tidal,
                 groupedHistory = mapOf(),
+                notifications = emptyList(),
             ),
+            showNotifications = {},
         )
     }
 }

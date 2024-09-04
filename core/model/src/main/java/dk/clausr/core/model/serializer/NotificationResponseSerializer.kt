@@ -1,9 +1,10 @@
-package dk.clausr.a1001albumsgenerator.utils
+package dk.clausr.core.model.serializer
 
-import dk.clausr.a1001albumsgenerator.network.model.NotificationData
-import dk.clausr.a1001albumsgenerator.network.model.NotificationResponse
-import dk.clausr.a1001albumsgenerator.network.model.NotificationType
-import dk.clausr.a1001albumsgenerator.network.model.NotificationsResponse
+import dk.clausr.core.model.NotificationData
+import dk.clausr.core.model.NotificationResponse
+import dk.clausr.core.model.NotificationType
+import dk.clausr.core.model.NotificationsResponse
+import dk.clausr.core.model.notificationTypeMap
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
@@ -14,7 +15,7 @@ import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import timber.log.Timber
+
 
 object NotificationResponseSerializer : KSerializer<NotificationResponse> {
     override val descriptor: SerialDescriptor = NotificationsResponse.serializer().descriptor
@@ -30,18 +31,9 @@ object NotificationResponseSerializer : KSerializer<NotificationResponse> {
         require(decoder is JsonDecoder)
         val jsonObject = decoder.decodeJsonElement().jsonObject
 
-        val type = when (val typeString = jsonObject["type"]?.jsonPrimitive?.content) {
-            "groupReview" -> NotificationType.GroupReview
-            "custom" -> NotificationType.Custom
-            "albumsRated" -> NotificationType.AlbumsRated
-            "newGroupMember" -> NotificationType.NewGroupMember
-            "groupAlbumsGenerated" -> NotificationType.GroupAlbumsGenerated
-            "signup" -> NotificationType.Signup
-            "donationPush" -> NotificationType.DonationPush
-            else -> NotificationType.Unknown
-        }
+        val type = notificationTypeMap[jsonObject["type"]?.jsonPrimitive?.content] ?: NotificationType.Unknown
 
-        val data: NotificationData? = when (type) {
+        val data = when (type) {
             NotificationType.GroupReview -> decoder.json.decodeFromJsonElement<NotificationData.GroupReviewData>(jsonObject["data"]!!)
             NotificationType.Custom -> decoder.json.decodeFromJsonElement<NotificationData.CustomData>(jsonObject["data"]!!)
             NotificationType.AlbumsRated -> decoder.json.decodeFromJsonElement<NotificationData.AlbumsRatedData>(jsonObject["data"]!!)
@@ -51,11 +43,8 @@ object NotificationResponseSerializer : KSerializer<NotificationResponse> {
             NotificationType.NewGroupMember -> decoder.json.decodeFromJsonElement<NotificationData.NewGroupMemberData>(jsonObject["data"]!!)
             NotificationType.Signup -> decoder.json.decodeFromJsonElement<NotificationData.SignupData>(jsonObject["data"]!!)
             NotificationType.DonationPush -> decoder.json.decodeFromJsonElement<NotificationData.DonationPushData>(jsonObject["data"]!!)
-            NotificationType.ReviewThumpUp -> decoder.json.decodeFromJsonElement<NotificationData.ReviewThumbUpData>(jsonObject["data"]!!)
-            NotificationType.Unknown -> {
-                Timber.w("Unknown notification type, ${jsonObject["type"]?.jsonPrimitive?.content}")
-                null
-            }
+            NotificationType.ReviewThumbUp -> decoder.json.decodeFromJsonElement<NotificationData.ReviewThumbUpData>(jsonObject["data"]!!)
+            NotificationType.Unknown -> NotificationData.Unknown
         }
 
         return NotificationResponse(
