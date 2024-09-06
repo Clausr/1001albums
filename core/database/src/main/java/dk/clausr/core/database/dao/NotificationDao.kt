@@ -17,4 +17,10 @@ interface NotificationDao {
 
     @Query("SELECT * FROM notifications")
     fun getNotifications(): Flow<List<NotificationEntity>>
+
+    @Query("SELECT * FROM notifications WHERE read = 0")
+    fun getUnreadNotifications(): Flow<List<NotificationEntity>>
+
+    @Query("UPDATE notifications SET read = 1 WHERE read = 0")
+    fun readNotifications()
 }

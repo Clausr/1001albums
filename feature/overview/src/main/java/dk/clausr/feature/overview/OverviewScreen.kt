@@ -1,5 +1,6 @@
 package dk.clausr.feature.overview
 
+import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -22,6 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CornerSize
@@ -211,74 +213,11 @@ internal fun OverviewScreen(
                                 }
                             }
 
-                            if (state.didNotListen.isNotEmpty()) {
-                                item(
-                                    span = { GridItemSpan(maxLineSpan) },
-                                ) {
-                                    AlbumRow(
-                                        modifier = Modifier
-                                            .ignoreHorizontalParentPadding(16.dp)
-                                            .fillMaxWidth(),
-                                        title = "Did not listen",
-                                        albums = state.didNotListen,
-                                        onClickAlbum = navigateToAlbumDetails,
-                                        streamingPlatform = state.streamingPlatform,
-                                        tertiaryTextTransform = { historicAlbum ->
-                                            historicAlbum.generatedAt.formatToDate()
-                                        },
-                                    )
-                                }
-                            }
+                            didNotListenSection(state, navigateToAlbumDetails)
 
-                            if (state.topRated.isNotEmpty()) {
-                                item(
-                                    span = { GridItemSpan(maxLineSpan) },
-                                ) {
-                                    AlbumRow(
-                                        modifier = Modifier
-                                            .ignoreHorizontalParentPadding(16.dp)
-                                            .fillMaxWidth(),
-                                        title = "5⭐️ albums",
-                                        albums = state.topRated,
-                                        onClickAlbum = navigateToAlbumDetails,
-                                        streamingPlatform = state.streamingPlatform,
-                                        tertiaryTextTransform = { historicAlbum ->
-                                            historicAlbum.generatedAt.formatToDate()
-                                        },
-                                    )
-                                }
-                            }
+                            topRatedSection(state, navigateToAlbumDetails)
 
-                            state.groupedHistory.forEach { (date, albums) ->
-                                item(span = { GridItemSpan(maxLineSpan) }) {
-                                    Text(
-                                        text = date,
-                                        modifier = Modifier.padding(top = 16.dp),
-                                        style = MaterialTheme.typography.titleLarge,
-                                    )
-                                }
-
-                                items(
-                                    items = albums,
-                                    key = { "history_${it.generatedAt}" },
-                                ) { historicAlbum ->
-                                    val streamingLink = StreamingServices.from(historicAlbum.album).getStreamingLinkFor(prefStreamingPlatform)
-
-                                    val onClickPlay = streamingLink?.let {
-                                        {
-                                            context.openLink(streamingLink)
-                                        }
-                                    }
-
-                                    AlbumThumb(
-                                        album = historicAlbum,
-                                        onClick = { navigateToAlbumDetails(historicAlbum.album.slug, "history-$date") },
-                                        onClickPlay = onClickPlay,
-                                        tertiaryText = historicAlbum.generatedAt.formatToDate(),
-                                        listName = "history-$date",
-                                    )
-                                }
-                            }
+                            historySection(state, prefStreamingPlatform, context, navigateToAlbumDetails)
                         }
                     }
                 }
@@ -297,8 +236,7 @@ internal fun OverviewScreen(
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.2f))
                     .clickable(interactionSource = null, indication = null, onClick = { showNotifications = false }),
-
-                )
+            )
         }
 
         AnimatedVisibility(
@@ -318,63 +256,171 @@ internal fun OverviewScreen(
                         .padding(bottom = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "Notifications",
-                            modifier = Modifier.weight(1f),
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                        IconButton(onClick = { showNotifications = false }) {
-                            Icon(Icons.Default.Close, contentDescription = "Close")
-                        }
-                    }
-
-                    notifications.forEach { notification ->
-                        Column(
-                            modifier = Modifier.clickable {
-                                onNotificationClick(notification)
-                            },
-                        ) {
-                            Text(text = notification.type.toString(), style = MaterialTheme.typography.labelLarge)
-                            val textToShow: AnnotatedString = when (val data = notification.data) {
-                                is NotificationData.AlbumsRatedData -> {
-                                    AnnotatedString("You've rated ${data.numberOfAlbums} albums!")
-                                }
-
-                                is NotificationData.CustomData -> AnnotatedString(data.body)
-                                is NotificationData.DonationPushData -> {
-                                    AnnotatedString("Plz donate")
-                                }
-
-                                is NotificationData.GroupAlbumsGeneratedData -> {
-                                    AnnotatedString("Your group ${data.groupSlug} has reached ${data.numberOfAlbums} albums!")
-                                }
-
-                                is NotificationData.GroupReviewData -> {
-                                    buildAnnotatedString {
-                                        withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                                            append(data.projectName)
-                                        }
-                                        append(" just gave ")
-                                        withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                                            append(data.albumName)
-                                        }
-                                        append(" ${data.rating} stars")
-                                    }
-                                }
-
-                                is NotificationData.NewGroupMemberData -> TODO()
-                                is NotificationData.ReviewThumbUpData -> TODO()
-                                is NotificationData.SignupData -> TODO()
-                                NotificationData.Unknown -> TODO()
-                                null -> TODO()
-                            }
-                            Text(textToShow)
-                            Text(text = "at ${notification.createdAt}")
-                        }
-                    }
+                    NotificationSheetContent(
+                        showNotifications = showNotifications,
+                        notifications = notifications,
+                        onNotificationClick = onNotificationClick,
+                        onDismiss = { showNotifications = false },
+                    )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun NotificationSheetContent(
+    showNotifications: Boolean,
+    notifications: ImmutableList<NotificationResponse>,
+    onNotificationClick: (NotificationResponse) -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "Notifications",
+            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.titleMedium,
+        )
+        IconButton(onClick = onDismiss) {
+            Icon(Icons.Default.Close, contentDescription = "Close")
+        }
+    }
+
+    notifications.forEach { notification ->
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    onNotificationClick(notification)
+                },
+        ) {
+            Text(text = notification.type.toString(), style = MaterialTheme.typography.labelLarge)
+
+            val textToShow: AnnotatedString = when (val data = notification.data) {
+                is NotificationData.AlbumsRatedData -> {
+                    AnnotatedString("You've rated ${data.numberOfAlbums} albums!")
+                }
+
+                is NotificationData.CustomData -> AnnotatedString(data.body)
+                is NotificationData.DonationPushData -> {
+                    AnnotatedString("Plz donate")
+                }
+
+                is NotificationData.GroupAlbumsGeneratedData -> {
+                    AnnotatedString("Your group ${data.groupSlug} has reached ${data.numberOfAlbums} albums!")
+                }
+
+                is NotificationData.GroupReviewData -> {
+                    buildAnnotatedString {
+                        withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                            append(data.projectName)
+                        }
+                        append(" just gave ")
+                        withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                            append(data.albumName)
+                        }
+                        append(" ${data.rating} stars")
+                    }
+                }
+
+                is NotificationData.NewGroupMemberData -> TODO()
+                is NotificationData.ReviewThumbUpData -> TODO()
+                is NotificationData.SignupData -> TODO()
+                NotificationData.Unknown -> TODO()
+                null -> TODO()
+            }
+            Text(textToShow)
+            Text(text = "at ${notification.createdAt}")
+        }
+    }
+}
+
+private fun LazyGridScope.didNotListenSection(
+    state: OverviewUiState.Success,
+    navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
+) {
+    if (state.didNotListen.isNotEmpty()) {
+        item(
+            span = { GridItemSpan(maxLineSpan) },
+        ) {
+            AlbumRow(
+                modifier = Modifier
+                    .ignoreHorizontalParentPadding(16.dp)
+                    .fillMaxWidth(),
+                title = "Did not listen",
+                albums = state.didNotListen,
+                onClickAlbum = navigateToAlbumDetails,
+                streamingPlatform = state.streamingPlatform,
+                tertiaryTextTransform = { historicAlbum ->
+                    historicAlbum.generatedAt.formatToDate()
+                },
+            )
+        }
+    }
+}
+
+private fun LazyGridScope.topRatedSection(
+    state: OverviewUiState.Success,
+    navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
+) {
+    if (state.topRated.isNotEmpty()) {
+        item(
+            span = { GridItemSpan(maxLineSpan) },
+        ) {
+            AlbumRow(
+                modifier = Modifier
+                    .ignoreHorizontalParentPadding(16.dp)
+                    .fillMaxWidth(),
+                title = "5⭐️ albums",
+                albums = state.topRated,
+                onClickAlbum = navigateToAlbumDetails,
+                streamingPlatform = state.streamingPlatform,
+                tertiaryTextTransform = { historicAlbum ->
+                    historicAlbum.generatedAt.formatToDate()
+                },
+            )
+        }
+    }
+}
+
+private fun LazyGridScope.historySection(
+    state: OverviewUiState.Success,
+    prefStreamingPlatform: StreamingPlatform,
+    context: Context,
+    navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
+) {
+    state.groupedHistory.forEach { (date, albums) ->
+        item(span = { GridItemSpan(maxLineSpan) }) {
+            Text(
+                text = date,
+                modifier = Modifier.padding(top = 16.dp),
+                style = MaterialTheme.typography.titleLarge,
+            )
+        }
+
+        items(
+            items = albums,
+            key = { "history_${it.generatedAt}" },
+        ) { historicAlbum ->
+            val streamingLink = StreamingServices.from(historicAlbum.album).getStreamingLinkFor(prefStreamingPlatform)
+
+            val onClickPlay = streamingLink?.let {
+                {
+                    context.openLink(streamingLink)
+                }
+            }
+
+            AlbumThumb(
+                album = historicAlbum,
+                onClick = { navigateToAlbumDetails(historicAlbum.album.slug, "history-$date") },
+                onClickPlay = onClickPlay,
+                tertiaryText = historicAlbum.generatedAt.formatToDate(),
+                listName = "history-$date",
+            )
         }
     }
 }

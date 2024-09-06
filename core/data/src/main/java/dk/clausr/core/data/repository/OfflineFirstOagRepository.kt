@@ -18,7 +18,6 @@ import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectId
 import dk.clausr.core.database.dao.AlbumDao
 import dk.clausr.core.database.dao.AlbumImageDao
-import dk.clausr.core.database.dao.NotificationDao
 import dk.clausr.core.database.dao.ProjectDao
 import dk.clausr.core.database.dao.RatingDao
 import dk.clausr.core.database.model.AlbumEntity
@@ -56,7 +55,6 @@ class OfflineFirstOagRepository @Inject constructor(
     private val projectDao: ProjectDao,
     private val ratingDao: RatingDao,
     private val albumImageDao: AlbumImageDao,
-    private val notificationDao: NotificationDao,
 ) : OagRepository {
     override val widgetState = widgetDataStore.data
 

@@ -29,16 +29,16 @@ import javax.inject.Inject
 @HiltViewModel
 class OverviewViewModel @Inject constructor(
     oagRepository: OagRepository,
-    notificationsRepository: NotificationRepository,
+    private val notificationsRepository: NotificationRepository,
 ) : ViewModel() {
 
-    val notifications = notificationsRepository.notifications
+    val notifications = notificationsRepository.unreadNotifications
         .map { it.toPersistentList() }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = persistentListOf(),
-    )
+        )
 
     val uiState = combine(
         oagRepository.project,
@@ -88,6 +88,8 @@ class OverviewViewModel @Inject constructor(
 
                 it?.name?.let {
                     notificationsRepository.updateNotifications(it)
+
+                    notificationsRepository.readAll(it)
                 }
             }
         }

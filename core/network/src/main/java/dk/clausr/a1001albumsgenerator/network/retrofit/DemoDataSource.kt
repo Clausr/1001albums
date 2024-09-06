@@ -7,7 +7,6 @@ import dk.clausr.a1001albumsgenerator.network.model.NetworkProject
 import dk.clausr.core.common.model.Result
 import dk.clausr.core.common.network.Dispatcher
 import dk.clausr.core.common.network.OagDispatchers
-import dk.clausr.core.model.NotificationsResponse
 import dk.clausr.core.network.NetworkError
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -26,8 +25,8 @@ class DemoDataSource @Inject constructor(
         Result.Success(assets.open("mock_project_response.json").use(json::decodeFromStream))
     }
 
-    override suspend fun getNotifications(projectId: String): Result<NotificationsResponse, NetworkError> = withContext(ioDispatcher) {
-        val res: NotificationsResponse = assets.open("mock_notification_response.json").use(json::decodeFromStream)
-        Result.Success(res)
-    }
+//    override suspend fun getNotifications(projectId: String): Result<NotificationsResponse, NetworkError> = withContext(ioDispatcher) {
+//        val res: NotificationsResponse = assets.open("mock_notification_response.json").use(json::decodeFromStream)
+//        Result.Success(res)
+//    }
 }
