@@ -46,6 +46,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -66,6 +71,7 @@ import dk.clausr.core.model.StreamingServices
 import dk.clausr.core.model.UpdateFrequency
 import dk.clausr.feature.overview.preview.albumPreviewData
 import dk.clausr.feature.overview.preview.historicAlbumPreviewData
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
@@ -84,14 +90,33 @@ fun OverviewRoute(
         navigateToSettings = navigateToSettings,
         navigateToAlbumDetails = navigateToAlbumDetails,
         notifications = notifications,
+        onNotificationClick = {
+            when (val data = it.data) {
+                is NotificationData.AlbumsRatedData -> TODO()
+                is NotificationData.CustomData -> TODO()
+                is NotificationData.DonationPushData -> TODO()
+                is NotificationData.GroupAlbumsGeneratedData -> TODO()
+                is NotificationData.GroupReviewData -> {
+                    val sluggify = data.albumName.lowercase().replace(" ", "-")
+                    navigateToAlbumDetails(sluggify, "notififations")
+                }
+
+                is NotificationData.NewGroupMemberData -> TODO()
+                is NotificationData.ReviewThumbUpData -> TODO()
+                is NotificationData.SignupData -> TODO()
+                NotificationData.Unknown -> TODO()
+                null -> TODO()
+            }
+        },
     )
 }
 
 @Composable
 internal fun OverviewScreen(
     state: OverviewUiState,
-    notifications: List<NotificationResponse>,
+    notifications: ImmutableList<NotificationResponse>,
     navigateToSettings: () -> Unit,
+    onNotificationClick: (NotificationResponse) -> Unit,
     navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -305,24 +330,37 @@ internal fun OverviewScreen(
                     }
 
                     notifications.forEach { notification ->
-                        Column {
+                        Column(
+                            modifier = Modifier.clickable {
+                                onNotificationClick(notification)
+                            },
+                        ) {
                             Text(text = notification.type.toString(), style = MaterialTheme.typography.labelLarge)
-                            val textToShow: String = when (val data = notification.data) {
+                            val textToShow: AnnotatedString = when (val data = notification.data) {
                                 is NotificationData.AlbumsRatedData -> {
-                                    "You've rated ${data.numberOfAlbums} albums!"
+                                    AnnotatedString("You've rated ${data.numberOfAlbums} albums!")
                                 }
 
-                                is NotificationData.CustomData -> data.body
+                                is NotificationData.CustomData -> AnnotatedString(data.body)
                                 is NotificationData.DonationPushData -> {
-                                    "Plz donate"
+                                    AnnotatedString("Plz donate")
                                 }
 
                                 is NotificationData.GroupAlbumsGeneratedData -> {
-                                    "Your group ${data.groupSlug} has reached ${data.numberOfAlbums} albums!"
+                                    AnnotatedString("Your group ${data.groupSlug} has reached ${data.numberOfAlbums} albums!")
                                 }
 
                                 is NotificationData.GroupReviewData -> {
-                                    "${data.projectName} just gave ${data.albumName} ${data.rating} stars!"
+                                    buildAnnotatedString {
+                                        withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                                            append(data.projectName)
+                                        }
+                                        append(" just gave ")
+                                        withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                                            append(data.albumName)
+                                        }
+                                        append(" ${data.rating} stars")
+                                    }
                                 }
 
                                 is NotificationData.NewGroupMemberData -> TODO()
@@ -370,7 +408,8 @@ private fun OverviewPreview() {
                 streamingPlatform = StreamingPlatform.Tidal,
                 groupedHistory = mapOf(),
             ),
-            notifications = emptyList(),
+            notifications = persistentListOf(),
+            onNotificationClick = {},
         )
     }
 }

@@ -14,10 +14,13 @@ import dk.clausr.core.model.Project
 import dk.clausr.core.model.Rating
 import dk.clausr.core.model.StreamingPlatform
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -29,10 +32,12 @@ class OverviewViewModel @Inject constructor(
     notificationsRepository: NotificationRepository,
 ) : ViewModel() {
 
-    val notifications = notificationsRepository.notifications.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = emptyList()
+    val notifications = notificationsRepository.notifications
+        .map { it.toPersistentList() }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = persistentListOf(),
     )
 
     val uiState = combine(
@@ -40,8 +45,7 @@ class OverviewViewModel @Inject constructor(
         oagRepository.currentAlbum,
         oagRepository.widgetState,
         oagRepository.preferredStreamingPlatform,
-
-        ) { project, currentAlbum, widgetState, platform ->
+    ) { project, currentAlbum, widgetState, platform ->
         if (project != null) {
             OverviewUiState.Success(
                 project = project,
@@ -63,7 +67,7 @@ class OverviewViewModel @Inject constructor(
         )
 
     private fun Project.topRatedAlbums(): ImmutableList<HistoricAlbum> {
-        return historicAlbums.filter { it.rating == Rating.Rated(5) }.toImmutableList()
+        return historicAlbums.filter { it.rating == Rating.Rated(rating = 5) }.toImmutableList()
     }
 
     private fun Project.didNotListenAlbums(): ImmutableList<HistoricAlbum> {
