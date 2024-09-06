@@ -15,7 +15,10 @@ class NotificationsRetrofitDataSource @Inject constructor(
 ) : NotificationsDataSource {
     private val api = retrofit.create(NotificationsApi::class.java)
 
-    override suspend fun getNotifications(projectId: String): Result<NotificationsResponse, NetworkError> = doNetwork {
+    override suspend fun getNotifications(
+        projectId: String,
+        showRead: Boolean,
+    ): Result<NotificationsResponse, NetworkError> = doNetwork {
         api.getNotifications(projectId = projectId, read = false)
     }
 

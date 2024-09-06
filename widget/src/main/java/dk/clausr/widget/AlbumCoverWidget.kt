@@ -45,10 +45,12 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import dk.clausr.core.common.extensions.openProject
+import dk.clausr.core.data.repository.NotificationRepository
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectUrl
+import dk.clausr.core.model.NotificationResponse
 import dk.clausr.worker.BurstUpdateWorker
 import dk.clausr.worker.SimplifiedWidgetWorker
 import kotlinx.coroutines.delay
@@ -64,6 +66,7 @@ class AlbumCoverWidget : GlanceAppWidget() {
     @InstallIn(SingletonComponent::class)
     interface AlbumCoverWidgetEntryPoint {
         fun oagRepository(): OagRepository
+        fun notificationRepository(): NotificationRepository
     }
 
     override suspend fun provideGlance(
@@ -76,6 +79,7 @@ class AlbumCoverWidget : GlanceAppWidget() {
             EntryPointAccessors.fromApplication(appContext, AlbumCoverWidgetEntryPoint::class.java)
 
         val repo = hiltEntryPoint.oagRepository()
+        val notificationRepo = hiltEntryPoint.notificationRepository()
 
         provideContent {
             val currentState = currentState<SerializedWidgetState>()
@@ -83,8 +87,14 @@ class AlbumCoverWidget : GlanceAppWidget() {
             val state: SerializedWidgetState by repo.widgetState
                 .collectAsState(initial = currentState)
 
+            val notifications: List<NotificationResponse> by notificationRepo.unreadNotifications.collectAsState(emptyList())
+
+            Timber.d("Notifications: ${notifications.size}")
             GlanceTheme {
-                Content(state = state)
+                Content(
+                    state = state,
+                    notificationCount = notifications.size,
+                )
             }
         }
     }
@@ -93,6 +103,7 @@ class AlbumCoverWidget : GlanceAppWidget() {
 @Composable
 fun Content(
     state: SerializedWidgetState,
+    notificationCount: Int,
     modifier: GlanceModifier = GlanceModifier,
 ) {
     Timber.d("Widget state: $state")
@@ -106,7 +117,7 @@ fun Content(
             }
 
             is SerializedWidgetState.Success -> {
-                ShowAlbumCover(state, state.currentProjectId)
+                ShowAlbumCover(state = state, notificationCount = notificationCount)
             }
 
             is SerializedWidgetState.Error -> {
@@ -137,7 +148,7 @@ fun Content(
 @Composable
 private fun ShowAlbumCover(
     state: SerializedWidgetState.Success,
-    projectId: String,
+    notificationCount: Int,
     modifier: GlanceModifier = GlanceModifier,
 ) {
     val context = LocalContext.current
@@ -166,7 +177,17 @@ private fun ShowAlbumCover(
         )
 
         if (state.data.newAvailable) {
-            RatingNudge(projectId)
+            RatingNudge(state.currentProjectId)
+        }
+
+        // TODO Change icon
+        if (notificationCount > 0) {
+            CircleIconButton(
+                modifier = GlanceModifier.size(36.dp),
+                imageProvider = ImageProvider(dk.clausr.a1001albumsgenerator.ui.R.drawable.album_cover_placeholder),
+                contentDescription = null,
+                onClick = { },
+            )
         }
 
         if (showLinks) {

@@ -19,6 +19,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import dk.clausr.core.common.model.doOnFailure
 import dk.clausr.core.common.model.doOnSuccess
+import dk.clausr.core.data.repository.NotificationRepository
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectId
@@ -32,6 +33,7 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
     @Assisted private val appContext: Context,
     @Assisted private val workerParameters: WorkerParameters,
     private val oagRepository: OagRepository,
+    private val notificationRepository: NotificationRepository,
 
 ) : CoroutineWorker(appContext, workerParameters) {
 
@@ -41,8 +43,10 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
         val projectId: String? = dataStore.data.firstOrNull()?.projectId
 
         // TODO Look into this actually checking if yesterdays album is rated
-        projectId?.let { nnProjectId ->
-            oagRepository.updateProject(nnProjectId)
+
+        projectId?.let {
+            notificationRepository.updateNotifications(projectId)
+            oagRepository.updateProject(projectId)
                 .doOnSuccess {
                     workerResult = Result.success()
                 }

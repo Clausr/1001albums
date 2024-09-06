@@ -35,16 +35,13 @@ object NotificationResponseSerializer : KSerializer<NotificationResponse> {
 
         val data = when (type) {
             NotificationType.GroupReview -> decoder.json.decodeFromJsonElement<NotificationData.GroupReviewData>(jsonObject["data"]!!)
-            NotificationType.Custom -> decoder.json.decodeFromJsonElement<NotificationData.CustomData>(jsonObject["data"]!!)
             NotificationType.AlbumsRated -> decoder.json.decodeFromJsonElement<NotificationData.AlbumsRatedData>(jsonObject["data"]!!)
             NotificationType.GroupAlbumsGenerated ->
                 decoder.json.decodeFromJsonElement<NotificationData.GroupAlbumsGeneratedData>(jsonObject["data"]!!)
 
             NotificationType.NewGroupMember -> decoder.json.decodeFromJsonElement<NotificationData.NewGroupMemberData>(jsonObject["data"]!!)
-            NotificationType.Signup -> decoder.json.decodeFromJsonElement<NotificationData.SignupData>(jsonObject["data"]!!)
-            NotificationType.DonationPush -> decoder.json.decodeFromJsonElement<NotificationData.DonationPushData>(jsonObject["data"]!!)
             NotificationType.ReviewThumbUp -> decoder.json.decodeFromJsonElement<NotificationData.ReviewThumbUpData>(jsonObject["data"]!!)
-            NotificationType.Unknown -> NotificationData.Unknown
+            NotificationType.Unknown -> null
         }
 
         return NotificationResponse(

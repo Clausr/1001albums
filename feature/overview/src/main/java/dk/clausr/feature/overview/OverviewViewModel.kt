@@ -17,6 +17,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -31,6 +32,7 @@ class OverviewViewModel @Inject constructor(
     oagRepository: OagRepository,
     private val notificationsRepository: NotificationRepository,
 ) : ViewModel() {
+    var projectId = MutableStateFlow("")
 
     val notifications = notificationsRepository.unreadNotifications
         .map { it.toPersistentList() }
@@ -82,14 +84,17 @@ class OverviewViewModel @Inject constructor(
         }
     }
 
+    fun readAllNotifications() = viewModelScope.launch {
+        notificationsRepository.readAll(projectId = projectId.value)
+    }
+
     init {
         viewModelScope.launch {
             oagRepository.project.collectLatest {
 
                 it?.name?.let {
                     notificationsRepository.updateNotifications(it)
-
-                    notificationsRepository.readAll(it)
+                    projectId.value = it
                 }
             }
         }

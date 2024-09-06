@@ -22,5 +22,8 @@ interface NotificationDao {
     fun getUnreadNotifications(): Flow<List<NotificationEntity>>
 
     @Query("UPDATE notifications SET read = 1 WHERE read = 0")
-    fun readNotifications()
+    suspend fun readNotifications()
+
+    @Query("SELECT count(id) FROM notifications")
+    suspend fun getNotificationCount(): Int
 }

@@ -5,6 +5,9 @@ import dk.clausr.core.model.NotificationsResponse
 import dk.clausr.core.network.NetworkError
 
 interface NotificationsDataSource {
-    suspend fun getNotifications(projectId: String): Result<NotificationsResponse, NetworkError>
+    suspend fun getNotifications(
+        projectId: String,
+        showRead: Boolean,
+    ): Result<NotificationsResponse, NetworkError>
     suspend fun readAll(projectId: String): Result<Boolean, NetworkError>
 }

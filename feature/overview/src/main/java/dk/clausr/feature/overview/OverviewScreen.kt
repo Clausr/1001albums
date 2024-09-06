@@ -12,6 +12,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -21,17 +22,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Badge
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,6 +45,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,11 +53,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -71,6 +71,8 @@ import dk.clausr.core.model.Project
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
 import dk.clausr.core.model.UpdateFrequency
+import dk.clausr.feature.overview.notifications.getBody
+import dk.clausr.feature.overview.notifications.getTitle
 import dk.clausr.feature.overview.preview.albumPreviewData
 import dk.clausr.feature.overview.preview.historicAlbumPreviewData
 import kotlinx.collections.immutable.ImmutableList
@@ -92,11 +94,10 @@ fun OverviewRoute(
         navigateToSettings = navigateToSettings,
         navigateToAlbumDetails = navigateToAlbumDetails,
         notifications = notifications,
+        readAllNotifications = viewModel::readAllNotifications,
         onNotificationClick = {
             when (val data = it.data) {
                 is NotificationData.AlbumsRatedData -> TODO()
-                is NotificationData.CustomData -> TODO()
-                is NotificationData.DonationPushData -> TODO()
                 is NotificationData.GroupAlbumsGeneratedData -> TODO()
                 is NotificationData.GroupReviewData -> {
                     val sluggify = data.albumName.lowercase().replace(" ", "-")
@@ -105,8 +106,6 @@ fun OverviewRoute(
 
                 is NotificationData.NewGroupMemberData -> TODO()
                 is NotificationData.ReviewThumbUpData -> TODO()
-                is NotificationData.SignupData -> TODO()
-                NotificationData.Unknown -> TODO()
                 null -> TODO()
             }
         },
@@ -120,11 +119,18 @@ internal fun OverviewScreen(
     navigateToSettings: () -> Unit,
     onNotificationClick: (NotificationResponse) -> Unit,
     navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
+    readAllNotifications: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     var showNotifications by remember {
         mutableStateOf(false)
+    }
+
+    LaunchedEffect(showNotifications) {
+        if (showNotifications && notifications.isNotEmpty()) {
+            readAllNotifications()
+        }
     }
     with(LocalSharedTransitionScope.current) {
         Scaffold(
@@ -139,13 +145,6 @@ internal fun OverviewScreen(
                         title = { Text(text = "Your project") },
                         actions = {
                             Box {
-                                if (notifications.isNotEmpty()) {
-                                    Badge(
-                                        modifier = Modifier
-                                            .align(Alignment.TopEnd)
-                                            .padding(4.dp),
-                                    ) { Text(text = notifications.size.toString()) }
-                                }
                                 IconButton(
                                     onClick = { showNotifications = true },
                                 ) {
@@ -153,6 +152,13 @@ internal fun OverviewScreen(
                                         imageVector = Icons.Default.Notifications,
                                         contentDescription = "Notifications",
                                     )
+                                }
+                                if (notifications.isNotEmpty()) {
+                                    Badge(
+                                        modifier = Modifier
+                                            .align(Alignment.TopEnd)
+                                            .padding(4.dp),
+                                    ) { Text(text = notifications.size.toString()) }
                                 }
                             }
                             IconButton(onClick = navigateToSettings) {
@@ -224,6 +230,7 @@ internal fun OverviewScreen(
             }
         }
 
+        // Scrim
         AnimatedVisibility(
             visible = showNotifications,
             enter = fadeIn(),
@@ -247,6 +254,7 @@ internal fun OverviewScreen(
             Surface(
                 shape = MaterialTheme.shapes.medium.copy(topStart = CornerSize(0.dp), topEnd = CornerSize(0.dp)),
                 shadowElevation = 2.dp,
+                color = MaterialTheme.colorScheme.surfaceContainer,
             ) {
                 Column(
                     modifier = Modifier
@@ -256,11 +264,23 @@ internal fun OverviewScreen(
                         .padding(bottom = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
+                    Row(
+                        modifier = Modifier,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = "Notifications",
+                            modifier = Modifier.weight(1f),
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                        IconButton(onClick = { showNotifications = false }) {
+                            Icon(Icons.Default.Close, contentDescription = "Close")
+                        }
+                    }
+
                     NotificationSheetContent(
-                        showNotifications = showNotifications,
                         notifications = notifications,
                         onNotificationClick = onNotificationClick,
-                        onDismiss = { showNotifications = false },
                     )
                 }
             }
@@ -269,72 +289,38 @@ internal fun OverviewScreen(
 }
 
 @Composable
-private fun NotificationSheetContent(
-    showNotifications: Boolean,
+private fun ColumnScope.NotificationSheetContent(
     notifications: ImmutableList<NotificationResponse>,
     onNotificationClick: (NotificationResponse) -> Unit,
-    onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = "Notifications",
-            modifier = Modifier.weight(1f),
-            style = MaterialTheme.typography.titleMedium,
-        )
-        IconButton(onClick = onDismiss) {
-            Icon(Icons.Default.Close, contentDescription = "Close")
-        }
-    }
+    val context = LocalContext.current
 
-    notifications.forEach { notification ->
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable {
-                    onNotificationClick(notification)
-                },
-        ) {
-            Text(text = notification.type.toString(), style = MaterialTheme.typography.labelLarge)
 
-            val textToShow: AnnotatedString = when (val data = notification.data) {
-                is NotificationData.AlbumsRatedData -> {
-                    AnnotatedString("You've rated ${data.numberOfAlbums} albums!")
-                }
-
-                is NotificationData.CustomData -> AnnotatedString(data.body)
-                is NotificationData.DonationPushData -> {
-                    AnnotatedString("Plz donate")
-                }
-
-                is NotificationData.GroupAlbumsGeneratedData -> {
-                    AnnotatedString("Your group ${data.groupSlug} has reached ${data.numberOfAlbums} albums!")
-                }
-
-                is NotificationData.GroupReviewData -> {
-                    buildAnnotatedString {
-                        withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                            append(data.projectName)
-                        }
-                        append(" just gave ")
-                        withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                            append(data.albumName)
-                        }
-                        append(" ${data.rating} stars")
-                    }
-                }
-
-                is NotificationData.NewGroupMemberData -> TODO()
-                is NotificationData.ReviewThumbUpData -> TODO()
-                is NotificationData.SignupData -> TODO()
-                NotificationData.Unknown -> TODO()
-                null -> TODO()
+    LazyColumn(modifier, contentPadding = WindowInsets.navigationBars.asPaddingValues()) {
+        items(notifications) { notification ->
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        onNotificationClick(notification)
+                    },
+            ) {
+                Text(text = notification.getTitle(context) ?: "No title", style = MaterialTheme.typography.labelLarge)
+                Text(text = notification.getBody(context) ?: "No body")
+                Text(text = "at ${notification.createdAt}")
             }
-            Text(textToShow)
-            Text(text = "at ${notification.createdAt}")
+        }
+
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Button(onClick = {}) {
+                    Text(text = "See all notifications")
+                }
+            }
         }
     }
 }
@@ -456,6 +442,7 @@ private fun OverviewPreview() {
             ),
             notifications = persistentListOf(),
             onNotificationClick = {},
+            readAllNotifications = {},
         )
     }
 }
