@@ -76,7 +76,7 @@ dependencies {
     implementation(libs.material)
 
     implementation(libs.core.ktx)
-    implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.activity.compose)
 
     implementation(libs.androidx.compose.ui)

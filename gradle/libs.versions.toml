@@ -1,15 +1,14 @@
 [versions]
-activityCompose = "1.9.1"
+activityCompose = "1.9.2"
 androidGradlePlugin = "8.6.0"
 coilCompose = "3.0.0-alpha10"
 coilNetworkOkhttp = "3.0.0-alpha10"
 coilVersion = "3.0.0-alpha10"
 coreKtx = "1.13.1"
-compose-bom = "2024.08.00"
+compose-bom = "2024.09.00"
 glanceAppwidget = "1.1.0"
 kotlin = "2.0.20"
 kotlinxCollectionsImmutable = "0.3.7"
-lifecycleRuntimeKtx = "2.8.4"
 materialVersion = "1.12.0"
 okhttp = "4.12.0"
 org-jetbrains-kotlin-android = "2.0.20"
@@ -24,8 +23,8 @@ hilt = "2.52"
 hiltExt = "1.2.0"
 kotlinxCoroutines = "1.8.1"
 androidxHiltNavigationCompose = "1.2.0"
-androidxLifecycle = "2.8.4"
-androidxNavigation = "2.8.0-rc01"
+androidxLifecycle = "2.8.5"
+androidxNavigation = "2.8.0"
 kotlinxSerializationJson = "1.7.2"
 junit = "4.13.2"
 androidx-test-ext-junit = "1.1.5"
@@ -41,18 +40,16 @@ detektComposeRulesPluginVersion = "0.4.11"
 detektPluginVersion = "1.23.6"
 haze = "0.9.0-alpha08"
 sentry = "4.11.0"
-composeUi = "1.7.0-rc01"
-composeAnimation = "1.7.0-rc01"
 
 [libraries]
 androidx-work-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "androidxWork" }
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
-androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "composeUi" }
+androidx-compose-ui = { module = "androidx.compose.ui:ui" }
 coil3 = { module = "io.coil-kt.coil3:coil", version.ref = "coilVersion" }
 coil3-coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 coil3-coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilNetworkOkhttp" }
-compose_animation = { module = "androidx.compose.animation:animation-android", version.ref = "composeAnimation" }
+compose_animation = { module = "androidx.compose.animation:animation-android" }
 compose_animation_core = { module = "androidx.compose.animation:animation-core-android" }
 androidx-compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
 androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
@@ -71,7 +68,6 @@ detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", 
 glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glanceAppwidget" }
 glance-material3 = { module = "androidx.glance:glance-material3", version.ref = "glanceAppwidget" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 material = { module = "com.google.android.material:material", version.ref = "materialVersion" }
 retrofit-core = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-kotlin-serialization = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofitKotlinxSerializationJson" }
@@ -82,6 +78,7 @@ hilt-ext-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.r
 androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hiltExt" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }
+androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidxLifecycle" }
 androidx-lifecycle-runtimeCompose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidxLifecycle" }
 androidx-lifecycle-viewModelCompose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidxLifecycle" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "androidxNavigation" }
@@ -99,7 +96,6 @@ android-application = { id = "com.android.application", version.ref = "androidGr
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "org-jetbrains-kotlin-android" }
-#protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
