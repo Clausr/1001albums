@@ -1,6 +1,7 @@
 package dk.clausr.widget
 
 import android.content.Context
+import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -20,6 +21,7 @@ import androidx.glance.LocalContext
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
+import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.components.CircleIconButton
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
@@ -50,7 +52,7 @@ import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectUrl
-import dk.clausr.core.model.NotificationResponse
+import dk.clausr.core.model.Notification
 import dk.clausr.worker.BurstUpdateWorker
 import dk.clausr.worker.SimplifiedWidgetWorker
 import kotlinx.coroutines.delay
@@ -87,7 +89,7 @@ class AlbumCoverWidget : GlanceAppWidget() {
             val state: SerializedWidgetState by repo.widgetState
                 .collectAsState(initial = currentState)
 
-            val notifications: List<NotificationResponse> by notificationRepo.unreadNotifications.collectAsState(emptyList())
+            val notifications: List<Notification> by notificationRepo.unreadNotifications.collectAsState(emptyList())
 
             Timber.d("Notifications: ${notifications.size}")
             GlanceTheme {
@@ -182,11 +184,15 @@ private fun ShowAlbumCover(
 
         // TODO Change icon
         if (notificationCount > 0) {
+            val intent = Intent(context, Class.forName("dk.clausr.a1001albumsgenerator.MainActivity")).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
+            val actionIntent = actionStartActivity(intent)
             CircleIconButton(
                 modifier = GlanceModifier.size(36.dp),
                 imageProvider = ImageProvider(dk.clausr.a1001albumsgenerator.ui.R.drawable.album_cover_placeholder),
                 contentDescription = null,
-                onClick = { },
+                onClick = actionIntent,
             )
         }
 

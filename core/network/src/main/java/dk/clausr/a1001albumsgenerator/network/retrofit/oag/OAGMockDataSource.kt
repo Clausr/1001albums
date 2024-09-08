@@ -1,4 +1,4 @@
-package dk.clausr.a1001albumsgenerator.network.retrofit
+package dk.clausr.a1001albumsgenerator.network.retrofit.oag
 
 import dk.LocalAssetManager
 import dk.clausr.a1001albumsgenerator.network.OAGDataSource
@@ -16,7 +16,7 @@ import kotlinx.serialization.json.decodeFromStream
 import javax.inject.Inject
 
 @OptIn(ExperimentalSerializationApi::class)
-class DemoDataSource @Inject constructor(
+class OAGMockDataSource @Inject constructor(
     private val json: Json,
     private val assets: FakeAssetManager = LocalAssetManager,
     @Dispatcher(OagDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
@@ -24,9 +24,4 @@ class DemoDataSource @Inject constructor(
     override suspend fun getProject(projectId: String): Result<NetworkProject, NetworkError> = withContext(ioDispatcher) {
         Result.Success(assets.open("mock_project_response.json").use(json::decodeFromStream))
     }
-
-//    override suspend fun getNotifications(projectId: String): Result<NotificationsResponse, NetworkError> = withContext(ioDispatcher) {
-//        val res: NotificationsResponse = assets.open("mock_notification_response.json").use(json::decodeFromStream)
-//        Result.Success(res)
-//    }
 }

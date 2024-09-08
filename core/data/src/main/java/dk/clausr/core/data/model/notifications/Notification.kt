@@ -1,16 +1,16 @@
 package dk.clausr.core.data.model.notifications
 
 import dk.clausr.core.database.model.NotificationEntity
+import dk.clausr.core.model.Notification
 import dk.clausr.core.model.NotificationData
-import dk.clausr.core.model.NotificationResponse
 import dk.clausr.core.model.NotificationType
 import dk.clausr.core.model.notificationTypeMap
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-fun List<NotificationResponse>.toEntities(): List<NotificationEntity> = map(NotificationResponse::toEntity)
+fun List<Notification>.toEntities(): List<NotificationEntity> = map(Notification::toEntity)
 
-fun NotificationResponse.toEntity(): NotificationEntity {
+fun Notification.toEntity(): NotificationEntity {
     val notification = this
     return NotificationEntity(
         id = notification.id,
@@ -23,7 +23,7 @@ fun NotificationResponse.toEntity(): NotificationEntity {
     )
 }
 
-fun NotificationEntity.asExternalModel(): NotificationResponse {
+fun NotificationEntity.asExternalModel(): Notification {
     val notificationType = notificationTypeMap[type] ?: NotificationType.Unknown
 
     val json = Json {
@@ -38,7 +38,7 @@ fun NotificationEntity.asExternalModel(): NotificationResponse {
         NotificationType.Unknown -> null
     }
 
-    return NotificationResponse(
+    return Notification(
         id = id,
         project = project,
         createdAt = createdAt,

@@ -1,12 +1,12 @@
 package dk.clausr.feature.overview.notifications
 
 import android.content.Context
+import dk.clausr.core.model.Notification
 import dk.clausr.core.model.NotificationData
-import dk.clausr.core.model.NotificationResponse
 import dk.clausr.feature.overview.R
 
-fun NotificationResponse.getTitle(context: Context): String? {
-    return when (val data = data) {
+fun Notification.getTitle(context: Context): String? {
+    return when (data) {
         is NotificationData.AlbumsRatedData -> context.getString(R.string.notification_albums_rated_title)
         is NotificationData.GroupAlbumsGeneratedData -> context.getString(R.string.notification_group_albums_generated_title)
         is NotificationData.GroupReviewData -> context.getString(R.string.notification_group_review_title)
@@ -16,7 +16,7 @@ fun NotificationResponse.getTitle(context: Context): String? {
     }
 }
 
-fun NotificationResponse.getBody(context: Context): String? {
+fun Notification.getBody(context: Context): String? {
     return when (val data = data) {
         is NotificationData.AlbumsRatedData -> context.getString(R.string.notification_albums_rated_body)
         is NotificationData.GroupAlbumsGeneratedData -> context.getString(R.string.notification_group_albums_generated_body, data.numberOfAlbums)

@@ -35,7 +35,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Badge
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,7 +44,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,6 +51,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -65,18 +65,21 @@ import dk.clausr.core.common.android.openLink
 import dk.clausr.core.common.extensions.formatToDate
 import dk.clausr.core.data.workers.UpdateProjectWorker
 import dk.clausr.core.data_widget.SerializedWidgetState
+import dk.clausr.core.model.Notification
 import dk.clausr.core.model.NotificationData
-import dk.clausr.core.model.NotificationResponse
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
 import dk.clausr.core.model.UpdateFrequency
+import dk.clausr.feature.overview.extensions.sluggify
 import dk.clausr.feature.overview.notifications.getBody
 import dk.clausr.feature.overview.notifications.getTitle
 import dk.clausr.feature.overview.preview.albumPreviewData
 import dk.clausr.feature.overview.preview.historicAlbumPreviewData
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
+import timber.log.Timber
 
 @Composable
 fun OverviewRoute(
@@ -86,26 +89,24 @@ fun OverviewRoute(
     viewModel: OverviewViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val notifications by viewModel.notifications.collectAsStateWithLifecycle()
 
     OverviewScreen(
         modifier = modifier,
         state = uiState,
         navigateToSettings = navigateToSettings,
         navigateToAlbumDetails = navigateToAlbumDetails,
-        notifications = notifications,
-        readAllNotifications = viewModel::readAllNotifications,
+        readAllNotifications = viewModel::clearUnreadNotifications,
         onNotificationClick = {
             when (val data = it.data) {
-                is NotificationData.AlbumsRatedData -> TODO()
-                is NotificationData.GroupAlbumsGeneratedData -> TODO()
+                is NotificationData.AlbumsRatedData -> {}
+                is NotificationData.GroupAlbumsGeneratedData -> {}
                 is NotificationData.GroupReviewData -> {
-                    val sluggify = data.albumName.lowercase().replace(" ", "-")
-                    navigateToAlbumDetails(sluggify, "notififations")
+                    Timber.d("Sluggified: ${data.albumName.sluggify}")
+                    navigateToAlbumDetails(data.albumName.sluggify, "notifications")
                 }
 
-                is NotificationData.NewGroupMemberData -> TODO()
-                is NotificationData.ReviewThumbUpData -> TODO()
+                is NotificationData.NewGroupMemberData -> {}
+                is NotificationData.ReviewThumbUpData -> {}
                 null -> TODO()
             }
         },
@@ -115,9 +116,8 @@ fun OverviewRoute(
 @Composable
 internal fun OverviewScreen(
     state: OverviewUiState,
-    notifications: ImmutableList<NotificationResponse>,
     navigateToSettings: () -> Unit,
-    onNotificationClick: (NotificationResponse) -> Unit,
+    onNotificationClick: (Notification) -> Unit,
     navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
     readAllNotifications: () -> Unit,
     modifier: Modifier = Modifier,
@@ -127,11 +127,6 @@ internal fun OverviewScreen(
         mutableStateOf(false)
     }
 
-    LaunchedEffect(showNotifications) {
-        if (showNotifications && notifications.isNotEmpty()) {
-            readAllNotifications()
-        }
-    }
     with(LocalSharedTransitionScope.current) {
         Scaffold(
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -142,7 +137,7 @@ internal fun OverviewScreen(
                         modifier = Modifier
                             .renderInSharedTransitionScopeOverlay(zIndexInOverlay = 1f)
                             .animateEnterExit(enter = fadeIn() + slideInVertically(), exit = fadeOut() + slideOutVertically()),
-                        title = { Text(text = "Your project") },
+                        title = { Text(text = stringResource(R.string.overview_app_bar_title)) },
                         actions = {
                             Box {
                                 IconButton(
@@ -153,18 +148,18 @@ internal fun OverviewScreen(
                                         contentDescription = "Notifications",
                                     )
                                 }
-                                if (notifications.isNotEmpty()) {
+                                if (state is OverviewUiState.Success && state.notifications.isNotEmpty()) {
                                     Badge(
                                         modifier = Modifier
                                             .align(Alignment.TopEnd)
                                             .padding(4.dp),
-                                    ) { Text(text = notifications.size.toString()) }
+                                    ) { Text(text = state.notifications.size.toString()) }
                                 }
                             }
                             IconButton(onClick = navigateToSettings) {
                                 Icon(
                                     imageVector = Icons.Default.Settings,
-                                    contentDescription = "Configure project",
+                                    contentDescription = stringResource(R.string.a11y_content_description_settings_icon),
                                 )
                             }
                         },
@@ -230,58 +225,68 @@ internal fun OverviewScreen(
             }
         }
 
-        // Scrim
-        AnimatedVisibility(
-            visible = showNotifications,
-            enter = fadeIn(),
-            exit = fadeOut(),
-        ) {
-            BackHandler { showNotifications = false }
-
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.2f))
-                    .clickable(interactionSource = null, indication = null, onClick = { showNotifications = false }),
-            )
-        }
-
-        AnimatedVisibility(
-            visible = showNotifications,
-            enter = slideInVertically(initialOffsetY = { -it }),
-            exit = slideOutVertically(targetOffsetY = { -it }),
-        ) {
-            Surface(
-                shape = MaterialTheme.shapes.medium.copy(topStart = CornerSize(0.dp), topEnd = CornerSize(0.dp)),
-                shadowElevation = 2.dp,
-                color = MaterialTheme.colorScheme.surfaceContainer,
+        if (state is OverviewUiState.Success) {
+            fun dismissDialog() {
+                showNotifications = false
+                readAllNotifications()
+            }
+            // Scrim
+            AnimatedVisibility(
+                visible = showNotifications,
+                enter = fadeIn(),
+                exit = fadeOut(),
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .statusBarsPadding()
-                        .padding(horizontal = 16.dp)
-                        .padding(bottom = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    Row(
-                        modifier = Modifier,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = "Notifications",
-                            modifier = Modifier.weight(1f),
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                        IconButton(onClick = { showNotifications = false }) {
-                            Icon(Icons.Default.Close, contentDescription = "Close")
-                        }
-                    }
+                BackHandler(onBack = ::dismissDialog)
 
-                    NotificationSheetContent(
-                        notifications = notifications,
-                        onNotificationClick = onNotificationClick,
-                    )
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.2f))
+                        .clickable(
+                            interactionSource = null,
+                            indication = null,
+                            onClick = ::dismissDialog,
+                        ),
+                )
+            }
+
+            AnimatedVisibility(
+                visible = showNotifications,
+                enter = slideInVertically(initialOffsetY = { -it }),
+                exit = slideOutVertically(targetOffsetY = { -it }),
+            ) {
+                Surface(
+                    shape = MaterialTheme.shapes.medium.copy(topStart = CornerSize(0.dp), topEnd = CornerSize(0.dp)),
+                    shadowElevation = 2.dp,
+                    color = MaterialTheme.colorScheme.surfaceContainer,
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .statusBarsPadding()
+                            .padding(horizontal = 16.dp)
+                            .padding(bottom = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Row(
+                            modifier = Modifier,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                text = "Notifications",
+                                modifier = Modifier.weight(1f),
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                            IconButton(onClick = ::dismissDialog) {
+                                Icon(Icons.Default.Close, contentDescription = "Close")
+                            }
+                        }
+
+                        NotificationSheetContent(
+                            notifications = state.notifications,
+                            onNotificationClick = onNotificationClick,
+                        )
+                    }
                 }
             }
         }
@@ -290,35 +295,39 @@ internal fun OverviewScreen(
 
 @Composable
 private fun ColumnScope.NotificationSheetContent(
-    notifications: ImmutableList<NotificationResponse>,
-    onNotificationClick: (NotificationResponse) -> Unit,
+    notifications: ImmutableList<Notification>,
+    onNotificationClick: (Notification) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
 
-
-    LazyColumn(modifier, contentPadding = WindowInsets.navigationBars.asPaddingValues()) {
-        items(notifications) { notification ->
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        onNotificationClick(notification)
-                    },
-            ) {
-                Text(text = notification.getTitle(context) ?: "No title", style = MaterialTheme.typography.labelLarge)
-                Text(text = notification.getBody(context) ?: "No body")
-                Text(text = "at ${notification.createdAt}")
+    LazyColumn(modifier = modifier) {
+        if (notifications.isEmpty()) {
+            // Empty state
+            item {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = stringResource(R.string.notifications_empty_state_title),
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
-        }
-
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Button(onClick = {}) {
-                    Text(text = "See all notifications")
+        } else {
+            items(notifications) { notification ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onNotificationClick(notification)
+                        },
+                ) {
+                    Text(
+                        text = notification.getTitle(context) ?: "No title",
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                    Text(text = notification.getBody(context) ?: "No body")
+                    Text("at ${notification.createdAt}")
                 }
             }
         }
@@ -438,9 +447,10 @@ private fun OverviewPreview() {
                 ),
                 topRated = persistentListOf(),
                 streamingPlatform = StreamingPlatform.Tidal,
-                groupedHistory = mapOf(),
+                groupedHistory = persistentMapOf(),
+                notifications = persistentListOf(),
             ),
-            notifications = persistentListOf(),
+
             onNotificationClick = {},
             readAllNotifications = {},
         )

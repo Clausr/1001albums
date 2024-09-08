@@ -1,4 +1,4 @@
-package dk.clausr.a1001albumsgenerator.network.retrofit
+package dk.clausr.a1001albumsgenerator.network.retrofit.notifications
 
 import dk.clausr.a1001albumsgenerator.network.NotificationsDataSource
 import dk.clausr.a1001albumsgenerator.utils.doNetwork
@@ -7,19 +7,17 @@ import dk.clausr.core.model.NotificationsResponse
 import dk.clausr.core.network.NetworkError
 import retrofit2.Retrofit
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 class NotificationsRetrofitDataSource @Inject constructor(
     retrofit: Retrofit,
 ) : NotificationsDataSource {
-    private val api = retrofit.create(NotificationsApi::class.java)
+    private val api = retrofit.create(NotificationsRetrofitApi::class.java)
 
     override suspend fun getNotifications(
         projectId: String,
         showRead: Boolean,
     ): Result<NotificationsResponse, NetworkError> = doNetwork {
-        api.getNotifications(projectId = projectId, read = false)
+        api.getNotifications(projectId = projectId, read = showRead)
     }
 
     override suspend fun readAll(projectId: String): Result<Boolean, NetworkError> = doNetwork {

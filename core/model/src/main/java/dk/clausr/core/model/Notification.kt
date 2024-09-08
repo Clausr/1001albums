@@ -5,18 +5,18 @@ import dk.clausr.core.model.NotificationType.GroupAlbumsGenerated
 import dk.clausr.core.model.NotificationType.GroupReview
 import dk.clausr.core.model.NotificationType.NewGroupMember
 import dk.clausr.core.model.NotificationType.ReviewThumbUp
-import dk.clausr.core.model.serializer.NotificationResponseSerializer
+import dk.clausr.core.model.serializer.NotificationSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class NotificationsResponse(
     val success: Boolean,
-    val notifications: List<NotificationResponse>,
+    val notifications: List<Notification>,
 )
 
-@Serializable(with = NotificationResponseSerializer::class)
-data class NotificationResponse(
+@Serializable(with = NotificationSerializer::class)
+data class Notification(
     @SerialName("_id") val id: String,
     val project: String,
     val createdAt: String,

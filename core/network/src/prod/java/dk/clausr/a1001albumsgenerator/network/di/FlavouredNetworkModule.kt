@@ -6,8 +6,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dk.clausr.a1001albumsgenerator.network.NotificationsDataSource
 import dk.clausr.a1001albumsgenerator.network.OAGDataSource
-import dk.clausr.a1001albumsgenerator.network.retrofit.NotificationsRetrofitDataSource
-import dk.clausr.a1001albumsgenerator.network.retrofit.OAGRetrofitDataSource
+import dk.clausr.a1001albumsgenerator.network.retrofit.notifications.NotificationsRetrofitDataSource
+import dk.clausr.a1001albumsgenerator.network.retrofit.oag.OAGRetrofitDataSource
 
 @Module
 @InstallIn(SingletonComponent::class)

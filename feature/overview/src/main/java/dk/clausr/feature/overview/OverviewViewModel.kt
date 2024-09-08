@@ -10,12 +10,14 @@ import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.model.Album
 import dk.clausr.core.model.HistoricAlbum
+import dk.clausr.core.model.Notification
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.Rating
 import dk.clausr.core.model.StreamingPlatform
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -32,22 +34,18 @@ class OverviewViewModel @Inject constructor(
     oagRepository: OagRepository,
     private val notificationsRepository: NotificationRepository,
 ) : ViewModel() {
-    var projectId = MutableStateFlow("")
+    private var projectId = MutableStateFlow("")
 
-    val notifications = notificationsRepository.unreadNotifications
+    private val _unreadNotifications = notificationsRepository.unreadNotifications
         .map { it.toPersistentList() }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = persistentListOf(),
-        )
 
     val uiState = combine(
         oagRepository.project,
         oagRepository.currentAlbum,
         oagRepository.widgetState,
         oagRepository.preferredStreamingPlatform,
-    ) { project, currentAlbum, widgetState, platform ->
+        _unreadNotifications,
+    ) { project, currentAlbum, widgetState, platform, unreadNotifications ->
         if (project != null) {
             OverviewUiState.Success(
                 project = project,
@@ -56,7 +54,8 @@ class OverviewViewModel @Inject constructor(
                 didNotListen = project.didNotListenAlbums(),
                 topRated = project.topRatedAlbums(),
                 streamingPlatform = platform,
-                groupedHistory = project.groupedHistory(),
+                groupedHistory = project.groupedHistory().toImmutableMap(),
+                notifications = unreadNotifications,
             )
         } else {
             OverviewUiState.Error
@@ -84,17 +83,16 @@ class OverviewViewModel @Inject constructor(
         }
     }
 
-    fun readAllNotifications() = viewModelScope.launch {
-        notificationsRepository.readAll(projectId = projectId.value)
+    fun clearUnreadNotifications() {
+        viewModelScope.launch { notificationsRepository.readAll(projectId.value) }
     }
 
     init {
         viewModelScope.launch {
-            oagRepository.project.collectLatest {
-
-                it?.name?.let {
-                    notificationsRepository.updateNotifications(it)
-                    projectId.value = it
+            oagRepository.project.collectLatest { project ->
+                project?.name?.let { projectId ->
+                    notificationsRepository.updateNotifications(projectId)
+                    this@OverviewViewModel.projectId.value = projectId
                 }
             }
         }
@@ -110,7 +108,8 @@ sealed interface OverviewUiState {
         val widgetState: SerializedWidgetState,
         val topRated: ImmutableList<HistoricAlbum>,
         val streamingPlatform: StreamingPlatform,
-        val groupedHistory: Map<String, List<HistoricAlbum>>,
+        val groupedHistory: ImmutableMap<String, List<HistoricAlbum>>,
+        val notifications: ImmutableList<Notification>,
     ) : OverviewUiState
 
     data object Error : OverviewUiState

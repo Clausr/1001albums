@@ -1,4 +1,4 @@
-package dk.clausr.a1001albumsgenerator.network.retrofit
+package dk.clausr.a1001albumsgenerator.network.retrofit.notifications
 
 import dk.clausr.a1001albumsgenerator.network.model.ReadAllNotificationsResponse
 import dk.clausr.core.model.NotificationsResponse
@@ -7,7 +7,7 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-interface NotificationsApi {
+interface NotificationsRetrofitApi {
     @GET("api/notifications/{projectId}")
     suspend fun getNotifications(
         @Path("projectId") projectId: String,

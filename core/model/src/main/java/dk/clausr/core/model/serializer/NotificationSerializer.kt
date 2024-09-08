@@ -1,7 +1,7 @@
 package dk.clausr.core.model.serializer
 
+import dk.clausr.core.model.Notification
 import dk.clausr.core.model.NotificationData
-import dk.clausr.core.model.NotificationResponse
 import dk.clausr.core.model.NotificationType
 import dk.clausr.core.model.NotificationsResponse
 import dk.clausr.core.model.notificationTypeMap
@@ -17,17 +17,17 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 
-object NotificationResponseSerializer : KSerializer<NotificationResponse> {
+object NotificationSerializer : KSerializer<Notification> {
     override val descriptor: SerialDescriptor = NotificationsResponse.serializer().descriptor
 
     override fun serialize(
         encoder: Encoder,
-        value: NotificationResponse,
+        value: Notification,
     ) {
-        NotificationResponse.serializer().serialize(encoder, value)
+        Notification.serializer().serialize(encoder, value)
     }
 
-    override fun deserialize(decoder: Decoder): NotificationResponse {
+    override fun deserialize(decoder: Decoder): Notification {
         require(decoder is JsonDecoder)
         val jsonObject = decoder.decodeJsonElement().jsonObject
 
@@ -44,7 +44,7 @@ object NotificationResponseSerializer : KSerializer<NotificationResponse> {
             NotificationType.Unknown -> null
         }
 
-        return NotificationResponse(
+        return Notification(
             id = jsonObject["_id"]?.jsonPrimitive?.content ?: "",
             project = jsonObject["project"]?.jsonPrimitive?.content ?: "",
             createdAt = jsonObject["createdAt"]?.jsonPrimitive?.content ?: "",

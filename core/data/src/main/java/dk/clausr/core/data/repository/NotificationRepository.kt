@@ -9,7 +9,7 @@ import dk.clausr.core.data.model.notifications.asExternalModel
 import dk.clausr.core.data.model.notifications.toEntities
 import dk.clausr.core.database.dao.NotificationDao
 import dk.clausr.core.database.model.NotificationEntity
-import dk.clausr.core.model.NotificationResponse
+import dk.clausr.core.model.Notification
 import dk.clausr.core.model.NotificationType
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -26,13 +26,13 @@ class NotificationRepository @Inject constructor(
     @Dispatcher(OagDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
     private val notificationDao: NotificationDao,
 ) {
-    val unreadNotifications: Flow<List<NotificationResponse>> = notificationDao.getUnreadNotifications()
+    val unreadNotifications: Flow<List<Notification>> = notificationDao.getUnreadNotifications()
         .map { entities ->
             entities.map(NotificationEntity::asExternalModel)
         }
         .flowOn(ioDispatcher)
 
-    val notifications: Flow<List<NotificationResponse>> = notificationDao.getNotifications()
+    val notifications: Flow<List<Notification>> = notificationDao.getNotifications()
         .map { entities ->
             entities.map(NotificationEntity::asExternalModel)
         }

@@ -18,5 +18,8 @@
 
     <string name="notification_albums_rated_title">Project milestone!</string>
     <string name="notification_albums_rated_body">You\'ve just rated album #%1$d</string>
+    <string name="notifications_empty_state_title">No unread notifications</string>
+    <string name="overview_app_bar_title">Your project</string>
+    <string name="a11y_content_description_settings_icon">Configure project</string>
 
 </resources>
