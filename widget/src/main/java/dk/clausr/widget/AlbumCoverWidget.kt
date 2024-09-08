@@ -190,7 +190,7 @@ private fun ShowAlbumCover(
             val actionIntent = actionStartActivity(intent)
             CircleIconButton(
                 modifier = GlanceModifier.size(36.dp),
-                imageProvider = ImageProvider(dk.clausr.a1001albumsgenerator.ui.R.drawable.album_cover_placeholder),
+                imageProvider = ImageProvider(R.drawable.ic_notification_active),
                 contentDescription = null,
                 onClick = actionIntent,
             )
