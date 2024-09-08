@@ -4,6 +4,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -12,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -21,8 +25,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.HazeStyle
+import dev.chrisbanes.haze.HazeTint
 import dev.chrisbanes.haze.haze
-import dk.clausr.a1001albumsgenerator.onboarding.components.childHazeModifier
+import dev.chrisbanes.haze.hazeChild
 import dk.clausr.a1001albumsgenerator.onboarding.screens.ProjectNameScreen
 import dk.clausr.a1001albumsgenerator.onboarding.screens.StreamingServiceScreen
 import dk.clausr.a1001albumsgenerator.ui.components.covergrid.CoverGrid
@@ -108,7 +114,18 @@ internal fun OnboardingScreen(
                 ) {
                     composable(route = OnboardingDirections.projectName()) {
                         ProjectNameScreen(
-                            modifier = Modifier.childHazeModifier(hazeState),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                                .clip(shape = MaterialTheme.shapes.medium)
+                                .hazeChild(
+                                    state = hazeState,
+                                    style = HazeStyle(
+                                        backgroundColor = MaterialTheme.colorScheme.background,
+                                        tint = HazeTint.Color(MaterialTheme.colorScheme.background.copy(alpha = 0.5f)),
+                                    ),
+                                )
+                                .padding(all = 16.dp),
                             prefilledProjectId = projectId.orEmpty(),
                             onSetProjectId = onSetProjectId,
                             error = error,
@@ -117,7 +134,18 @@ internal fun OnboardingScreen(
 
                     composable(route = OnboardingDirections.streamingPlatform()) {
                         StreamingServiceScreen(
-                            modifier = Modifier.childHazeModifier(hazeState),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                                .clip(shape = MaterialTheme.shapes.medium)
+                                .hazeChild(
+                                    state = hazeState,
+                                    style = HazeStyle(
+                                        backgroundColor = MaterialTheme.colorScheme.background,
+                                        tint = HazeTint.Color(MaterialTheme.colorScheme.background.copy(alpha = 0.5f)),
+                                    ),
+                                )
+                                .padding(all = 16.dp),
                             onSetStreamingPlatform = onSetStreamingPlatform,
                             preselectedPlatform = preferredStreamingPlatform,
                         )
