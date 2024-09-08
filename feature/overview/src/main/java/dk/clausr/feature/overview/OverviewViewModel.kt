@@ -84,7 +84,9 @@ class OverviewViewModel @Inject constructor(
     }
 
     fun clearUnreadNotifications() {
-        viewModelScope.launch { notificationsRepository.readAll(projectId.value) }
+        viewModelScope.launch {
+            notificationsRepository.readAll(projectId.value)
+        }
     }
 
     init {
