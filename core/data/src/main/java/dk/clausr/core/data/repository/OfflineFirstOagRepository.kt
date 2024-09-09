@@ -91,6 +91,7 @@ class OfflineFirstOagRepository @Inject constructor(
 
     override suspend fun setProject(projectId: String): Result<Project, NetworkError> {
         Timber.d("Set new project $projectId")
+
         return networkDataSource.getProject(projectId)
             .doOnSuccess { networkProject ->
                 widgetDataStore.updateData { oldData ->

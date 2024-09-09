@@ -57,7 +57,7 @@ fun NotificationUpperSheet(
         Box(
             Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.2f))
+                .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.4f))
                 .clickable(
                     interactionSource = null,
                     indication = null,

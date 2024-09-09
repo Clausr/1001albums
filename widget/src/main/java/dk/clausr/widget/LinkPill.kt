@@ -1,6 +1,7 @@
 package dk.clausr.widget
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
@@ -10,7 +11,6 @@ import androidx.glance.appwidget.cornerRadius
 import androidx.glance.background
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Row
-import dk.clausr.a1001albumsgenerator.ui.helper.icon
 import dk.clausr.core.common.BuildConfig
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
@@ -37,14 +37,14 @@ fun LinkPill(
         ) {
             CircleIconButton(
                 imageProvider = ImageProvider(uiR.drawable.ic_wiki),
-                contentDescription = "Wikipedia",
+                contentDescription = stringResource(R.string.a11y_content_description_wikipedia_link),
                 onClick = openUrlAction(wikipediaLink),
             )
 
             streamingServices.services.firstOrNull { it.platform == preferredStreamingPlatform }
                 ?.let { link ->
                     CircleIconButton(
-                        imageProvider = ImageProvider(link.platform.icon()),
+                        imageProvider = ImageProvider(R.drawable.ic_play_arrow),
                         contentDescription = link.platform.name,
                         onClick = openUrlAction(link.streamingLink),
                     )
@@ -52,14 +52,14 @@ fun LinkPill(
 
             CircleIconButton(
                 imageProvider = ImageProvider(uiR.drawable.ic_open_external),
-                contentDescription = "Open website",
+                contentDescription = stringResource(R.string.a11y_content_description_external_link),
                 onClick = openUrlAction(projectUrl),
             )
 
             if (BuildConfig.DEBUG) {
                 CircleIconButton(
                     imageProvider = ImageProvider(R.drawable.baseline_refresh_24),
-                    contentDescription = "Update widget",
+                    contentDescription = null,
                     onClick = { onForceUpdateWidget() },
                 )
             }

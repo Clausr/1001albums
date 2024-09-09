@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
@@ -182,7 +183,6 @@ private fun ShowAlbumCover(
             RatingNudge(state.currentProjectId)
         }
 
-        // TODO Change icon
         if (notificationCount > 0) {
             val intent = Intent(context, Class.forName("dk.clausr.a1001albumsgenerator.MainActivity")).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -263,7 +263,7 @@ private fun RatingNudge(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Button(
-                text = "Did not listen",
+                text = stringResource(R.string.nudge_did_not_listen_button_title),
                 onClick = {
                     context.openProject(projectId)
                     // Start requesting for changes

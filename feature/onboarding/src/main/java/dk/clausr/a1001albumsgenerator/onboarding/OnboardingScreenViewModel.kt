@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.clausr.core.common.model.doOnFailure
 import dk.clausr.core.common.model.doOnSuccess
+import dk.clausr.core.data.repository.NotificationRepository
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data.repository.UserRepository
 import dk.clausr.core.model.StreamingPlatform
@@ -22,6 +23,7 @@ import javax.inject.Inject
 class OnboardingScreenViewModel @Inject constructor(
     private val oagRepository: OagRepository,
     private val userRepository: UserRepository,
+    private val notificationRepository: NotificationRepository,
 ) : ViewModel() {
 
     private val _viewEffect = Channel<IntroViewEffects>(Channel.BUFFERED)
@@ -41,6 +43,7 @@ class OnboardingScreenViewModel @Inject constructor(
             } else {
                 oagRepository.setProject(projectId)
                     .doOnSuccess {
+                        notificationRepository.updateNotifications(projectId = projectId, getRead = true)
                         sendViewEffect(IntroViewEffects.ProjectSet)
                         this@OnboardingScreenViewModel._projectId.value = projectId
                     }
