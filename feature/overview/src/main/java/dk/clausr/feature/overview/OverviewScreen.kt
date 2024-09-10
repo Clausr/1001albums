@@ -210,11 +210,11 @@ internal fun OverviewScreen(
             NotificationUpperSheet(
                 showNotifications = showNotifications,
                 onDismiss = {
-                    readAllNotifications()
                     showNotifications = false
                 },
                 onNotificationClick = onNotificationClick,
                 notifications = state.notifications,
+                clearNotifications = readAllNotifications,
             )
         }
     }

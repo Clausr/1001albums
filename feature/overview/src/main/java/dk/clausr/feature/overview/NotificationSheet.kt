@@ -2,6 +2,7 @@ package dk.clausr.feature.overview
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -28,6 +29,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,6 +49,7 @@ import kotlinx.collections.immutable.ImmutableList
 fun NotificationUpperSheet(
     showNotifications: Boolean,
     onDismiss: () -> Unit,
+    clearNotifications: () -> Unit,
     onNotificationClick: (Notification) -> Unit,
     notifications: ImmutableList<Notification>,
     modifier: Modifier = Modifier,
@@ -77,6 +80,7 @@ fun NotificationUpperSheet(
         exit = slideOutVertically(targetOffsetY = { -it }),
     ) {
         Surface(
+            modifier = Modifier.animateContentSize(),
             shape = MaterialTheme.shapes.medium.copy(
                 topStart = CornerSize(0.dp),
                 topEnd = CornerSize(0.dp)
@@ -102,6 +106,13 @@ fun NotificationUpperSheet(
                             .weight(1f),
                         style = MaterialTheme.typography.titleMedium,
                     )
+                    AnimatedVisibility(
+                        notifications.isNotEmpty(),
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    ) {
+                        TextButton(onClick = clearNotifications) { Text(stringResource(R.string.notifications_clear_all_button_title)) }
+                    }
                     IconButton(onClick = onDismiss) {
                         Icon(Icons.Default.Close, contentDescription = "Close")
                     }
@@ -131,7 +142,11 @@ private fun NotificationSheetContent(
         if (notifications.isEmpty()) {
             // Empty state
             item {
-                Column(modifier = Modifier.fillMaxWidth()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animateItem()
+                ) {
                     Text(
                         text = stringResource(R.string.notifications_empty_state_title),
                         modifier = Modifier.fillMaxWidth(),
@@ -140,7 +155,7 @@ private fun NotificationSheetContent(
                 }
             }
         } else {
-            items(notifications) { notification ->
+            items(items = notifications) { notification ->
                 val onClickEnabled = when (notification.type) {
                     NotificationType.GroupReview -> true
                     NotificationType.ReviewThumbUp -> true
@@ -155,7 +170,8 @@ private fun NotificationSheetContent(
                         .clickable(enabled = onClickEnabled) {
                             onNotificationClick(notification)
                         }
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = 16.dp)
+                        .animateItem(),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Column(
