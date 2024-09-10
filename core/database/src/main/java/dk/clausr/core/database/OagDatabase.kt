@@ -27,7 +27,6 @@ import dk.clausr.core.database.utils.Converters
         NotificationEntity::class,
     ],
     version = 13,
-    exportSchema = false,
 )
 @TypeConverters(
     Converters::class,

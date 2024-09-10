@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 13,
-    "identityHash": "7ea88df941049d498d839f5b3380d3e1",
+    "identityHash": "939e40d3ed59bcfb904a52fda9d40a5c",
     "entities": [
       {
         "tableName": "project",
@@ -288,7 +288,7 @@
       },
       {
         "tableName": "notifications",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `createdAt` TEXT NOT NULL, `read` INTEGER NOT NULL, `type` TEXT NOT NULL, `data` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `read` INTEGER NOT NULL, `project` TEXT NOT NULL, `version` INTEGER NOT NULL, `type` TEXT NOT NULL, `data` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -299,12 +299,24 @@
           {
             "fieldPath": "createdAt",
             "columnName": "createdAt",
-            "affinity": "TEXT",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
             "fieldPath": "read",
             "columnName": "read",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "project",
+            "columnName": "project",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "version",
+            "columnName": "version",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -334,7 +346,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7ea88df941049d498d839f5b3380d3e1')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '939e40d3ed59bcfb904a52fda9d40a5c')"
     ]
   }
 }
