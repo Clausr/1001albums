@@ -17,7 +17,6 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import java.time.Instant
 
-
 object NotificationSerializer : KSerializer<Notification> {
     override val descriptor: SerialDescriptor = NotificationsResponse.serializer().descriptor
 
@@ -52,7 +51,7 @@ object NotificationSerializer : KSerializer<Notification> {
             read = jsonObject["read"]?.jsonPrimitive?.boolean ?: false,
             type = type,
             data = data,
-            version = jsonObject["__v"]?.jsonPrimitive?.int ?: 0
+            version = jsonObject["__v"]?.jsonPrimitive?.int ?: 0,
         )
     }
 }

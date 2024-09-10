@@ -28,7 +28,7 @@ class AlbumDetailsViewModel @Inject constructor(
     ) { historicAlbum, streaming ->
         AlbumDetailsViewState.Success(
             album = historicAlbum,
-            streamingPlatform = streaming
+            streamingPlatform = streaming,
         )
     }
         .stateIn(

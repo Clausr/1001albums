@@ -8,6 +8,5 @@ class AndroidAppInformation : AppInformation {
     override val versionName: String = BuildConfig.VERSION_NAME
     override val applicationId: String = BuildConfig.APPLICATION_ID
     override val userAgent: String
-        get() = "OAG-App/Android/${applicationId}/${versionName}-${versionCode}"
-
+        get() = "OAG-App/Android/$applicationId/$versionName-$versionCode"
 }

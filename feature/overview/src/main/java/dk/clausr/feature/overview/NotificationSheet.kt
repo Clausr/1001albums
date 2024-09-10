@@ -75,6 +75,7 @@ fun NotificationUpperSheet(
     }
 
     AnimatedVisibility(
+        modifier = modifier,
         visible = showNotifications,
         enter = slideInVertically(initialOffsetY = { -it }),
         exit = slideOutVertically(targetOffsetY = { -it }),
@@ -83,7 +84,7 @@ fun NotificationUpperSheet(
             modifier = Modifier.animateContentSize(),
             shape = MaterialTheme.shapes.medium.copy(
                 topStart = CornerSize(0.dp),
-                topEnd = CornerSize(0.dp)
+                topEnd = CornerSize(0.dp),
             ),
             shadowElevation = 2.dp,
             color = MaterialTheme.colorScheme.surfaceContainer,
@@ -109,7 +110,7 @@ fun NotificationUpperSheet(
                     AnimatedVisibility(
                         notifications.isNotEmpty(),
                         enter = fadeIn(),
-                        exit = fadeOut()
+                        exit = fadeOut(),
                     ) {
                         TextButton(onClick = clearNotifications) { Text(stringResource(R.string.notifications_clear_all_button_title)) }
                     }
@@ -145,7 +146,7 @@ private fun NotificationSheetContent(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .animateItem()
+                        .animateItem(),
                 ) {
                     Text(
                         text = stringResource(R.string.notifications_empty_state_title),
@@ -185,14 +186,14 @@ private fun NotificationSheetContent(
                         Text(text = notification.getBody(context) ?: "")
                         Text(
                             text = notification.createdAt.toRelativeTimeString(),
-                            style = MaterialTheme.typography.labelSmall
+                            style = MaterialTheme.typography.labelSmall,
                         )
                     }
                     if (onClickEnabled) {
                         Image(
                             imageVector = Icons.AutoMirrored.Default.KeyboardArrowRight,
                             contentDescription = null,
-                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface)
+                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
                         )
                     }
                 }
