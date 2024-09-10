@@ -1,11 +1,11 @@
 package dk.clausr.widget
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.ImageProvider
+import androidx.glance.LocalContext
 import androidx.glance.appwidget.components.CircleIconButton
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.background
@@ -26,6 +26,7 @@ fun LinkPill(
     modifier: GlanceModifier = GlanceModifier,
     onForceUpdateWidget: () -> Unit = {},
 ) {
+    val context = LocalContext.current
     Row(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -37,14 +38,14 @@ fun LinkPill(
         ) {
             CircleIconButton(
                 imageProvider = ImageProvider(uiR.drawable.ic_wiki),
-                contentDescription = stringResource(R.string.a11y_content_description_wikipedia_link),
+                contentDescription = context.getString(R.string.a11y_content_description_wikipedia_link),
                 onClick = openUrlAction(wikipediaLink),
             )
 
             streamingServices.services.firstOrNull { it.platform == preferredStreamingPlatform }
                 ?.let { link ->
                     CircleIconButton(
-                        imageProvider = ImageProvider(R.drawable.ic_play_arrow),
+                        imageProvider = ImageProvider(uiR.drawable.ic_play_arrow),
                         contentDescription = link.platform.name,
                         onClick = openUrlAction(link.streamingLink),
                     )
@@ -52,7 +53,7 @@ fun LinkPill(
 
             CircleIconButton(
                 imageProvider = ImageProvider(uiR.drawable.ic_open_external),
-                contentDescription = stringResource(R.string.a11y_content_description_external_link),
+                contentDescription = context.getString(R.string.a11y_content_description_external_link),
                 onClick = openUrlAction(projectUrl),
             )
 
