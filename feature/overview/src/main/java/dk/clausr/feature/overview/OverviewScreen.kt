@@ -232,7 +232,7 @@ private fun LazyGridScope.didNotListenSection(
                 modifier = Modifier
                     .ignoreHorizontalParentPadding(16.dp)
                     .fillMaxWidth(),
-                title = "Did not listen",
+                title = stringResource(R.string.overview_section_did_not_listen_title),
                 albums = state.didNotListen,
                 onClickAlbum = navigateToAlbumDetails,
                 streamingPlatform = state.streamingPlatform,
@@ -256,7 +256,7 @@ private fun LazyGridScope.topRatedSection(
                 modifier = Modifier
                     .ignoreHorizontalParentPadding(16.dp)
                     .fillMaxWidth(),
-                title = "5⭐️ albums",
+                title = stringResource(R.string.overview_section_top_rated_albums_title),
                 albums = state.topRated,
                 onClickAlbum = navigateToAlbumDetails,
                 streamingPlatform = state.streamingPlatform,
