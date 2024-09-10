@@ -6,8 +6,10 @@ import dk.clausr.core.model.NotificationType.GroupReview
 import dk.clausr.core.model.NotificationType.NewGroupMember
 import dk.clausr.core.model.NotificationType.ReviewThumbUp
 import dk.clausr.core.model.serializer.NotificationSerializer
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.time.Instant
 
 @Serializable
 data class NotificationsResponse(
@@ -19,7 +21,7 @@ data class NotificationsResponse(
 data class Notification(
     @SerialName("_id") val id: String,
     val project: String,
-    val createdAt: String,
+    @Contextual val createdAt: Instant,
     val read: Boolean,
     val type: NotificationType,
     val data: NotificationData?,

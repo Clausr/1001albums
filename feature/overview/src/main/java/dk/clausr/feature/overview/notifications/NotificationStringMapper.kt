@@ -18,7 +18,7 @@ fun Notification.getTitle(context: Context): String? {
 
 fun Notification.getBody(context: Context): String? {
     return when (val data = data) {
-        is NotificationData.AlbumsRatedData -> context.getString(R.string.notification_albums_rated_body)
+        is NotificationData.AlbumsRatedData -> context.getString(R.string.notification_albums_rated_body, data.numberOfAlbums)
         is NotificationData.GroupAlbumsGeneratedData -> context.getString(R.string.notification_group_albums_generated_body, data.numberOfAlbums)
         is NotificationData.GroupReviewData ->
             context.getString(R.string.notification_group_review_body, data.projectName, data.albumName, data.rating)

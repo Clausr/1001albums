@@ -15,6 +15,7 @@ import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import java.time.Instant
 
 
 object NotificationSerializer : KSerializer<Notification> {
@@ -47,7 +48,7 @@ object NotificationSerializer : KSerializer<Notification> {
         return Notification(
             id = jsonObject["_id"]?.jsonPrimitive?.content ?: "",
             project = jsonObject["project"]?.jsonPrimitive?.content ?: "",
-            createdAt = jsonObject["createdAt"]?.jsonPrimitive?.content ?: "",
+            createdAt = jsonObject["createdAt"]?.jsonPrimitive?.content?.let(Instant::parse) ?: Instant.now(),
             read = jsonObject["read"]?.jsonPrimitive?.boolean ?: false,
             type = type,
             data = data,

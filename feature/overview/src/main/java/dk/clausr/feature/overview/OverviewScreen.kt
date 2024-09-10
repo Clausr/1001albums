@@ -81,15 +81,14 @@ fun OverviewRoute(
         readAllNotifications = viewModel::clearUnreadNotifications,
         onNotificationClick = {
             when (val data = it.data) {
-                is NotificationData.AlbumsRatedData -> {}
-                is NotificationData.GroupAlbumsGeneratedData -> {}
                 is NotificationData.GroupReviewData -> {
                     navigateToAlbumDetails(data.albumName.sluggify, "notifications")
                 }
+                is NotificationData.ReviewThumbUpData -> {
+                    navigateToAlbumDetails(data.albumSlug, "notifications")
+                }
 
-                is NotificationData.NewGroupMemberData -> {}
-                is NotificationData.ReviewThumbUpData -> {}
-                null -> TODO()
+                else -> {}
             }
         },
     )

@@ -5,12 +5,12 @@
       "_id": "66cc7536a113d13774b0c7e5",
       "project": "651ef5d68a53974fd9aa7335",
       "createdAt": "2024-08-26T12:29:42.731Z",
-      "read": true,
+      "read": false,
       "type": "reviewThumpUp",
       "data": {
         "reviewId": "66cbf33a5771751a8c571118",
-        "albumName": "Olympia 64",
-        "albumSlug": "olympia-64",
+        "albumName": "2112",
+        "albumSlug": "2112",
         "albumSpotifyId": "5LeFF1RfG7fTnBg8yqwlYM",
         "thumbsUp": 1,
         "isUserAlbum": false
@@ -21,7 +21,7 @@
       "_id": "65a2da7d0f9936381bbaeef0",
       "project": "651ef5d68a53974fd9aa7335",
       "createdAt": "2024-01-13T18:46:21.014Z",
-      "read": true,
+      "read": false,
       "type": "lastEmailReminder",
       "__v": 0
     },
@@ -29,7 +29,7 @@
       "_id": "6524c1bc05dd510fed9d44a1",
       "project": "651ef5d68a53974fd9aa7335",
       "createdAt": "2023-10-10T03:15:08.641Z",
-      "read": true,
+      "read": false,
       "type": "groupAlbumsGenerated",
       "data": {
         "numberOfAlbums": 2,
@@ -45,11 +45,11 @@
       "read": false,
       "type": "groupReview",
       "data": {
-        "albumName": "Back to Basics",
+        "albumName": "AmeriKKKa's Most Wanted",
         "albumId": "64cffdba57315ed72dd175a0",
         "rating": 3,
         "groupSlug": "oag_group",
-        "projectName": "rpr",
+        "projectName": "oag_group_user",
         "isUserAlbum": false
       },
       "__v": 0
@@ -58,7 +58,7 @@
       "_id": "6523017305dd510fed9bb2a0",
       "project": "651ef5d68a53974fd9aa7335",
       "createdAt": "2023-10-08T19:22:27.467Z",
-      "read": true,
+      "read": false,
       "type": "newGroupMember",
       "data": {
         "groupSlug": "oag_group"
@@ -69,7 +69,7 @@
       "_id": "652127d8c230a76224b54007",
       "project": "651ef5d68a53974fd9aa7335",
       "createdAt": "2023-10-07T09:41:44.904Z",
-      "read": true,
+      "read": false,
       "type": "donationPush",
       "data": {
         "projectName": "oag_user"
@@ -80,7 +80,7 @@
       "_id": "651f9f018a53974fd9abfa3b",
       "project": "651ef5d68a53974fd9aa7335",
       "createdAt": "2023-10-06T05:45:37.068Z",
-      "read": true,
+      "read": false,
       "type": "custom",
       "data": {
         "heading": "Streaming Service",
@@ -92,7 +92,7 @@
       "_id": "651f9efb8a53974fd9abfa30",
       "project": "651ef5d68a53974fd9aa7335",
       "createdAt": "2023-10-06T05:45:31.139Z",
-      "read": true,
+      "read": false,
       "type": "albumsRated",
       "data": {
         "numberOfAlbums": 1
@@ -103,7 +103,7 @@
       "_id": "651ef5d68a53974fd9aa7336",
       "project": "651ef5d68a53974fd9aa7335",
       "createdAt": "2023-10-05T17:43:50.865Z",
-      "read": true,
+      "read": false,
       "type": "signup",
       "data": {
         "projectName": "oag_user"
