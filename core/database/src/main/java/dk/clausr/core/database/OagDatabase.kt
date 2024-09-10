@@ -1,5 +1,6 @@
 package dk.clausr.core.database
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -26,8 +27,10 @@ import dk.clausr.core.database.utils.Converters
         AlbumImageEntity::class,
         NotificationEntity::class,
     ],
+    autoMigrations = [
+        AutoMigration(from = 12, to = 13),
+    ],
     version = 13,
-    exportSchema = false,
 )
 @TypeConverters(
     Converters::class,
