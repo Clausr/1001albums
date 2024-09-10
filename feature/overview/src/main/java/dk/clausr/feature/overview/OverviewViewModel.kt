@@ -5,32 +5,47 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.clausr.core.common.extensions.formatMonthAndYear
 import dk.clausr.core.common.extensions.toLocalDateTime
+import dk.clausr.core.data.repository.NotificationRepository
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.model.Album
 import dk.clausr.core.model.HistoricAlbum
+import dk.clausr.core.model.Notification
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.Rating
 import dk.clausr.core.model.StreamingPlatform
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableMap
+import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
 class OverviewViewModel @Inject constructor(
     oagRepository: OagRepository,
+    private val notificationsRepository: NotificationRepository,
 ) : ViewModel() {
+    private var projectId = MutableStateFlow("")
+
+    private val _unreadNotifications = notificationsRepository.unreadNotifications
+        .map { it.toPersistentList() }
 
     val uiState = combine(
         oagRepository.project,
         oagRepository.currentAlbum,
         oagRepository.widgetState,
         oagRepository.preferredStreamingPlatform,
-    ) { project, currentAlbum, widgetState, platform ->
+        _unreadNotifications,
+    ) { project, currentAlbum, widgetState, platform, unreadNotifications ->
         if (project != null) {
             OverviewUiState.Success(
                 project = project,
@@ -39,7 +54,8 @@ class OverviewViewModel @Inject constructor(
                 didNotListen = project.didNotListenAlbums(),
                 topRated = project.topRatedAlbums(),
                 streamingPlatform = platform,
-                groupedHistory = project.groupedHistory(),
+                groupedHistory = project.groupedHistory().toImmutableMap(),
+                notifications = unreadNotifications,
             )
         } else {
             OverviewUiState.Error
@@ -52,7 +68,7 @@ class OverviewViewModel @Inject constructor(
         )
 
     private fun Project.topRatedAlbums(): ImmutableList<HistoricAlbum> {
-        return historicAlbums.filter { it.rating == Rating.Rated(5) }.toImmutableList()
+        return historicAlbums.filter { it.rating == Rating.Rated(rating = 5) }.toImmutableList()
     }
 
     private fun Project.didNotListenAlbums(): ImmutableList<HistoricAlbum> {
@@ -66,6 +82,23 @@ class OverviewViewModel @Inject constructor(
             date.formatMonthAndYear().replaceFirstChar { it.uppercase() }
         }
     }
+
+    fun clearUnreadNotifications() {
+        viewModelScope.launch {
+            notificationsRepository.readAll(projectId.value)
+        }
+    }
+
+    init {
+        viewModelScope.launch {
+            oagRepository.project.collectLatest { project ->
+                project?.name?.let { projectId ->
+                    notificationsRepository.updateNotifications(projectId)
+                    this@OverviewViewModel.projectId.value = projectId
+                }
+            }
+        }
+    }
 }
 
 sealed interface OverviewUiState {
@@ -77,7 +110,8 @@ sealed interface OverviewUiState {
         val widgetState: SerializedWidgetState,
         val topRated: ImmutableList<HistoricAlbum>,
         val streamingPlatform: StreamingPlatform,
-        val groupedHistory: Map<String, List<HistoricAlbum>>,
+        val groupedHistory: ImmutableMap<String, List<HistoricAlbum>>,
+        val notifications: ImmutableList<Notification>,
     ) : OverviewUiState
 
     data object Error : OverviewUiState

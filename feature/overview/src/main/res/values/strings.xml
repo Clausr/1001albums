@@ -1,6 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="history_header">History (%1$d / %2$d)</string>
-    <string name="rating_unrated">Unrated</string>
-    <string name="rating_did_not_listen">DNL</string>
+    <string name="notification_group_review_title">🌟 Group review added</string>
+    <string name="notification_group_review_body">%1$s gave %2$s %3$d stars!</string>
+
+    <string name="notification_thumb_up_title">👍 Thumb up!</string>
+    <string name="notification_thumb_up_body">Your review for %1$s just received thumb up #%2$d!</string>
+
+    <string name="notification_group_albums_generated_title">🍻 Group milestone</string>
+    <string name="notification_group_albums_generated_body">Your group just reached album #%1$d</string>
+
+    <string name="notification_new_group_member_title">👶 New group member</string>
+    <string name="notification_new_group_member_body">A member joined your group</string>
+
+    <string name="notification_albums_rated_title">🍺 Project milestone!</string>
+    <string name="notification_albums_rated_body">You\'ve just rated album #%1$d</string>
+
+    <string name="notifications_empty_state_title">No unread notifications 🎉</string>
+
+    <string name="overview_app_bar_title">Your project</string>
+    <string name="notifications_title">Notifications</string>
+    <string name="a11y_content_description_settings_icon">Configure project</string>
+    <string name="notifications_clear_all_button_title">Clear all</string>
+    <string name="overview_section_top_rated_albums_title">5⭐️ albums</string>
+    <string name="overview_section_did_not_listen_title">Did not listen</string>
 </resources>

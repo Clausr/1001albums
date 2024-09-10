@@ -1,4 +1,4 @@
-package dk.clausr.a1001albumsgenerator.network.retrofit
+package dk.clausr.a1001albumsgenerator.network.retrofit.oag
 
 import dk.clausr.a1001albumsgenerator.network.OAGDataSource
 import dk.clausr.a1001albumsgenerator.network.model.NetworkProject

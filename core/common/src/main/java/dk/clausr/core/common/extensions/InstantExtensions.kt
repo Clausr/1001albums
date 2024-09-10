@@ -1,5 +1,6 @@
 package dk.clausr.core.common.extensions
 
+import android.text.format.DateUtils
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -29,4 +30,8 @@ fun LocalDate.formatMonthAndYear(locale: Locale = Locale.getDefault()): String {
         DateTimeFormatter.ofPattern("MMMM yyyy", locale) // Month and year
     }
     return this.format(formatter)
+}
+
+fun Instant.toRelativeTimeString(): String {
+    return DateUtils.getRelativeTimeSpanString(this.toEpochMilli(), System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS).toString()
 }

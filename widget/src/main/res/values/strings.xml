@@ -17,4 +17,8 @@
     <string name="configuration_new_album_available">New album available.\n\nRate this album to get the latest cover</string>
     <string name="configuration_state_not_initialized">Project not initialized</string>
     <string name="album_cover_a11y">Cover of todays album</string>
+
+    <string name="a11y_content_description_external_link">Open website</string>
+    <string name="a11y_content_description_wikipedia_link">Open wikipedia page</string>
+    <string name="nudge_did_not_listen_button_title">Did not listen</string>
 </resources>

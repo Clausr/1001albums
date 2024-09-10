@@ -5,12 +5,12 @@ import androidx.compose.ui.unit.dp
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.ImageProvider
+import androidx.glance.LocalContext
 import androidx.glance.appwidget.components.CircleIconButton
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.background
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Row
-import dk.clausr.a1001albumsgenerator.ui.helper.icon
 import dk.clausr.core.common.BuildConfig
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
@@ -26,6 +26,7 @@ fun LinkPill(
     modifier: GlanceModifier = GlanceModifier,
     onForceUpdateWidget: () -> Unit = {},
 ) {
+    val context = LocalContext.current
     Row(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -37,14 +38,14 @@ fun LinkPill(
         ) {
             CircleIconButton(
                 imageProvider = ImageProvider(uiR.drawable.ic_wiki),
-                contentDescription = "Wikipedia",
+                contentDescription = context.getString(R.string.a11y_content_description_wikipedia_link),
                 onClick = openUrlAction(wikipediaLink),
             )
 
             streamingServices.services.firstOrNull { it.platform == preferredStreamingPlatform }
                 ?.let { link ->
                     CircleIconButton(
-                        imageProvider = ImageProvider(link.platform.icon()),
+                        imageProvider = ImageProvider(uiR.drawable.ic_play_arrow),
                         contentDescription = link.platform.name,
                         onClick = openUrlAction(link.streamingLink),
                     )
@@ -52,14 +53,14 @@ fun LinkPill(
 
             CircleIconButton(
                 imageProvider = ImageProvider(uiR.drawable.ic_open_external),
-                contentDescription = "Open website",
+                contentDescription = context.getString(R.string.a11y_content_description_external_link),
                 onClick = openUrlAction(projectUrl),
             )
 
             if (BuildConfig.DEBUG) {
                 CircleIconButton(
                     imageProvider = ImageProvider(R.drawable.baseline_refresh_24),
-                    contentDescription = "Update widget",
+                    contentDescription = null,
                     onClick = { onForceUpdateWidget() },
                 )
             }

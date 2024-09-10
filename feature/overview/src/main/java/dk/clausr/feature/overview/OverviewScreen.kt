@@ -1,5 +1,6 @@
 package dk.clausr.feature.overview
 
+import android.content.Context
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -16,10 +17,13 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Badge
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,9 +33,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -44,13 +52,17 @@ import dk.clausr.core.common.android.openLink
 import dk.clausr.core.common.extensions.formatToDate
 import dk.clausr.core.data.workers.UpdateProjectWorker
 import dk.clausr.core.data_widget.SerializedWidgetState
+import dk.clausr.core.model.Notification
+import dk.clausr.core.model.NotificationData
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
 import dk.clausr.core.model.UpdateFrequency
+import dk.clausr.feature.overview.extensions.sluggify
 import dk.clausr.feature.overview.preview.albumPreviewData
 import dk.clausr.feature.overview.preview.historicAlbumPreviewData
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 
 @Composable
 fun OverviewRoute(
@@ -66,6 +78,19 @@ fun OverviewRoute(
         state = uiState,
         navigateToSettings = navigateToSettings,
         navigateToAlbumDetails = navigateToAlbumDetails,
+        readAllNotifications = viewModel::clearUnreadNotifications,
+        onNotificationClick = {
+            when (val data = it.data) {
+                is NotificationData.GroupReviewData -> {
+                    navigateToAlbumDetails(data.albumName.sluggify, "notifications")
+                }
+                is NotificationData.ReviewThumbUpData -> {
+                    navigateToAlbumDetails(data.albumSlug, "notifications")
+                }
+
+                else -> {}
+            }
+        },
     )
 }
 
@@ -73,10 +98,15 @@ fun OverviewRoute(
 internal fun OverviewScreen(
     state: OverviewUiState,
     navigateToSettings: () -> Unit,
+    onNotificationClick: (Notification) -> Unit,
     navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
+    readAllNotifications: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
+    var showNotifications by remember {
+        mutableStateOf(false)
+    }
 
     with(LocalSharedTransitionScope.current) {
         Scaffold(
@@ -88,12 +118,29 @@ internal fun OverviewScreen(
                         modifier = Modifier
                             .renderInSharedTransitionScopeOverlay(zIndexInOverlay = 1f)
                             .animateEnterExit(enter = fadeIn() + slideInVertically(), exit = fadeOut() + slideOutVertically()),
-                        title = { Text(text = "Your project") },
+                        title = { Text(text = stringResource(R.string.overview_app_bar_title)) },
                         actions = {
+                            Box {
+                                IconButton(
+                                    onClick = { showNotifications = true },
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Notifications,
+                                        contentDescription = "Notifications",
+                                    )
+                                }
+                                if (state is OverviewUiState.Success && state.notifications.isNotEmpty()) {
+                                    Badge(
+                                        modifier = Modifier
+                                            .align(Alignment.TopEnd)
+                                            .padding(4.dp),
+                                    ) { Text(text = state.notifications.size.toString()) }
+                                }
+                            }
                             IconButton(onClick = navigateToSettings) {
                                 Icon(
                                     imageVector = Icons.Default.Settings,
-                                    contentDescription = "Configure project",
+                                    contentDescription = stringResource(R.string.a11y_content_description_settings_icon),
                                 )
                             }
                         },
@@ -148,78 +195,113 @@ internal fun OverviewScreen(
                                 }
                             }
 
-                            if (state.didNotListen.isNotEmpty()) {
-                                item(
-                                    span = { GridItemSpan(maxLineSpan) },
-                                ) {
-                                    AlbumRow(
-                                        modifier = Modifier
-                                            .ignoreHorizontalParentPadding(16.dp)
-                                            .fillMaxWidth(),
-                                        title = "Did not listen",
-                                        albums = state.didNotListen,
-                                        onClickAlbum = navigateToAlbumDetails,
-                                        streamingPlatform = state.streamingPlatform,
-                                        tertiaryTextTransform = { historicAlbum ->
-                                            historicAlbum.generatedAt.formatToDate()
-                                        },
-                                    )
-                                }
-                            }
+                            didNotListenSection(state, navigateToAlbumDetails)
 
-                            if (state.topRated.isNotEmpty()) {
-                                item(
-                                    span = { GridItemSpan(maxLineSpan) },
-                                ) {
-                                    AlbumRow(
-                                        modifier = Modifier
-                                            .ignoreHorizontalParentPadding(16.dp)
-                                            .fillMaxWidth(),
-                                        title = "5⭐️ albums",
-                                        albums = state.topRated,
-                                        onClickAlbum = navigateToAlbumDetails,
-                                        streamingPlatform = state.streamingPlatform,
-                                        tertiaryTextTransform = { historicAlbum ->
-                                            historicAlbum.generatedAt.formatToDate()
-                                        },
-                                    )
-                                }
-                            }
+                            topRatedSection(state, navigateToAlbumDetails)
 
-                            state.groupedHistory.forEach { (date, albums) ->
-                                item(span = { GridItemSpan(maxLineSpan) }) {
-                                    Text(
-                                        text = date,
-                                        modifier = Modifier.padding(top = 16.dp),
-                                        style = MaterialTheme.typography.titleLarge,
-                                    )
-                                }
-
-                                items(
-                                    items = albums,
-                                    key = { "history_${it.generatedAt}" },
-                                ) { historicAlbum ->
-                                    val streamingLink = StreamingServices.from(historicAlbum.album).getStreamingLinkFor(prefStreamingPlatform)
-
-                                    val onClickPlay = streamingLink?.let {
-                                        {
-                                            context.openLink(streamingLink)
-                                        }
-                                    }
-
-                                    AlbumThumb(
-                                        album = historicAlbum,
-                                        onClick = { navigateToAlbumDetails(historicAlbum.album.slug, "history-$date") },
-                                        onClickPlay = onClickPlay,
-                                        tertiaryText = historicAlbum.generatedAt.formatToDate(),
-                                        listName = "history-$date"
-                                    )
-                                }
-                            }
+                            historySection(state, prefStreamingPlatform, context, navigateToAlbumDetails)
                         }
                     }
                 }
             }
+        }
+
+        if (state is OverviewUiState.Success) {
+            NotificationUpperSheet(
+                showNotifications = showNotifications,
+                onDismiss = {
+                    showNotifications = false
+                },
+                onNotificationClick = onNotificationClick,
+                notifications = state.notifications,
+                clearNotifications = readAllNotifications,
+            )
+        }
+    }
+}
+
+private fun LazyGridScope.didNotListenSection(
+    state: OverviewUiState.Success,
+    navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
+) {
+    if (state.didNotListen.isNotEmpty()) {
+        item(
+            span = { GridItemSpan(maxLineSpan) },
+        ) {
+            AlbumRow(
+                modifier = Modifier
+                    .ignoreHorizontalParentPadding(16.dp)
+                    .fillMaxWidth(),
+                title = stringResource(R.string.overview_section_did_not_listen_title),
+                albums = state.didNotListen,
+                onClickAlbum = navigateToAlbumDetails,
+                streamingPlatform = state.streamingPlatform,
+                tertiaryTextTransform = { historicAlbum ->
+                    historicAlbum.generatedAt.formatToDate()
+                },
+            )
+        }
+    }
+}
+
+private fun LazyGridScope.topRatedSection(
+    state: OverviewUiState.Success,
+    navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
+) {
+    if (state.topRated.isNotEmpty()) {
+        item(
+            span = { GridItemSpan(maxLineSpan) },
+        ) {
+            AlbumRow(
+                modifier = Modifier
+                    .ignoreHorizontalParentPadding(16.dp)
+                    .fillMaxWidth(),
+                title = stringResource(R.string.overview_section_top_rated_albums_title),
+                albums = state.topRated,
+                onClickAlbum = navigateToAlbumDetails,
+                streamingPlatform = state.streamingPlatform,
+                tertiaryTextTransform = { historicAlbum ->
+                    historicAlbum.generatedAt.formatToDate()
+                },
+            )
+        }
+    }
+}
+
+private fun LazyGridScope.historySection(
+    state: OverviewUiState.Success,
+    prefStreamingPlatform: StreamingPlatform,
+    context: Context,
+    navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
+) {
+    state.groupedHistory.forEach { (date, albums) ->
+        item(span = { GridItemSpan(maxLineSpan) }) {
+            Text(
+                text = date,
+                modifier = Modifier.padding(top = 16.dp),
+                style = MaterialTheme.typography.titleLarge,
+            )
+        }
+
+        items(
+            items = albums,
+            key = { "history_${it.generatedAt}" },
+        ) { historicAlbum ->
+            val streamingLink = StreamingServices.from(historicAlbum.album).getStreamingLinkFor(prefStreamingPlatform)
+
+            val onClickPlay = streamingLink?.let {
+                {
+                    context.openLink(streamingLink)
+                }
+            }
+
+            AlbumThumb(
+                album = historicAlbum,
+                onClick = { navigateToAlbumDetails(historicAlbum.album.slug, "history-$date") },
+                onClickPlay = onClickPlay,
+                tertiaryText = historicAlbum.generatedAt.formatToDate(),
+                listName = "history-$date",
+            )
         }
     }
 }
@@ -251,8 +333,12 @@ private fun OverviewPreview() {
                 ),
                 topRated = persistentListOf(),
                 streamingPlatform = StreamingPlatform.Tidal,
-                groupedHistory = mapOf(),
+                groupedHistory = persistentMapOf(),
+                notifications = persistentListOf(),
             ),
+
+            onNotificationClick = {},
+            readAllNotifications = {},
         )
     }
 }

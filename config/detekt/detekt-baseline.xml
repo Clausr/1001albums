@@ -11,6 +11,9 @@
     <ID>PackageName:SerializedWidgetState.kt$package dk.clausr.core.data_widget</ID>
     <ID>CompositionLocalAllowlist:OagNavHost.kt$LocalSharedTransitionScope</ID>
     <ID>CompositionLocalAllowlist:OagNavHost.kt$LocalNavAnimatedVisibilityScope</ID>
+    <ID>CyclomaticComplexMethod:NotificationResponseSerializer.kt$NotificationResponseSerializer$override fun deserialize(decoder: Decoder):
+      NotificationResponse
+    </ID>
   </ManuallySuppressedIssues>
   <CurrentIssues />
 </SmellBaseline>

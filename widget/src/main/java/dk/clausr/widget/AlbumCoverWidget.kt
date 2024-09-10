@@ -1,6 +1,7 @@
 package dk.clausr.widget
 
 import android.content.Context
+import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -8,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
@@ -20,6 +22,7 @@ import androidx.glance.LocalContext
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
+import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.components.CircleIconButton
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
@@ -45,10 +48,12 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import dk.clausr.core.common.extensions.openProject
+import dk.clausr.core.data.repository.NotificationRepository
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectUrl
+import dk.clausr.core.model.Notification
 import dk.clausr.worker.BurstUpdateWorker
 import dk.clausr.worker.SimplifiedWidgetWorker
 import kotlinx.coroutines.delay
@@ -64,6 +69,7 @@ class AlbumCoverWidget : GlanceAppWidget() {
     @InstallIn(SingletonComponent::class)
     interface AlbumCoverWidgetEntryPoint {
         fun oagRepository(): OagRepository
+        fun notificationRepository(): NotificationRepository
     }
 
     override suspend fun provideGlance(
@@ -76,6 +82,7 @@ class AlbumCoverWidget : GlanceAppWidget() {
             EntryPointAccessors.fromApplication(appContext, AlbumCoverWidgetEntryPoint::class.java)
 
         val repo = hiltEntryPoint.oagRepository()
+        val notificationRepo = hiltEntryPoint.notificationRepository()
 
         provideContent {
             val currentState = currentState<SerializedWidgetState>()
@@ -83,8 +90,14 @@ class AlbumCoverWidget : GlanceAppWidget() {
             val state: SerializedWidgetState by repo.widgetState
                 .collectAsState(initial = currentState)
 
+            val notifications: List<Notification> by notificationRepo.unreadNotifications.collectAsState(emptyList())
+
+            Timber.d("Notifications: ${notifications.size}")
             GlanceTheme {
-                Content(state = state)
+                Content(
+                    state = state,
+                    notificationCount = notifications.size,
+                )
             }
         }
     }
@@ -93,6 +106,7 @@ class AlbumCoverWidget : GlanceAppWidget() {
 @Composable
 fun Content(
     state: SerializedWidgetState,
+    notificationCount: Int,
     modifier: GlanceModifier = GlanceModifier,
 ) {
     Timber.d("Widget state: $state")
@@ -106,7 +120,7 @@ fun Content(
             }
 
             is SerializedWidgetState.Success -> {
-                ShowAlbumCover(state, state.currentProjectId)
+                ShowAlbumCover(state = state, notificationCount = notificationCount)
             }
 
             is SerializedWidgetState.Error -> {
@@ -137,7 +151,7 @@ fun Content(
 @Composable
 private fun ShowAlbumCover(
     state: SerializedWidgetState.Success,
-    projectId: String,
+    notificationCount: Int,
     modifier: GlanceModifier = GlanceModifier,
 ) {
     val context = LocalContext.current
@@ -166,7 +180,20 @@ private fun ShowAlbumCover(
         )
 
         if (state.data.newAvailable) {
-            RatingNudge(projectId)
+            RatingNudge(state.currentProjectId)
+        }
+
+        if (notificationCount > 0) {
+            val intent = Intent(context, Class.forName("dk.clausr.a1001albumsgenerator.MainActivity")).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
+            val actionIntent = actionStartActivity(intent)
+            CircleIconButton(
+                modifier = GlanceModifier.size(36.dp),
+                imageProvider = ImageProvider(R.drawable.ic_notification_active),
+                contentDescription = null,
+                onClick = actionIntent,
+            )
         }
 
         if (showLinks) {
@@ -236,7 +263,7 @@ private fun RatingNudge(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Button(
-                text = "Did not listen",
+                text = stringResource(R.string.nudge_did_not_listen_button_title),
                 onClick = {
                     context.openProject(projectId)
                     // Start requesting for changes

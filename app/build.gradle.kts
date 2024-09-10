@@ -16,6 +16,7 @@ apply("${project.rootDir}/gradle/script-git-version.gradle.kts")
 android {
     namespace = "dk.clausr.a1001albumsgenerator"
 
+    buildFeatures.buildConfig = true
     defaultConfig {
         applicationId = "dk.clausr.a1001albumsgenerator"
 
@@ -65,6 +66,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:common"))
     implementation(project(":core:ui"))
     implementation(project(":core:network"))
     implementation(project(":core:data"))

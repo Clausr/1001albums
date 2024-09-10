@@ -74,9 +74,9 @@ fun SettingsRoute(
 
     viewModel.viewEffect.collectWithLifecycle {
         Timber.v("Handle viewEffect: $it")
-        when (it) {
-            is SettingsViewEffect.Error -> error = it.error
-            SettingsViewEffect.ProjectSet -> error = null
+        error = when (it) {
+            is SettingsViewEffect.Error -> it.error
+            SettingsViewEffect.ProjectSet -> null
         }
     }
     SettingsScreen(

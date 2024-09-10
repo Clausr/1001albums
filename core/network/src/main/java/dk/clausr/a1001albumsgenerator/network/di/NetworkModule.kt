@@ -18,7 +18,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dk.clausr.a1001albumsgenerator.network.BuildConfig
 import dk.clausr.a1001albumsgenerator.network.fake.FakeAssetManager
+import dk.clausr.a1001albumsgenerator.network.interceptors.UserAgentInterceptor
 import dk.clausr.a1001albumsgenerator.utils.InstantSerializer
+import dk.clausr.core.common.network.AppInformation
 import dk.clausr.core.common.network.Dispatcher
 import dk.clausr.core.common.network.OagDispatchers
 import kotlinx.coroutines.CoroutineDispatcher
@@ -41,7 +43,6 @@ object NetworkModule {
     @Singleton
     fun providesNetworkJson(): Json = Json {
         ignoreUnknownKeys = true
-        // TODO Maybe remove this?
         // https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/json.md#lenient-parsing
         isLenient = true
         serializersModule = SerializersModule {
@@ -55,15 +56,16 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun okHttpCallFactory(): Call.Factory {
+    fun okHttpCallFactory(appInformation: AppInformation): Call.Factory {
         val okHttpClient = OkHttpClient.Builder().readTimeout(15, TimeUnit.SECONDS)
             .writeTimeout(timeout = 15, TimeUnit.SECONDS)
             .connectTimeout(timeout = 30, TimeUnit.SECONDS)
             .addNetworkInterceptor(
                 HttpLoggingInterceptor().apply {
-                    level = HttpLoggingInterceptor.Level.BASIC
+                    level = HttpLoggingInterceptor.Level.BODY
                 },
             )
+            .addInterceptor(UserAgentInterceptor(appInformation))
             .build()
 
         return okHttpClient

@@ -2,7 +2,6 @@ import com.android.build.gradle.LibraryExtension
 import dk.clausr.Versions
 import dk.clausr.configureFlavors
 import dk.clausr.configureKotlinAndroid
-import dk.clausr.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -23,12 +22,6 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                 configureFlavors(this)
             }
 
-            configurations.configureEach {
-                resolutionStrategy {
-                    // No clue what causes this to be some other version...
-                    force(libs.findLibrary("androidx-navigation-compose").get())
-                }
-            }
             dependencies {
                 add("androidTestImplementation", kotlin("test"))
                 add("testImplementation", kotlin("test"))

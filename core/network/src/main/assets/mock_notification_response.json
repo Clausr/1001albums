@@ -1,0 +1,114 @@
+{
+  "success": true,
+  "notifications": [
+    {
+      "_id": "66cc7536a113d13774b0c7e5",
+      "project": "651ef5d68a53974fd9aa7335",
+      "createdAt": "2024-08-26T12:29:42.731Z",
+      "read": false,
+      "type": "reviewThumpUp",
+      "data": {
+        "reviewId": "66cbf33a5771751a8c571118",
+        "albumName": "2112",
+        "albumSlug": "2112",
+        "albumSpotifyId": "5LeFF1RfG7fTnBg8yqwlYM",
+        "thumbsUp": 1,
+        "isUserAlbum": false
+      },
+      "__v": 0
+    },
+    {
+      "_id": "65a2da7d0f9936381bbaeef0",
+      "project": "651ef5d68a53974fd9aa7335",
+      "createdAt": "2024-01-13T18:46:21.014Z",
+      "read": false,
+      "type": "lastEmailReminder",
+      "__v": 0
+    },
+    {
+      "_id": "6524c1bc05dd510fed9d44a1",
+      "project": "651ef5d68a53974fd9aa7335",
+      "createdAt": "2023-10-10T03:15:08.641Z",
+      "read": false,
+      "type": "groupAlbumsGenerated",
+      "data": {
+        "numberOfAlbums": 2,
+        "groupId": "6523012005dd510fed9bb282",
+        "groupSlug": "oag_group"
+      },
+      "__v": 0
+    },
+    {
+      "_id": "66bedf4ab22633436a43ff10",
+      "project": "651ef5d68a53974fd9aa7335",
+      "createdAt": "2024-08-16T05:10:34.833Z",
+      "read": false,
+      "type": "groupReview",
+      "data": {
+        "albumName": "AmeriKKKa's Most Wanted",
+        "albumId": "64cffdba57315ed72dd175a0",
+        "rating": 3,
+        "groupSlug": "oag_group",
+        "projectName": "oag_group_user",
+        "isUserAlbum": false
+      },
+      "__v": 0
+    },
+    {
+      "_id": "6523017305dd510fed9bb2a0",
+      "project": "651ef5d68a53974fd9aa7335",
+      "createdAt": "2023-10-08T19:22:27.467Z",
+      "read": false,
+      "type": "newGroupMember",
+      "data": {
+        "groupSlug": "oag_group"
+      },
+      "__v": 0
+    },
+    {
+      "_id": "652127d8c230a76224b54007",
+      "project": "651ef5d68a53974fd9aa7335",
+      "createdAt": "2023-10-07T09:41:44.904Z",
+      "read": false,
+      "type": "donationPush",
+      "data": {
+        "projectName": "oag_user"
+      },
+      "__v": 0
+    },
+    {
+      "_id": "651f9f018a53974fd9abfa3b",
+      "project": "651ef5d68a53974fd9aa7335",
+      "createdAt": "2023-10-06T05:45:37.068Z",
+      "read": false,
+      "type": "custom",
+      "data": {
+        "heading": "Streaming Service",
+        "body": "Tidal is now your default streaming icon. You can change it from your Info tab in the top menu."
+      },
+      "__v": 0
+    },
+    {
+      "_id": "651f9efb8a53974fd9abfa30",
+      "project": "651ef5d68a53974fd9aa7335",
+      "createdAt": "2023-10-06T05:45:31.139Z",
+      "read": false,
+      "type": "albumsRated",
+      "data": {
+        "numberOfAlbums": 1
+      },
+      "__v": 0
+    },
+    {
+      "_id": "651ef5d68a53974fd9aa7336",
+      "project": "651ef5d68a53974fd9aa7335",
+      "createdAt": "2023-10-05T17:43:50.865Z",
+      "read": false,
+      "type": "signup",
+      "data": {
+        "projectName": "oag_user"
+      },
+      "__v": 0
+    }
+  ]
+}

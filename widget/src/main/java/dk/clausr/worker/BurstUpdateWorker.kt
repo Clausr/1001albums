@@ -17,6 +17,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import dk.clausr.core.common.model.doOnFailure
 import dk.clausr.core.common.model.doOnSuccess
+import dk.clausr.core.data.repository.NotificationRepository
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.network.NetworkError
 import dk.clausr.widget.AlbumCoverWidget
@@ -28,6 +29,7 @@ class BurstUpdateWorker @AssistedInject constructor(
     @Assisted private val appContext: Context,
     @Assisted private val workerParameters: WorkerParameters,
     private val oagRepository: OagRepository,
+    private val notificationRepository: NotificationRepository,
 ) : CoroutineWorker(appContext, workerParameters) {
 
     override suspend fun doWork(): Result {
@@ -38,6 +40,8 @@ class BurstUpdateWorker @AssistedInject constructor(
             workerParameters.inputData.getString(PROJECT_ID_KEY) ?: return Result.failure()
 
         var result: Result? = null
+
+        notificationRepository.updateNotifications(projectId)
 
         oagRepository.updateProject(projectId)
             .doOnSuccess {
