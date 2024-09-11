@@ -202,9 +202,6 @@ private fun ShowAlbumCover(
                 streamingServices = state.data.streamingServices,
                 preferredStreamingPlatform = state.data.preferredStreamingPlatform,
                 projectUrl = state.projectUrl ?: "",
-                onForceUpdateWidget = {
-                    SimplifiedWidgetWorker.enqueueUnique(context)
-                },
             )
         }
     }
