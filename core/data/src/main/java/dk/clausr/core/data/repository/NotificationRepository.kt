@@ -13,7 +13,6 @@ import dk.clausr.core.model.Notification
 import dk.clausr.core.model.NotificationType
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -30,23 +29,19 @@ class NotificationRepository @Inject constructor(
         .map { entities ->
             entities.map(NotificationEntity::asExternalModel)
         }
-        .flowOn(ioDispatcher)
 
     val notifications: Flow<List<Notification>> = notificationDao.getNotifications()
         .map { entities ->
             entities.map(NotificationEntity::asExternalModel)
         }
-        .flowOn(ioDispatcher)
 
     suspend fun updateNotifications(
         projectId: String,
         getRead: Boolean = false,
     ) = withContext(ioDispatcher) {
-        val count = notificationDao.getNotificationCount()
-
         networkDataSource.getNotifications(
             projectId = projectId,
-            showRead = getRead || count == 0,
+            showRead = getRead,
         )
             .doOnSuccess { networkNotifications ->
                 val nonUnknownNotifications = networkNotifications.notifications.filterNot { it.type == NotificationType.Unknown }
