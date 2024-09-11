@@ -75,8 +75,12 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(
         networkJson: Json,
-        okhttpCallFactory: Call.Factory,
-    ): Retrofit = Retrofit.Builder().baseUrl(BuildConfig.BACKEND_URL).callFactory(okhttpCallFactory)
+        okhttpCallFactory: dagger.Lazy<Call.Factory>,
+    ): Retrofit = Retrofit.Builder()
+        .baseUrl(BuildConfig.BACKEND_URL)
+        // We use callFactory lambda here with dagger.Lazy<Call.Factory>
+        // to prevent initializing OkHttp on the main thread.
+        .callFactory { okhttpCallFactory.get().newCall(it) }
         .addConverterFactory(networkJson.asConverterFactory("application/json".toMediaType()))
         .build()
 
