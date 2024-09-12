@@ -5,13 +5,10 @@ plugins {
 
 android {
     namespace = "dk.clausr.a1001albumsgenerator.feature.onboarding"
-
-    buildFeatures {
-        compose = true
-    }
 }
 
 dependencies {
+    project(":widget")
     implementation(libs.haze)
     implementation(libs.androidx.compose.material.iconsExtended)
 }

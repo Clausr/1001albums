@@ -38,10 +38,14 @@ class BurstUpdateWorker @AssistedInject constructor(
 
         val projectId =
             workerParameters.inputData.getString(PROJECT_ID_KEY) ?: return Result.failure()
+        Timber.i("BurstUpdateWorker doing work for $projectId")
 
         var result: Result? = null
 
-        notificationRepository.updateNotifications(projectId)
+        notificationRepository.updateNotifications(
+            origin = "BurstUpdateWorker",
+            projectId = projectId
+        )
 
         oagRepository.updateProject(projectId)
             .doOnSuccess {

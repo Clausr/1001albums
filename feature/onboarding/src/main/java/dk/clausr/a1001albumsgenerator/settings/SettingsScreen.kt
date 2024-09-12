@@ -207,6 +207,7 @@ fun SettingsScreen(
                             ),
                         )
                         .padding(16.dp),
+                    enabled = false,
                     onProjectIdChange = onSetProjectId,
                     existingProjectId = projectId.orEmpty(),
                     error = error,

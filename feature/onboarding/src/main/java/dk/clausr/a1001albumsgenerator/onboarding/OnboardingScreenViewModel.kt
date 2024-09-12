@@ -43,7 +43,6 @@ class OnboardingScreenViewModel @Inject constructor(
             } else {
                 oagRepository.setProject(projectId)
                     .doOnSuccess {
-                        notificationRepository.updateNotifications(projectId = projectId, getRead = true)
                         sendViewEffect(IntroViewEffects.ProjectSet)
                         this@OnboardingScreenViewModel._projectId.value = projectId
                     }

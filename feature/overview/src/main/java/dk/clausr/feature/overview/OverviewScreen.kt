@@ -50,7 +50,6 @@ import dk.clausr.a1001albumsgenerator.ui.components.LocalSharedTransitionScope
 import dk.clausr.a1001albumsgenerator.ui.extensions.ignoreHorizontalParentPadding
 import dk.clausr.core.common.android.openLink
 import dk.clausr.core.common.extensions.formatToDate
-import dk.clausr.core.data.workers.UpdateProjectWorker
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.model.Notification
 import dk.clausr.core.model.NotificationData
@@ -61,6 +60,7 @@ import dk.clausr.core.model.UpdateFrequency
 import dk.clausr.feature.overview.extensions.sluggify
 import dk.clausr.feature.overview.preview.albumPreviewData
 import dk.clausr.feature.overview.preview.historicAlbumPreviewData
+import dk.clausr.worker.BurstUpdateWorker
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 
@@ -189,7 +189,8 @@ internal fun OverviewScreen(
                                             context.openLink(url)
                                         },
                                         startBurstUpdate = {
-                                            UpdateProjectWorker.run(context = context, projectId = state.project.name)
+                                            BurstUpdateWorker.enqueueUnique(context = context, projectId = state.project.name)
+//                                            UpdateProjectWorker.run(context = context, projectId = state.project.name)
                                         },
                                     )
                                 }

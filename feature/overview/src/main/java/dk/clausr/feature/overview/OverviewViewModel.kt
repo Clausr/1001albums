@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -92,8 +93,9 @@ class OverviewViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             oagRepository.project.collectLatest { project ->
+                Timber.d("Project updated ${project?.name}")
                 project?.name?.let { projectId ->
-                    notificationsRepository.updateNotifications(projectId)
+                    notificationsRepository.updateNotifications(origin = "OverviewViewModel", projectId = projectId)
                     this@OverviewViewModel.projectId.value = projectId
                 }
             }

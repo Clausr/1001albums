@@ -11,6 +11,7 @@ import dk.clausr.core.data.repository.UserRepository
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.network.NetworkError
 import dk.clausr.core.ui.CoverData
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -59,10 +60,19 @@ class SettingsViewModel @Inject constructor(
             if (existingProject != null && existingProject.name.equals(projectId, ignoreCase = true)) {
                 Timber.d("Same as existing project: ${existingProject.name}")
             } else {
-                oagRepository.setProject(projectId)
+                val asyncSetProject = async { oagRepository.setProject(projectId) }
+                val asyncUpdateNotifications = async {
+                    notificationRepository.updateNotifications(
+                        origin = "SettingsVM",
+                        projectId = projectId,
+                        getRead = false
+                    )
+                }
+
+                asyncSetProject.await()
                     .doOnSuccess {
                         Timber.d("Set project success!")
-                        notificationRepository.updateNotifications(projectId = projectId, getRead = true)
+                        asyncUpdateNotifications.await()
                         sendViewEffect(SettingsViewEffect.ProjectSet)
                     }
                     .doOnFailure { error ->
