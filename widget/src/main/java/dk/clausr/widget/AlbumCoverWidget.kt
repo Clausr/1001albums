@@ -9,7 +9,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
@@ -224,7 +223,7 @@ private fun RatingNudge(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = LocalContext.current.getString(R.string.state_new_available),
+            text = context.getString(R.string.state_new_available),
             modifier = GlanceModifier.fillMaxWidth(),
             style = TextStyle(
                 color = GlanceTheme.colors.onBackground,
@@ -260,7 +259,7 @@ private fun RatingNudge(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Button(
-                text = stringResource(R.string.nudge_did_not_listen_button_title),
+                text = context.getString(R.string.nudge_did_not_listen_button_title),
                 onClick = {
                     context.openProject(projectId)
                     // Start requesting for changes
