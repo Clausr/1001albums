@@ -93,6 +93,7 @@ fun SettingsRoute(
         showBack = showBack,
         coverData = covers,
         error = error,
+        projectTextFieldEnabled = projectId == null,
     )
 }
 
@@ -106,6 +107,7 @@ fun SettingsScreen(
     onClickApply: () -> Unit,
     showBack: Boolean,
     error: NetworkError?,
+    projectTextFieldEnabled: Boolean,
     modifier: Modifier = Modifier,
     coverData: CoverData = CoverData.default(),
 ) {
@@ -207,7 +209,7 @@ fun SettingsScreen(
                             ),
                         )
                         .padding(16.dp),
-                    enabled = false,
+                    enabled = projectTextFieldEnabled,
                     onProjectIdChange = onSetProjectId,
                     existingProjectId = projectId.orEmpty(),
                     error = error,
@@ -272,6 +274,7 @@ private fun SettingsPreview() {
             onClickApply = {},
             showBack = true,
             error = null,
+            projectTextFieldEnabled = true,
         )
     }
 }
