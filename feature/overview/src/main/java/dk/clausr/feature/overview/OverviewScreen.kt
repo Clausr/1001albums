@@ -51,13 +51,10 @@ import dk.clausr.a1001albumsgenerator.ui.extensions.ignoreHorizontalParentPaddin
 import dk.clausr.core.common.android.openLink
 import dk.clausr.core.common.extensions.formatToDate
 import dk.clausr.core.data_widget.SerializedWidgetState
-import dk.clausr.core.model.Notification
-import dk.clausr.core.model.NotificationData
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
 import dk.clausr.core.model.UpdateFrequency
-import dk.clausr.feature.overview.extensions.sluggify
 import dk.clausr.feature.overview.preview.albumPreviewData
 import dk.clausr.feature.overview.preview.historicAlbumPreviewData
 import dk.clausr.worker.BurstUpdateWorker
@@ -79,18 +76,6 @@ fun OverviewRoute(
         navigateToSettings = navigateToSettings,
         navigateToAlbumDetails = navigateToAlbumDetails,
         readAllNotifications = viewModel::clearUnreadNotifications,
-        onNotificationClick = {
-            when (val data = it.data) {
-                is NotificationData.GroupReviewData -> {
-                    navigateToAlbumDetails(data.albumName.sluggify, "notifications")
-                }
-                is NotificationData.ReviewThumbUpData -> {
-                    navigateToAlbumDetails(data.albumSlug, "notifications")
-                }
-
-                else -> {}
-            }
-        },
     )
 }
 
@@ -98,7 +83,6 @@ fun OverviewRoute(
 internal fun OverviewScreen(
     state: OverviewUiState,
     navigateToSettings: () -> Unit,
-    onNotificationClick: (Notification) -> Unit,
     navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
     readAllNotifications: () -> Unit,
     modifier: Modifier = Modifier,
@@ -213,7 +197,6 @@ internal fun OverviewScreen(
                 onDismiss = {
                     showNotifications = false
                 },
-                onNotificationClick = onNotificationClick,
                 notifications = state.notifications,
                 clearNotifications = readAllNotifications,
             )
@@ -338,7 +321,6 @@ private fun OverviewPreview() {
                 notifications = persistentListOf(),
             ),
 
-            onNotificationClick = {},
             readAllNotifications = {},
         )
     }
