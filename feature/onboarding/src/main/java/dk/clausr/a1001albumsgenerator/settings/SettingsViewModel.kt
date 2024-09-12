@@ -65,7 +65,7 @@ class SettingsViewModel @Inject constructor(
                     notificationRepository.updateNotifications(
                         origin = "SettingsVM",
                         projectId = projectId,
-                        getRead = false
+                        getRead = false,
                     )
                 }
 

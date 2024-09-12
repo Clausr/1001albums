@@ -33,7 +33,7 @@ fun LinkPill(
                 .background(
                     imageProvider = ImageProvider(R.drawable.pill_background),
                     colorFilter = ColorFilter.tint(GlanceTheme.colors.background),
-                )
+                ),
         ) {
             CircleIconButton(
                 imageProvider = ImageProvider(uiR.drawable.ic_wiki),

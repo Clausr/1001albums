@@ -47,7 +47,7 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
         projectId?.let {
             notificationRepository.updateNotifications(
                 origin = "SimplifiedWidgetWorker",
-                projectId = projectId
+                projectId = projectId,
             )
             oagRepository.updateProject(projectId)
                 .doOnSuccess {

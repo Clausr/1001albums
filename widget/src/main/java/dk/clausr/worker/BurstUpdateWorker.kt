@@ -44,7 +44,7 @@ class BurstUpdateWorker @AssistedInject constructor(
 
         notificationRepository.updateNotifications(
             origin = "BurstUpdateWorker",
-            projectId = projectId
+            projectId = projectId,
         )
 
         oagRepository.updateProject(projectId)
