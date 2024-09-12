@@ -40,16 +40,16 @@ class OagApplication : Application(), Configuration.Provider {
     }
 
     private fun initTimberAndSentry() {
-        SentryAndroid.init(this) { options ->
-            if (!BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        } else {
+            SentryAndroid.init(this) { options ->
                 options.addIntegration(
                     SentryTimberIntegration(
                         minEventLevel = SentryLevel.ERROR,
                         minBreadcrumbLevel = SentryLevel.INFO,
                     ),
                 )
-            } else {
-                Timber.plant(Timber.DebugTree())
             }
         }
     }
