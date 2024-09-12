@@ -18,6 +18,7 @@ import dk.clausr.core.common.model.doOnFailure
 import dk.clausr.core.common.model.doOnSuccess
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.network.NetworkError
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 @HiltWorker
@@ -29,6 +30,7 @@ class UpdateProjectWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         if (runAttemptCount >= MAX_RETRIES) return Result.failure(workDataOf("error" to "Max retries"))
         val projectId = workerParameters.inputData.getString(PROJECT_ID_KEY) ?: return Result.failure()
+        Timber.i("UpdateProjectWorker doing work for $projectId")
 
         var workerResult: Result = Result.retry()
 

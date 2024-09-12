@@ -42,10 +42,13 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
         val dataStore = AlbumWidgetDataDefinition.getDataStore(appContext)
         val projectId: String? = dataStore.data.firstOrNull()?.projectId
 
+        Timber.i("SimplifiedWidgetWorker doing work for $projectId")
         // TODO Look into this actually checking if yesterdays album is rated
-
         projectId?.let {
-            notificationRepository.updateNotifications(projectId)
+            notificationRepository.updateNotifications(
+                origin = "SimplifiedWidgetWorker",
+                projectId = projectId,
+            )
             oagRepository.updateProject(projectId)
                 .doOnSuccess {
                     workerResult = Result.success()
