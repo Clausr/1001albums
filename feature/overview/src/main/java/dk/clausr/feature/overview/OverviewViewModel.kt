@@ -1,8 +1,10 @@
 package dk.clausr.feature.overview
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dk.clausr.core.common.extensions.formatMonthAndYear
 import dk.clausr.core.common.extensions.toLocalDateTime
 import dk.clausr.core.data.repository.NotificationRepository
@@ -14,6 +16,7 @@ import dk.clausr.core.model.Notification
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.Rating
 import dk.clausr.core.model.StreamingPlatform
+import dk.clausr.worker.UpdateWidgetStateWorker
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
@@ -34,6 +37,7 @@ import javax.inject.Inject
 class OverviewViewModel @Inject constructor(
     oagRepository: OagRepository,
     private val notificationsRepository: NotificationRepository,
+    @ApplicationContext private val context: Context,
 ) : ViewModel() {
     private var projectId = MutableStateFlow("")
 
@@ -87,6 +91,7 @@ class OverviewViewModel @Inject constructor(
     fun clearUnreadNotifications() {
         viewModelScope.launch {
             notificationsRepository.readAll(projectId.value)
+            UpdateWidgetStateWorker.enqueueUnique(context)
         }
     }
 
@@ -96,6 +101,7 @@ class OverviewViewModel @Inject constructor(
                 Timber.d("Project updated ${project?.name}")
                 project?.name?.let { projectId ->
                     notificationsRepository.updateNotifications(origin = "OverviewViewModel", projectId = projectId)
+                    UpdateWidgetStateWorker.enqueueUnique(context)
                     this@OverviewViewModel.projectId.value = projectId
                 }
             }

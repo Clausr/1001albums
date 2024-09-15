@@ -52,10 +52,10 @@ class BurstUpdateWorker @AssistedInject constructor(
                 val isLatestAlbumRated = oagRepository.isLatestAlbumRated()
 
                 if (isLatestAlbumRated) {
-                    AlbumCoverWidget().updateAll(appContext)
-
                     // (Re)Start recurring poll
-                    SimplifiedWidgetWorker.enqueueUnique(appContext)
+                    PeriodicProjectUpdateWidgetWorker.enqueueUnique(appContext)
+                    UpdateWidgetStateWorker.enqueueUnique(appContext)
+
                     result = Result.success()
                 } else {
                     result = Result.retry()

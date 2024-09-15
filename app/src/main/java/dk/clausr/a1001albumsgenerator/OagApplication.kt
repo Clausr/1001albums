@@ -11,7 +11,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.HiltAndroidApp
 import dagger.hilt.components.SingletonComponent
 import dk.clausr.a1001albumsgenerator.network.BuildConfig
-import dk.clausr.worker.SimplifiedWidgetWorker
+import dk.clausr.worker.PeriodicProjectUpdateWidgetWorker
 import io.sentry.SentryLevel
 import io.sentry.android.core.SentryAndroid
 import io.sentry.android.timber.SentryTimberIntegration
@@ -26,7 +26,7 @@ class OagApplication : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
 
-        startWorker()
+        startPeriodicWorker()
 
         initTimberAndSentry()
 
@@ -35,8 +35,8 @@ class OagApplication : Application(), Configuration.Provider {
         }
     }
 
-    private fun startWorker() {
-        SimplifiedWidgetWorker.start(this)
+    private fun startPeriodicWorker() {
+        PeriodicProjectUpdateWidgetWorker.start(this)
     }
 
     private fun initTimberAndSentry() {
