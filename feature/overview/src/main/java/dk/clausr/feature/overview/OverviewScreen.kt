@@ -174,7 +174,6 @@ internal fun OverviewScreen(
                                         },
                                         startBurstUpdate = {
                                             BurstUpdateWorker.enqueueUnique(context = context, projectId = state.project.name)
-//                                            UpdateProjectWorker.run(context = context, projectId = state.project.name)
                                         },
                                     )
                                 }
@@ -320,7 +319,6 @@ private fun OverviewPreview() {
                 groupedHistory = persistentMapOf(),
                 notifications = persistentListOf(),
             ),
-
             readAllNotifications = {},
         )
     }

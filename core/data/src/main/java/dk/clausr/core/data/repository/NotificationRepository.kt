@@ -41,19 +41,21 @@ class NotificationRepository @Inject constructor(
         getRead: Boolean = false,
     ) {
         Timber.i("updateNotifications origin: $origin")
-        withContext(ioDispatcher) {
-            networkDataSource.getNotifications(
-                projectId = projectId,
-                showRead = getRead,
-            )
-                .doOnSuccess { networkNotifications ->
-                    val nonUnknownNotifications = networkNotifications.notifications.filterNot { it.type == NotificationType.Unknown }
+        networkDataSource.getNotifications(
+            projectId = projectId,
+            showRead = getRead,
+        )
+            .doOnSuccess { networkNotifications ->
+                val nonUnknownNotifications = networkNotifications.notifications.filterNot { it.type == NotificationType.Unknown }
+                if (networkNotifications.notifications.isEmpty()) {
+                    notificationDao.readNotifications()
+                } else {
                     notificationDao.insertNotifications(nonUnknownNotifications.toEntities())
                 }
-                .doOnFailure {
-                    Timber.e(it.cause, "Notifications went wrong..")
-                }
-        }
+            }
+            .doOnFailure {
+                Timber.e(it.cause, "Notifications went wrong..")
+            }
     }
 
     suspend fun readAll(projectId: String) = withContext(ioDispatcher) {

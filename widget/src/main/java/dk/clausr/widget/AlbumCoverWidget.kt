@@ -54,7 +54,7 @@ import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectUrl
 import dk.clausr.core.model.Notification
 import dk.clausr.worker.BurstUpdateWorker
-import dk.clausr.worker.SimplifiedWidgetWorker
+import dk.clausr.worker.PeriodicProjectUpdateWidgetWorker
 import kotlinx.coroutines.delay
 import timber.log.Timber
 
@@ -277,11 +277,11 @@ class AlbumCoverWidgetReceiver : GlanceAppWidgetReceiver() {
 
     override fun onEnabled(context: Context) {
         super.onEnabled(context)
-        SimplifiedWidgetWorker.start(context)
+        PeriodicProjectUpdateWidgetWorker.start(context)
     }
 
     override fun onDisabled(context: Context) {
         super.onDisabled(context)
-        SimplifiedWidgetWorker.cancel(context)
+        PeriodicProjectUpdateWidgetWorker.cancel(context)
     }
 }

@@ -29,12 +29,11 @@ import timber.log.Timber
 import java.time.Duration
 
 @HiltWorker
-class SimplifiedWidgetWorker @AssistedInject constructor(
+class PeriodicProjectUpdateWidgetWorker @AssistedInject constructor(
     @Assisted private val appContext: Context,
     @Assisted private val workerParameters: WorkerParameters,
     private val oagRepository: OagRepository,
     private val notificationRepository: NotificationRepository,
-
 ) : CoroutineWorker(appContext, workerParameters) {
 
     override suspend fun doWork(): Result {
@@ -43,15 +42,16 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
         val projectId: String? = dataStore.data.firstOrNull()?.projectId
 
         Timber.i("SimplifiedWidgetWorker doing work for $projectId")
-        // TODO Look into this actually checking if yesterdays album is rated
         projectId?.let {
             notificationRepository.updateNotifications(
                 origin = "SimplifiedWidgetWorker",
                 projectId = projectId,
             )
+
             oagRepository.updateProject(projectId)
                 .doOnSuccess {
                     workerResult = Result.success()
+                    UpdateWidgetStateWorker.enqueueUnique(appContext)
                 }
                 .doOnFailure { _ ->
                     workerResult = Result.failure()
@@ -60,15 +60,13 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
             workerResult = Result.failure(workDataOf("error" to "No project id set"))
         }
 
-        AlbumCoverWidget().updateAll(appContext)
-
         return workerResult
     }
 
     companion object {
         private const val SIMPLIFIED_WORKER_UNIQUE_NAME = "simplifiedWorkerUniqueName"
 
-        private fun startSingle() = OneTimeWorkRequestBuilder<SimplifiedWidgetWorker>()
+        private fun startSingle() = OneTimeWorkRequestBuilder<PeriodicProjectUpdateWidgetWorker>()
             .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             .addTag("SingleWorkForSimplified")
             .setConstraints(
@@ -93,7 +91,7 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build()
 
-        private fun periodicWorkSync() = PeriodicWorkRequestBuilder<SimplifiedWidgetWorker>(
+        private fun periodicWorkSync() = PeriodicWorkRequestBuilder<PeriodicProjectUpdateWidgetWorker>(
             repeatInterval = Duration.ofHours(1),
         )
             .setBackoffCriteria(
