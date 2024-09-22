@@ -1,6 +1,7 @@
 package dk.clausr.feature.overview.details
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -148,26 +149,26 @@ fun AlbumDetailsScreen(
                         .sharedBounds(
                             sharedContentState = rememberSharedContentState(key = "$listName-date-${historicAlbum.album.slug}"),
                             animatedVisibilityScope = animatedContentScope,
-                        ),
+                        )
+                        .padding(bottom = 16.dp),
                     text = historicAlbum.album.releaseDate,
                     textAlign = TextAlign.Center,
                 )
 
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp)
-                        .padding(horizontal = 16.dp)
                         .sharedBounds(
                             sharedContentState = rememberSharedContentState(key = "$listName-play-${historicAlbum.album.slug}"),
                             animatedVisibilityScope = animatedContentScope,
                             resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(),
-                        ),
+                        )
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.CenterHorizontally),
                 ) {
                     val context = LocalContext.current
                     StreamingServices.from(historicAlbum.album).getStreamingLinkFor(streamingPlatform)?.let { streamingLink ->
                         FilledTonalButton(
+                            modifier = Modifier,
                             onClick = {
                                 context.openLink(streamingLink)
                             },
@@ -232,7 +233,7 @@ fun AlbumDetailsScreen(
 private fun DetailsPreview() {
     OagTheme {
         AnimatedVisibility(visible = true) {
-            SharedTransitionScope {
+            SharedTransitionLayout {
                 CompositionLocalProvider(
                     LocalNavAnimatedVisibilityScope provides this@AnimatedVisibility,
                     LocalSharedTransitionScope provides this,
