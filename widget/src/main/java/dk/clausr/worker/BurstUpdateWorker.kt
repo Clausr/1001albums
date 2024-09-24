@@ -1,7 +1,6 @@
 package dk.clausr.worker
 
 import android.content.Context
-import androidx.glance.appwidget.updateAll
 import androidx.hilt.work.HiltWorker
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
@@ -20,7 +19,6 @@ import dk.clausr.core.common.model.doOnSuccess
 import dk.clausr.core.data.repository.NotificationRepository
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.network.NetworkError
-import dk.clausr.widget.AlbumCoverWidget
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 

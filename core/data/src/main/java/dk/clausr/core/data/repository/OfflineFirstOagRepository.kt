@@ -158,9 +158,9 @@ class OfflineFirstOagRepository @Inject constructor(
                     historicAlbums = networkProject.history.map { it.asExternalModel() },
                 )
             }
-//            .doOnFailure { error ->
-//                Timber.e(error.cause, "$error")
-//            }
+            .doOnFailure { error ->
+                Timber.e(error.cause, "$error")
+            }
             .map {
                 it.asExternalModel()
             }

@@ -1,7 +1,6 @@
 package dk.clausr.worker
 
 import android.content.Context
-import androidx.glance.appwidget.updateAll
 import androidx.hilt.work.HiltWorker
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
@@ -23,7 +22,6 @@ import dk.clausr.core.data.repository.NotificationRepository
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectId
-import dk.clausr.widget.AlbumCoverWidget
 import kotlinx.coroutines.flow.firstOrNull
 import timber.log.Timber
 import java.time.Duration
@@ -41,10 +39,10 @@ class PeriodicProjectUpdateWidgetWorker @AssistedInject constructor(
         val dataStore = AlbumWidgetDataDefinition.getDataStore(appContext)
         val projectId: String? = dataStore.data.firstOrNull()?.projectId
 
-        Timber.i("SimplifiedWidgetWorker doing work for $projectId")
+        Timber.i("PeriodicProjectUpdateWidgetWorker doing work for $projectId")
         projectId?.let {
             notificationRepository.updateNotifications(
-                origin = "SimplifiedWidgetWorker",
+                origin = "PeriodicProjectUpdateWidgetWorker",
                 projectId = projectId,
             )
 
@@ -64,11 +62,11 @@ class PeriodicProjectUpdateWidgetWorker @AssistedInject constructor(
     }
 
     companion object {
-        private const val SIMPLIFIED_WORKER_UNIQUE_NAME = "simplifiedWorkerUniqueName"
+        private const val SIMPLIFIED_WORKER_UNIQUE_NAME = "PeriodicProjectUpdateWidgetWorkerUniqueName"
 
         private fun startSingle() = OneTimeWorkRequestBuilder<PeriodicProjectUpdateWidgetWorker>()
             .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-            .addTag("SingleWorkForSimplified")
+            .addTag("SingleWorkForPeriodicProjectUpdateWidgetWorker")
             .setConstraints(
                 Constraints.Builder()
                     .setRequiredNetworkType(NetworkType.CONNECTED)
