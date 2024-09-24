@@ -47,7 +47,7 @@ class OagApplication : Application(), Configuration.Provider {
                 options.addIntegration(
                     SentryTimberIntegration(
                         minEventLevel = SentryLevel.ERROR,
-                        minBreadcrumbLevel = SentryLevel.INFO,
+                        minBreadcrumbLevel = SentryLevel.DEBUG,
                     ),
                 )
             }
