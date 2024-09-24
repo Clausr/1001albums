@@ -62,7 +62,7 @@ class PeriodicProjectUpdateWidgetWorker @AssistedInject constructor(
     }
 
     companion object {
-        private const val SIMPLIFIED_WORKER_UNIQUE_NAME = "PeriodicProjectUpdateWidgetWorkerUniqueName"
+        private const val SIMPLIFIED_WORKER_UNIQUE_NAME = "simplifiedWorkerUniqueName"
 
         private fun startSingle() = OneTimeWorkRequestBuilder<PeriodicProjectUpdateWidgetWorker>()
             .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
