@@ -29,6 +29,7 @@ fun ProjectTextField(
     modifier: Modifier = Modifier,
     existingProjectId: String = "",
     error: NetworkError? = null,
+    enabled: Boolean = true,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val scope = rememberCoroutineScope()
@@ -46,6 +47,7 @@ fun ProjectTextField(
 
     TextField(
         modifier = modifier,
+        enabled = enabled,
         label = {
             Text(stringResource(R.string.username_textfield_label))
         },

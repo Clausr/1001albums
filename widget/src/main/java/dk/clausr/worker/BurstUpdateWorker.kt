@@ -1,7 +1,6 @@
 package dk.clausr.worker
 
 import android.content.Context
-import androidx.glance.appwidget.updateAll
 import androidx.hilt.work.HiltWorker
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
@@ -20,7 +19,6 @@ import dk.clausr.core.common.model.doOnSuccess
 import dk.clausr.core.data.repository.NotificationRepository
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.network.NetworkError
-import dk.clausr.widget.AlbumCoverWidget
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -38,20 +36,24 @@ class BurstUpdateWorker @AssistedInject constructor(
 
         val projectId =
             workerParameters.inputData.getString(PROJECT_ID_KEY) ?: return Result.failure()
+        Timber.i("BurstUpdateWorker doing work for $projectId")
 
         var result: Result? = null
 
-        notificationRepository.updateNotifications(projectId)
+        notificationRepository.updateNotifications(
+            origin = "BurstUpdateWorker",
+            projectId = projectId,
+        )
 
         oagRepository.updateProject(projectId)
             .doOnSuccess {
                 val isLatestAlbumRated = oagRepository.isLatestAlbumRated()
 
                 if (isLatestAlbumRated) {
-                    AlbumCoverWidget().updateAll(appContext)
-
                     // (Re)Start recurring poll
-                    SimplifiedWidgetWorker.enqueueUnique(appContext)
+                    PeriodicProjectUpdateWidgetWorker.enqueueUnique(appContext)
+                    UpdateWidgetStateWorker.enqueueUnique(appContext)
+
                     result = Result.success()
                 } else {
                     result = Result.retry()

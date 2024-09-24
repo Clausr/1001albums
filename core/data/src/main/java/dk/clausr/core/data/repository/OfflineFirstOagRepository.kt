@@ -77,7 +77,7 @@ class OfflineFirstOagRepository @Inject constructor(
     ) { project, albums ->
         val historicAlbums = albums.map(RatingWithAlbum::mapToHistoricAlbum)
         project?.asExternalModel(historicAlbums)
-    }
+    }.distinctUntilChanged()
 
     override val currentAlbum: Flow<Album?> = project.mapNotNull { project ->
         project?.historicAlbums?.lastRevealedUnratedAlbum()?.album ?: project?.currentAlbumSlug?.let { currentSlug ->
@@ -158,9 +158,9 @@ class OfflineFirstOagRepository @Inject constructor(
                     historicAlbums = networkProject.history.map { it.asExternalModel() },
                 )
             }
-//            .doOnFailure { error ->
-//                Timber.e(error.cause, "$error")
-//            }
+            .doOnFailure { error ->
+                Timber.e(error.cause, "$error")
+            }
             .map {
                 it.asExternalModel()
             }

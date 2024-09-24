@@ -9,7 +9,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
@@ -55,7 +54,7 @@ import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectUrl
 import dk.clausr.core.model.Notification
 import dk.clausr.worker.BurstUpdateWorker
-import dk.clausr.worker.SimplifiedWidgetWorker
+import dk.clausr.worker.PeriodicProjectUpdateWidgetWorker
 import kotlinx.coroutines.delay
 import timber.log.Timber
 
@@ -202,9 +201,6 @@ private fun ShowAlbumCover(
                 streamingServices = state.data.streamingServices,
                 preferredStreamingPlatform = state.data.preferredStreamingPlatform,
                 projectUrl = state.projectUrl ?: "",
-                onForceUpdateWidget = {
-                    SimplifiedWidgetWorker.enqueueUnique(context)
-                },
             )
         }
     }
@@ -227,7 +223,7 @@ private fun RatingNudge(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = LocalContext.current.getString(R.string.state_new_available),
+            text = context.getString(R.string.state_new_available),
             modifier = GlanceModifier.fillMaxWidth(),
             style = TextStyle(
                 color = GlanceTheme.colors.onBackground,
@@ -263,7 +259,7 @@ private fun RatingNudge(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Button(
-                text = stringResource(R.string.nudge_did_not_listen_button_title),
+                text = context.getString(R.string.nudge_did_not_listen_button_title),
                 onClick = {
                     context.openProject(projectId)
                     // Start requesting for changes
@@ -281,11 +277,11 @@ class AlbumCoverWidgetReceiver : GlanceAppWidgetReceiver() {
 
     override fun onEnabled(context: Context) {
         super.onEnabled(context)
-        SimplifiedWidgetWorker.start(context)
+        PeriodicProjectUpdateWidgetWorker.start(context)
     }
 
     override fun onDisabled(context: Context) {
         super.onDisabled(context)
-        SimplifiedWidgetWorker.cancel(context)
+        PeriodicProjectUpdateWidgetWorker.cancel(context)
     }
 }

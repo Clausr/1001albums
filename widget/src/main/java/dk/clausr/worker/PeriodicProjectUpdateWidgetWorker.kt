@@ -1,7 +1,6 @@
 package dk.clausr.worker
 
 import android.content.Context
-import androidx.glance.appwidget.updateAll
 import androidx.hilt.work.HiltWorker
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
@@ -23,18 +22,16 @@ import dk.clausr.core.data.repository.NotificationRepository
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectId
-import dk.clausr.widget.AlbumCoverWidget
 import kotlinx.coroutines.flow.firstOrNull
 import timber.log.Timber
 import java.time.Duration
 
 @HiltWorker
-class SimplifiedWidgetWorker @AssistedInject constructor(
+class PeriodicProjectUpdateWidgetWorker @AssistedInject constructor(
     @Assisted private val appContext: Context,
     @Assisted private val workerParameters: WorkerParameters,
     private val oagRepository: OagRepository,
     private val notificationRepository: NotificationRepository,
-
 ) : CoroutineWorker(appContext, workerParameters) {
 
     override suspend fun doWork(): Result {
@@ -42,13 +39,17 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
         val dataStore = AlbumWidgetDataDefinition.getDataStore(appContext)
         val projectId: String? = dataStore.data.firstOrNull()?.projectId
 
-        // TODO Look into this actually checking if yesterdays album is rated
-
+        Timber.i("PeriodicProjectUpdateWidgetWorker doing work for $projectId")
         projectId?.let {
-            notificationRepository.updateNotifications(projectId)
+            notificationRepository.updateNotifications(
+                origin = "PeriodicProjectUpdateWidgetWorker",
+                projectId = projectId,
+            )
+
             oagRepository.updateProject(projectId)
                 .doOnSuccess {
                     workerResult = Result.success()
+                    UpdateWidgetStateWorker.enqueueUnique(appContext)
                 }
                 .doOnFailure { _ ->
                     workerResult = Result.failure()
@@ -57,17 +58,15 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
             workerResult = Result.failure(workDataOf("error" to "No project id set"))
         }
 
-        AlbumCoverWidget().updateAll(appContext)
-
         return workerResult
     }
 
     companion object {
-        private const val SIMPLIFIED_WORKER_UNIQUE_NAME = "simplifiedWorkerUniqueName"
+        private const val SIMPLIFIED_WORKER_UNIQUE_NAME = "PeriodicProjectUpdateWidgetWorkerUniqueName"
 
-        private fun startSingle() = OneTimeWorkRequestBuilder<SimplifiedWidgetWorker>()
+        private fun startSingle() = OneTimeWorkRequestBuilder<PeriodicProjectUpdateWidgetWorker>()
             .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-            .addTag("SingleWorkForSimplified")
+            .addTag("SingleWorkForPeriodicProjectUpdateWidgetWorker")
             .setConstraints(
                 Constraints.Builder()
                     .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -90,7 +89,7 @@ class SimplifiedWidgetWorker @AssistedInject constructor(
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build()
 
-        private fun periodicWorkSync() = PeriodicWorkRequestBuilder<SimplifiedWidgetWorker>(
+        private fun periodicWorkSync() = PeriodicWorkRequestBuilder<PeriodicProjectUpdateWidgetWorker>(
             repeatInterval = Duration.ofHours(1),
         )
             .setBackoffCriteria(
