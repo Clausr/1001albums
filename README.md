@@ -12,7 +12,7 @@ The tag of the release dictates the version name of the app.
 
 For the following sections we want to release app **1.3**
 
-## Release candidate
+### Release candidate
 Create a branch from main in the following format: `release/1.3` -> Push  
 [Draft a new release](https://github.com/Clausr/1001albums/releases/new)  
 1. Create a new tag: 1.3.0-rc01
@@ -22,7 +22,7 @@ Create a branch from main in the following format: `release/1.3` -> Push
 5. Publish release
 This will start building the production app and push it to internal testers on Google Play
 
-## Release
+### Release
 If any changes between release candidate and this release, they should be merged into the newly created release branch.
 [Draft a new release](https://github.com/Clausr/1001albums/releases/new)  
 1. Create a new tag: 1.3.0
@@ -32,3 +32,4 @@ If any changes between release candidate and this release, they should be merged
 5. Publish release
 
 After Github Actions is done running, go to [Play Console](https://play.google.com/console/u/0/developers/7571329545281378386/app/4976014396259861064/tracks/internal-testing) and promote the build to production
+And remember to make a **MERGE COMMIT** into master
