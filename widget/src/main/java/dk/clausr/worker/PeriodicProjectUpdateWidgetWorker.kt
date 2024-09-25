@@ -9,7 +9,6 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.OutOfQuotaPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
@@ -48,8 +47,8 @@ class PeriodicProjectUpdateWidgetWorker @AssistedInject constructor(
 
             oagRepository.updateProject(projectId)
                 .doOnSuccess {
-                    workerResult = Result.success()
                     UpdateWidgetStateWorker.enqueueUnique(appContext)
+                    workerResult = Result.success()
                 }
                 .doOnFailure { _ ->
                     workerResult = Result.failure()
@@ -65,7 +64,6 @@ class PeriodicProjectUpdateWidgetWorker @AssistedInject constructor(
         private const val SIMPLIFIED_WORKER_UNIQUE_NAME = "simplifiedWorkerUniqueName"
 
         private fun startSingle() = OneTimeWorkRequestBuilder<PeriodicProjectUpdateWidgetWorker>()
-            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             .addTag("SingleWorkForPeriodicProjectUpdateWidgetWorker")
             .setConstraints(
                 Constraints.Builder()
