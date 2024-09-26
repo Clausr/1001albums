@@ -102,6 +102,6 @@ sealed class NotificationData {
         val albumName: String,
         val albumSlug: String,
         val thumbsUp: Int,
-        val isUserAlbum: Boolean?,
+        val isUserAlbum: Boolean? = false,
     ) : NotificationData()
 }
