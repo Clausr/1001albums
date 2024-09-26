@@ -96,7 +96,7 @@ class PeriodicProjectUpdateWidgetWorker @AssistedInject constructor(
         fun enqueueUnique(context: Context) {
             WorkManager.getInstance(context).enqueueUniqueWork(
                 SIMPLIFIED_WORKER_UNIQUE_NAME,
-                ExistingWorkPolicy.KEEP,
+                ExistingWorkPolicy.REPLACE,
                 startSingle(),
             )
         }
