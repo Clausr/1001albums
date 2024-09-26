@@ -55,6 +55,17 @@ class BurstUpdateWorker @AssistedInject constructor(
                 }
             }
 
+        Timber.d(
+            "Burst Worker result: ${
+                when {
+                    result == Result.success() -> "Success"
+                    result == Result.retry() -> "Retry"
+                    result == Result.failure() -> "Failure"
+                    else -> "Unknown"
+                }
+            }",
+        )
+
         return result ?: Result.failure()
     }
 
@@ -87,7 +98,7 @@ class BurstUpdateWorker @AssistedInject constructor(
             WorkManager.getInstance(context)
                 .enqueueUniqueWork(
                     "BurstUpdateWorker",
-                    ExistingWorkPolicy.KEEP,
+                    ExistingWorkPolicy.REPLACE,
                     enqueueBurstUpdate(projectId),
                 )
         }

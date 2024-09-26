@@ -170,9 +170,10 @@ class OfflineFirstOagRepository @Inject constructor(
         val history = historicAlbums.firstOrNull()
         val lastAlbum = history?.firstOrNull()
 
-        Timber.d("isLatestAlbumRated ${lastAlbum?.album?.name} -- rating: ${lastAlbum?.rating}")
+        val isLastAlbumRated = lastAlbum?.rating is Rating.Rated
+        Timber.d("isLatestAlbumRated $isLastAlbumRated")
 
-        return lastAlbum?.rating is Rating.Rated
+        return isLastAlbumRated
     }
 
     private suspend fun updateWidgetData(
