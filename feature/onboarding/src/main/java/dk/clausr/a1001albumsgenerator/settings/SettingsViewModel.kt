@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.clausr.core.common.model.doOnFailure
 import dk.clausr.core.common.model.doOnSuccess
+import dk.clausr.core.common.network.AppInformation
 import dk.clausr.core.data.repository.NotificationRepository
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data.repository.UserRepository
@@ -28,10 +29,12 @@ class SettingsViewModel @Inject constructor(
     private val oagRepository: OagRepository,
     private val userRepository: UserRepository,
     private val notificationRepository: NotificationRepository,
+    appInformation: AppInformation,
 ) : ViewModel() {
     private val _viewEffect = Channel<SettingsViewEffect>(Channel.BUFFERED)
     val viewEffect = _viewEffect.receiveAsFlow()
 
+    val buildVersion = "${appInformation.versionName} (${appInformation.versionCode})"
     val projectId: StateFlow<String?> = oagRepository.projectId.map { it }
         .stateIn(
             scope = viewModelScope,
