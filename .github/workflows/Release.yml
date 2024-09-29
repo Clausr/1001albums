@@ -52,20 +52,14 @@ jobs:
 
         run: |
           mkdir -p signing
-          #         MacOS version
-          #          echo "$ENCODED_STRING" | base64 --d -o signing/Clausr.keystore
-          #         Ubuntu version
-               echo "$ENCODED_STRING" | base64 --decode > signing/Clausr.keystore
+          echo "$ENCODED_STRING" | base64 --decode > signing/Clausr.keystore
 
       - name: Insert sentry properties
         env:
           ENCODED_SENTRY_PROPERTIES: ${{ secrets.SENTRY_PROPERTIES_BASE64 }}
 
         run: |
-          #         MacOS version
-          #         echo "$ENCODED_SENTRY_PROPERTIES" | base64 --d -o sentry.properties # MacOS version
-          #         Ubuntu Version
-               echo "$ENCODED_SENTRY_PROPERTIES" | base64 --decode > sentry.properties
+          echo "$ENCODED_SENTRY_PROPERTIES" | base64 --decode > sentry.properties
 
 
       - name: Build Release bundle
