@@ -16,7 +16,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import dk.clausr.core.common.model.doOnFailure
 import dk.clausr.core.common.model.doOnSuccess
-import dk.clausr.core.data.repository.NotificationRepository
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.network.NetworkError
 import timber.log.Timber
@@ -27,7 +26,6 @@ class BurstUpdateWorker @AssistedInject constructor(
     @Assisted private val appContext: Context,
     @Assisted private val workerParameters: WorkerParameters,
     private val oagRepository: OagRepository,
-    private val notificationRepository: NotificationRepository,
 ) : CoroutineWorker(appContext, workerParameters) {
 
     override suspend fun doWork(): Result {
@@ -40,23 +38,15 @@ class BurstUpdateWorker @AssistedInject constructor(
 
         var result: Result? = null
 
-        notificationRepository.updateNotifications(
-            origin = "BurstUpdateWorker",
-            projectId = projectId,
-        )
-
         oagRepository.updateProject(projectId)
             .doOnSuccess {
                 val isLatestAlbumRated = oagRepository.isLatestAlbumRated()
 
-                if (isLatestAlbumRated) {
-                    // (Re)Start recurring poll
-                    PeriodicProjectUpdateWidgetWorker.enqueueUnique(appContext)
+                result = if (isLatestAlbumRated) {
                     UpdateWidgetStateWorker.enqueueUnique(appContext)
-
-                    result = Result.success()
+                    Result.success()
                 } else {
-                    result = Result.retry()
+                    Result.retry()
                 }
             }
             .doOnFailure {
@@ -64,6 +54,17 @@ class BurstUpdateWorker @AssistedInject constructor(
                     result = Result.retry()
                 }
             }
+
+        Timber.d(
+            "Burst Worker result: ${
+                when {
+                    result == Result.success() -> "Success"
+                    result == Result.retry() -> "Retry"
+                    result == Result.failure() -> "Failure"
+                    else -> "Unknown"
+                }
+            }",
+        )
 
         return result ?: Result.failure()
     }
@@ -97,7 +98,7 @@ class BurstUpdateWorker @AssistedInject constructor(
             WorkManager.getInstance(context)
                 .enqueueUniqueWork(
                     "BurstUpdateWorker",
-                    ExistingWorkPolicy.KEEP,
+                    ExistingWorkPolicy.REPLACE,
                     enqueueBurstUpdate(projectId),
                 )
         }
