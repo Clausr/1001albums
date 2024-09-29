@@ -79,7 +79,6 @@ class BurstUpdateWorker @AssistedInject constructor(
 
         private fun enqueueBurstUpdate(projectId: String) = OneTimeWorkRequestBuilder<BurstUpdateWorker>()
             .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-            .setInitialDelay(BACKOFF_SECONDS_DELAY, TimeUnit.SECONDS)
             .addTag("BurstUpdateWorkerTag")
             .setInputData(
                 workDataOf(
