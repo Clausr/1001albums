@@ -57,15 +57,23 @@ object NetworkModule {
     @Provides
     @Singleton
     fun okHttpCallFactory(appInformation: AppInformation): Call.Factory {
-        val okHttpClient = OkHttpClient.Builder().readTimeout(15, TimeUnit.SECONDS)
+        val okHttpClient = OkHttpClient.Builder()
+            .readTimeout(15, TimeUnit.SECONDS)
             .writeTimeout(timeout = 15, TimeUnit.SECONDS)
             .connectTimeout(timeout = 30, TimeUnit.SECONDS)
-            .addNetworkInterceptor(
-                HttpLoggingInterceptor().apply {
-                    level = HttpLoggingInterceptor.Level.BODY
-                },
+            .apply {
+                if (BuildConfig.DEBUG) {
+                    addNetworkInterceptor(
+                        HttpLoggingInterceptor().apply {
+                            level = HttpLoggingInterceptor.Level.BODY
+                        },
+                    )
+                }
+            }
+            .addInterceptor(
+                UserAgentInterceptor(appInformation)
             )
-            .addInterceptor(UserAgentInterceptor(appInformation))
+
             .build()
 
         return okHttpClient
