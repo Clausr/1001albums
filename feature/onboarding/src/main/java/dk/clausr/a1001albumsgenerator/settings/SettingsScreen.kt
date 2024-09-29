@@ -32,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
@@ -67,7 +68,6 @@ fun SettingsRoute(
     val projectId by viewModel.projectId.collectAsState()
     val preferredStreamingPlatform by viewModel.streamingPlatform.collectAsState()
     val covers by viewModel.coverData.collectAsState()
-
     var error: NetworkError? by remember {
         mutableStateOf(null)
     }
@@ -94,6 +94,7 @@ fun SettingsRoute(
         coverData = covers,
         error = error,
         projectTextFieldEnabled = projectId == null,
+        buildVersion = viewModel.buildVersion,
     )
 }
 
@@ -107,6 +108,7 @@ fun SettingsScreen(
     onClickApply: () -> Unit,
     showBack: Boolean,
     error: NetworkError?,
+    buildVersion: String,
     projectTextFieldEnabled: Boolean,
     modifier: Modifier = Modifier,
     coverData: CoverData = CoverData.default(),
@@ -165,16 +167,17 @@ fun SettingsScreen(
         bottomBar = {
             val context = LocalContext.current
             if (showBack) {
-                Row(
+                Column(
                     modifier = Modifier
                         .alpha(hideContentAlpha)
                         .fillMaxWidth()
                         .navigationBarsPadding(),
-                    horizontalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Button(onClick = { context.openLink("https://www.clausr.dk/privacy") }) {
                         Text("Privacy policy")
                     }
+                    Text(text = buildVersion)
                 }
             }
         },
@@ -275,6 +278,7 @@ private fun SettingsPreview() {
             showBack = true,
             error = null,
             projectTextFieldEnabled = true,
+            buildVersion = "1.2.3 (456)",
         )
     }
 }
