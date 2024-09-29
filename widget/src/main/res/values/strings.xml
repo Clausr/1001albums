@@ -21,4 +21,8 @@
     <string name="a11y_content_description_external_link">Open website</string>
     <string name="a11y_content_description_wikipedia_link">Open wikipedia page</string>
     <string name="nudge_did_not_listen_button_title">Did not listen</string>
+
+    <string name="sync_work_notification_title">1001 Albums Widget</string>
+    <string name="sync_work_notification_channel_name">Syncing project</string>
+    <string name="sync_work_notification_channel_description">Background tasks for 1001 Albums</string>
 </resources>

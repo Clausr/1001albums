@@ -7,6 +7,7 @@ import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
+import androidx.work.ForegroundInfo
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
@@ -33,6 +34,8 @@ class PeriodicProjectUpdateWidgetWorker @AssistedInject constructor(
     private val oagRepository: OagRepository,
     private val notificationRepository: NotificationRepository,
 ) : CoroutineWorker(appContext, workerParameters) {
+
+    override suspend fun getForegroundInfo(): ForegroundInfo = appContext.syncForegroundInfo(oagNotificationType = OagNotificationType.PeriodicSync)
 
     override suspend fun doWork(): Result {
         if (runAttemptCount >= MAX_RETRIES) return Result.failure()

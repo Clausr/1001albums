@@ -6,9 +6,10 @@ import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingWorkPolicy
+import androidx.work.ForegroundInfo
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST
+import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
@@ -27,6 +28,8 @@ class BurstUpdateWorker @AssistedInject constructor(
     @Assisted private val workerParameters: WorkerParameters,
     private val oagRepository: OagRepository,
 ) : CoroutineWorker(appContext, workerParameters) {
+
+    override suspend fun getForegroundInfo(): ForegroundInfo = appContext.syncForegroundInfo(oagNotificationType = OagNotificationType.BurstSync)
 
     override suspend fun doWork(): Result {
         if (runAttemptCount >= MAX_RETRIES) return Result.failure()
@@ -75,7 +78,8 @@ class BurstUpdateWorker @AssistedInject constructor(
         private const val BACKOFF_SECONDS_DELAY = 30L
 
         private fun enqueueBurstUpdate(projectId: String) = OneTimeWorkRequestBuilder<BurstUpdateWorker>()
-            .setExpedited(RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            .setInitialDelay(BACKOFF_SECONDS_DELAY, TimeUnit.SECONDS)
             .addTag("BurstUpdateWorkerTag")
             .setInputData(
                 workDataOf(
