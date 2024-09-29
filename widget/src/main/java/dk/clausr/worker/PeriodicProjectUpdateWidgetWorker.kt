@@ -7,16 +7,15 @@ import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
+import androidx.work.ForegroundInfo
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.OutOfQuotaPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import dk.clausr.core.common.model.doOnFailure
 import dk.clausr.core.common.model.doOnSuccess
 import dk.clausr.core.data.repository.NotificationRepository
 import dk.clausr.core.data.repository.OagRepository
@@ -33,6 +32,8 @@ class PeriodicProjectUpdateWidgetWorker @AssistedInject constructor(
     private val oagRepository: OagRepository,
     private val notificationRepository: NotificationRepository,
 ) : CoroutineWorker(appContext, workerParameters) {
+
+    override suspend fun getForegroundInfo(): ForegroundInfo = appContext.syncForegroundInfo(oagNotificationType = OagNotificationType.PeriodicSync)
 
     override suspend fun doWork(): Result {
         var workerResult: Result = Result.retry()
@@ -51,9 +52,6 @@ class PeriodicProjectUpdateWidgetWorker @AssistedInject constructor(
                     workerResult = Result.success()
                     UpdateWidgetStateWorker.enqueueUnique(appContext)
                 }
-                .doOnFailure { _ ->
-                    workerResult = Result.failure()
-                }
         } ?: run {
             workerResult = Result.failure(workDataOf("error" to "No project id set"))
         }
@@ -65,7 +63,6 @@ class PeriodicProjectUpdateWidgetWorker @AssistedInject constructor(
         private const val SIMPLIFIED_WORKER_UNIQUE_NAME = "simplifiedWorkerUniqueName"
 
         private fun startSingle() = OneTimeWorkRequestBuilder<PeriodicProjectUpdateWidgetWorker>()
-            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             .addTag("SingleWorkForPeriodicProjectUpdateWidgetWorker")
             .setConstraints(
                 Constraints.Builder()

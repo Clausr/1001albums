@@ -5,6 +5,7 @@ import androidx.glance.appwidget.updateAll
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingWorkPolicy
+import androidx.work.ForegroundInfo
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
@@ -18,6 +19,8 @@ class UpdateWidgetStateWorker @AssistedInject constructor(
     @Assisted private val appContext: Context,
     @Assisted private val workerParameters: WorkerParameters,
 ) : CoroutineWorker(appContext, workerParameters) {
+
+    override suspend fun getForegroundInfo(): ForegroundInfo = appContext.syncForegroundInfo(OagNotificationType.UpdateWidgetState)
     override suspend fun doWork(): Result {
         AlbumCoverWidget().updateAll(appContext)
 
