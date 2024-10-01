@@ -19,6 +19,8 @@ import dk.clausr.core.common.model.doOnFailure
 import dk.clausr.core.common.model.doOnSuccess
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.network.NetworkError
+import dk.clausr.worker.helper.OagNotificationType
+import dk.clausr.worker.helper.syncForegroundInfo
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -76,6 +78,7 @@ class BurstUpdateWorker @AssistedInject constructor(
         const val PROJECT_ID_KEY = "ProjectIdKey"
         const val MAX_RETRIES = 10
         private const val BACKOFF_SECONDS_DELAY = 30L
+        const val UNIQUE_NAME = "BurstUpdateWorker"
 
         private fun enqueueBurstUpdate(projectId: String) = OneTimeWorkRequestBuilder<BurstUpdateWorker>()
             .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
@@ -100,7 +103,7 @@ class BurstUpdateWorker @AssistedInject constructor(
         ) {
             WorkManager.getInstance(context)
                 .enqueueUniqueWork(
-                    "BurstUpdateWorker",
+                    UNIQUE_NAME,
                     ExistingWorkPolicy.REPLACE,
                     enqueueBurstUpdate(projectId),
                 )

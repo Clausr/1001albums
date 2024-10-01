@@ -23,6 +23,9 @@ import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectId
 import dk.clausr.core.network.NetworkError
+import dk.clausr.worker.helper.OagNotificationType
+import dk.clausr.worker.helper.isUniqueWorkerRunning
+import dk.clausr.worker.helper.syncForegroundInfo
 import kotlinx.coroutines.flow.firstOrNull
 import timber.log.Timber
 import java.time.Duration
@@ -40,6 +43,13 @@ class PeriodicProjectUpdateWidgetWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         if (runAttemptCount >= MAX_RETRIES) return Result.failure()
         Timber.d("Periodic run attempt $runAttemptCount")
+
+        val isBurstRunning = appContext.isUniqueWorkerRunning(BurstUpdateWorker.UNIQUE_NAME)
+        if (isBurstRunning) {
+            Timber.i("Burst update is already running, no need for this")
+            return Result.failure()
+        }
+
         var workerResult: Result = Result.failure()
         val dataStore = AlbumWidgetDataDefinition.getDataStore(appContext)
         val projectId: String? = dataStore.data.firstOrNull()?.projectId
@@ -83,7 +93,7 @@ class PeriodicProjectUpdateWidgetWorker @AssistedInject constructor(
     }
 
     companion object {
-        private const val SIMPLIFIED_WORKER_UNIQUE_NAME = "simplifiedWorkerUniqueName"
+        const val SIMPLIFIED_WORKER_UNIQUE_NAME = "simplifiedWorkerUniqueName"
         const val MAX_RETRIES = 10
         private const val BACKOFF_SECONDS_DELAY = 30L
 

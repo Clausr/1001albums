@@ -13,6 +13,8 @@ import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import dk.clausr.widget.AlbumCoverWidget
+import dk.clausr.worker.helper.OagNotificationType
+import dk.clausr.worker.helper.syncForegroundInfo
 
 @HiltWorker
 class UpdateWidgetStateWorker @AssistedInject constructor(
