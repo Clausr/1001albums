@@ -1,6 +1,9 @@
 package dk.clausr.a1001albumsgenerator
 
 import android.app.Application
+import android.app.usage.UsageStatsManager
+import android.content.Context
+import android.os.Build
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import coil3.ImageLoader
@@ -23,6 +26,7 @@ class OagApplication : Application(), Configuration.Provider {
     @Inject
     lateinit var imageLoader: ImageLoader
 
+    private val usageStatsService by lazy { getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager }
     override fun onCreate() {
         super.onCreate()
 
@@ -32,6 +36,18 @@ class OagApplication : Application(), Configuration.Provider {
 
         SingletonImageLoader.setSafe {
             imageLoader
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            val standbyBucket = when (usageStatsService.appStandbyBucket) {
+                UsageStatsManager.STANDBY_BUCKET_ACTIVE -> "Active"
+                UsageStatsManager.STANDBY_BUCKET_RARE -> "Rare"
+                UsageStatsManager.STANDBY_BUCKET_RESTRICTED -> "Restricted"
+                UsageStatsManager.STANDBY_BUCKET_WORKING_SET -> "Working set"
+                UsageStatsManager.STANDBY_BUCKET_FREQUENT -> "Frequent"
+                else -> ""
+            }
+            Timber.i("Standby bucket: $standbyBucket")
         }
     }
 

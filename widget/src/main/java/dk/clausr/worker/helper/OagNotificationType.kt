@@ -1,4 +1,4 @@
-package dk.clausr.worker
+package dk.clausr.worker.helper
 
 sealed class OagNotificationType(val id: Int, val channelId: String) {
     data object PeriodicSync : OagNotificationType(
