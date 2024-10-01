@@ -70,6 +70,7 @@ jobs:
         run: ./gradlew bundleProdRelease --stacktrace
 
       - name: Upload Release Build to Artifacts
+        if: github.ref_type == 'tag'
         uses: actions/upload-artifact@v4
         with:
           name: oag-prod-aab
@@ -77,6 +78,7 @@ jobs:
             **/prodRelease/*.aab
 
       - name: Upload Symbols mapping
+        if: github.ref_type == 'tag'
         uses: actions/upload-artifact@v4
         with:
           name: oag-prod-mapping
