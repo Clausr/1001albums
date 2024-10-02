@@ -26,6 +26,8 @@ import dk.clausr.core.network.NetworkError
 import dk.clausr.worker.helper.OagNotificationType
 import dk.clausr.worker.helper.isUniqueWorkerRunning
 import dk.clausr.worker.helper.syncForegroundInfo
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.firstOrNull
 import timber.log.Timber
 import java.time.Duration
@@ -56,24 +58,29 @@ class PeriodicProjectUpdateWidgetWorker @AssistedInject constructor(
 
         Timber.i("PeriodicProjectUpdateWidgetWorker doing work for $projectId")
         projectId?.let {
-            notificationRepository.updateNotifications(
-                origin = "PeriodicProjectUpdateWidgetWorker",
-                projectId = projectId,
-            )
+            coroutineScope {
+                val updateNotificationsAsync = async() { updateNotifications(it) }
+                val updateProjectAsync = async {
+                    oagRepository.updateProject(projectId)
+                }
 
-            oagRepository.updateProject(projectId)
-                .doOnSuccess {
-                    Timber.i("Project updated successfully")
-                    UpdateWidgetStateWorker.enqueueUnique(appContext)
-                    workerResult = Result.success()
-                }
-                .doOnFailure {
-                    workerResult = if (it is NetworkError.TooManyRequests) {
-                        Result.retry()
-                    } else {
-                        Result.failure()
+                val updateProjectResult = updateProjectAsync.await()
+
+                updateProjectResult
+                    .doOnSuccess {
+                        Timber.i("Project updated successfully")
+                        updateNotificationsAsync.await()
+                        UpdateWidgetStateWorker.enqueueUnique(appContext)
+                        workerResult = Result.success()
                     }
-                }
+                    .doOnFailure {
+                        workerResult = if (it is NetworkError.TooManyRequests) {
+                            Result.retry()
+                        } else {
+                            Result.failure()
+                        }
+                    }
+            }
         } ?: run {
             Timber.e("No project id set")
             workerResult = Result.failure(workDataOf("error" to "No project id set"))
@@ -90,6 +97,13 @@ class PeriodicProjectUpdateWidgetWorker @AssistedInject constructor(
             }",
         )
         return workerResult
+    }
+
+    private suspend fun updateNotifications(projectId: String) {
+        notificationRepository.updateNotifications(
+            origin = "PeriodicProjectUpdateWidgetWorker",
+            projectId = projectId,
+        )
     }
 
     companion object {
