@@ -14,6 +14,8 @@
     <ID>CyclomaticComplexMethod:NotificationResponseSerializer.kt$NotificationResponseSerializer$override fun deserialize(decoder: Decoder):
       NotificationResponse
     </ID>
+    <ID>PackageNaming:DataMigration.kt$package dk.clausr.core.data_widget</ID>
+    <ID>PackageName:DataMigration.kt$package dk.clausr.core.data_widget</ID>
   </ManuallySuppressedIssues>
   <CurrentIssues />
 </SmellBaseline>

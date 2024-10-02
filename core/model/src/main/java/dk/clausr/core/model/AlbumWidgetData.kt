@@ -9,6 +9,7 @@ data class AlbumWidgetData(
     val wikiLink: String,
     val streamingServices: StreamingServices,
     val preferredStreamingPlatform: StreamingPlatform,
+    val unreadNotifications: Int = 0,
 )
 
 @Serializable

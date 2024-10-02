@@ -192,6 +192,11 @@ class OfflineFirstOagRepository @Inject constructor(
                 SerializedWidgetState.NotInitialized -> StreamingPlatform.Undefined
             }
 
+            val oldNotifications = when (old) {
+                is SerializedWidgetState.Success -> old.data.unreadNotifications
+                else -> 0
+            }
+
             SerializedWidgetState.Success(
                 data = AlbumWidgetData(
                     newAvailable = lastRevealedUnratedAlbum != null,
@@ -199,6 +204,7 @@ class OfflineFirstOagRepository @Inject constructor(
                     wikiLink = albumToUse.wikipediaUrl,
                     streamingServices = StreamingServices.from(albumToUse),
                     preferredStreamingPlatform = oldPreferredPlatform,
+                    unreadNotifications = oldNotifications,
                 ),
                 currentProjectId = project.name,
             )

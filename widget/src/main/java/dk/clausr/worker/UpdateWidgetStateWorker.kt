@@ -41,7 +41,7 @@ class UpdateWidgetStateWorker @AssistedInject constructor(
                 .enqueueUniqueWork(
                     UPDATE_WIDGET_UNIQUE_NAME,
                     ExistingWorkPolicy.REPLACE,
-                    startSingle()
+                    startSingle(),
                 )
         }
     }
