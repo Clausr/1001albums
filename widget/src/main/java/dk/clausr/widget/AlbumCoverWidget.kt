@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,18 +40,11 @@ import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
 import dk.clausr.core.common.extensions.openProject
-import dk.clausr.core.data.repository.NotificationRepository
-import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectUrl
-import dk.clausr.core.model.Notification
 import dk.clausr.worker.BurstUpdateWorker
 import dk.clausr.worker.PeriodicProjectUpdateWidgetWorker
 import kotlinx.coroutines.delay
@@ -64,38 +56,16 @@ class AlbumCoverWidget : GlanceAppWidget() {
     override val stateDefinition: GlanceStateDefinition<SerializedWidgetState> =
         AlbumWidgetDataDefinition
 
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    interface AlbumCoverWidgetEntryPoint {
-        fun oagRepository(): OagRepository
-        fun notificationRepository(): NotificationRepository
-    }
-
     override suspend fun provideGlance(
         context: Context,
         id: GlanceId,
     ) {
         Timber.d("GlanceID: $id")
-        val appContext = context.applicationContext
-        val hiltEntryPoint =
-            EntryPointAccessors.fromApplication(appContext, AlbumCoverWidgetEntryPoint::class.java)
-
-        val repo = hiltEntryPoint.oagRepository()
-        val notificationRepo = hiltEntryPoint.notificationRepository()
 
         provideContent {
-            val currentState = currentState<SerializedWidgetState>()
-
-            val state: SerializedWidgetState by repo.widgetState
-                .collectAsState(initial = currentState)
-
-            val notifications: List<Notification> by notificationRepo.unreadNotifications.collectAsState(emptyList())
-
-            Timber.d("Notifications: ${notifications.size}")
             GlanceTheme {
                 Content(
-                    state = state,
-                    notificationCount = notifications.size,
+                    state = currentState<SerializedWidgetState>(),
                 )
             }
         }
@@ -105,7 +75,6 @@ class AlbumCoverWidget : GlanceAppWidget() {
 @Composable
 fun Content(
     state: SerializedWidgetState,
-    notificationCount: Int,
     modifier: GlanceModifier = GlanceModifier,
 ) {
     Timber.d("Widget state: $state")
@@ -119,7 +88,9 @@ fun Content(
             }
 
             is SerializedWidgetState.Success -> {
-                ShowAlbumCover(state = state, notificationCount = notificationCount)
+                ShowAlbumCover(
+                    state = state,
+                )
             }
 
             is SerializedWidgetState.Error -> {
@@ -150,7 +121,6 @@ fun Content(
 @Composable
 private fun ShowAlbumCover(
     state: SerializedWidgetState.Success,
-    notificationCount: Int,
     modifier: GlanceModifier = GlanceModifier,
 ) {
     val context = LocalContext.current
@@ -182,7 +152,7 @@ private fun ShowAlbumCover(
             RatingNudge(state.currentProjectId)
         }
 
-        if (notificationCount > 0) {
+        if (state.data.unreadNotifications > 0) {
             val intent = Intent(context, Class.forName("dk.clausr.a1001albumsgenerator.MainActivity")).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             }
@@ -277,11 +247,21 @@ class AlbumCoverWidgetReceiver : GlanceAppWidgetReceiver() {
 
     override fun onEnabled(context: Context) {
         super.onEnabled(context)
+        Timber.d("AlbumCoverWidgetReceiver onEnabled")
         PeriodicProjectUpdateWidgetWorker.start(context)
     }
 
     override fun onDisabled(context: Context) {
         super.onDisabled(context)
+        Timber.d("AlbumCoverWidgetReceiver onDisabled")
         PeriodicProjectUpdateWidgetWorker.cancel(context)
+    }
+
+    override fun onDeleted(
+        context: Context,
+        appWidgetIds: IntArray,
+    ) {
+        Timber.d("AlbumCoverWidgetReceiver onDeleted: ids: ${appWidgetIds.joinToString { it.toString() }}")
+        super.onDeleted(context, appWidgetIds)
     }
 }

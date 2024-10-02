@@ -18,10 +18,13 @@ import java.io.InputStream
 import java.io.OutputStream
 
 object AlbumWidgetDataDefinition : GlanceStateDefinition<SerializedWidgetState> {
-    const val fileName = "_ALBUM_WIDGET_DATASTORE_FILE"
+    private const val FILE_NAME = "_ALBUM_WIDGET_DATASTORE_FILE"
     private val Context.oagDataStore by dataStore(
-        fileName = fileName,
+        fileName = FILE_NAME,
         serializer = WidgetStateDataSerializer,
+        produceMigrations = { _ ->
+            listOf(dataMigration)
+        },
     )
 
     override suspend fun getDataStore(
@@ -29,12 +32,12 @@ object AlbumWidgetDataDefinition : GlanceStateDefinition<SerializedWidgetState> 
         fileKey: String,
     ): DataStore<SerializedWidgetState> = context.oagDataStore
 
-    suspend fun getDataStore(context: Context): DataStore<SerializedWidgetState> = getDataStore(context, fileName)
+    suspend fun getDataStore(context: Context): DataStore<SerializedWidgetState> = getDataStore(context, FILE_NAME)
 
     override fun getLocation(
         context: Context,
         fileKey: String,
-    ): File = context.dataStoreFile(fileName)
+    ): File = context.dataStoreFile(FILE_NAME)
 
     @OptIn(ExperimentalSerializationApi::class)
     object WidgetStateDataSerializer : Serializer<SerializedWidgetState> {

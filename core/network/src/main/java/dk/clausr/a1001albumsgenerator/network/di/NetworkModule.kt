@@ -71,9 +71,8 @@ object NetworkModule {
                 }
             }
             .addInterceptor(
-                UserAgentInterceptor(appInformation)
+                UserAgentInterceptor(appInformation),
             )
-
             .build()
 
         return okHttpClient

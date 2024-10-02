@@ -59,7 +59,7 @@ class PeriodicProjectUpdateWidgetWorker @AssistedInject constructor(
         Timber.i("PeriodicProjectUpdateWidgetWorker doing work for $projectId")
         projectId?.let {
             coroutineScope {
-                val updateNotificationsAsync = async() { updateNotifications(it) }
+                val updateNotificationsAsync = async { updateNotifications(it) }
                 val updateProjectAsync = async {
                     oagRepository.updateProject(projectId)
                 }
@@ -70,7 +70,6 @@ class PeriodicProjectUpdateWidgetWorker @AssistedInject constructor(
                     .doOnSuccess {
                         Timber.i("Project updated successfully")
                         updateNotificationsAsync.await()
-                        UpdateWidgetStateWorker.enqueueUnique(appContext)
                         workerResult = Result.success()
                     }
                     .doOnFailure {

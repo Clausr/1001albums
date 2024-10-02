@@ -48,7 +48,7 @@ class BurstUpdateWorker @AssistedInject constructor(
                 val isLatestAlbumRated = oagRepository.isLatestAlbumRated()
 
                 result = if (isLatestAlbumRated) {
-                    UpdateWidgetStateWorker.enqueueUnique(appContext)
+//                    UpdateWidgetStateWorker.enqueueUnique(appContext)
                     Result.success()
                 } else {
                     Result.retry()
