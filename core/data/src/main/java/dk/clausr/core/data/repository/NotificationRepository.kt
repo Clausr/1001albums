@@ -68,7 +68,7 @@ class NotificationRepository @Inject constructor(
                 }
             }
             .doOnFailure {
-                Timber.e(it.cause, "Notifications went wrong.. -- ${it}")
+                Timber.e(it.cause, "Notifications went wrong.. -- $it")
             }
     }
 

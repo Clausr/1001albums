@@ -3,8 +3,7 @@ package dk.clausr.core.data_widget
 import androidx.datastore.core.DataMigration
 
 val dataMigration = object : DataMigration<SerializedWidgetState> {
-    override suspend fun cleanUp() { /* Intentionally blank */
-    }
+    override suspend fun cleanUp() { /* Intentionally blank */ }
 
     override suspend fun shouldMigrate(currentData: SerializedWidgetState): Boolean {
         // Decide if migration is needed (e.g., old data doesn't have `unreadNotifications`)
