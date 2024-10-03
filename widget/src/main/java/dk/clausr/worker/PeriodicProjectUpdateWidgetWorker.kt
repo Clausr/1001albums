@@ -18,6 +18,8 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import dk.clausr.core.common.model.doOnFailure
 import dk.clausr.core.common.model.doOnSuccess
+import dk.clausr.core.common.network.Dispatcher
+import dk.clausr.core.common.network.OagDispatchers
 import dk.clausr.core.data.repository.NotificationRepository
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
@@ -26,6 +28,7 @@ import dk.clausr.core.network.NetworkError
 import dk.clausr.worker.helper.OagNotificationType
 import dk.clausr.worker.helper.isUniqueWorkerRunning
 import dk.clausr.worker.helper.syncForegroundInfo
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.firstOrNull
@@ -36,6 +39,7 @@ import java.time.Duration
 class PeriodicProjectUpdateWidgetWorker @AssistedInject constructor(
     @Assisted private val appContext: Context,
     @Assisted private val workerParameters: WorkerParameters,
+    @Dispatcher(OagDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
     private val oagRepository: OagRepository,
     private val notificationRepository: NotificationRepository,
 ) : CoroutineWorker(appContext, workerParameters) {
@@ -59,8 +63,8 @@ class PeriodicProjectUpdateWidgetWorker @AssistedInject constructor(
         Timber.i("PeriodicProjectUpdateWidgetWorker doing work for $projectId")
         projectId?.let {
             coroutineScope {
-                val updateNotificationsAsync = async { updateNotifications(it) }
-                val updateProjectAsync = async {
+                val updateNotificationsAsync = async(ioDispatcher) { updateNotifications(it) }
+                val updateProjectAsync = async(ioDispatcher) {
                     oagRepository.updateProject(projectId)
                 }
 

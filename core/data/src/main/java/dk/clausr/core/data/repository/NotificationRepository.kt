@@ -49,6 +49,7 @@ class NotificationRepository @Inject constructor(
             showRead = getRead,
         )
             .doOnSuccess { networkNotifications ->
+                Timber.i("Notifications gotten correctly.")
                 val nonUnknownNotifications = networkNotifications.notifications.filterNot { it.type == NotificationType.Unknown }
                 if (networkNotifications.notifications.isEmpty()) {
                     notificationDao.readNotifications()
@@ -67,7 +68,7 @@ class NotificationRepository @Inject constructor(
                 }
             }
             .doOnFailure {
-                Timber.e(it.cause, "Notifications went wrong..")
+                Timber.e(it.cause, "Notifications went wrong.. -- ${it}")
             }
     }
 
