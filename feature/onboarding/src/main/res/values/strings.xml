@@ -10,6 +10,9 @@
     <string name="get_started">Get started</string>
     <string name="create_user">Create a user</string>
     <string name="lets_go">Let\'s go</string>
+    <string name="select_streaming_service_button_title">Select</string>
     <string name="all_set">All set</string>
     <string name="username_textfield_label">Username</string>
+    <string name="streaming_service_title">Streaming service</string>
+    <string name="streaming_service_subtitle">Select your preferred streaming service</string>
 </resources>
