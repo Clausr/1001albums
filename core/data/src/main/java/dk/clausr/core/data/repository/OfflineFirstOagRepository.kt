@@ -159,7 +159,7 @@ class OfflineFirstOagRepository @Inject constructor(
                 )
             }
             .doOnFailure { error ->
-                Timber.e(error.cause, "$error")
+                Timber.e(error.cause, "Could not getAndUpdate project ${error.cause}")
             }
             .map {
                 it.asExternalModel()

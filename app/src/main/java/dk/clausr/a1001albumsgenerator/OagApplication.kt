@@ -14,10 +14,15 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.HiltAndroidApp
 import dagger.hilt.components.SingletonComponent
 import dk.clausr.a1001albumsgenerator.network.BuildConfig
+import dk.clausr.core.common.network.di.ApplicationCoroutineScope
+import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.worker.PeriodicProjectUpdateWidgetWorker
 import io.sentry.SentryLevel
 import io.sentry.android.core.SentryAndroid
 import io.sentry.android.timber.SentryTimberIntegration
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -25,6 +30,13 @@ import javax.inject.Inject
 class OagApplication : Application(), Configuration.Provider {
     @Inject
     lateinit var imageLoader: ImageLoader
+
+    @Inject
+    lateinit var oagRepository: OagRepository
+
+    @Inject
+    @ApplicationCoroutineScope
+    lateinit var applicationScope: CoroutineScope
 
     private val usageStatsService by lazy { getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager }
     override fun onCreate() {
@@ -51,8 +63,12 @@ class OagApplication : Application(), Configuration.Provider {
         }
     }
 
-    private fun startPeriodicWorker() {
-        PeriodicProjectUpdateWidgetWorker.start(this)
+    private fun startPeriodicWorker() = applicationScope.launch {
+        oagRepository.projectId.collectLatest {
+            it?.let {
+                PeriodicProjectUpdateWidgetWorker.start(this@OagApplication)
+            }
+        }
     }
 
     private fun initTimberAndSentry() {
@@ -81,6 +97,6 @@ class OagApplication : Application(), Configuration.Provider {
 
     override val workManagerConfiguration: Configuration = Configuration.Builder()
         .setWorkerFactory(EntryPoints.get(this, HiltWorkerFactoryEntryPoint::class.java).workerFactory())
-        .setMinimumLoggingLevel(android.util.Log.DEBUG)
+        .setMinimumLoggingLevel(if (BuildConfig.DEBUG) android.util.Log.VERBOSE else android.util.Log.INFO)
         .build()
 }
