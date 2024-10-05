@@ -31,6 +31,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import timber.log.Timber
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
@@ -64,9 +65,10 @@ object NetworkModule {
             .apply {
                 if (BuildConfig.DEBUG) {
                     addNetworkInterceptor(
-                        HttpLoggingInterceptor().apply {
-                            level = HttpLoggingInterceptor.Level.BODY
-                        },
+                        HttpLoggingInterceptor { message -> Timber.v(message) }
+                            .apply {
+                                level = HttpLoggingInterceptor.Level.BODY
+                            },
                     )
                 }
             }
