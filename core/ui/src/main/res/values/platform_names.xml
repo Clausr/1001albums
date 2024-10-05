@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_amazon_music">Amazon Music</string>
+    <string name="platform_apple_music">Apple Music</string>
+    <string name="platform_deezer">Deezer</string>
+    <string name="platform_spotify">Spotify</string>
+    <string name="platform_tidal">Tidal</string>
+    <string name="platform_youtube_music">YouTube Music</string>
+    <string name="platform_qobuz">Qobuz</string>
+</resources>

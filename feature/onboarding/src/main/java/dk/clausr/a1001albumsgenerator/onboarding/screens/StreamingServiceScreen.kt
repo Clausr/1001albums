@@ -23,10 +23,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dk.clausr.a1001albumsgenerator.feature.onboarding.R
 import dk.clausr.a1001albumsgenerator.onboarding.components.OnboardingTitle
 import dk.clausr.a1001albumsgenerator.ui.extensions.conditional
+import dk.clausr.a1001albumsgenerator.ui.helper.displayName
 import dk.clausr.a1001albumsgenerator.ui.helper.icon
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.model.StreamingPlatform
@@ -47,10 +50,10 @@ internal fun StreamingServiceScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        OnboardingTitle(text = "Streaming service")
+        OnboardingTitle(text = stringResource(R.string.streaming_service_title))
 
         Text(
-            text = "Select your preferred streaming service",
+            text = stringResource(R.string.streaming_service_subtitle),
             modifier = Modifier.fillMaxWidth(),
         )
 
@@ -92,7 +95,7 @@ internal fun StreamingServiceScreen(
                         contentDescription = null,
                     )
                     Text(
-                        text = platform.name,
+                        text = platform.displayName(),
                         color = itemColor,
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -107,7 +110,7 @@ internal fun StreamingServiceScreen(
                     onSetStreamingPlatform(selectedPlatform!!)
                 },
             ) {
-                Text("Select")
+                Text(stringResource(R.string.select_streaming_service_button_title))
             }
         }
     }

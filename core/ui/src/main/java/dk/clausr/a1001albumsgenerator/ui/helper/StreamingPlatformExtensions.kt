@@ -1,6 +1,8 @@
 package dk.clausr.a1001albumsgenerator.ui.helper
 
 import androidx.annotation.DrawableRes
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import dk.clausr.a1001albumsgenerator.ui.R
 import dk.clausr.core.model.StreamingPlatform
 
@@ -14,4 +16,16 @@ fun StreamingPlatform.icon(): Int = when (this) {
     StreamingPlatform.YouTubeMusic -> R.drawable.ic_youtube_music
     StreamingPlatform.Qobuz -> R.drawable.ic_qobuz
     StreamingPlatform.Undefined -> -1
+}
+
+@Composable
+fun StreamingPlatform.displayName(): String = when (this) {
+    StreamingPlatform.AmazonMusic -> stringResource(R.string.platform_amazon_music)
+    StreamingPlatform.AppleMusic -> stringResource(R.string.platform_apple_music)
+    StreamingPlatform.Deezer -> stringResource(R.string.platform_deezer)
+    StreamingPlatform.Spotify -> stringResource(R.string.platform_spotify)
+    StreamingPlatform.Tidal -> stringResource(R.string.platform_tidal)
+    StreamingPlatform.YouTubeMusic -> stringResource(R.string.platform_youtube_music)
+    StreamingPlatform.Qobuz -> stringResource(R.string.platform_amazon_music)
+    StreamingPlatform.Undefined -> ""
 }
