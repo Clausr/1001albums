@@ -54,6 +54,7 @@ fun ProjectTextField(
         singleLine = true,
         value = projectId,
         keyboardActions = KeyboardActions(onDone = {
+            onProjectIdChange(projectId)
             scope.launch {
                 keyboardController?.hide()
             }

@@ -1,19 +1,19 @@
-package dk.clausr.worker
+package dk.clausr.worker.helper
 
 sealed class OagNotificationType(val id: Int, val channelId: String) {
     data object PeriodicSync : OagNotificationType(
         id = PERIODIC_SYNC_NOTIFICATION_ID,
-        channelId = PERIODIC_SYNC_NOTIFICATION_CHANNEL_ID
+        channelId = PERIODIC_SYNC_NOTIFICATION_CHANNEL_ID,
     )
 
     data object BurstSync : OagNotificationType(
         id = BURST_SYNC_NOTIFICATION_ID,
-        channelId = BURST_SYNC_NOTIFICATION_CHANNEL_ID
+        channelId = BURST_SYNC_NOTIFICATION_CHANNEL_ID,
     )
 
     data object UpdateWidgetState : OagNotificationType(
         id = UPDATE_WIDGET_WORKER_NOTIFICATION_ID,
-        channelId = UPDATE_WIDGET_WORKER_NOTIFICATION_CHANNEL_ID
+        channelId = UPDATE_WIDGET_WORKER_NOTIFICATION_CHANNEL_ID,
     )
 }
 

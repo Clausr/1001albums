@@ -31,6 +31,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import timber.log.Timber
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
@@ -57,15 +58,23 @@ object NetworkModule {
     @Provides
     @Singleton
     fun okHttpCallFactory(appInformation: AppInformation): Call.Factory {
-        val okHttpClient = OkHttpClient.Builder().readTimeout(15, TimeUnit.SECONDS)
+        val okHttpClient = OkHttpClient.Builder()
+            .readTimeout(15, TimeUnit.SECONDS)
             .writeTimeout(timeout = 15, TimeUnit.SECONDS)
             .connectTimeout(timeout = 30, TimeUnit.SECONDS)
-            .addNetworkInterceptor(
-                HttpLoggingInterceptor().apply {
-                    level = HttpLoggingInterceptor.Level.BODY
-                },
+            .apply {
+                if (BuildConfig.DEBUG) {
+                    addNetworkInterceptor(
+                        HttpLoggingInterceptor { message -> Timber.v(message) }
+                            .apply {
+                                level = HttpLoggingInterceptor.Level.BODY
+                            },
+                    )
+                }
+            }
+            .addInterceptor(
+                UserAgentInterceptor(appInformation),
             )
-            .addInterceptor(UserAgentInterceptor(appInformation))
             .build()
 
         return okHttpClient

@@ -3,6 +3,7 @@ package dk.clausr.a1001albumsgenerator.utils
 import dk.clausr.core.common.model.Result
 import dk.clausr.core.network.NetworkError
 import retrofit2.HttpException
+import kotlin.coroutines.cancellation.CancellationException
 
 internal inline fun <T> doNetwork(
     httpExceptionHandler: (e: HttpException) -> Result.Failure<NetworkError> = ::defaultHttpExceptionHandler,
@@ -14,6 +15,8 @@ internal inline fun <T> doNetwork(
         Result.Success(value)
     } catch (httpException: HttpException) {
         httpExceptionHandler(httpException)
+    } catch (ce: CancellationException) {
+        Result.Failure(NetworkError.Generic(ce.cause))
     } catch (e: Exception) {
         Result.Failure(NetworkError.Generic(e))
     }

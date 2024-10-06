@@ -1,4 +1,4 @@
-package dk.clausr.worker
+package dk.clausr.worker.helper
 
 import android.app.Notification
 import android.app.NotificationChannel

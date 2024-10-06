@@ -18,11 +18,19 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import dk.clausr.core.common.model.doOnFailure
 import dk.clausr.core.common.model.doOnSuccess
+import dk.clausr.core.common.network.Dispatcher
+import dk.clausr.core.common.network.OagDispatchers
 import dk.clausr.core.data.repository.NotificationRepository
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectId
 import dk.clausr.core.network.NetworkError
+import dk.clausr.worker.helper.OagNotificationType
+import dk.clausr.worker.helper.isUniqueWorkerRunning
+import dk.clausr.worker.helper.syncForegroundInfo
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.firstOrNull
 import timber.log.Timber
 import java.time.Duration
@@ -31,6 +39,7 @@ import java.time.Duration
 class PeriodicProjectUpdateWidgetWorker @AssistedInject constructor(
     @Assisted private val appContext: Context,
     @Assisted private val workerParameters: WorkerParameters,
+    @Dispatcher(OagDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
     private val oagRepository: OagRepository,
     private val notificationRepository: NotificationRepository,
 ) : CoroutineWorker(appContext, workerParameters) {
@@ -40,30 +49,41 @@ class PeriodicProjectUpdateWidgetWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         if (runAttemptCount >= MAX_RETRIES) return Result.failure()
         Timber.d("Periodic run attempt $runAttemptCount")
+
+        val isBurstRunning = appContext.isUniqueWorkerRunning(BurstUpdateWorker.UNIQUE_NAME)
+        if (isBurstRunning) {
+            Timber.i("Burst update is already running, no need for this")
+            return Result.failure()
+        }
+
         var workerResult: Result = Result.failure()
         val dataStore = AlbumWidgetDataDefinition.getDataStore(appContext)
         val projectId: String? = dataStore.data.firstOrNull()?.projectId
 
         Timber.i("PeriodicProjectUpdateWidgetWorker doing work for $projectId")
         projectId?.let {
-            notificationRepository.updateNotifications(
-                origin = "PeriodicProjectUpdateWidgetWorker",
-                projectId = projectId,
-            )
+            coroutineScope {
+                val updateNotificationsAsync = async(ioDispatcher) { updateNotifications(it) }
+                val updateProjectAsync = async(ioDispatcher) {
+                    oagRepository.updateProject(projectId)
+                }
 
-            oagRepository.updateProject(projectId)
-                .doOnSuccess {
-                    Timber.i("Project updated successfully")
-                    UpdateWidgetStateWorker.enqueueUnique(appContext)
-                    workerResult = Result.success()
-                }
-                .doOnFailure {
-                    workerResult = if (it is NetworkError.TooManyRequests) {
-                        Result.retry()
-                    } else {
-                        Result.failure()
+                val updateProjectResult = updateProjectAsync.await()
+
+                updateProjectResult
+                    .doOnSuccess {
+                        Timber.i("Project updated successfully")
+                        updateNotificationsAsync.await()
+                        workerResult = Result.success()
                     }
-                }
+                    .doOnFailure {
+                        workerResult = if (it is NetworkError.TooManyRequests) {
+                            Result.retry()
+                        } else {
+                            Result.failure()
+                        }
+                    }
+            }
         } ?: run {
             Timber.e("No project id set")
             workerResult = Result.failure(workDataOf("error" to "No project id set"))
@@ -82,8 +102,15 @@ class PeriodicProjectUpdateWidgetWorker @AssistedInject constructor(
         return workerResult
     }
 
+    private suspend fun updateNotifications(projectId: String) {
+        notificationRepository.updateNotifications(
+            origin = "PeriodicProjectUpdateWidgetWorker",
+            projectId = projectId,
+        )
+    }
+
     companion object {
-        private const val SIMPLIFIED_WORKER_UNIQUE_NAME = "simplifiedWorkerUniqueName"
+        const val SIMPLIFIED_WORKER_UNIQUE_NAME = "simplifiedWorkerUniqueName"
         const val MAX_RETRIES = 10
         private const val BACKOFF_SECONDS_DELAY = 30L
 

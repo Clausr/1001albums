@@ -8,5 +8,5 @@ import kotlin.annotation.AnnotationRetention.RUNTIME
 annotation class Dispatcher(val oagDispatcher: OagDispatchers)
 
 enum class OagDispatchers {
-    IO,
+    IO, Main
 }
