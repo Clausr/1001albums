@@ -37,7 +37,7 @@ room = "2.6.1"
 coreSplashscreen = "1.0.1"
 detektComposeRulesPluginVersion = "0.4.12"
 detektPluginVersion = "1.23.7"
-haze = "0.9.0-beta01"
+haze = "0.9.0-beta03"
 sentry = "4.11.0"
 
 [libraries]
