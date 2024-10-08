@@ -11,21 +11,19 @@ import dk.clausr.core.database.dao.LogDao
 import dk.clausr.core.database.dao.NotificationDao
 import dk.clausr.core.database.dao.ProjectDao
 import dk.clausr.core.database.dao.RatingDao
-import dk.clausr.core.database.dao.WidgetDao
 import dk.clausr.core.database.model.AlbumEntity
 import dk.clausr.core.database.model.AlbumImageEntity
 import dk.clausr.core.database.model.LogEntity
 import dk.clausr.core.database.model.NotificationEntity
 import dk.clausr.core.database.model.ProjectEntity
 import dk.clausr.core.database.model.RatingEntity
-import dk.clausr.core.database.model.WidgetEntity
 import dk.clausr.core.database.utils.Converters
+import dk.clausr.core.database.utils.DatabaseMigrations
 
 @Database(
     entities = [
         ProjectEntity::class,
         AlbumEntity::class,
-        WidgetEntity::class,
         RatingEntity::class,
         AlbumImageEntity::class,
         NotificationEntity::class,
@@ -33,6 +31,7 @@ import dk.clausr.core.database.utils.Converters
     ],
     autoMigrations = [
         AutoMigration(from = 12, to = 13),
+        AutoMigration(from = 13, to = 14, DatabaseMigrations.Schema13To14::class),
     ],
     version = 14,
 )
@@ -42,7 +41,6 @@ import dk.clausr.core.database.utils.Converters
 abstract class OagDatabase : RoomDatabase() {
     abstract fun projectDao(): ProjectDao
     abstract fun albumDao(): AlbumDao
-    abstract fun widgetDao(): WidgetDao
     abstract fun ratingDao(): RatingDao
     abstract fun albumImageDao(): AlbumImageDao
     abstract fun notificationDao(): NotificationDao

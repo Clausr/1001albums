@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 14,
-    "identityHash": "5b0f94e614b1e639eff2f87df05f3478",
+    "identityHash": "885e5d0cdbaf9a4431fa79f9be04aa92",
     "entities": [
       {
         "tableName": "project",
@@ -153,50 +153,6 @@
         "foreignKeys": []
       },
       {
-        "tableName": "widget",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`projectName` TEXT NOT NULL, `currentAlbumTitle` TEXT NOT NULL, `currentAlbumArtist` TEXT NOT NULL, `currentCoverUrl` TEXT NOT NULL, `newAlbumAvailable` INTEGER NOT NULL, PRIMARY KEY(`projectName`))",
-        "fields": [
-          {
-            "fieldPath": "projectName",
-            "columnName": "projectName",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "currentAlbumTitle",
-            "columnName": "currentAlbumTitle",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "currentAlbumArtist",
-            "columnName": "currentAlbumArtist",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "currentCoverUrl",
-            "columnName": "currentCoverUrl",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "newAlbumAvailable",
-            "columnName": "newAlbumAvailable",
-            "affinity": "INTEGER",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "projectName"
-          ]
-        },
-        "indices": [],
-        "foreignKeys": []
-      },
-      {
         "tableName": "ratings",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`albumSlug` TEXT NOT NULL, `rating` TEXT, `review` TEXT NOT NULL, `generatedAt` INTEGER NOT NULL, `globalRating` REAL NOT NULL, `isRevealed` INTEGER NOT NULL, PRIMARY KEY(`albumSlug`, `generatedAt`))",
         "fields": [
@@ -341,56 +297,12 @@
         },
         "indices": [],
         "foreignKeys": []
-      },
-      {
-        "tableName": "logs",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `message` TEXT NOT NULL, `level` INTEGER NOT NULL, `tag` TEXT NOT NULL, `timestamp` INTEGER NOT NULL)",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "message",
-            "columnName": "message",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "level",
-            "columnName": "level",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "tag",
-            "columnName": "tag",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "timestamp",
-            "columnName": "timestamp",
-            "affinity": "INTEGER",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": true,
-          "columnNames": [
-            "id"
-          ]
-        },
-        "indices": [],
-        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5b0f94e614b1e639eff2f87df05f3478')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '885e5d0cdbaf9a4431fa79f9be04aa92')"
     ]
   }
 }
