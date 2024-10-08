@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Adb
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
@@ -27,7 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
@@ -50,12 +51,9 @@ import dk.clausr.a1001albumsgenerator.onboarding.components.ProjectTextField
 import dk.clausr.a1001albumsgenerator.onboarding.screens.StreamingServiceScreen
 import dk.clausr.a1001albumsgenerator.ui.components.covergrid.CoverGrid
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
+import dk.clausr.core.common.BuildConfig
 import dk.clausr.core.common.android.openLink
-import dk.clausr.core.common.extensions.collectWithLifecycle
 import dk.clausr.core.model.StreamingPlatform
-import dk.clausr.core.network.NetworkError
-import dk.clausr.core.ui.CoverData
-import timber.log.Timber
 
 @Composable
 fun SettingsRoute(
@@ -65,25 +63,12 @@ fun SettingsRoute(
     showBack: Boolean = true,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
-    val projectId by viewModel.projectId.collectAsState()
-    val preferredStreamingPlatform by viewModel.streamingPlatform.collectAsState()
-    val covers by viewModel.coverData.collectAsState()
-    var error: NetworkError? by remember {
-        mutableStateOf(null)
-    }
+    val viewState by viewModel.viewState.collectAsStateWithLifecycle()
 
-    viewModel.viewEffect.collectWithLifecycle {
-        Timber.v("Handle viewEffect: $it")
-        error = when (it) {
-            is SettingsViewEffect.Error -> it.error
-            SettingsViewEffect.ProjectSet -> null
-        }
-    }
     SettingsScreen(
         modifier = modifier,
+        viewState = viewState,
         onNavigateUp = onNavigateUp,
-        preferredStreamingPlatform = preferredStreamingPlatform,
-        projectId = projectId,
         onSetStreamingPlatform = viewModel::setStreamingPlatform,
         onSetProjectId = viewModel::setProjectId,
         onClickApply = {
@@ -91,10 +76,6 @@ fun SettingsRoute(
             viewModel.markOnboardingAsCompleted()
         },
         showBack = showBack,
-        coverData = covers,
-        error = error,
-        projectTextFieldEnabled = projectId == null,
-        buildVersion = viewModel.buildVersion,
     )
 }
 
@@ -102,17 +83,12 @@ fun SettingsRoute(
 @Composable
 fun SettingsScreen(
     onNavigateUp: () -> Unit,
-    preferredStreamingPlatform: StreamingPlatform?,
-    projectId: String?,
+    viewState: SettingsViewModel.ViewState,
     onSetStreamingPlatform: (StreamingPlatform) -> Unit,
     onSetProjectId: (String) -> Unit,
     onClickApply: () -> Unit,
     showBack: Boolean,
-    error: NetworkError?,
-    buildVersion: String,
-    projectTextFieldEnabled: Boolean,
     modifier: Modifier = Modifier,
-    coverData: CoverData = CoverData.default(),
 ) {
     val hazeState = remember { HazeState() }
     var hideContent by remember { mutableStateOf(false) }
@@ -141,19 +117,35 @@ fun SettingsScreen(
                     }
                 },
                 actions = {
-                    IconButton(
-                        onClick = { hideContent = !hideContent },
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .hazeChild(
-                                state = hazeState,
-                                style = HazeMaterials.regular(),
-                            ),
-                    ) {
-                        if (hideContent) {
-                            Icon(imageVector = Icons.Default.VisibilityOff, contentDescription = "Visibility ")
-                        } else {
-                            Icon(imageVector = Icons.Default.Visibility, contentDescription = "Visibility ")
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        if (BuildConfig.DEBUG) {
+                            // Button to check logs for the app
+                            IconButton(
+                                onClick = {},
+                                modifier = Modifier
+                                    .clip(CircleShape)
+                                    .hazeChild(
+                                        state = hazeState,
+                                        style = HazeMaterials.regular(),
+                                    ),
+                            ) {
+                                Icon(imageVector = Icons.Default.Adb, contentDescription = null)
+                            }
+                        }
+                        IconButton(
+                            onClick = { hideContent = !hideContent },
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .hazeChild(
+                                    state = hazeState,
+                                    style = HazeMaterials.regular(),
+                                ),
+                        ) {
+                            if (hideContent) {
+                                Icon(imageVector = Icons.Default.VisibilityOff, contentDescription = "Visibility ")
+                            } else {
+                                Icon(imageVector = Icons.Default.Visibility, contentDescription = "Visibility ")
+                            }
                         }
                     }
                 },
@@ -172,7 +164,7 @@ fun SettingsScreen(
                     Button(onClick = { context.openLink("https://www.clausr.dk/privacy") }) {
                         Text("Privacy policy")
                     }
-                    Text(text = buildVersion)
+                    Text(text = viewState.buildVersion)
                 }
             }
         },
@@ -184,7 +176,7 @@ fun SettingsScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .haze(state = hazeState),
-                covers = coverData,
+                covers = viewState.covers,
             )
 
             Column(
@@ -204,10 +196,10 @@ fun SettingsScreen(
                             style = HazeMaterials.ultraThin(),
                         )
                         .padding(16.dp),
-                    enabled = projectTextFieldEnabled,
+                    enabled = viewState.editProjectIdEnabled,
                     onProjectIdChange = onSetProjectId,
-                    existingProjectId = projectId.orEmpty(),
-                    error = error,
+                    existingProjectId = viewState.projectId.orEmpty(),
+                    error = viewState.error,
                 )
 
                 StreamingServiceScreen(
@@ -219,7 +211,7 @@ fun SettingsScreen(
                         )
                         .padding(16.dp),
                     onSetStreamingPlatform = onSetStreamingPlatform,
-                    preselectedPlatform = preferredStreamingPlatform,
+                    preselectedPlatform = viewState.preferredStreamingPlatform,
                     showSelectButton = false,
                 )
 
@@ -256,15 +248,14 @@ private fun SettingsPreview() {
     OagTheme {
         SettingsScreen(
             onNavigateUp = {},
-            preferredStreamingPlatform = null,
-            projectId = null,
             onSetStreamingPlatform = {},
             onSetProjectId = {},
             onClickApply = {},
             showBack = true,
-            error = null,
-            projectTextFieldEnabled = true,
-            buildVersion = "1.2.3 (456)",
+            viewState = SettingsViewModel.ViewState(
+                projectId = "OagUser",
+                preferredStreamingPlatform = StreamingPlatform.Spotify,
+            ),
         )
     }
 }

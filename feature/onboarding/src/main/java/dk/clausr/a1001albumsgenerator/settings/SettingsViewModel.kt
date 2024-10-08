@@ -13,13 +13,14 @@ import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.network.NetworkError
 import dk.clausr.core.ui.CoverData
 import kotlinx.coroutines.async
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -31,30 +32,30 @@ class SettingsViewModel @Inject constructor(
     private val notificationRepository: NotificationRepository,
     appInformation: AppInformation,
 ) : ViewModel() {
-    private val _viewEffect = Channel<SettingsViewEffect>(Channel.BUFFERED)
-    val viewEffect = _viewEffect.receiveAsFlow()
+    private val buildVersion = "${appInformation.versionName} (${appInformation.versionCode})"
+    private var _error = MutableStateFlow<NetworkError?>(null)
 
-    val buildVersion = "${appInformation.versionName} (${appInformation.versionCode})"
-    val projectId: StateFlow<String?> = oagRepository.projectId.map { it }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null,
-        )
-
-    val streamingPlatform: StateFlow<StreamingPlatform?> = oagRepository.preferredStreamingPlatform.map { it }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null,
-        )
-
-    val coverData: StateFlow<CoverData> = oagRepository.albumCovers
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = CoverData.default(),
-        )
+    val viewState: StateFlow<ViewState> =
+        combine(
+            oagRepository.projectId,
+            oagRepository.preferredStreamingPlatform,
+            oagRepository.albumCovers,
+            _error.asStateFlow(),
+        ) { projectId, streamingPlatform, albumCovers, error ->
+            ViewState(
+                projectId = projectId,
+                editProjectIdEnabled = projectId == null,
+                preferredStreamingPlatform = streamingPlatform,
+                covers = albumCovers,
+                error = error,
+                buildVersion = buildVersion,
+            )
+        }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = ViewState(),
+            )
 
     fun setProjectId(projectId: String) {
         Timber.d("setProjectId $projectId")
@@ -75,12 +76,12 @@ class SettingsViewModel @Inject constructor(
                 asyncSetProject.await()
                     .doOnSuccess {
                         Timber.d("Set project success!")
+                        _error.update { null }
                         asyncUpdateNotifications.await()
-                        sendViewEffect(SettingsViewEffect.ProjectSet)
                     }
                     .doOnFailure { error ->
                         Timber.e(error.cause, "Could not change projectId")
-                        sendViewEffect(SettingsViewEffect.Error(error = error))
+                        _error.update { error }
                     }
             }
         }
@@ -98,14 +99,12 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    private fun sendViewEffect(viewEffect: SettingsViewEffect) {
-        viewModelScope.launch {
-            _viewEffect.send(viewEffect)
-        }
-    }
-}
-
-sealed interface SettingsViewEffect {
-    data class Error(val error: NetworkError) : SettingsViewEffect
-    data object ProjectSet : SettingsViewEffect
+    data class ViewState(
+        val projectId: String? = null,
+        val editProjectIdEnabled: Boolean = true,
+        val preferredStreamingPlatform: StreamingPlatform = StreamingPlatform.Undefined,
+        val covers: CoverData = CoverData.default(),
+        val error: NetworkError? = null,
+        val buildVersion: String = "",
+    )
 }
