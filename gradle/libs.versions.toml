@@ -1,12 +1,12 @@
 [versions]
 activityCompose = "1.9.2"
 androidGradlePlugin = "8.7.0"
-coilCompose = "3.0.0-alpha10"
 coilNetworkOkhttp = "3.0.0-alpha10"
-coilVersion = "3.0.0-alpha10"
+coilVersion = "3.0.0-rc01"
 coreKtx = "1.13.1"
 compose-bom = "2024.09.03"
 glanceAppwidget = "1.1.0"
+haze = "0.9.0-beta03"
 kotlin = "2.0.20"
 kotlinxCollectionsImmutable = "0.3.8"
 materialVersion = "1.12.0"
@@ -37,7 +37,6 @@ room = "2.6.1"
 coreSplashscreen = "1.0.1"
 detektComposeRulesPluginVersion = "0.4.15"
 detektPluginVersion = "1.23.7"
-haze = "0.9.0-beta03"
 sentry = "4.11.0"
 
 [libraries]
@@ -46,7 +45,7 @@ activity-compose = { module = "androidx.activity:activity-compose", version.ref 
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
 androidx-compose-ui = { module = "androidx.compose.ui:ui" }
 coil3 = { module = "io.coil-kt.coil3:coil", version.ref = "coilVersion" }
-coil3-coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
+coil3-coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilVersion" }
 coil3-coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilNetworkOkhttp" }
 compose_animation = { module = "androidx.compose.animation:animation-android" }
 compose_animation_core = { module = "androidx.compose.animation:animation-core-android" }
@@ -57,6 +56,8 @@ androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
 androidx-compose-material-iconsExtended = { module = "androidx.compose.material:material-icons-extended" }
 androidx-compose-runtime = { module = "androidx.compose.runtime:runtime" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
+haze = { group = "dev.chrisbanes.haze", name = "haze", version.ref = "haze" }
+haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version.ref = "haze" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
 android-desugarJdkLibs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "androidDesugarJdkLibs" }
@@ -88,7 +89,6 @@ ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devto
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
-haze = { group = "dev.chrisbanes.haze", name = "haze", version.ref = "haze" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

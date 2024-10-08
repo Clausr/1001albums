@@ -9,6 +9,5 @@ android {
 
 dependencies {
     project(":widget")
-    implementation(libs.haze)
     implementation(libs.androidx.compose.material.iconsExtended)
 }

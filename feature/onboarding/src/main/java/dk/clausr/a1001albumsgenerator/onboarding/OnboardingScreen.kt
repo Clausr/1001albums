@@ -25,10 +25,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.HazeStyle
-import dev.chrisbanes.haze.HazeTint
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
+import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
+import dev.chrisbanes.haze.materials.HazeMaterials
 import dk.clausr.a1001albumsgenerator.onboarding.screens.ProjectNameScreen
 import dk.clausr.a1001albumsgenerator.onboarding.screens.StreamingServiceScreen
 import dk.clausr.a1001albumsgenerator.ui.components.covergrid.CoverGrid
@@ -79,6 +79,7 @@ fun OnboardingRoute(
     )
 }
 
+@OptIn(ExperimentalHazeMaterialsApi::class)
 @Composable
 internal fun OnboardingScreen(
     projectId: String?,
@@ -120,10 +121,7 @@ internal fun OnboardingScreen(
                                 .clip(shape = MaterialTheme.shapes.medium)
                                 .hazeChild(
                                     state = hazeState,
-                                    style = HazeStyle(
-                                        backgroundColor = MaterialTheme.colorScheme.background,
-                                        tint = HazeTint.Color(MaterialTheme.colorScheme.background.copy(alpha = 0.5f)),
-                                    ),
+                                    style = HazeMaterials.ultraThin(),
                                 )
                                 .padding(all = 16.dp),
                             prefilledProjectId = projectId.orEmpty(),
@@ -140,10 +138,7 @@ internal fun OnboardingScreen(
                                 .clip(shape = MaterialTheme.shapes.medium)
                                 .hazeChild(
                                     state = hazeState,
-                                    style = HazeStyle(
-                                        backgroundColor = MaterialTheme.colorScheme.background,
-                                        tint = HazeTint.Color(MaterialTheme.colorScheme.background.copy(alpha = 0.5f)),
-                                    ),
+                                    style = HazeMaterials.ultraThin(),
                                 )
                                 .padding(all = 16.dp),
                             onSetStreamingPlatform = onSetStreamingPlatform,

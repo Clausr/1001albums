@@ -20,6 +20,8 @@ dependencies {
     implementation(libs.coil3.coil.compose)
     implementation(libs.coil3.coil.network.okhttp)
 
-    implementation(libs.haze)
+    api(libs.haze)
+    api(libs.haze.materials)
+
     api(libs.androidx.compose.material3)
 }

@@ -42,10 +42,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.HazeStyle
-import dev.chrisbanes.haze.HazeTint
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
+import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
+import dev.chrisbanes.haze.materials.HazeMaterials
 import dk.clausr.a1001albumsgenerator.onboarding.components.ProjectTextField
 import dk.clausr.a1001albumsgenerator.onboarding.screens.StreamingServiceScreen
 import dk.clausr.a1001albumsgenerator.ui.components.covergrid.CoverGrid
@@ -98,6 +98,7 @@ fun SettingsRoute(
     )
 }
 
+@OptIn(ExperimentalHazeMaterialsApi::class)
 @Composable
 fun SettingsScreen(
     onNavigateUp: () -> Unit,
@@ -132,10 +133,7 @@ fun SettingsScreen(
                                 .clip(CircleShape)
                                 .hazeChild(
                                     state = hazeState,
-                                    style = HazeStyle(
-                                        backgroundColor = MaterialTheme.colorScheme.background,
-                                        tint = HazeTint.Color(MaterialTheme.colorScheme.background.copy(alpha = 0.5f)),
-                                    ),
+                                    style = HazeMaterials.regular(),
                                 ),
                         ) {
                             Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back")
@@ -149,10 +147,7 @@ fun SettingsScreen(
                             .clip(CircleShape)
                             .hazeChild(
                                 state = hazeState,
-                                style = HazeStyle(
-                                    backgroundColor = MaterialTheme.colorScheme.background,
-                                    tint = HazeTint.Color(MaterialTheme.colorScheme.background.copy(alpha = 0.5f)),
-                                ),
+                                style = HazeMaterials.regular(),
                             ),
                     ) {
                         if (hideContent) {
@@ -206,10 +201,7 @@ fun SettingsScreen(
                         .clip(shape = MaterialTheme.shapes.medium)
                         .hazeChild(
                             state = hazeState,
-                            style = HazeStyle(
-                                backgroundColor = MaterialTheme.colorScheme.background,
-                                tint = HazeTint.Color(MaterialTheme.colorScheme.background.copy(alpha = 0.5f)),
-                            ),
+                            style = HazeMaterials.ultraThin(),
                         )
                         .padding(16.dp),
                     enabled = projectTextFieldEnabled,
@@ -223,10 +215,7 @@ fun SettingsScreen(
                         .clip(shape = MaterialTheme.shapes.medium)
                         .hazeChild(
                             state = hazeState,
-                            style = HazeStyle(
-                                backgroundColor = MaterialTheme.colorScheme.background,
-                                tint = HazeTint.Color(MaterialTheme.colorScheme.background.copy(alpha = 0.5f)),
-                            ),
+                            style = HazeMaterials.ultraThin(),
                         )
                         .padding(16.dp),
                     onSetStreamingPlatform = onSetStreamingPlatform,
@@ -250,10 +239,7 @@ fun SettingsScreen(
                             .clip(shape = CircleShape)
                             .hazeChild(
                                 state = hazeState,
-                                style = HazeStyle(
-                                    backgroundColor = MaterialTheme.colorScheme.background,
-                                    tint = HazeTint.Color(MaterialTheme.colorScheme.background.copy(alpha = 0.5f)),
-                                ),
+                                style = HazeMaterials.regular(),
                             ),
                     ) {
                         Text(text = "Done", modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
