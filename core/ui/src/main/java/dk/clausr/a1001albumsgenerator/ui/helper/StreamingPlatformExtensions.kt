@@ -26,6 +26,6 @@ fun StreamingPlatform.displayName(): String = when (this) {
     StreamingPlatform.Spotify -> stringResource(R.string.platform_spotify)
     StreamingPlatform.Tidal -> stringResource(R.string.platform_tidal)
     StreamingPlatform.YouTubeMusic -> stringResource(R.string.platform_youtube_music)
-    StreamingPlatform.Qobuz -> stringResource(R.string.platform_amazon_music)
+    StreamingPlatform.Qobuz -> stringResource(R.string.platform_qobuz)
     StreamingPlatform.Undefined -> ""
 }
