@@ -169,9 +169,7 @@ fun SettingsScreen(
             }
         },
     ) {
-        Box(
-            modifier = Modifier,
-        ) {
+        Box {
             CoverGrid(
                 modifier = Modifier
                     .fillMaxSize()
