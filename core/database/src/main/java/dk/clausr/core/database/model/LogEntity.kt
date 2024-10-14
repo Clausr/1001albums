@@ -8,7 +8,7 @@ import java.time.Instant
 data class LogEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val message: String,
-    val level: String,
+    val level: Int,
     val tag: String,
     val timestamp: Instant = Instant.now(),
 )

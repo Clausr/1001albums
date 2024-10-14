@@ -18,15 +18,7 @@ class RoomLoggingTree @Inject constructor(
         message: String,
         t: Throwable?,
     ) {
-        val logLevel = when (priority) {
-            Log.VERBOSE -> "VERBOSE"
-            Log.DEBUG -> "DEBUG"
-            Log.INFO -> "INFO"
-            Log.WARN -> "WARN"
-            Log.ERROR -> "ERROR"
-            Log.ASSERT -> "ASSERT"
-            else -> "UNKNOWN"
-        }
+        val logLevel = OagLog.LogLevel.fromPriorityConstant(priority)
 
         if (priority < Log.DEBUG) return
 
@@ -36,7 +28,6 @@ class RoomLoggingTree @Inject constructor(
             level = logLevel,
             tag = tag.orEmpty(),
         )
-
 
         // Make sure to use a coroutine since Room operations are suspending
         CoroutineScope(Dispatchers.IO).launch {

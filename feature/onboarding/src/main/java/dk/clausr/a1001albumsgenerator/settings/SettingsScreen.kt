@@ -59,6 +59,7 @@ import dk.clausr.core.model.StreamingPlatform
 fun SettingsRoute(
     onNavigateUp: () -> Unit,
     onClickApply: () -> Unit,
+    onShowLogs: () -> Unit,
     modifier: Modifier = Modifier,
     showBack: Boolean = true,
     viewModel: SettingsViewModel = hiltViewModel(),
@@ -76,6 +77,7 @@ fun SettingsRoute(
             viewModel.markOnboardingAsCompleted()
         },
         showBack = showBack,
+        onShowLogs = onShowLogs,
     )
 }
 
@@ -87,6 +89,7 @@ fun SettingsScreen(
     onSetStreamingPlatform: (StreamingPlatform) -> Unit,
     onSetProjectId: (String) -> Unit,
     onClickApply: () -> Unit,
+    onShowLogs: () -> Unit,
     showBack: Boolean,
     modifier: Modifier = Modifier,
 ) {
@@ -121,7 +124,7 @@ fun SettingsScreen(
                         if (BuildConfig.DEBUG) {
                             // Button to check logs for the app
                             IconButton(
-                                onClick = {},
+                                onClick = onShowLogs,
                                 modifier = Modifier
                                     .clip(CircleShape)
                                     .hazeChild(
@@ -254,6 +257,7 @@ private fun SettingsPreview() {
                 projectId = "OagUser",
                 preferredStreamingPlatform = StreamingPlatform.Spotify,
             ),
+            onShowLogs = {},
         )
     }
 }

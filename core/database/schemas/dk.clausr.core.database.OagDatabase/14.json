@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 14,
-    "identityHash": "d1ce381614cc5a15d92951f11f5f5738",
+    "identityHash": "5b0f94e614b1e639eff2f87df05f3478",
     "entities": [
       {
         "tableName": "project",
@@ -344,7 +344,7 @@
       },
       {
         "tableName": "logs",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `message` TEXT NOT NULL, `level` TEXT NOT NULL, `tag` TEXT NOT NULL, `timestamp` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `message` TEXT NOT NULL, `level` INTEGER NOT NULL, `tag` TEXT NOT NULL, `timestamp` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -361,7 +361,7 @@
           {
             "fieldPath": "level",
             "columnName": "level",
-            "affinity": "TEXT",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -390,7 +390,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd1ce381614cc5a15d92951f11f5f5738')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5b0f94e614b1e639eff2f87df05f3478')"
     ]
   }
 }
