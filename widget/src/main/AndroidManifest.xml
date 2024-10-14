@@ -13,12 +13,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name="dk.clausr.WidgetViewerActivity"
-            android:exported="true">
-
-        </activity>
-
         <receiver
             android:name=".AlbumCoverWidgetReceiver"
             android:exported="true">
