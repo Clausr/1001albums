@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
@@ -35,6 +36,8 @@ import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.padding
 import androidx.glance.layout.size
 import androidx.glance.layout.width
+import androidx.glance.preview.ExperimentalGlancePreviewApi
+import androidx.glance.preview.Preview
 import androidx.glance.state.GlanceStateDefinition
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
@@ -45,6 +48,11 @@ import dk.clausr.core.common.extensions.openProject
 import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectUrl
+import dk.clausr.core.model.AlbumWidgetData
+import dk.clausr.core.model.StreamingPlatform
+import dk.clausr.core.model.StreamingService
+import dk.clausr.core.model.StreamingServices
+import dk.clausr.extensions.GlancePreview
 import dk.clausr.worker.BurstUpdateWorker
 import dk.clausr.worker.PeriodicProjectUpdateWidgetWorker
 import kotlinx.coroutines.delay
@@ -123,6 +131,7 @@ private fun ShowAlbumCover(
     state: SerializedWidgetState.Success,
     modifier: GlanceModifier = GlanceModifier,
 ) {
+    val isPreview = LocalInspectionMode.current
     val context = LocalContext.current
     var showLinks by remember {
         mutableStateOf(false)
@@ -143,16 +152,16 @@ private fun ShowAlbumCover(
             },
         contentAlignment = Alignment.BottomCenter,
     ) {
-        AlbumCover(
+        GlanceImage(
             modifier = GlanceModifier.fillMaxSize(),
-            coverUrl = state.data.coverUrl,
+            src = state.data.coverUrl,
         )
 
         if (state.data.newAvailable) {
             RatingNudge(state.currentProjectId)
         }
 
-        if (state.data.unreadNotifications > 0) {
+        if (state.data.unreadNotifications > 0 && !isPreview) {
             val intent = Intent(context, Class.forName("dk.clausr.a1001albumsgenerator.MainActivity")).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             }
@@ -263,5 +272,33 @@ class AlbumCoverWidgetReceiver : GlanceAppWidgetReceiver() {
     ) {
         Timber.d("AlbumCoverWidgetReceiver onDeleted: ids: ${appWidgetIds.joinToString { it.toString() }}")
         super.onDeleted(context, appWidgetIds)
+    }
+}
+
+@OptIn(ExperimentalGlancePreviewApi::class)
+@Preview
+@Composable
+private fun SuccessPreview() {
+    GlancePreview(sizes = listOf(4 to 3, 5 to 4)) {
+        Content(
+            state = SerializedWidgetState.Success(
+                currentProjectId = "oagUser",
+                data = AlbumWidgetData(
+                    coverUrl = "https://i.scdn.co/image/4b9994763bc8efbd74bd6b6429e111ad167523b7",
+                    newAvailable = true,
+                    wikiLink = "https://wiki.org",
+                    streamingServices = StreamingServices(
+                        listOf(
+                            StreamingService(
+                                id = "spotify",
+                                platform = StreamingPlatform.Spotify,
+                            ),
+                        ),
+                    ),
+                    preferredStreamingPlatform = StreamingPlatform.Spotify,
+                    unreadNotifications = 0,
+                ),
+            ),
+        )
     }
 }
