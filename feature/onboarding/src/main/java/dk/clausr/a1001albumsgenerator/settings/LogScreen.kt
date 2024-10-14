@@ -58,7 +58,6 @@ fun LogScreen(
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
-//                            modifier = Modifier.padding(horizontal = 4.dp),
                             text = log.level.name.first().toString(),
                             color = contentColorFor(logColor),
                         )
