@@ -1,10 +1,15 @@
 package dk.clausr.feature.overview
 
+import android.content.Context
+import androidx.glance.appwidget.updateAll
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dk.clausr.core.common.extensions.formatMonthAndYear
 import dk.clausr.core.common.extensions.toLocalDateTime
+import dk.clausr.core.common.model.doOnFailure
+import dk.clausr.core.common.model.doOnSuccess
 import dk.clausr.core.data.repository.NotificationRepository
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.SerializedWidgetState
@@ -14,6 +19,7 @@ import dk.clausr.core.model.Notification
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.Rating
 import dk.clausr.core.model.StreamingPlatform
+import dk.clausr.widget.AlbumCoverWidget
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
@@ -33,6 +39,7 @@ import javax.inject.Inject
 @HiltViewModel
 class OverviewViewModel @Inject constructor(
     oagRepository: OagRepository,
+    @ApplicationContext private val context: Context,
     private val notificationsRepository: NotificationRepository,
 ) : ViewModel() {
     private var projectId = MutableStateFlow("")
@@ -87,6 +94,14 @@ class OverviewViewModel @Inject constructor(
     fun clearUnreadNotifications() {
         viewModelScope.launch {
             notificationsRepository.readAll(projectId.value)
+                .doOnSuccess {
+                    Timber.d("Notifications marked as read, update widget.")
+                    AlbumCoverWidget().updateAll(context = context)
+                }
+                .doOnFailure {
+                    Timber.e(it.cause, "Could not read all notifications")
+                }
+
         }
     }
 

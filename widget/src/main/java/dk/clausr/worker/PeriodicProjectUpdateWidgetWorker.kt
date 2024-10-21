@@ -1,6 +1,7 @@
 package dk.clausr.worker
 
 import android.content.Context
+import androidx.glance.appwidget.updateAll
 import androidx.hilt.work.HiltWorker
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
@@ -25,6 +26,7 @@ import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.AlbumWidgetDataDefinition
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectId
 import dk.clausr.core.network.NetworkError
+import dk.clausr.widget.AlbumCoverWidget
 import dk.clausr.worker.helper.OagNotificationType
 import dk.clausr.worker.helper.isUniqueWorkerRunning
 import dk.clausr.worker.helper.syncForegroundInfo
@@ -99,6 +101,7 @@ class PeriodicProjectUpdateWidgetWorker @AssistedInject constructor(
                 }
             }",
         )
+        AlbumCoverWidget().updateAll(context = appContext)
         return workerResult
     }
 

@@ -16,6 +16,7 @@
     </ID>
     <ID>PackageNaming:DataMigration.kt$package dk.clausr.core.data_widget</ID>
     <ID>PackageName:DataMigration.kt$package dk.clausr.core.data_widget</ID>
+    <ID>UnstableCollections:Preview.kt$List&lt;Pair&lt;Int, Int>></ID>
   </ManuallySuppressedIssues>
   <CurrentIssues />
 </SmellBaseline>

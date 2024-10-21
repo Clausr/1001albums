@@ -1,6 +1,7 @@
 package dk.clausr.worker
 
 import android.content.Context
+import androidx.glance.appwidget.updateAll
 import androidx.hilt.work.HiltWorker
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
@@ -19,6 +20,7 @@ import dk.clausr.core.common.model.doOnFailure
 import dk.clausr.core.common.model.doOnSuccess
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.network.NetworkError
+import dk.clausr.widget.AlbumCoverWidget
 import dk.clausr.worker.helper.OagNotificationType
 import dk.clausr.worker.helper.syncForegroundInfo
 import timber.log.Timber
@@ -46,6 +48,7 @@ class BurstUpdateWorker @AssistedInject constructor(
         oagRepository.updateProject(projectId)
             .doOnSuccess {
                 result = if (oagRepository.isLatestAlbumRated()) {
+                    AlbumCoverWidget().updateAll(context = appContext)
                     Result.success()
                 } else {
                     Result.retry()
@@ -59,10 +62,10 @@ class BurstUpdateWorker @AssistedInject constructor(
 
         Timber.d(
             "Burst Worker result: ${
-                when {
-                    result == Result.success() -> "Success"
-                    result == Result.retry() -> "Retry"
-                    result == Result.failure() -> "Failure"
+                when (result) {
+                    Result.success() -> "Success"
+                    Result.retry() -> "Retry"
+                    Result.failure() -> "Failure"
                     else -> "Unknown"
                 }
             }",

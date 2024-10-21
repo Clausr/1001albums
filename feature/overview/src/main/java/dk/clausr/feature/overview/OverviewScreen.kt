@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Badge
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -35,6 +36,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,11 +57,13 @@ import dk.clausr.core.model.Project
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
 import dk.clausr.core.model.UpdateFrequency
+import dk.clausr.extensions.askToAddToHomeScreen
 import dk.clausr.feature.overview.preview.albumPreviewData
 import dk.clausr.feature.overview.preview.historicAlbumPreviewData
 import dk.clausr.worker.BurstUpdateWorker
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.coroutines.launch
 
 @Composable
 fun OverviewRoute(
@@ -69,7 +73,6 @@ fun OverviewRoute(
     viewModel: OverviewViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
     OverviewScreen(
         modifier = modifier,
         state = uiState,
@@ -88,6 +91,7 @@ internal fun OverviewScreen(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     var showNotifications by remember {
         mutableStateOf(false)
     }
@@ -104,6 +108,18 @@ internal fun OverviewScreen(
                             .animateEnterExit(enter = fadeIn() + slideInVertically(), exit = fadeOut() + slideOutVertically()),
                         title = { Text(text = stringResource(R.string.overview_app_bar_title)) },
                         actions = {
+                            IconButton(
+                                onClick = {
+                                    coroutineScope.launch {
+                                        context.askToAddToHomeScreen()
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Star,
+                                    contentDescription = null,
+                                )
+                            }
                             Box {
                                 IconButton(
                                     onClick = { showNotifications = true },

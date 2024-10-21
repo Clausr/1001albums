@@ -61,19 +61,20 @@ import timber.log.Timber
 // Periodic update thing:
 // https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:glance/glance-appwidget/samples/src/main/java/androidx/glance/appwidget/samples/GlanceAppWidgetSamples.kt;drc=c28b42063433bb0f928a897c0d6ec31b45ba2021;l=114
 class AlbumCoverWidget : GlanceAppWidget() {
-    override val stateDefinition: GlanceStateDefinition<SerializedWidgetState> =
-        AlbumWidgetDataDefinition
+    override val stateDefinition: GlanceStateDefinition<SerializedWidgetState> = AlbumWidgetDataDefinition
 
     override suspend fun provideGlance(
         context: Context,
         id: GlanceId,
     ) {
         Timber.d("GlanceID: $id")
-
         provideContent {
+            val state = currentState<SerializedWidgetState>()
+
+            Timber.d("State updated: $state")
             GlanceTheme {
                 Content(
-                    state = currentState<SerializedWidgetState>(),
+                    state = state,
                 )
             }
         }
