@@ -1,5 +1,5 @@
 [versions]
-activityCompose = "1.9.2"
+activityCompose = "1.9.3"
 androidGradlePlugin = "8.7.0"
 coilNetworkOkhttp = "3.0.0-rc01"
 coilVersion = "3.0.0-rc01"
