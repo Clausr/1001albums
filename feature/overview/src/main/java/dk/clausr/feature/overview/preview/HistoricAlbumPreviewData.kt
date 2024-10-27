@@ -5,11 +5,11 @@ import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Rating
 import java.time.Instant
 
-internal val albumPreviewData = Album(
+internal fun albumPreviewData(slug: String = "paranoid") = Album(
     artist = "Black Sabbath",
     artistOrigin = "UK",
     name = "Paranoid",
-    slug = "paranoid",
+    slug = slug,
     releaseDate = "1970",
     globalReviewsUrl = "https://1001albumsgenerator.com/albums/7DBES3oV6jjAmWob7kJg6P/paranoid",
     wikipediaUrl = "https://en.wikipedia.org/wiki/Paranoid_(album)",
@@ -25,8 +25,11 @@ internal val albumPreviewData = Album(
     deezerId = null,
 )
 
-internal fun historicAlbumPreviewData(rating: Rating = Rating.Rated(rating = 5)) = HistoricAlbum(
-    album = albumPreviewData,
+internal fun historicAlbumPreviewData(
+    rating: Rating = Rating.Rated(rating = 5),
+    slug: String = "paranoid",
+) = HistoricAlbum(
+    album = albumPreviewData(slug),
     rating = rating,
     review = "",
     generatedAt = Instant.now(),

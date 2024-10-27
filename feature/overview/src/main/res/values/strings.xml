@@ -23,4 +23,10 @@
     <string name="notifications_clear_all_button_title">Clear all</string>
     <string name="overview_section_top_rated_albums_title">5⭐️ albums</string>
     <string name="overview_section_did_not_listen_title">Did not listen</string>
+    <string name="wikipedia_button_title">Wikipedia</string>
+    <string name="play_button_title">Play</string>
+    <string name="rating_did_not_listen">Did not listen</string>
+    <string name="rating_text_rated">%1$d⭐️</string>
+    <string name="rating_text_unrated">Unrated</string>
+    <string name="related_albums_title">Related albums</string>
 </resources>

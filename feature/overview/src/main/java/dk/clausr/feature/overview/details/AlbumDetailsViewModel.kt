@@ -9,6 +9,9 @@ import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.feature.overview.navigation.OverviewDirections
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
@@ -16,7 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AlbumDetailsViewModel @Inject constructor(
-    oagRepository: OagRepository,
+    private val oagRepository: OagRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val albumSlug by savedStateHandle.require<String>(OverviewDirections.Args.ALBUM_SLUG)
@@ -26,22 +29,27 @@ class AlbumDetailsViewModel @Inject constructor(
         oagRepository.getHistoricAlbum(albumSlug),
         oagRepository.preferredStreamingPlatform,
     ) { historicAlbum, streaming ->
-        AlbumDetailsViewState.Success(
+        AlbumDetailsViewState(
             album = historicAlbum,
             streamingPlatform = streaming,
+            relatedAlbums = getRelatedAlbums(historicAlbum.album.artist),
         )
     }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = AlbumDetailsViewState.Loading,
+            initialValue = AlbumDetailsViewState(),
         )
 
-    sealed interface AlbumDetailsViewState {
-        data object Loading : AlbumDetailsViewState
-        data class Success(
-            val album: HistoricAlbum,
-            val streamingPlatform: StreamingPlatform,
-        ) : AlbumDetailsViewState
+    private suspend fun getRelatedAlbums(artist: String): ImmutableList<HistoricAlbum> {
+        return oagRepository.getSimilarAlbums(artist)
+            .filterNot { it.album.slug == albumSlug }
+            .toPersistentList()
     }
+
+    data class AlbumDetailsViewState(
+        val album: HistoricAlbum? = null,
+        val streamingPlatform: StreamingPlatform = StreamingPlatform.Undefined,
+        val relatedAlbums: ImmutableList<HistoricAlbum> = persistentListOf(),
+    )
 }

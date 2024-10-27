@@ -26,4 +26,5 @@ interface OagRepository {
     suspend fun setPreferredPlatform(platform: StreamingPlatform)
     suspend fun isLatestAlbumRated(): Boolean
     fun getHistoricAlbum(slug: String): Flow<HistoricAlbum>
+    suspend fun getSimilarAlbums(artist: String): List<HistoricAlbum>
 }
