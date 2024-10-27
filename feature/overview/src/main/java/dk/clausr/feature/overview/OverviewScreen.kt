@@ -108,17 +108,19 @@ internal fun OverviewScreen(
                             .animateEnterExit(enter = fadeIn() + slideInVertically(), exit = fadeOut() + slideOutVertically()),
                         title = { Text(text = stringResource(R.string.overview_app_bar_title)) },
                         actions = {
-                            IconButton(
-                                onClick = {
-                                    coroutineScope.launch {
-                                        context.askToAddToHomeScreen()
-                                    }
+                            if (state is OverviewUiState.Success && !state.isUsingWidget) {
+                                IconButton(
+                                    onClick = {
+                                        coroutineScope.launch {
+                                            context.askToAddToHomeScreen()
+                                        }
+                                    },
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Star,
+                                        contentDescription = null,
+                                    )
                                 }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Star,
-                                    contentDescription = null,
-                                )
                             }
                             Box {
                                 IconButton(
@@ -334,6 +336,7 @@ private fun OverviewPreview() {
                 streamingPlatform = StreamingPlatform.Tidal,
                 groupedHistory = persistentMapOf(),
                 notifications = persistentListOf(),
+                isUsingWidget = false,
             ),
             readAllNotifications = {},
         )
