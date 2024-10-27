@@ -40,7 +40,7 @@ fun NavGraphBuilder.overviewGraph(
                     navHostController.navigate(OverviewDirections.albumDetails(slug, list)) {
                         popUpTo(OverviewDirections.Routes.ALBUM_DETAILS) { inclusive = true }
                     }
-                }
+                },
             )
         }
     }

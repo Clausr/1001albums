@@ -17,8 +17,8 @@ import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 
 @Composable
 internal fun SummaryScreen(
-    modifier: Modifier = Modifier,
     onNext: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier,
@@ -42,6 +42,6 @@ internal fun SummaryScreen(
 @Composable
 private fun SummaryPreview() {
     OagTheme {
-        SummaryScreen {}
+        SummaryScreen(onNext = {})
     }
 }
