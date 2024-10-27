@@ -15,7 +15,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -42,7 +41,6 @@ import dk.clausr.a1001albumsgenerator.ui.components.LocalNavAnimatedVisibilitySc
 import dk.clausr.a1001albumsgenerator.ui.components.LocalSharedTransitionScope
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.common.android.openLink
-import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Rating
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
@@ -55,37 +53,32 @@ fun AlbumDetailsRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    when (val internalState = state) {
-        AlbumDetailsViewModel.AlbumDetailsViewState.Loading -> CircularProgressIndicator()
-        is AlbumDetailsViewModel.AlbumDetailsViewState.Success -> {
-            AlbumDetailsScreen(
-                modifier = modifier,
-                historicAlbum = internalState.album,
-                streamingPlatform = internalState.streamingPlatform,
-                listName = viewModel.listName ?: "nozhing",
-            )
-        }
-    }
+    AlbumDetailsScreen(
+        modifier = modifier,
+        state = state,
+        listName = viewModel.listName ?: "nozhing",
+    )
 }
 
 @Composable
 fun AlbumDetailsScreen(
-    historicAlbum: HistoricAlbum,
-    streamingPlatform: StreamingPlatform,
+    state: AlbumDetailsViewModel.AlbumDetailsViewState,
     modifier: Modifier = Modifier,
     listName: String = "List",
 ) {
+    val historicAlbum = state.album
     val animatedContentScope = LocalNavAnimatedVisibilityScope.current
     with(LocalSharedTransitionScope.current) {
         Scaffold(
             modifier = modifier
                 .sharedBounds(
-                    sharedContentState = rememberSharedContentState(key = "$listName-bounds-${historicAlbum.album.slug}"),
+                    sharedContentState = rememberSharedContentState(key = "$listName-bounds-${historicAlbum?.album?.slug}"),
                     animatedVisibilityScope = animatedContentScope,
                 ),
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
             containerColor = MaterialTheme.colorScheme.background,
         ) { paddingValues ->
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -95,16 +88,16 @@ fun AlbumDetailsScreen(
             ) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(historicAlbum.album.imageUrl)
+                        .data(historicAlbum?.album?.imageUrl)
                         .crossfade(true)
-                        .placeholderMemoryCacheKey(historicAlbum.album.slug)
-                        .memoryCacheKey(historicAlbum.album.slug)
+                        .placeholderMemoryCacheKey(historicAlbum?.album?.slug)
+                        .memoryCacheKey(historicAlbum?.album?.slug)
                         .build(),
                     contentDescription = "Album cover",
                     modifier = Modifier
                         .fillMaxWidth()
                         .sharedElement(
-                            state = rememberSharedContentState(key = "$listName-cover-${historicAlbum.album.slug}"),
+                            state = rememberSharedContentState(key = "$listName-cover-${historicAlbum?.album?.slug}"),
                             animatedVisibilityScope = animatedContentScope,
                         ),
                     contentScale = ContentScale.FillWidth,
@@ -115,14 +108,14 @@ fun AlbumDetailsScreen(
                         .fillMaxWidth()
                         .padding(top = 8.dp)
                         .sharedBounds(
-                            sharedContentState = rememberSharedContentState(key = "$listName-title-${historicAlbum.album.slug}"),
+                            sharedContentState = rememberSharedContentState(key = "$listName-title-${historicAlbum?.album?.slug}"),
                             animatedVisibilityScope = animatedContentScope,
                             resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(
                                 contentScale = ContentScale.FillWidth,
                                 alignment = Alignment.CenterStart,
                             ),
                         ),
-                    text = historicAlbum.album.name,
+                    text = historicAlbum?.album?.name.orEmpty(),
                     style = MaterialTheme.typography.headlineMedium,
                     textAlign = TextAlign.Center,
                 )
@@ -131,14 +124,14 @@ fun AlbumDetailsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .sharedBounds(
-                            sharedContentState = rememberSharedContentState(key = "$listName-artist-${historicAlbum.album.slug}"),
+                            sharedContentState = rememberSharedContentState(key = "$listName-artist-${historicAlbum?.album?.slug}"),
                             animatedVisibilityScope = animatedContentScope,
                             resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(
                                 contentScale = ContentScale.FillWidth,
                                 alignment = Alignment.CenterStart,
                             ),
                         ),
-                    text = historicAlbum.album.artist,
+                    text = historicAlbum?.album?.artist.orEmpty(),
                     style = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center,
                 )
@@ -147,59 +140,64 @@ fun AlbumDetailsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .sharedBounds(
-                            sharedContentState = rememberSharedContentState(key = "$listName-date-${historicAlbum.album.slug}"),
+                            sharedContentState = rememberSharedContentState(key = "$listName-date-${historicAlbum?.album?.slug}"),
                             animatedVisibilityScope = animatedContentScope,
                         )
                         .padding(bottom = 16.dp),
-                    text = historicAlbum.album.releaseDate,
+                    text = historicAlbum?.album?.releaseDate.orEmpty(),
                     textAlign = TextAlign.Center,
                 )
 
-                Row(
-                    modifier = Modifier
-                        .sharedBounds(
-                            sharedContentState = rememberSharedContentState(key = "$listName-play-${historicAlbum.album.slug}"),
-                            animatedVisibilityScope = animatedContentScope,
-                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(),
-                        )
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.CenterHorizontally),
-                ) {
-                    val context = LocalContext.current
-                    StreamingServices.from(historicAlbum.album).getStreamingLinkFor(streamingPlatform)?.let { streamingLink ->
+                if (historicAlbum?.album != null) {
+                    Row(
+                        modifier = Modifier
+                            .sharedBounds(
+                                sharedContentState = rememberSharedContentState(key = "$listName-play-${historicAlbum.album.slug}"),
+                                animatedVisibilityScope = animatedContentScope,
+                                resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(),
+                            )
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.CenterHorizontally),
+                    ) {
+                        val context = LocalContext.current
+                        StreamingServices.from(historicAlbum.album)
+                            .getStreamingLinkFor(state.streamingPlatform)
+                            ?.let { streamingLink ->
+                                FilledTonalButton(
+                                    modifier = Modifier,
+                                    onClick = {
+                                        context.openLink(streamingLink)
+                                    },
+                                ) {
+                                    Icon(
+                                        modifier = Modifier.padding(end = 8.dp),
+                                        imageVector = Icons.Default.PlayArrow,
+                                        contentDescription = "Play",
+                                    )
+                                    Text(text = "Play")
+                                }
+                            }
+
                         FilledTonalButton(
-                            modifier = Modifier,
                             onClick = {
-                                context.openLink(streamingLink)
+                                context.openLink(historicAlbum.album.wikipediaUrl)
                             },
                         ) {
                             Icon(
                                 modifier = Modifier.padding(end = 8.dp),
-                                imageVector = Icons.Default.PlayArrow,
-                                contentDescription = "Play",
+                                painter = painterResource(id = dk.clausr.a1001albumsgenerator.ui.R.drawable.ic_wiki),
+                                contentDescription = "Wikipedia",
                             )
-                            Text(text = "Play")
+                            Text(text = "Wikipedia")
                         }
-                    }
-
-                    FilledTonalButton(
-                        onClick = {
-                            context.openLink(historicAlbum.album.wikipediaUrl)
-                        },
-                    ) {
-                        Icon(
-                            modifier = Modifier.padding(end = 8.dp),
-                            painter = painterResource(id = dk.clausr.a1001albumsgenerator.ui.R.drawable.ic_wiki),
-                            contentDescription = "Wikipedia",
-                        )
-                        Text(text = "Wikipedia")
                     }
                 }
 
-                val ratingText = when (val rating = historicAlbum.rating) {
+                val ratingText = when (val rating = historicAlbum?.rating) {
                     Rating.DidNotListen -> "Did not listen"
                     is Rating.Rated -> "${rating.rating}⭐️"
                     Rating.Unrated -> "Unrated"
+                    else -> ""
                 }
 
                 Text(
@@ -212,7 +210,7 @@ fun AlbumDetailsScreen(
                     textAlign = TextAlign.Center,
                 )
 
-                if (historicAlbum.review.isNotBlank()) {
+                if (historicAlbum?.review?.isNotBlank() == true) {
                     Text(
                         text = "“${historicAlbum.review}”",
                         modifier = Modifier
@@ -239,8 +237,10 @@ private fun DetailsPreview() {
                     LocalSharedTransitionScope provides this,
                 ) {
                     AlbumDetailsScreen(
-                        historicAlbum = historicAlbumPreviewData(),
-                        streamingPlatform = StreamingPlatform.Tidal,
+                        state = AlbumDetailsViewModel.AlbumDetailsViewState(
+                            album = historicAlbumPreviewData(),
+                            streamingPlatform = StreamingPlatform.Tidal,
+                        ),
                     )
                 }
             }
