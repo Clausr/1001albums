@@ -1,5 +1,6 @@
 package dk.clausr.feature.overview.details
 
+import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
@@ -28,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,6 +47,7 @@ import dk.clausr.core.model.Rating
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
 import dk.clausr.feature.overview.AlbumRow
+import dk.clausr.feature.overview.R
 import dk.clausr.feature.overview.preview.historicAlbumPreviewData
 import kotlinx.collections.immutable.persistentListOf
 
@@ -71,6 +74,7 @@ fun AlbumDetailsScreen(
     modifier: Modifier = Modifier,
     listName: String = "List",
 ) {
+    val context = LocalContext.current
     val historicAlbum = state.album
     val animatedContentScope = LocalNavAnimatedVisibilityScope.current
     with(LocalSharedTransitionScope.current) {
@@ -164,7 +168,6 @@ fun AlbumDetailsScreen(
                             .fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.CenterHorizontally),
                     ) {
-                        val context = LocalContext.current
                         StreamingServices.from(historicAlbum.album)
                             .getStreamingLinkFor(state.streamingPlatform)
                             ?.let { streamingLink ->
@@ -179,7 +182,7 @@ fun AlbumDetailsScreen(
                                         imageVector = Icons.Default.PlayArrow,
                                         contentDescription = "Play",
                                     )
-                                    Text(text = "Play")
+                                    Text(text = stringResource(R.string.play_button_title))
                                 }
                             }
 
@@ -193,7 +196,7 @@ fun AlbumDetailsScreen(
                                 painter = painterResource(id = dk.clausr.a1001albumsgenerator.ui.R.drawable.ic_wiki),
                                 contentDescription = "Wikipedia",
                             )
-                            Text(text = "Wikipedia")
+                            Text(text = stringResource(R.string.wikipedia_button_title))
                         }
                     }
                 }
@@ -203,7 +206,7 @@ fun AlbumDetailsScreen(
                         .fillMaxWidth()
                         .padding(top = 16.dp)
                         .padding(horizontal = 16.dp),
-                    text = historicAlbum?.rating.ratingText(),
+                    text = historicAlbum?.rating.ratingText(context),
                     style = MaterialTheme.typography.displaySmall,
                     textAlign = TextAlign.Center,
                 )
@@ -222,11 +225,11 @@ fun AlbumDetailsScreen(
 
                 if (state.relatedAlbums.isNotEmpty()) {
                     AlbumRow(
-                        title = "Related albums",
+                        title = stringResource(R.string.related_albums_title),
                         albums = state.relatedAlbums,
                         onClickAlbum = navigateToDetails,
                         streamingPlatform = state.streamingPlatform,
-                        tertiaryTextTransform = { "${it.rating.ratingText()}\n${it.album.releaseDate}" },
+                        tertiaryTextTransform = { "${it.rating.ratingText(context)}\n${it.album.releaseDate}" },
                     )
                 }
             }
@@ -234,11 +237,11 @@ fun AlbumDetailsScreen(
     }
 }
 
-private fun Rating?.ratingText(): String {
+private fun Rating?.ratingText(context: Context): String {
     return when (this) {
-        Rating.DidNotListen -> "Did not listen"
-        is Rating.Rated -> "$rating⭐️"
-        Rating.Unrated -> "Unrated"
+        Rating.DidNotListen -> context.getString(R.string.rating_did_not_listen)
+        is Rating.Rated -> context.getString(R.string.rating_text_rated, rating)
+        Rating.Unrated -> context.getString(R.string.rating_text_unrated)
         else -> ""
     }
 }
