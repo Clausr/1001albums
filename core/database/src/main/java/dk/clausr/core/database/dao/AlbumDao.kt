@@ -32,4 +32,7 @@ interface AlbumDao {
     // Additional queries as needed
     @Query("SELECT * FROM albums")
     fun getAlbums(): Flow<List<AlbumEntity>>
+
+    @Query("SELECT slug from albums WHERE LOWER(artist) LIKE LOWER(:originalArtist)")
+    fun getSimilarAlbumSlugs(originalArtist: String): List<String>
 }

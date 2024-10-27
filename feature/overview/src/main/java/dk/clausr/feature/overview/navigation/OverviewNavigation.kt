@@ -35,7 +35,13 @@ fun NavGraphBuilder.overviewGraph(
                 navArgument(OverviewDirections.Args.LIST_NAME) { type = NavType.StringType },
             ),
         ) {
-            AlbumDetailsRoute()
+            AlbumDetailsRoute(
+                navigateToDetails = { slug, list ->
+                    navHostController.navigate(OverviewDirections.albumDetails(slug, list)) {
+                        popUpTo(OverviewDirections.Routes.ALBUM_DETAILS) { inclusive = true }
+                    }
+                }
+            )
         }
     }
 }

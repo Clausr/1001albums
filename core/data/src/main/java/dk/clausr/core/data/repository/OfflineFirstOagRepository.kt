@@ -239,4 +239,10 @@ class OfflineFirstOagRepository @Inject constructor(
     }
 
     override fun getHistoricAlbum(slug: String): Flow<HistoricAlbum> = ratingDao.getRatingWithAlbum(slug).map(RatingWithAlbum::mapToHistoricAlbum)
+    override suspend fun getSimilarAlbums(artist: String): List<HistoricAlbum> = withContext(ioDispatcher) {
+        val similarAlbumSlugs = albumDao.getSimilarAlbumSlugs(artist)
+        ratingDao.getAlbumRatings(similarAlbumSlugs)
+            .sortedBy { it.album.releaseDate }
+            .map(RatingWithAlbum::mapToHistoricAlbum)
+    }
 }

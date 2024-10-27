@@ -44,10 +44,13 @@ import dk.clausr.core.common.android.openLink
 import dk.clausr.core.model.Rating
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
+import dk.clausr.feature.overview.AlbumRow
 import dk.clausr.feature.overview.preview.historicAlbumPreviewData
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun AlbumDetailsRoute(
+    navigateToDetails: (slug: String, list: String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AlbumDetailsViewModel = hiltViewModel(),
 ) {
@@ -56,6 +59,7 @@ fun AlbumDetailsRoute(
     AlbumDetailsScreen(
         modifier = modifier,
         state = state,
+        navigateToDetails = navigateToDetails,
         listName = viewModel.listName ?: "nozhing",
     )
 }
@@ -63,6 +67,7 @@ fun AlbumDetailsRoute(
 @Composable
 fun AlbumDetailsScreen(
     state: AlbumDetailsViewModel.AlbumDetailsViewState,
+    navigateToDetails: (slug: String, list: String) -> Unit,
     modifier: Modifier = Modifier,
     listName: String = "List",
 ) {
@@ -193,19 +198,12 @@ fun AlbumDetailsScreen(
                     }
                 }
 
-                val ratingText = when (val rating = historicAlbum?.rating) {
-                    Rating.DidNotListen -> "Did not listen"
-                    is Rating.Rated -> "${rating.rating}⭐️"
-                    Rating.Unrated -> "Unrated"
-                    else -> ""
-                }
-
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp)
                         .padding(horizontal = 16.dp),
-                    text = ratingText,
+                    text = historicAlbum?.rating.ratingText(),
                     style = MaterialTheme.typography.displaySmall,
                     textAlign = TextAlign.Center,
                 )
@@ -221,8 +219,27 @@ fun AlbumDetailsScreen(
                         textAlign = TextAlign.Center,
                     )
                 }
+
+                if (state.relatedAlbums.isNotEmpty()) {
+                    AlbumRow(
+                        title = "Related albums",
+                        albums = state.relatedAlbums,
+                        onClickAlbum = navigateToDetails,
+                        streamingPlatform = state.streamingPlatform,
+                        tertiaryTextTransform = { "${it.rating.ratingText()}\n${it.album.releaseDate}" },
+                    )
+                }
             }
         }
+    }
+}
+
+private fun Rating?.ratingText(): String {
+    return when (this) {
+        Rating.DidNotListen -> "Did not listen"
+        is Rating.Rated -> "$rating⭐️"
+        Rating.Unrated -> "Unrated"
+        else -> ""
     }
 }
 
@@ -240,7 +257,12 @@ private fun DetailsPreview() {
                         state = AlbumDetailsViewModel.AlbumDetailsViewState(
                             album = historicAlbumPreviewData(),
                             streamingPlatform = StreamingPlatform.Tidal,
+                            relatedAlbums = persistentListOf(
+                                historicAlbumPreviewData(slug = "1"),
+                                historicAlbumPreviewData(slug = "2"),
+                            ),
                         ),
+                        navigateToDetails = { _, _ -> },
                     )
                 }
             }

@@ -25,6 +25,10 @@ interface RatingDao {
     @Query("SELECT * FROM ratings WHERE albumSlug = :slug")
     fun getRatingWithAlbum(slug: String): Flow<RatingWithAlbum>
 
+    @Transaction
+    @Query("SELECT * FROM ratings WHERE albumSlug IN (:slugs)")
+    fun getAlbumRatings(slugs: List<String>): List<RatingWithAlbum>
+
     @Query("DELETE FROM ratings")
     suspend fun clearTable()
 }
