@@ -37,7 +37,7 @@ room = "2.6.1"
 coreSplashscreen = "1.0.1"
 detektComposeRulesPluginVersion = "0.4.17"
 detektPluginVersion = "1.23.7"
-sentry = "4.12.0"
+sentry = "4.13.0"
 
 [libraries]
 androidx-work-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "androidxWork" }
