@@ -1,7 +1,7 @@
 [versions]
 activityCompose = "1.9.3"
 androidGradlePlugin = "8.7.2"
-coilNetworkOkhttp = "3.0.0-rc01"
+coilNetworkOkhttp = "3.0.0-rc02"
 coilVersion = "3.0.0-rc02"
 coreKtx = "1.13.1"
 compose-bom = "2024.10.01"
