@@ -60,7 +60,7 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
                         val glanceId = GlanceAppWidgetManager(baseContext).getGlanceIdBy(appWidgetId)
                         AlbumCoverWidget().update(
                             context = this@AlbumWidgetConfigurationActivity,
-                            id = glanceId
+                            id = glanceId,
                         )
                     }
                     finish()
