@@ -22,10 +22,6 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":feature:onboarding"))
 
-//    implementation(platform(libs.androidx.compose.bom))
-//    implementation(libs.androidx.compose.ui.tooling.preview)
-//    debugImplementation(libs.androidx.compose.ui.tooling)
-
     implementation(libs.androidx.glance.preview)
 
     implementation(libs.material)
@@ -37,7 +33,6 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.compose.material.iconsExtended)
     implementation(libs.kotlinx.serialization.json)
-
     implementation(libs.androidx.work.ktx)
     implementation(libs.androidx.hilt.work)
     ksp(libs.hilt.ext.compiler)
