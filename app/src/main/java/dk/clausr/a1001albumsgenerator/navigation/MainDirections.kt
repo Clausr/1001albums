@@ -33,7 +33,7 @@ fun NavGraphBuilder.mainNavigationGraph(navHostController: NavHostController) {
         SettingsRoute(
             onNavigateUp = navHostController::navigateUp,
             onClickApply = navHostController::navigateUp,
-            onShowLogs = { navHostController.navigate(MainDirections.Routes.LOGS) }
+            onShowLogs = { navHostController.navigate(MainDirections.Routes.LOGS) },
         )
     }
 

@@ -28,7 +28,7 @@ import dk.clausr.core.database.utils.Converters
         RatingEntity::class,
         AlbumImageEntity::class,
         NotificationEntity::class,
-        LogEntity::class
+        LogEntity::class,
     ],
     autoMigrations = [
         AutoMigration(from = 12, to = 13),

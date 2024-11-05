@@ -15,7 +15,8 @@ data class OagLog(
         INFO(Log.INFO),
         WARN(Log.WARN),
         ERROR(Log.ERROR),
-        ASSERT(Log.ASSERT);
+        ASSERT(Log.ASSERT),
+        ;
 
         companion object {
             fun fromPriorityConstant(priorityConstant: Int): LogLevel {
