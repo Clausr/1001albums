@@ -102,11 +102,13 @@ class BurstUpdateWorker @AssistedInject constructor(
             projectId: String,
         ) {
             WorkManager.getInstance(context)
-                .enqueueUniqueWork(
+                .beginUniqueWork(
                     UNIQUE_NAME,
                     ExistingWorkPolicy.REPLACE,
                     enqueueBurstUpdate(projectId),
                 )
+                .then(UpdateWidgetStateWorker.startSingle())
+                .enqueue()
         }
     }
 }

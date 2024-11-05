@@ -32,7 +32,7 @@ class UpdateWidgetStateWorker @AssistedInject constructor(
     companion object {
         private const val UPDATE_WIDGET_UNIQUE_NAME = "UpdateWidgetStateWorker"
 
-        private fun startSingle() = OneTimeWorkRequestBuilder<UpdateWidgetStateWorker>()
+        fun startSingle() = OneTimeWorkRequestBuilder<UpdateWidgetStateWorker>()
             .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             .build()
 

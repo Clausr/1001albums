@@ -135,14 +135,14 @@ class PeriodicProjectUpdateWidgetWorker @AssistedInject constructor(
         }
 
         private const val PERIODIC_SYNC = "SimplifiedPeriodicSyncWorker"
-
         private val periodicConstraints =
             Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build()
 
+        private const val HALF_HOUR_MINUTES = 30L
         private fun periodicWorkSync() = PeriodicWorkRequestBuilder<PeriodicProjectUpdateWidgetWorker>(
-            repeatInterval = Duration.ofHours(1),
+            repeatInterval = Duration.ofMinutes(HALF_HOUR_MINUTES),
         )
             .setBackoffCriteria(
                 backoffPolicy = BackoffPolicy.LINEAR,
