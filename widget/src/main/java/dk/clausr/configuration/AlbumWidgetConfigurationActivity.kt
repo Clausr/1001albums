@@ -47,6 +47,7 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
             SettingsRoute(
                 showBack = false,
                 onNavigateUp = {},
+                onShowLogs = {},
                 onClickApply = {
                     // Start updates and stuff
                     viewModel.updateWidgets()
