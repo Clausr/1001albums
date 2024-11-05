@@ -14,6 +14,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.HiltAndroidApp
 import dagger.hilt.components.SingletonComponent
 import dk.clausr.a1001albumsgenerator.network.BuildConfig
+import dk.clausr.a1001albumsgenerator.utils.RoomLoggingTree
 import dk.clausr.core.common.network.di.ApplicationCoroutineScope
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.worker.PeriodicProjectUpdateWidgetWorker
@@ -37,6 +38,9 @@ class OagApplication : Application(), Configuration.Provider {
     @Inject
     @ApplicationCoroutineScope
     lateinit var applicationScope: CoroutineScope
+
+    @Inject
+    lateinit var roomLoggingTree: RoomLoggingTree
 
     private val usageStatsService by lazy { getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager }
     override fun onCreate() {
@@ -72,6 +76,8 @@ class OagApplication : Application(), Configuration.Provider {
     }
 
     private fun initTimberAndSentry() {
+        Timber.plant(roomLoggingTree)
+
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         } else {
