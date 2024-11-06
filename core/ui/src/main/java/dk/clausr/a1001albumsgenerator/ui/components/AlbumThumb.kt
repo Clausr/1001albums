@@ -75,26 +75,26 @@ fun AlbumThumb(
                         contentDescription = null,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(shape = RoundedCornerShape(4.dp))
                             .aspectRatio(1f)
                             .sharedElement(
                                 state = rememberSharedContentState(key = "$listName-cover-$albumSlug"),
                                 animatedVisibilityScope = animatedContentScope,
-                            ),
+                            )
+                            .clip(shape = RoundedCornerShape(4.dp)),
                         contentScale = ContentScale.FillWidth,
                     )
 
                     onClickPlay?.let { onClickPlay ->
                         FilledTonalIconButton(
                             modifier = Modifier
+                                .padding(4.dp)
+                                .size(40.dp)
                                 .sharedBounds(
                                     sharedContentState = rememberSharedContentState(key = "$listName-play-$albumSlug"),
                                     animatedVisibilityScope = animatedContentScope,
                                     resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
                                 )
-                                .padding(4.dp)
-                                .clip(CircleShape)
-                                .size(40.dp),
+                                .clip(CircleShape),
                             onClick = onClickPlay,
                         ) {
                             Icon(imageVector = Icons.Default.PlayArrow, contentDescription = "Play")

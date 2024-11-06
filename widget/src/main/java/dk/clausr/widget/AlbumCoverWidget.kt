@@ -67,7 +67,7 @@ class AlbumCoverWidget : GlanceAppWidget() {
         context: Context,
         id: GlanceId,
     ) {
-        Timber.d("GlanceID: $id")
+        Timber.d("provideGlance GlanceID: $id")
         provideContent {
             val state = currentState<SerializedWidgetState>()
 
@@ -86,7 +86,6 @@ fun Content(
     state: SerializedWidgetState,
     modifier: GlanceModifier = GlanceModifier,
 ) {
-    Timber.d("Widget state: $state")
     Box(
         modifier = modifier
             .fillMaxSize(),
