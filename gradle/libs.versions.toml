@@ -5,7 +5,7 @@ coilNetworkOkhttp = "3.0.0-rc02"
 coilVersion = "3.0.0-rc02"
 coreKtx = "1.15.0"
 compose-bom = "2024.10.01"
-glanceAppwidget = "1.1.1"
+glance = "1.1.1"
 haze = "0.9.0-rc02"
 kotlin = "2.0.21"
 kotlinxCollectionsImmutable = "0.3.8"
@@ -40,6 +40,10 @@ detektPluginVersion = "1.23.7"
 sentry = "4.13.0"
 
 [libraries]
+androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glance" }
+androidx-glance-appwidget-preview = { module = "androidx.glance:glance-appwidget-preview", version.ref = "glance" }
+androidx-glance-preview = { group = "androidx.glance", name = "glance-preview", version.ref = "glance" }
+androidx-glance-material3 = { module = "androidx.glance:glance-material3", version.ref = "glance" }
 androidx-work-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "androidxWork" }
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
@@ -65,8 +69,7 @@ core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
 detekt-cli = { module = "io.gitlab.arturbosch.detekt:detekt-cli", version.ref = "detektPluginVersion" }
 detekt-compose-rules = { module = "io.nlopez.compose.rules:detekt", version.ref = "detektComposeRulesPluginVersion" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detektPluginVersion" }
-glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glanceAppwidget" }
-glance-material3 = { module = "androidx.glance:glance-material3", version.ref = "glanceAppwidget" }
+
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 material = { module = "com.google.android.material:material", version.ref = "materialVersion" }
 retrofit-core = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
@@ -89,6 +92,7 @@ ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devto
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

@@ -1,10 +1,16 @@
 package dk.clausr.feature.overview
 
+import android.content.Context
+import androidx.glance.appwidget.GlanceAppWidgetManager
+import androidx.glance.appwidget.updateAll
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dk.clausr.core.common.extensions.formatMonthAndYear
 import dk.clausr.core.common.extensions.toLocalDateTime
+import dk.clausr.core.common.model.doOnFailure
+import dk.clausr.core.common.model.doOnSuccess
 import dk.clausr.core.data.repository.NotificationRepository
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.SerializedWidgetState
@@ -14,6 +20,7 @@ import dk.clausr.core.model.Notification
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.Rating
 import dk.clausr.core.model.StreamingPlatform
+import dk.clausr.widget.AlbumCoverWidget
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
@@ -22,7 +29,6 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -33,6 +39,7 @@ import javax.inject.Inject
 @HiltViewModel
 class OverviewViewModel @Inject constructor(
     oagRepository: OagRepository,
+    @ApplicationContext private val context: Context,
     private val notificationsRepository: NotificationRepository,
 ) : ViewModel() {
     private var projectId = MutableStateFlow("")
@@ -40,13 +47,24 @@ class OverviewViewModel @Inject constructor(
     private val _unreadNotifications = notificationsRepository.unreadNotifications
         .map { it.toPersistentList() }
 
-    val uiState = combine(
+    // Default to true, so it only shows later
+    private val _isUsingWidget = MutableStateFlow(true)
+
+    val uiState = dk.clausr.core.common.extensions.combine(
         oagRepository.project,
         oagRepository.currentAlbum,
         oagRepository.widgetState,
         oagRepository.preferredStreamingPlatform,
         _unreadNotifications,
-    ) { project, currentAlbum, widgetState, platform, unreadNotifications ->
+        _isUsingWidget,
+    ) {
+            project: Project?,
+            currentAlbum: Album?,
+            widgetState: SerializedWidgetState,
+            platform: StreamingPlatform,
+            unreadNotifications: ImmutableList<Notification>,
+            isUsingWidget: Boolean,
+        ->
         if (project != null) {
             OverviewUiState.Success(
                 project = project,
@@ -57,6 +75,7 @@ class OverviewViewModel @Inject constructor(
                 streamingPlatform = platform,
                 groupedHistory = project.groupedHistory().toImmutableMap(),
                 notifications = unreadNotifications,
+                isUsingWidget = isUsingWidget,
             )
         } else {
             OverviewUiState.Error
@@ -87,6 +106,13 @@ class OverviewViewModel @Inject constructor(
     fun clearUnreadNotifications() {
         viewModelScope.launch {
             notificationsRepository.readAll(projectId.value)
+                .doOnSuccess {
+                    Timber.d("Notifications marked as read, update widget.")
+                    AlbumCoverWidget().updateAll(context = context)
+                }
+                .doOnFailure {
+                    Timber.e(it.cause, "Could not read all notifications")
+                }
         }
     }
 
@@ -99,6 +125,16 @@ class OverviewViewModel @Inject constructor(
                     this@OverviewViewModel.projectId.value = projectId
                 }
             }
+        }
+
+        updateIsUsingWidget()
+    }
+
+    private fun updateIsUsingWidget() {
+        viewModelScope.launch {
+            val widgets = GlanceAppWidgetManager(context).getGlanceIds(AlbumCoverWidget::class.java)
+            Timber.d("Widgets count: ${widgets.size}")
+            _isUsingWidget.emit(widgets.isNotEmpty())
         }
     }
 }
@@ -114,6 +150,7 @@ sealed interface OverviewUiState {
         val streamingPlatform: StreamingPlatform,
         val groupedHistory: ImmutableMap<String, List<HistoricAlbum>>,
         val notifications: ImmutableList<Notification>,
+        val isUsingWidget: Boolean,
     ) : OverviewUiState
 
     data object Error : OverviewUiState

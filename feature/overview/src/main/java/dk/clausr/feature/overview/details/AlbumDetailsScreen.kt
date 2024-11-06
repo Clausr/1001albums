@@ -148,11 +148,11 @@ fun AlbumDetailsScreen(
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(bottom = 16.dp)
                         .sharedBounds(
                             sharedContentState = rememberSharedContentState(key = "$listName-date-${historicAlbum?.album?.slug}"),
                             animatedVisibilityScope = animatedContentScope,
-                        )
-                        .padding(bottom = 16.dp),
+                        ),
                     text = historicAlbum?.album?.releaseDate.orEmpty(),
                     textAlign = TextAlign.Center,
                 )
@@ -160,12 +160,12 @@ fun AlbumDetailsScreen(
                 if (historicAlbum?.album != null) {
                     Row(
                         modifier = Modifier
+                            .fillMaxWidth()
                             .sharedBounds(
                                 sharedContentState = rememberSharedContentState(key = "$listName-play-${historicAlbum.album.slug}"),
                                 animatedVisibilityScope = animatedContentScope,
                                 resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(),
-                            )
-                            .fillMaxWidth(),
+                            ),
                         horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.CenterHorizontally),
                     ) {
                         StreamingServices.from(historicAlbum.album)

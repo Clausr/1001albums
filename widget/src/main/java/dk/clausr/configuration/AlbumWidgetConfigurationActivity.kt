@@ -7,8 +7,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.glance.appwidget.GlanceAppWidgetManager
 import dagger.hilt.android.AndroidEntryPoint
 import dk.clausr.a1001albumsgenerator.settings.SettingsRoute
+import dk.clausr.widget.AlbumCoverWidget
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class AlbumWidgetConfigurationActivity : ComponentActivity() {
@@ -38,6 +43,7 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
 
     private fun updateView() {
         setContent {
+            val coroutineScope = rememberCoroutineScope()
             SettingsRoute(
                 showBack = false,
                 onNavigateUp = {},
@@ -51,6 +57,13 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
                         appWidgetId,
                     )
                     setResult(RESULT_OK, resultValue)
+                    coroutineScope.launch(Dispatchers.IO) {
+                        val glanceId = GlanceAppWidgetManager(baseContext).getGlanceIdBy(appWidgetId)
+                        AlbumCoverWidget().update(
+                            context = this@AlbumWidgetConfigurationActivity,
+                            id = glanceId,
+                        )
+                    }
                     finish()
                 },
             )

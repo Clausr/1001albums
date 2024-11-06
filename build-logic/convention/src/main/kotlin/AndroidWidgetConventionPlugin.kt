@@ -12,11 +12,14 @@ class AndroidWidgetConventionPlugin : Plugin<Project> {
 
             dependencies {
                 add("implementation", libs.findLibrary("kotlinx.coroutines.android").get())
-                add("api", libs.findLibrary("glance.appwidget").get())
-                add("implementation", libs.findLibrary("glance.material3").get())
+                add("api", libs.findLibrary("androidx.glance.appwidget").get())
+                add("implementation", libs.findLibrary("androidx.glance.material3").get())
 
                 add("implementation", libs.findLibrary("activity.compose").get())
                 add("implementation", libs.findLibrary("androidx.compose.material3").get())
+
+                add("implementation", libs.findLibrary("androidx.glance.preview").get())
+                add("implementation", libs.findLibrary("androidx.glance.appwidget.preview").get())
             }
         }
     }

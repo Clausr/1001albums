@@ -22,9 +22,7 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":feature:onboarding"))
 
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    debugImplementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.androidx.glance.preview)
 
     implementation(libs.material)
 
