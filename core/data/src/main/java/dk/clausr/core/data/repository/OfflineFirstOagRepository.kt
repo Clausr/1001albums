@@ -167,11 +167,17 @@ class OfflineFirstOagRepository @Inject constructor(
     }
 
     override suspend fun isLatestAlbumRated(): Boolean {
-        val history = historicAlbums.firstOrNull()
-        val lastAlbum = history?.firstOrNull()
+        val history = historicAlbums.firstOrNull() ?: emptyList()
+        val latestRevealedAlbum = history.firstOrNull { it.isRevealed }
 
-        val isLastAlbumRated = lastAlbum?.rating is Rating.Rated
-        Timber.d("isLatestAlbumRated $isLastAlbumRated")
+        val isLastAlbumRated = when (latestRevealedAlbum?.rating) {
+            Rating.DidNotListen -> true
+            is Rating.Rated -> true
+            Rating.Unrated -> false
+            null -> false
+        }
+
+        Timber.d("isLatestRevealedAlbum Rated $isLastAlbumRated")
 
         return isLastAlbumRated
     }
