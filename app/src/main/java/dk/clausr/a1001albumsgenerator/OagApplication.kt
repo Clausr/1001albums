@@ -14,6 +14,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.HiltAndroidApp
 import dagger.hilt.components.SingletonComponent
 import dk.clausr.a1001albumsgenerator.network.BuildConfig
+import dk.clausr.a1001albumsgenerator.utils.CrashlyticsHelper
 import dk.clausr.a1001albumsgenerator.utils.RoomLoggingTree
 import dk.clausr.core.common.network.di.ApplicationCoroutineScope
 import dk.clausr.core.data.repository.OagRepository
@@ -78,9 +79,12 @@ class OagApplication : Application(), Configuration.Provider {
     private fun initTimberAndSentry() {
         Timber.plant(roomLoggingTree)
 
+
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         } else {
+            Timber.plant(CrashlyticsHelper.CrashlyticsLoggingTree())
+
             SentryAndroid.init(this) { options ->
                 options.addIntegration(
                     SentryTimberIntegration(
