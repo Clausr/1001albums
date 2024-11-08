@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1008932389865",
+    "project_id": "albums-2c2ae",
+    "storage_bucket": "albums-2c2ae.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1008932389865:android:d3cd83704e47de88f44178",
+        "android_client_info": {
+          "package_name": "dk.clausr.a1001albumsgenerator"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcJnbBSGF_mHKA0ehFiSBm3s_N3I91NxA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1008932389865:android:867591018d1ef42df44178",
+        "android_client_info": {
+          "package_name": "dk.clausr.a1001albumsgenerator.debug"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcJnbBSGF_mHKA0ehFiSBm3s_N3I91NxA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

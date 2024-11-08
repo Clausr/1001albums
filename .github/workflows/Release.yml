@@ -54,14 +54,6 @@ jobs:
           mkdir -p signing
           echo "$ENCODED_STRING" | base64 --decode > signing/Clausr.keystore
 
-      - name: Insert sentry properties
-        env:
-          ENCODED_SENTRY_PROPERTIES: ${{ secrets.SENTRY_PROPERTIES_BASE64 }}
-
-        run: |
-          echo "$ENCODED_SENTRY_PROPERTIES" | base64 --decode > sentry.properties
-
-
       - name: Build Release bundle
         env:
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}

@@ -11,7 +11,8 @@ plugins {
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.detekt).version(libs.versions.detektPluginVersion.get())
     alias(libs.plugins.detekt.compiler) apply false
-    alias(libs.plugins.sentry) apply false
+    alias(libs.plugins.google.services) apply false
+    alias(libs.plugins.firebase.crashlytics) apply false
 }
 
 detekt {
