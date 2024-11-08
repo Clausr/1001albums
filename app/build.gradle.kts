@@ -6,6 +6,8 @@ plugins {
     id("a1001albums.android.application.compose")
     id("a1001albums.android.application.flavors")
     id("a1001albums.android.hilt")
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 val keystorePropertiesFile = rootProject.file("signing/secrets.properties")
@@ -95,6 +97,11 @@ dependencies {
     implementation(libs.coil3)
     implementation(libs.coil3.coil.compose)
     implementation(libs.coil3.coil.network.okhttp)
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.crashlytics)
+
 }
 
 private fun getEnvNullable(variableName: String): String {
