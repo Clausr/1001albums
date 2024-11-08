@@ -19,9 +19,6 @@ import dk.clausr.a1001albumsgenerator.utils.RoomLoggingTree
 import dk.clausr.core.common.network.di.ApplicationCoroutineScope
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.worker.PeriodicProjectUpdateWidgetWorker
-import io.sentry.SentryLevel
-import io.sentry.android.core.SentryAndroid
-import io.sentry.android.timber.SentryTimberIntegration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -49,7 +46,7 @@ class OagApplication : Application(), Configuration.Provider {
 
         startPeriodicWorker()
 
-        initTimberAndSentry()
+        initTimber()
 
         SingletonImageLoader.setSafe {
             imageLoader
@@ -76,23 +73,13 @@ class OagApplication : Application(), Configuration.Provider {
         }
     }
 
-    private fun initTimberAndSentry() {
+    private fun initTimber() {
         Timber.plant(roomLoggingTree)
-
 
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         } else {
             Timber.plant(CrashlyticsHelper.CrashlyticsLoggingTree())
-
-            SentryAndroid.init(this) { options ->
-                options.addIntegration(
-                    SentryTimberIntegration(
-                        minEventLevel = SentryLevel.ERROR,
-                        minBreadcrumbLevel = SentryLevel.DEBUG,
-                    ),
-                )
-            }
         }
     }
 

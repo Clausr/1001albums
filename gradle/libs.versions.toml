@@ -40,7 +40,6 @@ room = "2.6.1"
 coreSplashscreen = "1.0.1"
 detektComposeRulesPluginVersion = "0.4.17"
 detektPluginVersion = "1.23.7"
-sentry = "4.13.0"
 
 [libraries]
 androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glance" }
@@ -109,7 +108,6 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detektPluginVersion" }
 detekt-compiler = { id = "io.github.detekt.gradle.compiler-plugin", version.ref = "detektPluginVersion" }
-sentry = { id = "io.sentry.android.gradle", version.ref = "sentry" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServicesVersion" }
 firebase_crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlyticsGradleVersion" }
 
