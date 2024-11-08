@@ -6,7 +6,8 @@ Before creating a pull request, make sure that your branch is up to date with ma
 After approval, the PR should be **SQUASHED AND MERGED**. Main should remain as clean as possible. This also helps when generating release notes.
 
 ## Releasing
-To release the app we want to have at least one release candidate running for a few days, while observing for new crashes on Sentry.
+
+To release the app we want to have at least one release candidate running for a few days, while observing for new crashes on Crashlytics.
 When we're confident that the release is stable, we create a release.
 The tag of the release dictates the version name of the app.
 
