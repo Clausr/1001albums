@@ -8,7 +8,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import dk.clausr.a1001albumsgenerator.ui.components.LocalNavAnimatedVisibilityScope
 import dk.clausr.a1001albumsgenerator.ui.components.LocalSharedTransitionScope
 
-
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun PreviewSharedTransitionLayout(content: @Composable () -> Unit) {
