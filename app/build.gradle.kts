@@ -6,6 +6,8 @@ plugins {
     id("a1001albums.android.application.compose")
     id("a1001albums.android.application.flavors")
     id("a1001albums.android.hilt")
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 val keystorePropertiesFile = rootProject.file("signing/secrets.properties")
@@ -95,6 +97,11 @@ dependencies {
     implementation(libs.coil3)
     implementation(libs.coil3.coil.compose)
     implementation(libs.coil3.coil.network.okhttp)
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.crashlytics)
+
 }
 
 private fun getEnvNullable(variableName: String): String {
@@ -109,19 +116,4 @@ fun getPropertyOrEnvNullable(
     val output = variable ?: getEnvNullable(variableName)
 
     return output
-}
-
-sentry {
-    org.set("clausr")
-    projectName.set("1001-albums-widget")
-
-    // this will upload your source code to Sentry to show it as part of the stack traces
-    // disable if you don't want to expose your sources
-    includeSourceContext.set(true)
-
-    tracingInstrumentation {
-        logcat {
-            enabled = false
-        }
-    }
 }

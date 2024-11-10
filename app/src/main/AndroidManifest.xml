@@ -34,23 +34,6 @@
                 android:value="androidx.startup"
                 tools:node="remove" />
         </provider>
-
-        <!-- Required: set your sentry.io project identifier (DSN) -->
-        <meta-data
-            android:name="io.sentry.dsn"
-            android:value="https://35c733348332234ff0fe4fb7772fd054@o4507681224327168.ingest.de.sentry.io/4507681227538512" />
-        <!-- enable the performance API by setting a sample-rate, adjust in production env -->
-        <meta-data
-            android:name="io.sentry.traces.sample-rate"
-            android:value="1.0" />
-        <!-- enable profiling when starting transactions, adjust in production env -->
-        <meta-data
-            android:name="io.sentry.traces.profiling.sample-rate"
-            android:value="1.0" />
-        <!-- enable automatic breadcrumbs for user interactions (clicks, swipes, scrolls) -->
-        <meta-data
-            android:name="io.sentry.traces.user-interaction.enable"
-            android:value="true" />
     </application>
 
 </manifest>
