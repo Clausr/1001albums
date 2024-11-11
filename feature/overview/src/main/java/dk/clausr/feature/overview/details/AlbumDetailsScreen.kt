@@ -42,7 +42,7 @@ import coil3.request.crossfade
 import dk.clausr.a1001albumsgenerator.ui.components.LocalNavAnimatedVisibilityScope
 import dk.clausr.a1001albumsgenerator.ui.components.LocalSharedTransitionScope
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
-import dk.clausr.core.common.android.openLink
+import dk.clausr.core.common.extensions.openLink
 import dk.clausr.core.model.Rating
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
@@ -230,6 +230,7 @@ fun AlbumDetailsScreen(
                         onClickAlbum = navigateToDetails,
                         streamingPlatform = state.streamingPlatform,
                         tertiaryTextTransform = { "${it.rating.ratingText(context)}\n${it.album.releaseDate}" },
+                        onClickPlay = { context.openLink(it) }
                     )
                 }
             }

@@ -52,7 +52,7 @@ import dk.clausr.a1001albumsgenerator.onboarding.screens.StreamingServiceScreen
 import dk.clausr.a1001albumsgenerator.ui.components.covergrid.CoverGrid
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.common.BuildConfig
-import dk.clausr.core.common.android.openLink
+import dk.clausr.core.common.extensions.openLink
 import dk.clausr.core.model.StreamingPlatform
 
 @Composable

@@ -15,7 +15,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dk.clausr.a1001albumsgenerator.ui.components.AlbumThumb
-import dk.clausr.core.common.android.openLink
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
@@ -26,6 +25,7 @@ fun AlbumRow(
     title: String,
     albums: ImmutableList<HistoricAlbum>,
     onClickAlbum: (slug: String, listName: String) -> Unit,
+    onClickPlay: (link: String) -> Unit,
     streamingPlatform: StreamingPlatform,
     tertiaryTextTransform: (HistoricAlbum) -> String?,
     modifier: Modifier = Modifier,
@@ -53,9 +53,9 @@ fun AlbumRow(
                     .from(album.album)
                     .getStreamingLinkFor(streamingPlatform)
 
-                val onClickPlay = streamingLink?.let {
+                val playClick = streamingLink?.let {
                     {
-                        context.openLink(streamingLink)
+                        onClickPlay(it)
                     }
                 }
 
@@ -63,7 +63,7 @@ fun AlbumRow(
                     modifier = Modifier.width(120.dp),
                     album = album,
                     onClick = { onClickAlbum(album.album.slug, title) },
-                    onClickPlay = onClickPlay,
+                    onClickPlay = playClick,
                     tertiaryText = tertiaryTextTransform(album),
                     listName = title,
                 )

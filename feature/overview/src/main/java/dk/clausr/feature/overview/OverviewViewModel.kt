@@ -1,5 +1,6 @@
 package dk.clausr.feature.overview
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.updateAll
@@ -8,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dk.clausr.core.common.extensions.formatMonthAndYear
+import dk.clausr.core.common.extensions.openLink
 import dk.clausr.core.common.extensions.toLocalDateTime
 import dk.clausr.core.common.model.doOnFailure
 import dk.clausr.core.common.model.doOnSuccess
@@ -26,10 +28,12 @@ import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -38,11 +42,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OverviewViewModel @Inject constructor(
-    oagRepository: OagRepository,
+    private val oagRepository: OagRepository,
     @ApplicationContext private val context: Context,
     private val notificationsRepository: NotificationRepository,
 ) : ViewModel() {
     private var projectId = MutableStateFlow("")
+    private val _viewEffect = Channel<ViewEffect>(Channel.BUFFERED)
+    val viewEffect = _viewEffect.receiveAsFlow()
 
     private val _unreadNotifications = notificationsRepository.unreadNotifications
         .map { it.toPersistentList() }
@@ -116,6 +122,18 @@ class OverviewViewModel @Inject constructor(
         }
     }
 
+    fun openStreamingLink(url: String) {
+        try {
+            context.openLink(url)
+        } catch (e: ActivityNotFoundException) {
+            Timber.e(e, "Couldn't open streaming link")
+
+            viewModelScope.launch {
+                _viewEffect.send(ViewEffect.ShowSnackbar(message = "Could not find any browser to handle the link"))
+            }
+        }
+    }
+
     init {
         viewModelScope.launch {
             oagRepository.project.collectLatest { project ->
@@ -137,6 +155,10 @@ class OverviewViewModel @Inject constructor(
             _isUsingWidget.emit(widgets.isNotEmpty())
         }
     }
+
+    sealed interface ViewEffect {
+        data class ShowSnackbar(val message: String) : ViewEffect
+    }
 }
 
 sealed interface OverviewUiState {
@@ -155,3 +177,4 @@ sealed interface OverviewUiState {
 
     data object Error : OverviewUiState
 }
+
