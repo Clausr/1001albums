@@ -18,11 +18,9 @@
     <ID>PackageName:DataMigration.kt$package dk.clausr.core.data_widget</ID>
     <ID>UnstableCollections:Preview.kt$List&lt;Pair&lt;Int, Int>></ID>
     <ID>LongParameterList:FlowExtension.kt$( flow: Flow&lt;T1>, flow2: Flow&lt;T2>, flow3: Flow&lt;T3>, flow4: Flow&lt;T4>, flow5: Flow&lt;T5>, flow6: Flow&lt;T6>,
-      transform: suspend (T1, T2, T3, T4, T5, T6) -> R )
-    </ID>
-    <ID>LongParameterList:FlowExtension.kt$( flow: Flow&lt;T1>, flow2: Flow&lt;T2>, flow3: Flow&lt;T3>, flow4: Flow&lt;T4>, flow5: Flow&lt;T5>, flow6: Flow&lt;T6>,
       transform: suspend (T1, T2, T3, T4, T5, T6) -> R, )
     </ID>
+    <ID>LongParameterList:FlowExtension.kt$( flow: Flow&lt;T1>, flow2: Flow&lt;T2>, flow3: Flow&lt;T3>, flow4: Flow&lt;T4>, flow5: Flow&lt;T5>, flow6: Flow&lt;T6>, transform: suspend (T1, T2, T3, T4, T5, T6) -> R, )</ID>
   </ManuallySuppressedIssues>
-  <CurrentIssues />
+  <CurrentIssues/>
 </SmellBaseline>

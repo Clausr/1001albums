@@ -50,6 +50,8 @@ import dk.clausr.a1001albumsgenerator.ui.components.AlbumThumb
 import dk.clausr.a1001albumsgenerator.ui.components.LocalNavAnimatedVisibilityScope
 import dk.clausr.a1001albumsgenerator.ui.components.LocalSharedTransitionScope
 import dk.clausr.a1001albumsgenerator.ui.extensions.ignoreHorizontalParentPadding
+import dk.clausr.a1001albumsgenerator.ui.preview.PreviewSharedTransitionLayout
+import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.common.android.openLink
 import dk.clausr.core.common.extensions.formatToDate
 import dk.clausr.core.data_widget.SerializedWidgetState
@@ -310,35 +312,37 @@ private fun LazyGridScope.historySection(
 @Preview
 @Composable
 private fun OverviewPreview() {
-    MaterialTheme {
-        OverviewScreen(
-            navigateToSettings = {},
-            navigateToAlbumDetails = { _, _ -> },
-            state = OverviewUiState.Success(
-                project = Project(
-                    name = "GlanceWidget",
-                    currentAlbumSlug = "paranoid",
-                    currentAlbumNotes = "",
-                    updateFrequency = UpdateFrequency.DailyWithWeekends,
-                    shareableUrl = "https://clausr.dk",
-                    historicAlbums = listOf(
-                        historicAlbumPreviewData(),
+    OagTheme {
+        PreviewSharedTransitionLayout {
+            OverviewScreen(
+                navigateToSettings = {},
+                navigateToAlbumDetails = { _, _ -> },
+                state = OverviewUiState.Success(
+                    project = Project(
+                        name = "GlanceWidget",
+                        currentAlbumSlug = "paranoid",
+                        currentAlbumNotes = "",
+                        updateFrequency = UpdateFrequency.DailyWithWeekends,
+                        shareableUrl = "https://clausr.dk",
+                        historicAlbums = listOf(
+                            historicAlbumPreviewData(),
+                        ),
                     ),
+                    currentAlbum = albumPreviewData(),
+                    widgetState = SerializedWidgetState.NotInitialized,
+                    didNotListen = persistentListOf(
+                        historicAlbumPreviewData(slug = "0"),
+                        historicAlbumPreviewData(slug = "1"),
+                        historicAlbumPreviewData(slug = "2"),
+                    ),
+                    topRated = persistentListOf(),
+                    streamingPlatform = StreamingPlatform.Tidal,
+                    groupedHistory = persistentMapOf(),
+                    notifications = persistentListOf(),
+                    isUsingWidget = false,
                 ),
-                currentAlbum = albumPreviewData(),
-                widgetState = SerializedWidgetState.NotInitialized,
-                didNotListen = persistentListOf(
-                    historicAlbumPreviewData(slug = "0"),
-                    historicAlbumPreviewData(slug = "1"),
-                    historicAlbumPreviewData(slug = "2"),
-                ),
-                topRated = persistentListOf(),
-                streamingPlatform = StreamingPlatform.Tidal,
-                groupedHistory = persistentMapOf(),
-                notifications = persistentListOf(),
-                isUsingWidget = false,
-            ),
-            readAllNotifications = {},
-        )
+                readAllNotifications = {},
+            )
+        }
     }
 }
