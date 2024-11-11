@@ -101,7 +101,6 @@ dependencies {
     // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
-
 }
 
 private fun getEnvNullable(variableName: String): String {

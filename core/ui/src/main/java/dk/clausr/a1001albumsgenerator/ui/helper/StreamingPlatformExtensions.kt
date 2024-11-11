@@ -1,6 +1,7 @@
 package dk.clausr.a1001albumsgenerator.ui.helper
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import dk.clausr.a1001albumsgenerator.ui.R
@@ -18,14 +19,19 @@ fun StreamingPlatform.icon(): Int = when (this) {
     StreamingPlatform.Undefined -> -1
 }
 
-@Composable
-fun StreamingPlatform.displayName(): String = when (this) {
-    StreamingPlatform.AmazonMusic -> stringResource(R.string.platform_amazon_music)
-    StreamingPlatform.AppleMusic -> stringResource(R.string.platform_apple_music)
-    StreamingPlatform.Deezer -> stringResource(R.string.platform_deezer)
-    StreamingPlatform.Spotify -> stringResource(R.string.platform_spotify)
-    StreamingPlatform.Tidal -> stringResource(R.string.platform_tidal)
-    StreamingPlatform.YouTubeMusic -> stringResource(R.string.platform_youtube_music)
-    StreamingPlatform.Qobuz -> stringResource(R.string.platform_qobuz)
-    StreamingPlatform.Undefined -> ""
+@StringRes
+fun StreamingPlatform.displayNameRes(): Int? = when (this) {
+    StreamingPlatform.AmazonMusic -> R.string.platform_amazon_music
+    StreamingPlatform.AppleMusic -> R.string.platform_apple_music
+    StreamingPlatform.Deezer -> R.string.platform_deezer
+    StreamingPlatform.Spotify -> R.string.platform_spotify
+    StreamingPlatform.Tidal -> R.string.platform_tidal
+    StreamingPlatform.YouTubeMusic -> R.string.platform_youtube_music
+    StreamingPlatform.Qobuz -> R.string.platform_qobuz
+    StreamingPlatform.Undefined -> null
 }
+
+@Composable
+fun StreamingPlatform.displayName(): String = displayNameRes()?.let { displayNameResId ->
+    stringResource(displayNameResId)
+}.orEmpty()
