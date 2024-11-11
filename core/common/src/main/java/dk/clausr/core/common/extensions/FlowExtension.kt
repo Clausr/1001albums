@@ -1,3 +1,5 @@
+@file:Suppress("LongParameterList")
+
 package dk.clausr.core.common.extensions
 
 import androidx.compose.runtime.Composable

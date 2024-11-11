@@ -177,4 +177,3 @@ sealed interface OverviewUiState {
 
     data object Error : OverviewUiState
 }
-

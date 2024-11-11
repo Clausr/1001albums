@@ -22,7 +22,6 @@ fun Context.openProject(
     openLink(uri.toString())
 }
 
-
 fun Context.openLink(url: String) = openLink(url.toUri())
 
 fun Context.openLink(uri: Uri) {

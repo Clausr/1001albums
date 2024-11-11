@@ -230,7 +230,7 @@ fun AlbumDetailsScreen(
                         onClickAlbum = navigateToDetails,
                         streamingPlatform = state.streamingPlatform,
                         tertiaryTextTransform = { "${it.rating.ratingText(context)}\n${it.album.releaseDate}" },
-                        onClickPlay = { context.openLink(it) }
+                        onClickPlay = { context.openLink(it) },
                     )
                 }
             }
