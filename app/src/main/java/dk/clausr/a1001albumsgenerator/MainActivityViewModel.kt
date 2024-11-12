@@ -14,6 +14,10 @@ class MainActivityViewModel @Inject constructor(
     val uiState = userRepo.hasOnboarded.map {
         MainViewState.Success(hasOnboarded = it)
     }
+
+    init {
+
+    }
 }
 
 sealed interface MainViewState {

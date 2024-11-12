@@ -14,6 +14,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.HiltAndroidApp
 import dagger.hilt.components.SingletonComponent
 import dk.clausr.a1001albumsgenerator.network.BuildConfig
+import dk.clausr.a1001albumsgenerator.tracking.Tracking
 import dk.clausr.a1001albumsgenerator.utils.CrashlyticsHelper
 import dk.clausr.a1001albumsgenerator.utils.RoomLoggingTree
 import dk.clausr.core.common.network.di.ApplicationCoroutineScope
@@ -39,6 +40,17 @@ class OagApplication : Application(), Configuration.Provider {
 
     @Inject
     lateinit var roomLoggingTree: RoomLoggingTree
+
+    @Inject
+    lateinit var tracking: Tracking
+
+    @Inject
+    lateinit var workerFactory: HiltWorkerFactory
+
+    override val workManagerConfiguration: Configuration = Configuration.Builder()
+        .setWorkerFactory(EntryPoints.get(this, HiltWorkerFactoryEntryPoint::class.java).workerFactory())
+        .setMinimumLoggingLevel(if (BuildConfig.DEBUG) android.util.Log.VERBOSE else android.util.Log.INFO)
+        .build()
 
     private val usageStatsService by lazy { getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager }
     override fun onCreate() {
@@ -88,12 +100,4 @@ class OagApplication : Application(), Configuration.Provider {
     interface HiltWorkerFactoryEntryPoint {
         fun workerFactory(): HiltWorkerFactory
     }
-
-    @Inject
-    lateinit var workerFactory: HiltWorkerFactory
-
-    override val workManagerConfiguration: Configuration = Configuration.Builder()
-        .setWorkerFactory(EntryPoints.get(this, HiltWorkerFactoryEntryPoint::class.java).workerFactory())
-        .setMinimumLoggingLevel(if (BuildConfig.DEBUG) android.util.Log.VERBOSE else android.util.Log.INFO)
-        .build()
 }

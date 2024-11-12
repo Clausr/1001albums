@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dk.clausr.a1001albumsgenerator.tracking.Tracking
 import dk.clausr.core.common.extensions.formatMonthAndYear
 import dk.clausr.core.common.extensions.openLink
 import dk.clausr.core.common.extensions.toLocalDateTime
@@ -43,6 +44,7 @@ class OverviewViewModel @Inject constructor(
     private val oagRepository: OagRepository,
     @ApplicationContext private val context: Context,
     private val notificationsRepository: NotificationRepository,
+    private val tracking: Tracking,
 ) : ViewModel() {
     private var projectId = MutableStateFlow("")
     private val _viewEffect = Channel<ViewEffect>(Channel.BUFFERED)
@@ -118,6 +120,10 @@ class OverviewViewModel @Inject constructor(
         }
     }
 
+    fun track() {
+        tracking.selectItem("Clear unread")
+    }
+
     fun openStreamingLink(url: String) {
         try {
             context.openLink(url)
@@ -131,6 +137,8 @@ class OverviewViewModel @Inject constructor(
     }
 
     init {
+        tracking.screenViewed("Overview")
+
         viewModelScope.launch {
             oagRepository.project.collectLatest { project ->
                 Timber.d("Project updated ${project?.name}")

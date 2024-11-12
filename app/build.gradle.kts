@@ -74,6 +74,7 @@ dependencies {
     implementation(project(":core:network"))
     implementation(project(":core:data"))
     implementation(project(":core:model"))
+    implementation(project(":core:tracking"))
     implementation(project(":widget"))
     implementation(project(":feature:overview"))
     implementation(project(":feature:onboarding"))
@@ -101,6 +102,7 @@ dependencies {
     // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.analytics)
 }
 
 private fun getEnvNullable(variableName: String): String {
