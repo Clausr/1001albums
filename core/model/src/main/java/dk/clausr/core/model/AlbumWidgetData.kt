@@ -87,7 +87,7 @@ enum class StreamingPlatform {
 data class StreamingService(private val id: String, val platform: StreamingPlatform) {
     val streamingLink: String
         get() = when (platform) {
-            StreamingPlatform.Spotify -> "spotify:album:$id"
+            StreamingPlatform.Spotify -> "https://open.spotify.com/album/$id"
             StreamingPlatform.AppleMusic -> "https://music.apple.com/album/$id"
             StreamingPlatform.Tidal -> "https://tidal.com/browse/album/$id"
             StreamingPlatform.AmazonMusic -> "https://music.amazon.com/albums/$id"

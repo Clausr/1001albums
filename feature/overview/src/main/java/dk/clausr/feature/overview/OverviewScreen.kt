@@ -1,6 +1,5 @@
 package dk.clausr.feature.overview
 
-import android.content.Context
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -30,6 +30,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -53,6 +55,7 @@ import dk.clausr.a1001albumsgenerator.ui.extensions.ignoreHorizontalParentPaddin
 import dk.clausr.a1001albumsgenerator.ui.preview.PreviewSharedTransitionLayout
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.common.android.openLink
+import dk.clausr.core.common.extensions.collectWithLifecycle
 import dk.clausr.core.common.extensions.formatToDate
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.model.Project
@@ -75,12 +78,24 @@ fun OverviewRoute(
     viewModel: OverviewViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    viewModel.viewEffect.collectWithLifecycle {
+        when (it) {
+            is OverviewViewModel.ViewEffect.ShowSnackbar -> {
+                snackbarHostState.showSnackbar(message = it.message)
+            }
+        }
+    }
+
     OverviewScreen(
         modifier = modifier,
         state = uiState,
         navigateToSettings = navigateToSettings,
         navigateToAlbumDetails = navigateToAlbumDetails,
         readAllNotifications = viewModel::clearUnreadNotifications,
+        openLink = viewModel::openStreamingLink,
+        snackbarHostState = snackbarHostState,
     )
 }
 
@@ -90,7 +105,9 @@ internal fun OverviewScreen(
     navigateToSettings: () -> Unit,
     navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
     readAllNotifications: () -> Unit,
+    openLink: (streamingLink: String) -> Unit,
     modifier: Modifier = Modifier,
+    snackbarHostState: SnackbarHostState = SnackbarHostState(),
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -100,6 +117,9 @@ internal fun OverviewScreen(
 
     with(LocalSharedTransitionScope.current) {
         Scaffold(
+            snackbarHost = {
+                SnackbarHost(hostState = snackbarHostState, modifier = Modifier.navigationBarsPadding())
+            },
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
             modifier = modifier,
             topBar = {
@@ -189,9 +209,7 @@ internal fun OverviewScreen(
                                         modifier = Modifier.ignoreHorizontalParentPadding(16.dp),
                                         state = state.widgetState,
                                         album = it,
-                                        openLink = { url ->
-                                            context.openLink(url)
-                                        },
+                                        openLink = openLink,
                                         startBurstUpdate = {
                                             BurstUpdateWorker.enqueueUnique(context = context, projectId = state.project.name)
                                         },
@@ -199,11 +217,24 @@ internal fun OverviewScreen(
                                 }
                             }
 
-                            didNotListenSection(state, navigateToAlbumDetails)
+                            didNotListenSection(
+                                state = state,
+                                navigateToAlbumDetails = navigateToAlbumDetails,
+                                clickPlay = openLink,
+                            )
 
-                            topRatedSection(state, navigateToAlbumDetails)
+                            topRatedSection(
+                                state = state,
+                                navigateToAlbumDetails = navigateToAlbumDetails,
+                                clickPlay = openLink,
+                            )
 
-                            historySection(state, prefStreamingPlatform, context, navigateToAlbumDetails)
+                            historySection(
+                                state = state,
+                                prefStreamingPlatform = prefStreamingPlatform,
+                                navigateToAlbumDetails = navigateToAlbumDetails,
+                                onClickPlay = openLink,
+                            )
                         }
                     }
                 }
@@ -226,6 +257,7 @@ internal fun OverviewScreen(
 private fun LazyGridScope.didNotListenSection(
     state: OverviewUiState.Success,
     navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
+    clickPlay: (String) -> Unit,
 ) {
     if (state.didNotListen.isNotEmpty()) {
         item(
@@ -239,6 +271,7 @@ private fun LazyGridScope.didNotListenSection(
                 albums = state.didNotListen,
                 onClickAlbum = navigateToAlbumDetails,
                 streamingPlatform = state.streamingPlatform,
+                onClickPlay = clickPlay,
                 tertiaryTextTransform = { historicAlbum ->
                     historicAlbum.generatedAt.formatToDate()
                 },
@@ -250,6 +283,7 @@ private fun LazyGridScope.didNotListenSection(
 private fun LazyGridScope.topRatedSection(
     state: OverviewUiState.Success,
     navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
+    clickPlay: (String) -> Unit,
 ) {
     if (state.topRated.isNotEmpty()) {
         item(
@@ -266,6 +300,7 @@ private fun LazyGridScope.topRatedSection(
                 tertiaryTextTransform = { historicAlbum ->
                     historicAlbum.generatedAt.formatToDate()
                 },
+                onClickPlay = clickPlay,
             )
         }
     }
@@ -274,8 +309,8 @@ private fun LazyGridScope.topRatedSection(
 private fun LazyGridScope.historySection(
     state: OverviewUiState.Success,
     prefStreamingPlatform: StreamingPlatform,
-    context: Context,
     navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
+    onClickPlay: (String) -> Unit,
 ) {
     state.groupedHistory.forEach { (date, albums) ->
         item(span = { GridItemSpan(maxLineSpan) }) {
@@ -292,16 +327,16 @@ private fun LazyGridScope.historySection(
         ) { historicAlbum ->
             val streamingLink = StreamingServices.from(historicAlbum.album).getStreamingLinkFor(prefStreamingPlatform)
 
-            val onClickPlay = streamingLink?.let {
+            val onPlay = streamingLink?.let {
                 {
-                    context.openLink(streamingLink)
+                    onClickPlay(it)
                 }
             }
 
             AlbumThumb(
                 album = historicAlbum,
                 onClick = { navigateToAlbumDetails(historicAlbum.album.slug, "history-$date") },
-                onClickPlay = onClickPlay,
+                onClickPlay = onPlay,
                 tertiaryText = historicAlbum.generatedAt.formatToDate(),
                 listName = "history-$date",
             )
@@ -342,6 +377,7 @@ private fun OverviewPreview() {
                     isUsingWidget = false,
                 ),
                 readAllNotifications = {},
+                openLink = {},
             )
         }
     }

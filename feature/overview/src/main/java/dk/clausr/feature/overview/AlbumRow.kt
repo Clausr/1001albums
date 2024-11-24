@@ -11,7 +11,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,11 +30,11 @@ fun AlbumRow(
     title: String,
     albums: ImmutableList<HistoricAlbum>,
     onClickAlbum: (slug: String, listName: String) -> Unit,
+    onClickPlay: (link: String) -> Unit,
     streamingPlatform: StreamingPlatform,
     tertiaryTextTransform: (HistoricAlbum) -> String?,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -58,9 +57,9 @@ fun AlbumRow(
                     .from(album.album)
                     .getStreamingLinkFor(streamingPlatform)
 
-                val onClickPlay = streamingLink?.let {
+                val playClick = streamingLink?.let {
                     {
-                        context.openLink(streamingLink)
+                        onClickPlay(it)
                     }
                 }
 
@@ -68,7 +67,7 @@ fun AlbumRow(
                     modifier = Modifier.width(120.dp),
                     album = album,
                     onClick = { onClickAlbum(album.album.slug, title) },
-                    onClickPlay = onClickPlay,
+                    onClickPlay = playClick,
                     tertiaryText = tertiaryTextTransform(album),
                     listName = title,
                 )
