@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import dk.clausr.a1001albumsgenerator.ui.components.AlbumThumb
 import dk.clausr.a1001albumsgenerator.ui.preview.PreviewSharedTransitionLayout
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
-import dk.clausr.core.common.android.openLink
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
@@ -92,6 +91,7 @@ private fun Preview() {
                 onClickAlbum = { _, _ -> },
                 streamingPlatform = StreamingPlatform.Spotify,
                 tertiaryTextTransform = { null },
+                onClickPlay = {},
             )
         }
     }

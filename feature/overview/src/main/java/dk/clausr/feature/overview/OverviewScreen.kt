@@ -54,7 +54,6 @@ import dk.clausr.a1001albumsgenerator.ui.components.LocalSharedTransitionScope
 import dk.clausr.a1001albumsgenerator.ui.extensions.ignoreHorizontalParentPadding
 import dk.clausr.a1001albumsgenerator.ui.preview.PreviewSharedTransitionLayout
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
-import dk.clausr.core.common.android.openLink
 import dk.clausr.core.common.extensions.collectWithLifecycle
 import dk.clausr.core.common.extensions.formatToDate
 import dk.clausr.core.data_widget.SerializedWidgetState
