@@ -12,12 +12,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dk.clausr.a1001albumsgenerator.ui.components.AlbumThumb
+import dk.clausr.a1001albumsgenerator.ui.preview.PreviewSharedTransitionLayout
+import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
+import dk.clausr.core.common.android.openLink
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
+import dk.clausr.feature.overview.preview.historicAlbumPreviewData
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun AlbumRow(
@@ -66,6 +72,27 @@ fun AlbumRow(
                     listName = title,
                 )
             }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun Preview() {
+    OagTheme {
+        PreviewSharedTransitionLayout {
+            AlbumRow(
+                title = "Title goes here",
+                albums = persistentListOf(
+                    historicAlbumPreviewData(slug = "0"),
+                    historicAlbumPreviewData(slug = "1"),
+                    historicAlbumPreviewData(slug = "2"),
+                    historicAlbumPreviewData(slug = "3"),
+                ),
+                onClickAlbum = { _, _ -> },
+                streamingPlatform = StreamingPlatform.Spotify,
+                tertiaryTextTransform = { null },
+            )
         }
     }
 }
