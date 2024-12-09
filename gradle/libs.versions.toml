@@ -1,6 +1,6 @@
 [versions]
 activityCompose = "1.9.3"
-androidGradlePlugin = "8.7.2"
+androidGradlePlugin = "8.7.3"
 coilNetworkOkhttp = "3.0.3"
 coilVersion = "3.0.3"
 coreKtx = "1.15.0"
