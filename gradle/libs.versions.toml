@@ -2,7 +2,7 @@
 activityCompose = "1.9.3"
 androidGradlePlugin = "8.7.3"
 coilNetworkOkhttp = "3.0.3"
-coilVersion = "3.0.3"
+coilVersion = "3.0.4"
 coreKtx = "1.15.0"
 compose-bom = "2024.11.00"
 crashlyticsGradleVersion = "3.0.2"
