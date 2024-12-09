@@ -38,7 +38,7 @@ androidxWork = "2.10.0"
 ksp = "2.0.21-1.0.28"
 room = "2.6.1"
 coreSplashscreen = "1.0.1"
-detektComposeRulesPluginVersion = "0.4.18"
+detektComposeRulesPluginVersion = "0.4.19"
 detektPluginVersion = "1.23.7"
 
 [libraries]
