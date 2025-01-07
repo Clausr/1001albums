@@ -98,7 +98,7 @@ class OverviewViewModel @Inject constructor(
     }
 
     private fun Project.didNotListenAlbums(): ImmutableList<HistoricAlbum> {
-        return historicAlbums.filter { it.metadata?.rating !is Rating.Rated }.toImmutableList()
+        return historicAlbums.filter { it.metadata != null && it.metadata?.rating !is Rating.Rated }.toImmutableList()
     }
 
     private fun Project.groupedHistory(): Map<String, List<HistoricAlbum>> {
