@@ -14,13 +14,6 @@ interface RatingDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRatings(ratings: List<RatingEntity>)
 
-    @Query("SELECT * FROM ratings WHERE albumSlug = :albumSlug")
-    suspend fun getRatingByAlbumSlug(albumSlug: String): RatingEntity?
-
-    @Transaction
-    @Query("SELECT * FROM ratings ORDER BY generatedAt DESC")
-    fun getRatingsWithAlbums(): Flow<List<RatingWithAlbum>>
-
     @Transaction
     @Query("SELECT * FROM ratings WHERE albumSlug = :slug")
     fun getRatingWithAlbum(slug: String): Flow<RatingWithAlbum>

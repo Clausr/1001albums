@@ -14,6 +14,7 @@ interface OagRepository {
     val projectId: Flow<String?>
     val project: Flow<Project?>
     val historicAlbums: Flow<List<HistoricAlbum>>
+    val didNotListenAlbums: Flow<List<HistoricAlbum>>
     val currentAlbum: Flow<Album?>
 
     val widgetState: Flow<SerializedWidgetState>

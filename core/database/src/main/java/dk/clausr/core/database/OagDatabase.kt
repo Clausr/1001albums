@@ -6,6 +6,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import dk.clausr.core.database.dao.AlbumDao
 import dk.clausr.core.database.dao.AlbumImageDao
+import dk.clausr.core.database.dao.AlbumWithOptionalRatingDao
 import dk.clausr.core.database.dao.LogDao
 import dk.clausr.core.database.dao.NotificationDao
 import dk.clausr.core.database.dao.ProjectDao
@@ -46,4 +47,5 @@ abstract class OagDatabase : RoomDatabase() {
     abstract fun albumImageDao(): AlbumImageDao
     abstract fun notificationDao(): NotificationDao
     abstract fun logDao(): LogDao
+    abstract fun albumWithOptionalRatingDao(): AlbumWithOptionalRatingDao
 }

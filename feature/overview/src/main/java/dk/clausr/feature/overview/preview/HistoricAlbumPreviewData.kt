@@ -2,6 +2,7 @@ package dk.clausr.feature.overview.preview
 
 import dk.clausr.core.model.Album
 import dk.clausr.core.model.HistoricAlbum
+import dk.clausr.core.model.Metadata
 import dk.clausr.core.model.Rating
 import java.time.Instant
 
@@ -30,9 +31,11 @@ internal fun historicAlbumPreviewData(
     slug: String = "paranoid",
 ) = HistoricAlbum(
     album = albumPreviewData(slug),
-    rating = rating,
-    review = "",
-    generatedAt = Instant.now(),
-    globalRating = 5.0,
-    isRevealed = true,
+    metadata = Metadata(
+        rating = rating,
+        review = "",
+        generatedAt = Instant.now(),
+        globalRating = 5.0,
+        isRevealed = true,
+    ),
 )

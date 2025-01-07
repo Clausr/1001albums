@@ -18,10 +18,12 @@ import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectId
 import dk.clausr.core.database.dao.AlbumDao
 import dk.clausr.core.database.dao.AlbumImageDao
+import dk.clausr.core.database.dao.AlbumWithOptionalRatingDao
 import dk.clausr.core.database.dao.ProjectDao
 import dk.clausr.core.database.dao.RatingDao
 import dk.clausr.core.database.model.AlbumEntity
 import dk.clausr.core.database.model.AlbumImageEntity
+import dk.clausr.core.database.model.AlbumWithOptionalRating
 import dk.clausr.core.database.model.RatingEntity
 import dk.clausr.core.database.model.RatingWithAlbum
 import dk.clausr.core.model.Album
@@ -37,7 +39,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.withContext
@@ -55,6 +56,7 @@ class OfflineFirstOagRepository @Inject constructor(
     private val projectDao: ProjectDao,
     private val ratingDao: RatingDao,
     private val albumImageDao: AlbumImageDao,
+    private val albumWithOptionalRatingDao: AlbumWithOptionalRatingDao,
 ) : OagRepository {
     override val widgetState = widgetDataStore.data
 
@@ -73,9 +75,9 @@ class OfflineFirstOagRepository @Inject constructor(
 
     override val project: Flow<Project?> = combine(
         projectDao.getProject(),
-        ratingDao.getRatingsWithAlbums(),
+        albumWithOptionalRatingDao.getAlbumsWithRatings(),
     ) { project, albums ->
-        val historicAlbums = albums.map(RatingWithAlbum::mapToHistoricAlbum)
+        val historicAlbums = albums.map(AlbumWithOptionalRating::mapToHistoricAlbum)
         project?.asExternalModel(historicAlbums)
     }.distinctUntilChanged()
 
@@ -85,9 +87,11 @@ class OfflineFirstOagRepository @Inject constructor(
         }
     }
 
-    override val historicAlbums: Flow<List<HistoricAlbum>> = ratingDao.getRatingsWithAlbums().map { ratingsWithAlbum ->
-        ratingsWithAlbum.map(RatingWithAlbum::mapToHistoricAlbum)
-    }
+    override val historicAlbums: Flow<List<HistoricAlbum>> =
+        albumWithOptionalRatingDao.getAlbumsWithRatings().map { it.map(AlbumWithOptionalRating::mapToHistoricAlbum) }
+
+    override val didNotListenAlbums: Flow<List<HistoricAlbum>> =
+        albumWithOptionalRatingDao.getDidNotListenAlbums().map { it.map(AlbumWithOptionalRating::mapToHistoricAlbum) }
 
     override suspend fun setProject(projectId: String): Result<Project, NetworkError> {
         Timber.d("Set new project $projectId")
@@ -167,10 +171,9 @@ class OfflineFirstOagRepository @Inject constructor(
     }
 
     override suspend fun isLatestAlbumRated(): Boolean {
-        val history = historicAlbums.firstOrNull() ?: emptyList()
-        val latestRevealedAlbum = history.firstOrNull { it.isRevealed }
+        val latestRevealedAlbum = albumWithOptionalRatingDao.getLatestRevealedAlbum()?.mapToHistoricAlbum()
 
-        val isLastAlbumRated = when (latestRevealedAlbum?.rating) {
+        val isLastAlbumRated = when (latestRevealedAlbum?.metadata?.rating) {
             Rating.DidNotListen -> true
             is Rating.Rated -> true
             Rating.Unrated -> false
@@ -223,7 +226,7 @@ class OfflineFirstOagRepository @Inject constructor(
      * isRevealed == true AND rating == unrated
      */
     private fun List<HistoricAlbum>.lastRevealedUnratedAlbum(): HistoricAlbum? {
-        return this.reversed().firstOrNull { it.isRevealed && it.rating is Rating.Unrated }
+        return this.reversed().firstOrNull { it.metadata?.isRevealed == true && it.metadata?.rating is Rating.Unrated }
     }
 
     override suspend fun setPreferredPlatform(platform: StreamingPlatform) {
@@ -244,9 +247,13 @@ class OfflineFirstOagRepository @Inject constructor(
         CoverData.createCoverDataOrDefault(externalList = it)
     }
 
-    override fun getHistoricAlbum(slug: String): Flow<HistoricAlbum> = ratingDao.getRatingWithAlbum(slug).map(RatingWithAlbum::mapToHistoricAlbum)
+    override fun getHistoricAlbum(slug: String): Flow<HistoricAlbum> = albumWithOptionalRatingDao
+        .getAlbumBySlug(slug)
+        .map(AlbumWithOptionalRating::mapToHistoricAlbum)
+
     override suspend fun getSimilarAlbums(artist: String): List<HistoricAlbum> = withContext(ioDispatcher) {
         val similarAlbumSlugs = albumDao.getSimilarAlbumSlugs(artist)
+
         ratingDao.getAlbumRatings(similarAlbumSlugs)
             .sortedBy { it.album.releaseDate }
             .map(RatingWithAlbum::mapToHistoricAlbum)

@@ -94,17 +94,17 @@ class OverviewViewModel @Inject constructor(
         )
 
     private fun Project.topRatedAlbums(): ImmutableList<HistoricAlbum> {
-        return historicAlbums.filter { it.rating == Rating.Rated(rating = 5) }.toImmutableList()
+        return historicAlbums.filter { it.metadata?.rating == Rating.Rated(rating = 5) }.toImmutableList()
     }
 
     private fun Project.didNotListenAlbums(): ImmutableList<HistoricAlbum> {
-        return historicAlbums.filter { it.rating !is Rating.Rated }.toImmutableList()
+        return historicAlbums.filter { it.metadata?.rating !is Rating.Rated }.toImmutableList()
     }
 
     private fun Project.groupedHistory(): Map<String, List<HistoricAlbum>> {
         return historicAlbums.groupBy {
-            val generated = it.generatedAt.toLocalDateTime()
-            val date = LocalDate.of(generated.year, generated.monthValue, 1)
+            val generated = it.metadata?.generatedAt?.toLocalDateTime()
+            val date = LocalDate.of(generated?.year ?: 1970, generated?.monthValue ?: 1, 1)
             date.formatMonthAndYear().replaceFirstChar { it.uppercase() }
         }
     }

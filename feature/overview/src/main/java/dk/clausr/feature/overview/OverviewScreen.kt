@@ -272,7 +272,7 @@ private fun LazyGridScope.didNotListenSection(
                 streamingPlatform = state.streamingPlatform,
                 onClickPlay = clickPlay,
                 tertiaryTextTransform = { historicAlbum ->
-                    historicAlbum.generatedAt.formatToDate()
+                    historicAlbum.metadata?.generatedAt?.formatToDate()
                 },
             )
         }
@@ -297,7 +297,7 @@ private fun LazyGridScope.topRatedSection(
                 onClickAlbum = navigateToAlbumDetails,
                 streamingPlatform = state.streamingPlatform,
                 tertiaryTextTransform = { historicAlbum ->
-                    historicAlbum.generatedAt.formatToDate()
+                    historicAlbum.metadata?.generatedAt?.formatToDate()
                 },
                 onClickPlay = clickPlay,
             )
@@ -322,7 +322,7 @@ private fun LazyGridScope.historySection(
 
         items(
             items = albums,
-            key = { "history_${it.generatedAt}" },
+            key = { "history_${it.metadata?.generatedAt}" },
         ) { historicAlbum ->
             val streamingLink = StreamingServices.from(historicAlbum.album).getStreamingLinkFor(prefStreamingPlatform)
 
@@ -336,7 +336,7 @@ private fun LazyGridScope.historySection(
                 album = historicAlbum,
                 onClick = { navigateToAlbumDetails(historicAlbum.album.slug, "history-$date") },
                 onClickPlay = onPlay,
-                tertiaryText = historicAlbum.generatedAt.formatToDate(),
+                tertiaryText = historicAlbum.metadata?.generatedAt?.formatToDate(),
                 listName = "history-$date",
             )
         }

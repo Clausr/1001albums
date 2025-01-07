@@ -6,6 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dk.clausr.core.database.dao.AlbumDao
 import dk.clausr.core.database.dao.AlbumImageDao
+import dk.clausr.core.database.dao.AlbumWithOptionalRatingDao
 import dk.clausr.core.database.dao.LogDao
 import dk.clausr.core.database.dao.NotificationDao
 import dk.clausr.core.database.dao.ProjectDao
@@ -35,4 +36,7 @@ object DaosModule {
 
     @Provides
     fun providesLogDao(database: OagDatabase): LogDao = database.logDao()
+
+    @Provides
+    fun providesAlbumWithOptionalrating(database: OagDatabase): AlbumWithOptionalRatingDao = database.albumWithOptionalRatingDao()
 }

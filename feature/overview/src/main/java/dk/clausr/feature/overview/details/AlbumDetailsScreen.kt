@@ -206,14 +206,14 @@ fun AlbumDetailsScreen(
                         .fillMaxWidth()
                         .padding(top = 16.dp)
                         .padding(horizontal = 16.dp),
-                    text = historicAlbum?.rating.ratingText(context),
+                    text = historicAlbum?.metadata?.rating?.ratingText(context).orEmpty(),
                     style = MaterialTheme.typography.displaySmall,
                     textAlign = TextAlign.Center,
                 )
 
-                if (historicAlbum?.review?.isNotBlank() == true) {
+                if (historicAlbum?.metadata?.review?.isNotBlank() == true) {
                     Text(
-                        text = "“${historicAlbum.review}”",
+                        text = "“${historicAlbum.metadata?.review}”",
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp)
@@ -229,7 +229,7 @@ fun AlbumDetailsScreen(
                         albums = state.relatedAlbums,
                         onClickAlbum = navigateToDetails,
                         streamingPlatform = state.streamingPlatform,
-                        tertiaryTextTransform = { "${it.rating.ratingText(context)}\n${it.album.releaseDate}" },
+                        tertiaryTextTransform = { "${it.metadata?.rating?.ratingText(context)}\n${it.album.releaseDate}" },
                         onClickPlay = { context.openLink(it) },
                     )
                 }
