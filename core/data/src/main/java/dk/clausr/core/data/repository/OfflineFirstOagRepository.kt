@@ -25,7 +25,6 @@ import dk.clausr.core.database.model.AlbumEntity
 import dk.clausr.core.database.model.AlbumImageEntity
 import dk.clausr.core.database.model.AlbumWithOptionalRating
 import dk.clausr.core.database.model.RatingEntity
-import dk.clausr.core.database.model.RatingWithAlbum
 import dk.clausr.core.model.Album
 import dk.clausr.core.model.AlbumWidgetData
 import dk.clausr.core.model.HistoricAlbum
@@ -83,7 +82,7 @@ class OfflineFirstOagRepository @Inject constructor(
 
     override val currentAlbum: Flow<Album?> = project.mapNotNull { project ->
         project?.historicAlbums?.lastRevealedUnratedAlbum()?.album ?: project?.currentAlbumSlug?.let { currentSlug ->
-            albumDao.getAlbumBySlug(currentSlug)?.asExternalModel()
+            albumWithOptionalRatingDao.getAlbumBySlug(currentSlug)?.album?.asExternalModel()
         }
     }
 
@@ -248,14 +247,10 @@ class OfflineFirstOagRepository @Inject constructor(
     }
 
     override fun getHistoricAlbum(slug: String): Flow<HistoricAlbum> = albumWithOptionalRatingDao
-        .getAlbumBySlug(slug)
+        .getAlbumBySlugFlow(slug)
         .map(AlbumWithOptionalRating::mapToHistoricAlbum)
 
     override suspend fun getSimilarAlbums(artist: String): List<HistoricAlbum> = withContext(ioDispatcher) {
-        val similarAlbumSlugs = albumDao.getSimilarAlbumSlugs(artist)
-
-        ratingDao.getAlbumRatings(similarAlbumSlugs)
-            .sortedBy { it.album.releaseDate }
-            .map(RatingWithAlbum::mapToHistoricAlbum)
+        albumWithOptionalRatingDao.getSimilarAlbumsWithRatings(artist).map(AlbumWithOptionalRating::mapToHistoricAlbum)
     }
 }

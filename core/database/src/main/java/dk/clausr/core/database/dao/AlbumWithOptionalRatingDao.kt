@@ -41,7 +41,18 @@ interface AlbumWithOptionalRatingDao {
         ORDER BY generatedAt DESC
         """
     )
-    fun getAlbumBySlug(slug: String): Flow<AlbumWithOptionalRating>
+    suspend fun getAlbumBySlug(slug: String): AlbumWithOptionalRating?
+
+    @Query(
+        """
+        SELECT *
+        FROM albums
+        LEFT JOIN ratings ON albums.slug = ratings.albumSlug
+        WHERE slug = (:slug)
+        ORDER BY generatedAt DESC
+        """
+    )
+    fun getAlbumBySlugFlow(slug: String): Flow<AlbumWithOptionalRating>
 
     @Query(
         """
@@ -54,4 +65,16 @@ interface AlbumWithOptionalRatingDao {
     """
     )
     suspend fun getLatestRevealedAlbum(): AlbumWithOptionalRating?
+
+    @Transaction
+    @Query(
+        """
+        SELECT *
+        FROM albums
+        LEFT JOIN ratings ON albums.slug = ratings.albumSlug
+        WHERE LOWER(artist) LIKE LOWER(:artist)   -- Use LIKE for case-insensitive comparison
+        ORDER BY releaseDate
+    """
+    )
+    suspend fun getSimilarAlbumsWithRatings(artist: String): List<AlbumWithOptionalRating>
 }
