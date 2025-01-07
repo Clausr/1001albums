@@ -17,15 +17,18 @@ class LoggingRepository @Inject constructor(
     private val logDao: LogDao,
 ) {
     suspend fun insertLog(log: OagLog) = withContext(ioDispatcher) {
-        val logEntity = LogEntity(message = log.message, level = log.level.priorityConstant, tag = log.tag)
-
-        val excessLogs = logDao.getRowCount() - MaxItems
-        if (excessLogs >= 0) {
+        val excessLogs = logDao.getRowCount() - MAX_ITEMS
+        if (excessLogs > 0) {
             logDao.deleteOldestLogs(excessLogs)
-            logDao.insertLog(logEntity)
-        } else {
-            logDao.insertLog(logEntity)
         }
+
+        logDao.insertLog(
+            LogEntity(
+                message = log.message,
+                level = log.level.priorityConstant,
+                tag = log.tag
+            )
+        )
     }
 
     fun getAllLogs() = logDao.getAllLogs().map { logs ->
@@ -40,6 +43,6 @@ class LoggingRepository @Inject constructor(
     }
 
     companion object {
-        const val MaxItems = 1000
+        const val MAX_ITEMS = 1000
     }
 }
