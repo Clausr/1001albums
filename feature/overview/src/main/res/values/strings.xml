@@ -28,5 +28,5 @@
     <string name="rating_did_not_listen">Did not listen</string>
     <string name="rating_text_rated">%1$d⭐️</string>
     <string name="rating_text_unrated">Unrated</string>
-    <string name="related_albums_title">Previous albums</string>
+    <string name="related_albums_title">Related albums</string>
 </resources>
