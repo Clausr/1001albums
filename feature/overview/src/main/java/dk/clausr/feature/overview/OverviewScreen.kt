@@ -383,9 +383,9 @@ private fun OverviewPreview() {
                             "",
                             StreamingServices.NONE,
                             preferredStreamingPlatform = StreamingPlatform.Tidal,
-                            unreadNotifications = 0
+                            unreadNotifications = 0,
                         ),
-                        currentProjectId = "oag_user"
+                        currentProjectId = "oag_user",
                     ),
                     didNotListen = createPreviewAlbums(),
                     topRated = createPreviewAlbums(),

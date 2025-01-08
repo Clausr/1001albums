@@ -38,7 +38,7 @@ fun RatingWithAlbum.mapToHistoricAlbum(): HistoricAlbum = HistoricAlbum(
         generatedAt = rating.generatedAt,
         globalRating = rating.globalRating,
         isRevealed = rating.isRevealed,
-    )
+    ),
 )
 
 fun AlbumWithOptionalRating.mapToHistoricAlbum(): HistoricAlbum = HistoricAlbum(
@@ -51,7 +51,7 @@ fun AlbumWithOptionalRating.mapToHistoricAlbum(): HistoricAlbum = HistoricAlbum(
             globalRating = it.globalRating,
             isRevealed = it.isRevealed,
         )
-    }
+    },
 )
 
 private fun String?.mapToRating(): Rating = when (this) {

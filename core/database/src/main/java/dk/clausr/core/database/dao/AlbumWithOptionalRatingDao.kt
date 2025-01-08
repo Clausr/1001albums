@@ -16,10 +16,9 @@ interface AlbumWithOptionalRatingDao {
         FROM albums
         LEFT JOIN ratings ON albums.slug = ratings.albumSlug
         ORDER BY generatedAt DESC
-    """
+    """,
     )
     fun getAlbumsWithRatings(): Flow<List<AlbumWithOptionalRating>>
-
 
     @Transaction
     @Query(
@@ -28,7 +27,7 @@ interface AlbumWithOptionalRatingDao {
             FROM albums
             LEFT JOIN ratings ON albums.slug = ratings.albumSlug
             WHERE ratings.albumSlug IS NULL  -- Assuming DidNotListen is represented by a lack of rating
-        """
+        """,
     )
     fun getDidNotListenAlbums(): Flow<List<AlbumWithOptionalRating>>
 
@@ -39,7 +38,7 @@ interface AlbumWithOptionalRatingDao {
         LEFT JOIN ratings ON albums.slug = ratings.albumSlug
         WHERE slug = (:slug)
         ORDER BY generatedAt DESC
-        """
+        """,
     )
     suspend fun getAlbumBySlug(slug: String): AlbumWithOptionalRating?
 
@@ -50,7 +49,7 @@ interface AlbumWithOptionalRatingDao {
         LEFT JOIN ratings ON albums.slug = ratings.albumSlug
         WHERE slug = (:slug)
         ORDER BY generatedAt DESC
-        """
+        """,
     )
     fun getAlbumBySlugFlow(slug: String): Flow<AlbumWithOptionalRating>
 
@@ -62,7 +61,7 @@ interface AlbumWithOptionalRatingDao {
         WHERE ratings.isRevealed = 1
         ORDER BY generatedAt DESC
         LIMIT 1
-    """
+    """,
     )
     suspend fun getLatestRevealedAlbum(): AlbumWithOptionalRating?
 
@@ -74,7 +73,7 @@ interface AlbumWithOptionalRatingDao {
         LEFT JOIN ratings ON albums.slug = ratings.albumSlug
         WHERE LOWER(artist) LIKE LOWER(:artist)   -- Use LIKE for case-insensitive comparison
         ORDER BY releaseDate
-    """
+    """,
     )
     suspend fun getSimilarAlbumsWithRatings(artist: String): List<AlbumWithOptionalRating>
 }
