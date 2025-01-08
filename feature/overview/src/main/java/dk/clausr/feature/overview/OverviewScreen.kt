@@ -57,6 +57,10 @@ import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.common.extensions.collectWithLifecycle
 import dk.clausr.core.common.extensions.formatToDate
 import dk.clausr.core.data_widget.SerializedWidgetState
+import dk.clausr.core.model.AlbumWidgetData
+import dk.clausr.core.model.HistoricAlbum
+import dk.clausr.core.model.Notification
+import dk.clausr.core.model.NotificationType
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
@@ -65,9 +69,12 @@ import dk.clausr.extensions.askToAddToHomeScreen
 import dk.clausr.feature.overview.preview.albumPreviewData
 import dk.clausr.feature.overview.preview.historicAlbumPreviewData
 import dk.clausr.worker.BurstUpdateWorker
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.launch
+import java.time.Instant
 
 @Composable
 fun OverviewRoute(
@@ -346,6 +353,12 @@ private fun LazyGridScope.historySection(
 @Preview
 @Composable
 private fun OverviewPreview() {
+    fun createPreviewAlbums(count: Int = 3): ImmutableList<HistoricAlbum> {
+        return List(count) {
+            historicAlbumPreviewData(slug = "$it")
+        }.toPersistentList()
+    }
+
     OagTheme {
         PreviewSharedTransitionLayout {
             OverviewScreen(
@@ -363,16 +376,35 @@ private fun OverviewPreview() {
                         ),
                     ),
                     currentAlbum = albumPreviewData(),
-                    widgetState = SerializedWidgetState.NotInitialized,
-                    didNotListen = persistentListOf(
-                        historicAlbumPreviewData(slug = "0"),
-                        historicAlbumPreviewData(slug = "1"),
-                        historicAlbumPreviewData(slug = "2"),
+                    widgetState = SerializedWidgetState.Success(
+                        data = AlbumWidgetData(
+                            "",
+                            false,
+                            "",
+                            StreamingServices.NONE,
+                            preferredStreamingPlatform = StreamingPlatform.Tidal,
+                            unreadNotifications = 0
+                        ),
+                        currentProjectId = "oag_user"
                     ),
-                    topRated = persistentListOf(),
+                    didNotListen = createPreviewAlbums(),
+                    topRated = createPreviewAlbums(),
                     streamingPlatform = StreamingPlatform.Tidal,
-                    groupedHistory = persistentMapOf(),
-                    notifications = persistentListOf(),
+                    groupedHistory = persistentMapOf(
+                        "2024" to createPreviewAlbums(2),
+                        "2023" to createPreviewAlbums(1),
+                    ),
+                    notifications = persistentListOf(
+                        Notification(
+                            id = "",
+                            project = "",
+                            createdAt = Instant.now(),
+                            read = false,
+                            type = NotificationType.Unknown,
+                            data = null,
+                            version = 1,
+                        ),
+                    ),
                     isUsingWidget = false,
                 ),
                 readAllNotifications = {},
