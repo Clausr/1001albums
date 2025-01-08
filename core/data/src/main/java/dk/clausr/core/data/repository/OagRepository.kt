@@ -72,11 +72,13 @@ class OagRepository @Inject constructor(
         }
     }
 
+    private val historicAlbums: Flow<List<HistoricAlbum>> =
+        albumWithOptionalRatingDao.getAlbumsWithRatings().map { it.map(AlbumWithOptionalRating::mapToHistoricAlbum) }
+
     val project: Flow<Project?> = combine(
         projectDao.getProject(),
-        albumWithOptionalRatingDao.getAlbumsWithRatings(),
-    ) { project, albums ->
-        val historicAlbums = albums.map(AlbumWithOptionalRating::mapToHistoricAlbum)
+        historicAlbums,
+    ) { project, historicAlbums ->
         project?.asExternalModel(historicAlbums)
     }.distinctUntilChanged()
 
@@ -86,8 +88,6 @@ class OagRepository @Inject constructor(
         }
     }
 
-    val historicAlbums: Flow<List<HistoricAlbum>> =
-        albumWithOptionalRatingDao.getAlbumsWithRatings().map { it.map(AlbumWithOptionalRating::mapToHistoricAlbum) }
 
     val didNotListenAlbums: Flow<List<HistoricAlbum>> =
         albumWithOptionalRatingDao.getDidNotListenAlbums().map { it.map(AlbumWithOptionalRating::mapToHistoricAlbum) }

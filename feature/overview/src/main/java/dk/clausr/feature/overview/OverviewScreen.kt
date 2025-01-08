@@ -35,6 +35,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -74,6 +75,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.time.Instant
 
 @Composable
@@ -86,6 +88,8 @@ fun OverviewRoute(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
+    val didNotListenAlbums by viewModel.didNotListenAlbums.collectAsState()
+    Timber.d("Did not listen from query: ${didNotListenAlbums.size} -- from state: ${(uiState as? OverviewUiState.Success)?.didNotListen?.size}")
     viewModel.viewEffect.collectWithLifecycle {
         when (it) {
             is OverviewViewModel.ViewEffect.ShowSnackbar -> {

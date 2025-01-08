@@ -14,7 +14,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object DataWidgetModule {
+object DataModule {
     @Provides
     @Singleton
     fun provideStateDefinition(@ApplicationContext context: Context): DataStore<SerializedWidgetState> = runBlocking {

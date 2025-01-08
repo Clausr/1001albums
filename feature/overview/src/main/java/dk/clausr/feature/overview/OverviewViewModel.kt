@@ -56,6 +56,14 @@ class OverviewViewModel @Inject constructor(
     // Default to true, so it only shows later
     private val _isUsingWidget = MutableStateFlow(true)
 
+    val didNotListenAlbums =
+        oagRepository.didNotListenAlbums
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = emptyList()
+            )
+
     val uiState = dk.clausr.core.common.extensions.combine(
         oagRepository.project,
         oagRepository.currentAlbum,

@@ -26,7 +26,8 @@ interface AlbumWithOptionalRatingDao {
             SELECT * 
             FROM albums
             LEFT JOIN ratings ON albums.slug = ratings.albumSlug
-            WHERE ratings.albumSlug IS NULL  -- Assuming DidNotListen is represented by a lack of rating
+            WHERE (ratings.rating is NULL OR ratings.rating is "did-not-listen")
+            AND ratings.isRevealed IS NOT NULL -- Check that no other metadata is saved; e.g. this is the current album
         """,
     )
     fun getDidNotListenAlbums(): Flow<List<AlbumWithOptionalRating>>
