@@ -97,16 +97,13 @@ class OverviewViewModel @Inject constructor(
             initialValue = OverviewUiState.Loading,
         )
 
-    private fun List<HistoricAlbum>.groupedHistory(): Map<String, List<HistoricAlbum>> {
-
-        return filterNot { it.metadata == null }
-            .groupBy {
-                val metadata = it.metadata ?: return emptyMap()
-                val generated = metadata.generatedAt.toLocalDateTime()
-                val date = LocalDate.of(generated.year, generated.monthValue, 1)
-                date.formatMonthAndYear().replaceFirstChar(Char::uppercase)
+    private fun List<HistoricAlbum>.groupedHistory(): Map<String, List<HistoricAlbum>> = filterNot { it.metadata == null }
+        .groupBy {
+            val metadata = it.metadata ?: return emptyMap()
+            val generated = metadata.generatedAt.toLocalDateTime()
+            val date = LocalDate.of(generated.year, generated.monthValue, 1)
+            date.formatMonthAndYear().replaceFirstChar(Char::uppercase)
         }
-    }
 
     fun clearUnreadNotifications() {
         viewModelScope.launch {

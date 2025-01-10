@@ -97,7 +97,7 @@ interface AlbumWithOptionalRatingDao {
             FROM albums a
             LEFT JOIN ratings r ON a.slug = r.albumSlug
             WHERE a.slug = :slug
-        """
+        """,
     )
     suspend fun getAlbumWithSlug(slug: String): AlbumWithOptionalRating
 }

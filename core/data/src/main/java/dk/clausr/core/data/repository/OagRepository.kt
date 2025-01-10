@@ -84,7 +84,7 @@ class OagRepository @Inject constructor(
 
     val currentAlbum = combine(
         historicAlbums,
-        projectDao.getProject()
+        projectDao.getProject(),
     ) { albums, project ->
         val lastRevealedUnratedAlbum = albums.lastRevealedUnratedAlbum()
         if (lastRevealedUnratedAlbum == null && project != null) {
