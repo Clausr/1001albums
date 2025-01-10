@@ -39,7 +39,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
@@ -72,25 +71,28 @@ class OagRepository @Inject constructor(
         }
     }
 
-    private val historicAlbums: Flow<List<HistoricAlbum>> =
-        albumWithOptionalRatingDao.getAlbumsWithRatings().map { it.map(AlbumWithOptionalRating::mapToHistoricAlbum) }
-
-    val project: Flow<Project?> = combine(
-        projectDao.getProject(),
-        historicAlbums,
-    ) { project, historicAlbums ->
-        project?.asExternalModel(historicAlbums)
-    }.distinctUntilChanged()
-
-    val currentAlbum: Flow<Album?> = project.mapNotNull { project ->
-        project?.historicAlbums?.lastRevealedUnratedAlbum()?.album ?: project?.currentAlbumSlug?.let { currentSlug ->
-            albumWithOptionalRatingDao.getAlbumBySlug(currentSlug)?.album?.asExternalModel()
-        }
-    }
-
+    val historicAlbums: Flow<List<HistoricAlbum>> =
+        albumWithOptionalRatingDao.getAlbumsWithRatings().map { it.map(AlbumWithOptionalRating::mapToHistoricAlbum) }.distinctUntilChanged()
 
     val didNotListenAlbums: Flow<List<HistoricAlbum>> =
-        albumWithOptionalRatingDao.getDidNotListenAlbums().map { it.map(AlbumWithOptionalRating::mapToHistoricAlbum) }
+        albumWithOptionalRatingDao.getDidNotListenAlbums().map { it.map(AlbumWithOptionalRating::mapToHistoricAlbum) }.distinctUntilChanged()
+
+    val topRatedAlbums: Flow<List<HistoricAlbum>> =
+        albumWithOptionalRatingDao.getTopRatedAlbums().map { it.map(AlbumWithOptionalRating::mapToHistoricAlbum) }.distinctUntilChanged()
+
+    val project: Flow<Project?> = projectDao.getProject().map { it?.asExternalModel() }
+
+    val currentAlbum = combine(
+        historicAlbums,
+        projectDao.getProject()
+    ) { albums, project ->
+        val lastRevealedUnratedAlbum = albums.lastRevealedUnratedAlbum()
+        if (lastRevealedUnratedAlbum == null && project != null) {
+            albumWithOptionalRatingDao.getAlbumBySlug(project.currentAlbumSlug)?.album?.asExternalModel()
+        } else {
+            lastRevealedUnratedAlbum
+        }
+    }
 
     suspend fun setProject(projectId: String): Result<Project, NetworkError> {
         Timber.d("Set new project $projectId")
@@ -191,7 +193,7 @@ class OagRepository @Inject constructor(
     ) {
         widgetDataStore.updateData { old ->
             val lastRevealedUnratedAlbum = historicAlbums.lastRevealedUnratedAlbum()
-            val albumToUse = lastRevealedUnratedAlbum?.album ?: currentAlbum
+            val albumToUse = lastRevealedUnratedAlbum ?: currentAlbum
 
             val oldPreferredPlatform = when (old) {
                 is SerializedWidgetState.Loading -> old.previousStreamingPlatform
@@ -224,8 +226,8 @@ class OagRepository @Inject constructor(
      * currentAlbum is always displayed UNLESS:
      * isRevealed == true AND rating == unrated
      */
-    private fun List<HistoricAlbum>.lastRevealedUnratedAlbum(): HistoricAlbum? {
-        return this.reversed().firstOrNull { it.metadata?.isRevealed == true && it.metadata?.rating is Rating.Unrated }
+    private fun List<HistoricAlbum>.lastRevealedUnratedAlbum(): Album? {
+        return this.reversed().firstOrNull { it.metadata?.isRevealed == true && it.metadata?.rating is Rating.Unrated }?.album
     }
 
     suspend fun setPreferredPlatform(platform: StreamingPlatform) {

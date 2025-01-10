@@ -20,12 +20,10 @@ import dk.clausr.core.model.Album
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Notification
 import dk.clausr.core.model.Project
-import dk.clausr.core.model.Rating
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.widget.AlbumCoverWidget
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.channels.Channel
@@ -56,14 +54,6 @@ class OverviewViewModel @Inject constructor(
     // Default to true, so it only shows later
     private val _isUsingWidget = MutableStateFlow(true)
 
-    val didNotListenAlbums =
-        oagRepository.didNotListenAlbums
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = emptyList()
-            )
-
     val uiState = dk.clausr.core.common.extensions.combine(
         oagRepository.project,
         oagRepository.currentAlbum,
@@ -71,6 +61,9 @@ class OverviewViewModel @Inject constructor(
         oagRepository.preferredStreamingPlatform,
         _unreadNotifications,
         _isUsingWidget,
+        oagRepository.didNotListenAlbums,
+        oagRepository.historicAlbums,
+        oagRepository.topRatedAlbums,
     ) {
             project: Project?,
             currentAlbum: Album?,
@@ -78,16 +71,19 @@ class OverviewViewModel @Inject constructor(
             platform: StreamingPlatform,
             unreadNotifications: ImmutableList<Notification>,
             isUsingWidget: Boolean,
+            didNotListenAlbums,
+            historicAlbums,
+            topRatedAlbums,
         ->
         if (project != null) {
             OverviewUiState.Success(
                 project = project,
                 currentAlbum = currentAlbum,
                 widgetState = widgetState,
-                didNotListen = project.didNotListenAlbums(),
-                topRated = project.topRatedAlbums(),
+                didNotListen = didNotListenAlbums.toPersistentList(),
+                topRated = topRatedAlbums.toPersistentList(),
                 streamingPlatform = platform,
-                groupedHistory = project.groupedHistory().toImmutableMap(),
+                groupedHistory = historicAlbums.groupedHistory().toImmutableMap(),
                 notifications = unreadNotifications,
                 isUsingWidget = isUsingWidget,
             )
@@ -101,19 +97,14 @@ class OverviewViewModel @Inject constructor(
             initialValue = OverviewUiState.Loading,
         )
 
-    private fun Project.topRatedAlbums(): ImmutableList<HistoricAlbum> {
-        return historicAlbums.filter { it.metadata?.rating == Rating.Rated(rating = 5) }.toImmutableList()
-    }
+    private fun List<HistoricAlbum>.groupedHistory(): Map<String, List<HistoricAlbum>> {
 
-    private fun Project.didNotListenAlbums(): ImmutableList<HistoricAlbum> {
-        return historicAlbums.filter { it.metadata != null && it.metadata?.rating !is Rating.Rated }.toImmutableList()
-    }
-
-    private fun Project.groupedHistory(): Map<String, List<HistoricAlbum>> {
-        return historicAlbums.groupBy {
-            val generated = it.metadata?.generatedAt?.toLocalDateTime()
-            val date = LocalDate.of(generated?.year ?: 1970, generated?.monthValue ?: 1, 1)
-            date.formatMonthAndYear().replaceFirstChar { it.uppercase() }
+        return filterNot { it.metadata == null }
+            .groupBy {
+                val metadata = it.metadata ?: return emptyMap()
+                val generated = metadata.generatedAt.toLocalDateTime()
+                val date = LocalDate.of(generated.year, generated.monthValue, 1)
+                date.formatMonthAndYear().replaceFirstChar(Char::uppercase)
         }
     }
 

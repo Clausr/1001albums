@@ -2,7 +2,6 @@ package dk.clausr.core.data.model
 
 import dk.clausr.a1001albumsgenerator.network.model.NetworkProject
 import dk.clausr.core.database.model.ProjectEntity
-import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Project
 
 fun NetworkProject.asExternalModel(): Project = Project(
@@ -11,7 +10,6 @@ fun NetworkProject.asExternalModel(): Project = Project(
     currentAlbumNotes = currentAlbumNotes,
     updateFrequency = updateFrequency.asExternalModel(),
     shareableUrl = shareableUrl,
-    historicAlbums = history.map { it.asExternalModel() },
 )
 
 fun NetworkProject.toEntity(): ProjectEntity = ProjectEntity(
@@ -22,11 +20,10 @@ fun NetworkProject.toEntity(): ProjectEntity = ProjectEntity(
     updateFrequency = updateFrequency.asExternalModel(),
 )
 
-fun ProjectEntity.asExternalModel(history: List<HistoricAlbum>): Project = Project(
+fun ProjectEntity.asExternalModel(): Project = Project(
     name = name,
     currentAlbumSlug = currentAlbumSlug,
     currentAlbumNotes = currentAlbumNotes,
     updateFrequency = updateFrequency,
     shareableUrl = shareableUrl,
-    historicAlbums = history,
 )

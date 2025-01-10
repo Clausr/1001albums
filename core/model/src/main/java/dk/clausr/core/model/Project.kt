@@ -6,5 +6,4 @@ data class Project(
     val currentAlbumNotes: String,
     val updateFrequency: UpdateFrequency,
     val shareableUrl: String,
-    val historicAlbums: List<HistoricAlbum>,
 )
