@@ -4,6 +4,10 @@ import java.time.Instant
 
 data class HistoricAlbum(
     val album: Album,
+    val metadata: Metadata?,
+)
+
+data class Metadata(
     val rating: Rating,
     val review: String,
     val generatedAt: Instant,

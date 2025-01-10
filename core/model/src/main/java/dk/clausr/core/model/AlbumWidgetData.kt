@@ -21,6 +21,7 @@ data class StreamingServices(val services: List<StreamingService>) {
     }
 
     companion object {
+        val NONE = StreamingServices(emptyList())
         fun from(album: Album): StreamingServices {
             return StreamingServices(
                 listOfNotNull(
