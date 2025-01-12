@@ -178,7 +178,7 @@ fun SettingsScreen(
                             onLongClick = onShowLogs,
                             interactionSource = null,
                             indication = null,
-                            onClick = {}
+                            onClick = {},
                         ),
                     )
                 }
