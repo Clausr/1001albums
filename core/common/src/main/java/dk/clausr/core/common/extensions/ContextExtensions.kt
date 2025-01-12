@@ -4,12 +4,13 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.core.net.toUri
+import dk.clausr.core.common.ExternalLinks
 
 fun Context.openProject(
     projectId: String,
     rating: Int? = null,
 ) {
-    val baseUri = "https://1001albumsgenerator.com"
+    val baseUri = ExternalLinks.Generator.BASE_URL
     val uri = Uri.parse(baseUri).buildUpon()
         .appendPath(projectId)
         .apply {

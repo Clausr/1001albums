@@ -20,6 +20,7 @@ import dk.clausr.a1001albumsgenerator.feature.onboarding.R
 import dk.clausr.a1001albumsgenerator.onboarding.components.OnboardingTitle
 import dk.clausr.a1001albumsgenerator.onboarding.components.ProjectTextField
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
+import dk.clausr.core.common.ExternalLinks
 import dk.clausr.core.common.extensions.openLink
 import dk.clausr.core.network.NetworkError
 
@@ -37,17 +38,17 @@ internal fun ProjectNameScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        OnboardingTitle("1001 Albums Generator")
+        OnboardingTitle(stringResource(R.string.onboarding_project_title))
 
-        Text(text = stringResource(id = R.string.onboarding_description_project))
+        Text(text = stringResource(id = R.string.onboarding_project_description))
 
-        Button(onClick = { context.openLink("https://1001albumsgenerator.com/") }) {
+        Button(onClick = { context.openLink(ExternalLinks.Generator.BASE_URL) }) {
             Text(stringResource(id = R.string.create_user))
             Spacer(Modifier.width(4.dp))
             Icon(painterResource(id = dk.clausr.a1001albumsgenerator.ui.R.drawable.ic_open_external), contentDescription = null)
         }
 
-        Text("then enter it here:")
+        Text(stringResource(R.string.onboarding_project_description_part_2))
 
         ProjectTextField(
             onProjectIdChange = onSetProjectId,
