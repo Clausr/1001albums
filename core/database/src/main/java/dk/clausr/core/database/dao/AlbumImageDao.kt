@@ -18,7 +18,7 @@ interface AlbumImageDao {
         FROM album_images ai
         INNER JOIN ratings r ON ai.albumSlug = r.albumSlug
         WHERE r.rating != "did-not-listen" AND r.rating > 3 AND ai.height > 200 AND ai.height < 400
-        ORDER BY r.rating DESC
+        ORDER BY r.rating DESC, r.globalRating DESC
     """,
     )
     fun getAlbumCovers(): Flow<List<String>>
