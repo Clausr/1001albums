@@ -1,6 +1,8 @@
 package dk.clausr.a1001albumsgenerator.settings
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +40,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -47,11 +50,13 @@ import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.chrisbanes.haze.materials.HazeMaterials
+import dk.clausr.a1001albumsgenerator.feature.onboarding.R
 import dk.clausr.a1001albumsgenerator.onboarding.components.ProjectTextField
 import dk.clausr.a1001albumsgenerator.onboarding.screens.StreamingServiceScreen
 import dk.clausr.a1001albumsgenerator.ui.components.covergrid.CoverGrid
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.common.BuildConfig
+import dk.clausr.core.common.ExternalLinks
 import dk.clausr.core.common.extensions.openLink
 import dk.clausr.core.model.StreamingPlatform
 
@@ -81,7 +86,7 @@ fun SettingsRoute(
     )
 }
 
-@OptIn(ExperimentalHazeMaterialsApi::class)
+@OptIn(ExperimentalHazeMaterialsApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun SettingsScreen(
     onNavigateUp: () -> Unit,
@@ -164,10 +169,18 @@ fun SettingsScreen(
                         .navigationBarsPadding(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Button(onClick = { context.openLink("https://www.clausr.dk/privacy") }) {
-                        Text("Privacy policy")
+                    Button(onClick = { context.openLink(ExternalLinks.Clausr.PRIVACY_POLICY) }) {
+                        Text(stringResource(R.string.privacy_policy_title))
                     }
-                    Text(text = viewState.buildVersion)
+                    Text(
+                        text = viewState.buildVersion,
+                        modifier = Modifier.combinedClickable(
+                            onLongClick = onShowLogs,
+                            interactionSource = null,
+                            indication = null,
+                            onClick = {}
+                        ),
+                    )
                 }
             }
         },
@@ -256,6 +269,7 @@ private fun SettingsPreview() {
             viewState = SettingsViewModel.ViewState(
                 projectId = "OagUser",
                 preferredStreamingPlatform = StreamingPlatform.Spotify,
+                buildVersion = "1.3.3.7",
             ),
             onShowLogs = {},
         )
