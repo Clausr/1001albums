@@ -1,5 +1,6 @@
 package dk.clausr.core.data_widget
 
+import dk.clausr.core.common.ExternalLinks
 import dk.clausr.core.model.AlbumWidgetData
 import dk.clausr.core.model.StreamingPlatform
 import kotlinx.serialization.Serializable
@@ -31,9 +32,9 @@ sealed interface SerializedWidgetState {
 
         val SerializedWidgetState.projectUrl: String?
             get() = when (this) {
-                is Error -> "https://1001albumsgenerator.com/$projectId"
-                is Loading -> "https://1001albumsgenerator.com/$projectId"
-                is Success -> "https://1001albumsgenerator.com/$projectId"
+                is Error -> "${ExternalLinks.Generator.BASE_URL}/$projectId"
+                is Loading -> "${ExternalLinks.Generator.BASE_URL}/$projectId"
+                is Success -> "${ExternalLinks.Generator.BASE_URL}/$projectId"
                 NotInitialized -> null
             }
     }

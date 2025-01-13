@@ -26,8 +26,8 @@ class LoggingRepository @Inject constructor(
             LogEntity(
                 message = log.message,
                 level = log.level.priorityConstant,
-                tag = log.tag
-            )
+                tag = log.tag,
+            ),
         )
     }
 
