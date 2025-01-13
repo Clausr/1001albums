@@ -11,7 +11,6 @@ import dk.clausr.core.database.dao.LogDao
 import dk.clausr.core.database.dao.NotificationDao
 import dk.clausr.core.database.dao.ProjectDao
 import dk.clausr.core.database.dao.RatingDao
-import dk.clausr.core.database.dao.WidgetDao
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -21,9 +20,6 @@ object DaosModule {
 
     @Provides
     fun providesAlbumDao(database: OagDatabase): AlbumDao = database.albumDao()
-
-    @Provides
-    fun providesWidgetDao(database: OagDatabase): WidgetDao = database.widgetDao()
 
     @Provides
     fun providesRatingDao(database: OagDatabase): RatingDao = database.ratingDao()
