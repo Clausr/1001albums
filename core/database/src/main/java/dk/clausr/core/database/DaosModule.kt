@@ -34,5 +34,5 @@ object DaosModule {
     fun providesLogDao(database: OagDatabase): LogDao = database.logDao()
 
     @Provides
-    fun providesAlbumWithOptionalrating(database: OagDatabase): AlbumWithOptionalRatingDao = database.albumWithOptionalRatingDao()
+    fun providesAlbumWithOptionalRating(database: OagDatabase): AlbumWithOptionalRatingDao = database.albumWithOptionalRatingDao()
 }
