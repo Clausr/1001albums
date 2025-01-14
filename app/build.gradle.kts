@@ -74,7 +74,7 @@ dependencies {
     implementation(project(":core:network"))
     implementation(project(":core:data"))
     implementation(project(":core:model"))
-    implementation(project(":core:tracking"))
+    implementation(project(":core:analytics"))
     implementation(project(":widget"))
     implementation(project(":feature:overview"))
     implementation(project(":feature:onboarding"))

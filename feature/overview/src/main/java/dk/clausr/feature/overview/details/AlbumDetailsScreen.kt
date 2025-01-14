@@ -48,6 +48,7 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import dk.clausr.a1001albumsgenerator.ui.components.LocalNavAnimatedVisibilityScope
 import dk.clausr.a1001albumsgenerator.ui.components.LocalSharedTransitionScope
+import dk.clausr.a1001albumsgenerator.ui.extensions.TrackScreenViewEvent
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.common.extensions.openLink
 import dk.clausr.core.model.Rating
@@ -65,6 +66,15 @@ fun AlbumDetailsRoute(
     modifier: Modifier = Modifier,
     viewModel: AlbumDetailsViewModel = hiltViewModel(),
 ) {
+    TrackScreenViewEvent(
+        screenName = "Album details${
+            if (!viewModel.listName.isNullOrBlank()) {
+                ": ${viewModel.listName}"
+            } else {
+                ""
+            }
+        }"
+    )
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     AlbumDetailsScreen(

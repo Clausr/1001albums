@@ -14,7 +14,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.HiltAndroidApp
 import dagger.hilt.components.SingletonComponent
 import dk.clausr.a1001albumsgenerator.network.BuildConfig
-import dk.clausr.a1001albumsgenerator.tracking.Tracking
 import dk.clausr.a1001albumsgenerator.utils.CrashlyticsHelper
 import dk.clausr.a1001albumsgenerator.utils.RoomLoggingTree
 import dk.clausr.core.common.network.di.ApplicationCoroutineScope
@@ -40,9 +39,6 @@ class OagApplication : Application(), Configuration.Provider {
 
     @Inject
     lateinit var roomLoggingTree: RoomLoggingTree
-
-    @Inject
-    lateinit var tracking: Tracking
 
     @Inject
     lateinit var workerFactory: HiltWorkerFactory

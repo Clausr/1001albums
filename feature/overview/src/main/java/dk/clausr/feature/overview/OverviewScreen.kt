@@ -51,6 +51,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dk.clausr.a1001albumsgenerator.ui.components.AlbumThumb
 import dk.clausr.a1001albumsgenerator.ui.components.LocalNavAnimatedVisibilityScope
 import dk.clausr.a1001albumsgenerator.ui.components.LocalSharedTransitionScope
+import dk.clausr.a1001albumsgenerator.ui.extensions.TrackScreenViewEvent
 import dk.clausr.a1001albumsgenerator.ui.extensions.ignoreHorizontalParentPadding
 import dk.clausr.a1001albumsgenerator.ui.preview.PreviewSharedTransitionLayout
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
@@ -83,6 +84,8 @@ fun OverviewRoute(
     modifier: Modifier = Modifier,
     viewModel: OverviewViewModel = hiltViewModel(),
 ) {
+    TrackScreenViewEvent(screenName = "Overview")
+
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 

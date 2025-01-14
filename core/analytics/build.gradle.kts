@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "dk.clausr.core.tracking"
+    namespace = "dk.clausr.a1001albumsgenerator.core.analytics"
 
     buildFeatures {
         buildConfig = true
@@ -13,6 +13,6 @@ android {
 }
 
 dependencies {
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.analytics)
+    prodImplementation(platform(libs.firebase.bom))
+    prodImplementation(libs.firebase.analytics)
 }
