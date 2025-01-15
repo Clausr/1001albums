@@ -39,10 +39,6 @@ room = "2.6.1"
 coreSplashscreen = "1.0.1"
 detektComposeRulesPluginVersion = "0.4.22"
 detektPluginVersion = "1.23.7"
-junitVersion = "4.13.2"
-androidxJunit = "1.2.1"
-espressoCore = "3.6.1"
-appcompatVersion = "1.7.0"
 
 [libraries]
 androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glance" }
@@ -99,11 +95,6 @@ ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devto
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
-junit = { group = "junit", name = "junit", version.ref = "junitVersion" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxJunit" }
-androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompatVersion" }
-
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
