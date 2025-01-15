@@ -46,8 +46,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.haze
-import dev.chrisbanes.haze.hazeChild
+import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.chrisbanes.haze.materials.HazeMaterials
 import dk.clausr.a1001albumsgenerator.feature.onboarding.R
@@ -115,7 +115,7 @@ fun SettingsScreen(
                             onClick = onNavigateUp,
                             modifier = Modifier
                                 .clip(CircleShape)
-                                .hazeChild(
+                                .hazeEffect(
                                     state = hazeState,
                                     style = HazeMaterials.regular(),
                                 ),
@@ -132,7 +132,7 @@ fun SettingsScreen(
                                 onClick = onShowLogs,
                                 modifier = Modifier
                                     .clip(CircleShape)
-                                    .hazeChild(
+                                    .hazeEffect(
                                         state = hazeState,
                                         style = HazeMaterials.regular(),
                                     ),
@@ -144,7 +144,7 @@ fun SettingsScreen(
                             onClick = { hideContent = !hideContent },
                             modifier = Modifier
                                 .clip(CircleShape)
-                                .hazeChild(
+                                .hazeEffect(
                                     state = hazeState,
                                     style = HazeMaterials.regular(),
                                 ),
@@ -189,7 +189,7 @@ fun SettingsScreen(
             CoverGrid(
                 modifier = Modifier
                     .fillMaxSize()
-                    .haze(state = hazeState),
+                    .hazeSource(state = hazeState),
                 covers = viewState.covers,
             )
 
@@ -205,7 +205,7 @@ fun SettingsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(shape = MaterialTheme.shapes.medium)
-                        .hazeChild(
+                        .hazeEffect(
                             state = hazeState,
                             style = HazeMaterials.ultraThin(),
                         )
@@ -219,7 +219,7 @@ fun SettingsScreen(
                 StreamingServiceScreen(
                     modifier = Modifier
                         .clip(shape = MaterialTheme.shapes.medium)
-                        .hazeChild(
+                        .hazeEffect(
                             state = hazeState,
                             style = HazeMaterials.ultraThin(),
                         )
@@ -243,7 +243,7 @@ fun SettingsScreen(
                         ),
                         modifier = Modifier
                             .clip(shape = CircleShape)
-                            .hazeChild(
+                            .hazeEffect(
                                 state = hazeState,
                                 style = HazeMaterials.regular(),
                             ),

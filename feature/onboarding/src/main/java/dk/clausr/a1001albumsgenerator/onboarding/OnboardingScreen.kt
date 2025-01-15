@@ -25,8 +25,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.haze
-import dev.chrisbanes.haze.hazeChild
+import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.chrisbanes.haze.materials.HazeMaterials
 import dk.clausr.a1001albumsgenerator.onboarding.screens.ProjectNameScreen
@@ -98,7 +98,7 @@ internal fun OnboardingScreen(
         CoverGrid(
             modifier = Modifier
                 .fillMaxSize()
-                .haze(state = hazeState),
+                .hazeSource(state = hazeState),
         )
 
         Column(
@@ -119,7 +119,7 @@ internal fun OnboardingScreen(
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp)
                                 .clip(shape = MaterialTheme.shapes.medium)
-                                .hazeChild(
+                                .hazeEffect(
                                     state = hazeState,
                                     style = HazeMaterials.ultraThin(),
                                 )
@@ -136,7 +136,7 @@ internal fun OnboardingScreen(
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp)
                                 .clip(shape = MaterialTheme.shapes.medium)
-                                .hazeChild(
+                                .hazeEffect(
                                     state = hazeState,
                                     style = HazeMaterials.ultraThin(),
                                 )
