@@ -21,6 +21,7 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:ui"))
     implementation(project(":feature:onboarding"))
+    implementation("com.google.guava:guava:31.1-android")
 
     implementation(libs.androidx.glance.preview)
 
