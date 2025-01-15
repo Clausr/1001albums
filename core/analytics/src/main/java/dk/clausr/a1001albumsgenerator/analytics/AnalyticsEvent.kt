@@ -1,5 +1,7 @@
 package dk.clausr.a1001albumsgenerator.analytics
 
+import com.google.firebase.analytics.FirebaseAnalytics
+
 /**
  * Represents an analytics event.
  *
@@ -16,8 +18,9 @@ data class AnalyticsEvent(
 ) {
     // Standard analytics types.
     object Types {
-        const val SCREEN_VIEW = "screen_view" // (extras: SCREEN_NAME)
-        const val SELECT_ITEM = "select_item"
+        const val SCREEN_VIEW = FirebaseAnalytics.Event.SCREEN_VIEW // (extras: SCREEN_NAME)
+        const val SELECT_ITEM = FirebaseAnalytics.Event.SELECT_ITEM
+        const val RATE_ALBUM = "rate_album"
     }
 
     /**
@@ -34,7 +37,8 @@ data class AnalyticsEvent(
 
     // Standard parameter keys.
     object ParamKeys {
-        const val SCREEN_NAME = "screen_name"
-        const val ITEM_LIST_NAME = "item_list_name"
+        const val SCREEN_NAME = FirebaseAnalytics.Param.SCREEN_NAME
+        const val ITEM_LIST_NAME = FirebaseAnalytics.Param.ITEM_LIST_NAME
+        const val RATING = "rating"
     }
 }

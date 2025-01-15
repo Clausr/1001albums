@@ -35,6 +35,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import dk.clausr.a1001albumsgenerator.analytics.LocalAnalyticsHelper
+import dk.clausr.a1001albumsgenerator.ui.extensions.logRatingGiven
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.common.extensions.openProject
 import dk.clausr.core.data_widget.SerializedWidgetState
@@ -54,6 +56,7 @@ fun BigCurrentAlbum(
     startBurstUpdate: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val analyticsHelper = LocalAnalyticsHelper.current
     when (state) {
         is SerializedWidgetState.Error -> {
             Box(
@@ -87,6 +90,7 @@ fun BigCurrentAlbum(
                 openLink = openLink,
                 streamingService = streamingService,
                 onRating = { stars ->
+                    analyticsHelper.logRatingGiven(gaveRating = stars != null)
                     context.openProject(state.currentProjectId, stars)
                     startBurstUpdate()
                 },

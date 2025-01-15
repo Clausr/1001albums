@@ -3,7 +3,6 @@ package dk.clausr.a1001albumsgenerator.analytics
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.logEvent
 import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Implementation of `AnalyticsHelper` which logs events to a Firebase backend.

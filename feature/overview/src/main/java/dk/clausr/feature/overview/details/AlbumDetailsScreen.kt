@@ -46,6 +46,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import dk.clausr.a1001albumsgenerator.analytics.AnalyticsEvent
 import dk.clausr.a1001albumsgenerator.ui.components.LocalNavAnimatedVisibilityScope
 import dk.clausr.a1001albumsgenerator.ui.components.LocalSharedTransitionScope
 import dk.clausr.a1001albumsgenerator.ui.extensions.TrackScreenViewEvent
@@ -67,13 +68,14 @@ fun AlbumDetailsRoute(
     viewModel: AlbumDetailsViewModel = hiltViewModel(),
 ) {
     TrackScreenViewEvent(
-        screenName = "Album details${
+        screenName = "Album details",
+        extras = listOfNotNull(
             if (!viewModel.listName.isNullOrBlank()) {
-                ": ${viewModel.listName}"
+                AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.ITEM_LIST_NAME, viewModel.listName)
             } else {
-                ""
+                null
             }
-        }"
+        )
     )
     val state by viewModel.state.collectAsStateWithLifecycle()
 

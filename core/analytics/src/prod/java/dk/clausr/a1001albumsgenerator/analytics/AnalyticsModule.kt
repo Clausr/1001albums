@@ -14,7 +14,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 internal abstract class AnalyticsModule {
     @Binds
-    abstract fun bindAnalyticsAdapter(analyticsHelperImpl: FirebaseAnalyticsHelper): AnalyticsHelper
+    abstract fun bindAnalyticsHelper(analyticsHelperImpl: FirebaseAnalyticsHelper): AnalyticsHelper
 
     companion object {
         @Provides

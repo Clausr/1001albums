@@ -54,6 +54,7 @@ import dk.clausr.a1001albumsgenerator.feature.onboarding.R
 import dk.clausr.a1001albumsgenerator.onboarding.components.ProjectTextField
 import dk.clausr.a1001albumsgenerator.onboarding.screens.StreamingServiceScreen
 import dk.clausr.a1001albumsgenerator.ui.components.covergrid.CoverGrid
+import dk.clausr.a1001albumsgenerator.ui.extensions.TrackScreenViewEvent
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.common.BuildConfig
 import dk.clausr.core.common.ExternalLinks
@@ -69,6 +70,7 @@ fun SettingsRoute(
     showBack: Boolean = true,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
+    TrackScreenViewEvent("SettingsScreen")
     val viewState by viewModel.viewState.collectAsStateWithLifecycle()
 
     SettingsScreen(

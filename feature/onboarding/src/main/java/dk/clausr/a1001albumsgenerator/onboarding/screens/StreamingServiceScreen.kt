@@ -28,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dk.clausr.a1001albumsgenerator.feature.onboarding.R
 import dk.clausr.a1001albumsgenerator.onboarding.components.OnboardingTitle
+import dk.clausr.a1001albumsgenerator.ui.extensions.TrackScreenViewEvent
 import dk.clausr.a1001albumsgenerator.ui.extensions.conditional
 import dk.clausr.a1001albumsgenerator.ui.helper.displayName
 import dk.clausr.a1001albumsgenerator.ui.helper.icon
@@ -41,6 +42,9 @@ internal fun StreamingServiceScreen(
     preselectedPlatform: StreamingPlatform? = null,
     showSelectButton: Boolean = true,
 ) {
+    if (showSelectButton) {
+        TrackScreenViewEvent(screenName = "StreamingServiceScreen")
+    }
     var selectedPlatform: StreamingPlatform? by remember(preselectedPlatform) {
         mutableStateOf(preselectedPlatform)
     }

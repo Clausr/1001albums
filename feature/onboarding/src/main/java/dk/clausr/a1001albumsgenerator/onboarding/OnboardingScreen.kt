@@ -32,6 +32,7 @@ import dev.chrisbanes.haze.materials.HazeMaterials
 import dk.clausr.a1001albumsgenerator.onboarding.screens.ProjectNameScreen
 import dk.clausr.a1001albumsgenerator.onboarding.screens.StreamingServiceScreen
 import dk.clausr.a1001albumsgenerator.ui.components.covergrid.CoverGrid
+import dk.clausr.a1001albumsgenerator.ui.extensions.TrackScreenViewEvent
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.common.extensions.collectWithLifecycle
 import dk.clausr.core.model.StreamingPlatform
@@ -90,6 +91,7 @@ internal fun OnboardingScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController = rememberNavController(),
 ) {
+    TrackScreenViewEvent(screenName = "OnboardingScreen")
     val hazeState = remember { HazeState() }
 
     Box(
