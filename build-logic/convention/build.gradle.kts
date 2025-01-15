@@ -21,6 +21,7 @@ dependencies {
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.ksp.gradlePlugin)
+    compileOnly(libs.firebase.crashlytics.gradlePlugin)
 }
 
 gradlePlugin {
@@ -40,6 +41,10 @@ gradlePlugin {
         register("androidLibrary") {
             id = "a1001albums.android.library"
             implementationClass = "AndroidLibraryConventionPlugin"
+        }
+        register("androidFirebase") {
+            id = "a1001albums.android.firebase"
+            implementationClass = "AndroidApplicationFirebaseConventionPlugin"
         }
         register("androidFeature") {
             id = "a1001albums.android.feature"
