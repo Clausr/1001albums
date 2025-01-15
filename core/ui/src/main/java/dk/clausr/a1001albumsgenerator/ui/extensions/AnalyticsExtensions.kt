@@ -5,6 +5,8 @@ import androidx.compose.runtime.DisposableEffect
 import dk.clausr.a1001albumsgenerator.analytics.AnalyticsEvent
 import dk.clausr.a1001albumsgenerator.analytics.AnalyticsHelper
 import dk.clausr.a1001albumsgenerator.analytics.LocalAnalyticsHelper
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 fun AnalyticsHelper.logScreenView(
     screenName: String,
@@ -20,16 +22,14 @@ fun AnalyticsHelper.logScreenView(
     )
 }
 
-fun AnalyticsHelper.logRatingGiven(
-    gaveRating: Boolean,
-) {
+fun AnalyticsHelper.logRatingGiven(gaveRating: Boolean) {
     logEvent(
         AnalyticsEvent(
             type = AnalyticsEvent.Types.RATE_ALBUM,
             extras = listOf(
-                AnalyticsEvent.Param(AnalyticsEvent.ParamKeys.RATING, gaveRating.toString())
-            )
-        )
+                AnalyticsEvent.Param(AnalyticsEvent.ParamKeys.RATING, gaveRating.toString()),
+            ),
+        ),
     )
 }
 
@@ -39,12 +39,12 @@ fun AnalyticsHelper.logRatingGiven(
 @Composable
 fun TrackScreenViewEvent(
     screenName: String,
-    extras: List<AnalyticsEvent.Param> = emptyList(),
+    extras: ImmutableList<AnalyticsEvent.Param> = persistentListOf(),
     analyticsHelper: AnalyticsHelper = LocalAnalyticsHelper.current,
 ) = DisposableEffect(Unit) {
     analyticsHelper.logScreenView(
         screenName = screenName,
-        extras = extras
+        extras = extras,
     )
     onDispose {}
 }

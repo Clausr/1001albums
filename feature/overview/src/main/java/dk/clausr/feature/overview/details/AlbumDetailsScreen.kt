@@ -59,6 +59,7 @@ import dk.clausr.feature.overview.AlbumRow
 import dk.clausr.feature.overview.R
 import dk.clausr.feature.overview.preview.historicAlbumPreviewData
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlin.random.Random
 
 @Composable
@@ -74,8 +75,8 @@ fun AlbumDetailsRoute(
                 AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.ITEM_LIST_NAME, viewModel.listName)
             } else {
                 null
-            }
-        )
+            },
+        ).toPersistentList(),
     )
     val state by viewModel.state.collectAsStateWithLifecycle()
 
