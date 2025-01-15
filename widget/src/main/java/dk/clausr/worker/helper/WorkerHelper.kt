@@ -15,13 +15,16 @@ fun Context.isUniqueWorkerRunning(uniqueWorkerId: String): Boolean {
     if (workInfos.isNotEmpty()) {
         val workInfo = workInfos[0] // Get the first and only WorkInfo
         // Log important details about the WorkInfo
-        Timber.i("WorkInfo for uniqueWorkerId: $uniqueWorkerId")
-        Timber.i("State: ${workInfo.state}")
-        Timber.i("Output Data: ${workInfo.outputData}")
-        Timber.i("Run Attempt Count: ${workInfo.runAttemptCount}")
-        Timber.i("Tags: ${workInfo.tags}")
-        Timber.i("Id: ${workInfo.id}")
-        Timber.i("Next Scheduled At: ${LocalDateTime.ofInstant(Instant.ofEpochMilli(workInfo.nextScheduleTimeMillis), ZoneId.systemDefault())}")
+        Timber.i(
+            """WorkInfo for uniqueWorkerId: $uniqueWorkerId
+        State: ${workInfo.state}
+        Output Data: ${workInfo.outputData}
+        Run Attempt Count: ${workInfo.runAttemptCount}
+        Tags: ${workInfo.tags}
+        Id: ${workInfo.id}
+        Next Scheduled At: ${LocalDateTime.ofInstant(Instant.ofEpochMilli(workInfo.nextScheduleTimeMillis), ZoneId.systemDefault())}
+        """,
+        )
         val isRunning = when (workInfo.state) {
             WorkInfo.State.ENQUEUED,
             WorkInfo.State.RUNNING,

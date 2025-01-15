@@ -72,13 +72,19 @@ class OagRepository @Inject constructor(
     }
 
     val historicAlbums: Flow<List<HistoricAlbum>> =
-        albumWithOptionalRatingDao.getAlbumsWithRatings().map { it.map(AlbumWithOptionalRating::mapToHistoricAlbum) }.distinctUntilChanged()
+        albumWithOptionalRatingDao.getAlbumsWithRatings()
+            .map { it.map(AlbumWithOptionalRating::mapToHistoricAlbum) }
+            .distinctUntilChanged()
 
     val didNotListenAlbums: Flow<List<HistoricAlbum>> =
-        albumWithOptionalRatingDao.getDidNotListenAlbums().map { it.map(AlbumWithOptionalRating::mapToHistoricAlbum) }.distinctUntilChanged()
+        albumWithOptionalRatingDao.getDidNotListenAlbums()
+            .map { it.map(AlbumWithOptionalRating::mapToHistoricAlbum) }
+            .distinctUntilChanged()
 
     val topRatedAlbums: Flow<List<HistoricAlbum>> =
-        albumWithOptionalRatingDao.getTopRatedAlbums().map { it.map(AlbumWithOptionalRating::mapToHistoricAlbum) }.distinctUntilChanged()
+        albumWithOptionalRatingDao.getTopRatedAlbums()
+            .map { it.map(AlbumWithOptionalRating::mapToHistoricAlbum) }
+            .distinctUntilChanged()
 
     val project: Flow<Project?> = projectDao.getProject().map { it?.asExternalModel() }
 
@@ -131,6 +137,7 @@ class OagRepository @Inject constructor(
 
         // Insert current album into DB
         with(networkProject.currentAlbum) {
+            Timber.i("Current album from network: $artist - $name..")
             albumDao.insert(this.toEntity())
             albumImageDao.insertAll(this.toAlbumImageEntities())
         }
@@ -151,6 +158,7 @@ class OagRepository @Inject constructor(
     }
 
     private suspend fun getAndUpdateProject(projectId: String): Result<Project, NetworkError> = withContext(ioDispatcher) {
+        Timber.d("getAndUpdateProject")
         networkDataSource.getProject(projectId)
             .doOnSuccess { networkProject ->
                 Timber.d("Got project ${networkProject.name} with ${networkProject.history.size} albums")
