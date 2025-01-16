@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dk.clausr.a1001albumsgenerator.settings.log.LogViewModel
+import dk.clausr.a1001albumsgenerator.ui.extensions.TrackScreenViewEvent
 import dk.clausr.core.data.model.log.OagLog
 
 @Composable
@@ -31,6 +32,7 @@ fun LogScreen(
     modifier: Modifier = Modifier,
     viewModel: LogViewModel = hiltViewModel(),
 ) {
+    TrackScreenViewEvent(screenName = "LogScreen")
     val logs by viewModel.logs.collectAsStateWithLifecycle()
 
     Scaffold(

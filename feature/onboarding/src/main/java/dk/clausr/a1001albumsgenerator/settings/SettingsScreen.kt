@@ -41,6 +41,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.invisibleToUser
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -50,10 +52,14 @@ import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.chrisbanes.haze.materials.HazeMaterials
+import dk.clausr.a1001albumsgenerator.analytics.AnalyticsEvent
+import dk.clausr.a1001albumsgenerator.analytics.LocalAnalyticsHelper
 import dk.clausr.a1001albumsgenerator.feature.onboarding.R
 import dk.clausr.a1001albumsgenerator.onboarding.components.ProjectTextField
 import dk.clausr.a1001albumsgenerator.onboarding.screens.StreamingServiceScreen
 import dk.clausr.a1001albumsgenerator.ui.components.covergrid.CoverGrid
+import dk.clausr.a1001albumsgenerator.ui.extensions.TrackScreenViewEvent
+import dk.clausr.a1001albumsgenerator.ui.extensions.logClickEvent
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.common.BuildConfig
 import dk.clausr.core.common.ExternalLinks
@@ -69,6 +75,7 @@ fun SettingsRoute(
     showBack: Boolean = true,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
+    TrackScreenViewEvent("SettingsScreen")
     val viewState by viewModel.viewState.collectAsStateWithLifecycle()
 
     SettingsScreen(
@@ -101,6 +108,8 @@ fun SettingsScreen(
     val hazeState = remember { HazeState() }
     var hideContent by remember { mutableStateOf(false) }
     val hideContentAlpha by animateFloatAsState(targetValue = if (hideContent) 0f else 1f, label = "Hide content alpha")
+
+    val analyticsHelper = LocalAnalyticsHelper.current
 
     Scaffold(
         modifier = modifier,
@@ -147,7 +156,8 @@ fun SettingsScreen(
                                 .hazeEffect(
                                     state = hazeState,
                                     style = HazeMaterials.regular(),
-                                ),
+                                )
+                                .clearAndSetSemantics { invisibleToUser() },
                         ) {
                             if (hideContent) {
                                 Icon(imageVector = Icons.Default.VisibilityOff, contentDescription = "Visibility ")
@@ -169,7 +179,10 @@ fun SettingsScreen(
                         .navigationBarsPadding(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Button(onClick = { context.openLink(ExternalLinks.Clausr.PRIVACY_POLICY) }) {
+                    Button(onClick = {
+                        context.openLink(ExternalLinks.Clausr.PRIVACY_POLICY)
+                        analyticsHelper.logClickEvent("Privacy policy")
+                    }) {
                         Text(stringResource(R.string.privacy_policy_title))
                     }
                     Text(
@@ -211,7 +224,20 @@ fun SettingsScreen(
                         )
                         .padding(16.dp),
                     enabled = viewState.editProjectIdEnabled,
-                    onProjectIdChange = onSetProjectId,
+                    onProjectIdChange = {
+                        analyticsHelper.logEvent(
+                            AnalyticsEvent(
+                                type = AnalyticsEvent.Types.CLICK_ITEM,
+                                extras = listOf(
+                                    AnalyticsEvent.Param(AnalyticsEvent.ParamKeys.EVENT_NAME, "Set project"),
+                                    AnalyticsEvent.Param("is_not_blank", it.isNotBlank().toString()),
+                                    AnalyticsEvent.Param("edit_project_enabled", viewState.editProjectIdEnabled.toString()),
+                                ),
+                            ),
+                        )
+
+                        onSetProjectId(it)
+                    },
                     existingProjectId = viewState.projectId.orEmpty(),
                     error = viewState.error,
                 )
@@ -224,7 +250,9 @@ fun SettingsScreen(
                             style = HazeMaterials.ultraThin(),
                         )
                         .padding(16.dp),
-                    onSetStreamingPlatform = onSetStreamingPlatform,
+                    onSetStreamingPlatform = {
+                        onSetStreamingPlatform(it)
+                    },
                     preselectedPlatform = viewState.preferredStreamingPlatform,
                     showSelectButton = false,
                 )
@@ -236,6 +264,7 @@ fun SettingsScreen(
                     Button(
                         onClick = {
                             onClickApply()
+                            analyticsHelper.logClickEvent("Done")
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Transparent,

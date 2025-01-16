@@ -46,8 +46,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import dk.clausr.a1001albumsgenerator.analytics.AnalyticsEvent
 import dk.clausr.a1001albumsgenerator.ui.components.LocalNavAnimatedVisibilityScope
 import dk.clausr.a1001albumsgenerator.ui.components.LocalSharedTransitionScope
+import dk.clausr.a1001albumsgenerator.ui.extensions.TrackScreenViewEvent
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.common.extensions.openLink
 import dk.clausr.core.model.Rating
@@ -57,6 +59,7 @@ import dk.clausr.feature.overview.AlbumRow
 import dk.clausr.feature.overview.R
 import dk.clausr.feature.overview.preview.historicAlbumPreviewData
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlin.random.Random
 
 @Composable
@@ -65,6 +68,16 @@ fun AlbumDetailsRoute(
     modifier: Modifier = Modifier,
     viewModel: AlbumDetailsViewModel = hiltViewModel(),
 ) {
+    TrackScreenViewEvent(
+        screenName = "Album details",
+        extras = listOfNotNull(
+            if (!viewModel.listName.isNullOrBlank()) {
+                AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.ITEM_LIST_NAME, viewModel.listName)
+            } else {
+                null
+            },
+        ).toPersistentList(),
+    )
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     AlbumDetailsScreen(

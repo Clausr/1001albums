@@ -26,9 +26,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dk.clausr.a1001albumsgenerator.analytics.LocalAnalyticsHelper
 import dk.clausr.a1001albumsgenerator.feature.onboarding.R
 import dk.clausr.a1001albumsgenerator.onboarding.components.OnboardingTitle
+import dk.clausr.a1001albumsgenerator.ui.extensions.TrackScreenViewEvent
 import dk.clausr.a1001albumsgenerator.ui.extensions.conditional
+import dk.clausr.a1001albumsgenerator.ui.extensions.logClickEvent
+import dk.clausr.a1001albumsgenerator.ui.extensions.logListItemSelected
 import dk.clausr.a1001albumsgenerator.ui.helper.displayName
 import dk.clausr.a1001albumsgenerator.ui.helper.icon
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
@@ -41,6 +45,11 @@ internal fun StreamingServiceScreen(
     preselectedPlatform: StreamingPlatform? = null,
     showSelectButton: Boolean = true,
 ) {
+    val analyticsHelper = LocalAnalyticsHelper.current
+
+    if (showSelectButton) {
+        TrackScreenViewEvent(screenName = "StreamingServiceScreen")
+    }
     var selectedPlatform: StreamingPlatform? by remember(preselectedPlatform) {
         mutableStateOf(preselectedPlatform)
     }
@@ -65,6 +74,7 @@ internal fun StreamingServiceScreen(
             StreamingPlatform.entries.filterNot { it == StreamingPlatform.Undefined }.forEach { platform ->
                 val isSelected = platform == selectedPlatform
                 val itemColor = if (isSelected) MaterialTheme.colorScheme.primary else LocalContentColor.current
+                val displayName = platform.displayName()
                 Row(
                     Modifier
                         .fillMaxWidth()
@@ -75,6 +85,10 @@ internal fun StreamingServiceScreen(
                         .selectable(
                             selected = isSelected,
                             onClick = {
+                                analyticsHelper.logListItemSelected(
+                                    listName = "Streaming service",
+                                    itemName = displayName,
+                                )
                                 selectedPlatform = platform
                                 if (!showSelectButton) {
                                     onSetStreamingPlatform(platform)
@@ -95,7 +109,7 @@ internal fun StreamingServiceScreen(
                         contentDescription = null,
                     )
                     Text(
-                        text = platform.displayName(),
+                        text = displayName,
                         color = itemColor,
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -107,6 +121,7 @@ internal fun StreamingServiceScreen(
             Button(
                 enabled = selectedPlatform != null,
                 onClick = {
+                    analyticsHelper.logClickEvent("Select streaming service")
                     onSetStreamingPlatform(selectedPlatform!!)
                 },
             ) {

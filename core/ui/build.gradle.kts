@@ -9,6 +9,7 @@ android {
 
 dependencies {
     implementation(project(":core:model"))
+    api(project(":core:analytics"))
 
     implementation(libs.material)
     implementation(libs.androidx.navigation.compose)

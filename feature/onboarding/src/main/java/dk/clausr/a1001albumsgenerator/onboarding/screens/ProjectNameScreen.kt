@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import dk.clausr.a1001albumsgenerator.feature.onboarding.R
 import dk.clausr.a1001albumsgenerator.onboarding.components.OnboardingTitle
 import dk.clausr.a1001albumsgenerator.onboarding.components.ProjectTextField
+import dk.clausr.a1001albumsgenerator.ui.extensions.TrackScreenViewEvent
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.common.ExternalLinks
 import dk.clausr.core.common.extensions.openLink
@@ -31,6 +32,7 @@ internal fun ProjectNameScreen(
     prefilledProjectId: String = "",
     error: NetworkError? = null,
 ) {
+    TrackScreenViewEvent(screenName = "ProjectNameScreen")
     val context = LocalContext.current
 
     Column(

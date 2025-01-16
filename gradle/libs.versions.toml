@@ -30,7 +30,6 @@ androidxNavigation = "2.8.5"
 kotlinxSerializationJson = "1.8.0"
 junit = "4.13.2"
 androidx-test-ext-junit = "1.1.5"
-espresso-core = "3.5.1"
 appcompat = "1.6.1"
 material = "1.11.0"
 datastore-preferences = "1.1.1"
@@ -40,6 +39,7 @@ room = "2.6.1"
 coreSplashscreen = "1.0.1"
 detektComposeRulesPluginVersion = "0.4.22"
 detektPluginVersion = "1.23.7"
+firebaseCrashlyticsPlugin = "3.0.2"
 
 [libraries]
 androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glance" }
@@ -73,6 +73,7 @@ detekt-compose-rules = { module = "io.nlopez.compose.rules:detekt", version.ref 
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detektPluginVersion" }
 firebase_bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBomVersion" }
 firebase_crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+firebase_analytics = { module = "com.google.firebase:firebase-analytics" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 material = { module = "com.google.android.material:material", version.ref = "materialVersion" }
 retrofit-core = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
@@ -95,7 +96,7 @@ ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devto
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
-
+firebase-crashlytics-gradlePlugin = { group = "com.google.firebase", name = "firebase-crashlytics-gradle", version.ref = "firebaseCrashlyticsPlugin" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

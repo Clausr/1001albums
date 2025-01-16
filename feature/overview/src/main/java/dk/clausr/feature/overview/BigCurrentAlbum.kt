@@ -31,10 +31,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import dk.clausr.a1001albumsgenerator.analytics.LocalAnalyticsHelper
+import dk.clausr.a1001albumsgenerator.ui.extensions.logClickEvent
+import dk.clausr.a1001albumsgenerator.ui.extensions.logRatingGiven
+import dk.clausr.a1001albumsgenerator.ui.helper.displayName
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.common.extensions.openProject
 import dk.clausr.core.data_widget.SerializedWidgetState
@@ -54,6 +59,7 @@ fun BigCurrentAlbum(
     startBurstUpdate: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val analyticsHelper = LocalAnalyticsHelper.current
     when (state) {
         is SerializedWidgetState.Error -> {
             Box(
@@ -87,6 +93,7 @@ fun BigCurrentAlbum(
                 openLink = openLink,
                 streamingService = streamingService,
                 onRating = { stars ->
+                    analyticsHelper.logRatingGiven(gaveRating = stars != null)
                     context.openProject(state.currentProjectId, stars)
                     startBurstUpdate()
                 },
@@ -105,6 +112,8 @@ fun BigCurrentAlbum(
     onRating: (rating: Int?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val analyticsHelper = LocalAnalyticsHelper.current
+
     Column(modifier = modifier) {
         Box(
             modifier = Modifier.aspectRatio(1f),
@@ -168,7 +177,7 @@ fun BigCurrentAlbum(
                         horizontalArrangement = Arrangement.Center,
                     ) {
                         Button(onClick = { onRating(null) }) {
-                            Text(text = "Did not listen")
+                            Text(text = stringResource(R.string.rating_did_not_listen))
                         }
                     }
                 }
@@ -205,31 +214,40 @@ fun BigCurrentAlbum(
             ),
         ) {
             FilledIconButton(
-                onClick = { openLink(album.wikipediaUrl) },
+                onClick = {
+                    analyticsHelper.logClickEvent("Wikipedia")
+                    openLink(album.wikipediaUrl)
+                },
             ) {
                 Icon(
                     painterResource(id = uiR.drawable.ic_wiki),
-                    contentDescription = null,
+                    contentDescription = "Open albums wikipedia page",
                 )
             }
 
             streamingService.takeIf { it?.streamingLink?.isNotBlank() == true }?.let { streaming ->
                 FilledIconButton(
-                    onClick = { openLink(streaming.streamingLink) },
+                    onClick = {
+                        analyticsHelper.logClickEvent("Open streaming service")
+                        openLink(streaming.streamingLink)
+                    },
                 ) {
                     Icon(
                         imageVector = Icons.Default.PlayArrow,
-                        contentDescription = null,
+                        contentDescription = "Play album on ${streaming.platform.displayName()}",
                     )
                 }
             }
 
             FilledIconButton(
-                onClick = openProject,
+                onClick = {
+                    analyticsHelper.logClickEvent("Open project website")
+                    openProject()
+                },
             ) {
                 Icon(
                     painterResource(id = uiR.drawable.ic_open_external),
-                    contentDescription = null,
+                    contentDescription = "Open project website",
                 )
             }
         }

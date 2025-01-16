@@ -48,10 +48,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dk.clausr.a1001albumsgenerator.analytics.LocalAnalyticsHelper
 import dk.clausr.a1001albumsgenerator.ui.components.AlbumThumb
 import dk.clausr.a1001albumsgenerator.ui.components.LocalNavAnimatedVisibilityScope
 import dk.clausr.a1001albumsgenerator.ui.components.LocalSharedTransitionScope
+import dk.clausr.a1001albumsgenerator.ui.extensions.TrackScreenViewEvent
 import dk.clausr.a1001albumsgenerator.ui.extensions.ignoreHorizontalParentPadding
+import dk.clausr.a1001albumsgenerator.ui.extensions.logClickEvent
 import dk.clausr.a1001albumsgenerator.ui.preview.PreviewSharedTransitionLayout
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.common.extensions.collectWithLifecycle
@@ -83,6 +86,8 @@ fun OverviewRoute(
     modifier: Modifier = Modifier,
     viewModel: OverviewViewModel = hiltViewModel(),
 ) {
+    TrackScreenViewEvent(screenName = "Overview")
+
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -116,6 +121,7 @@ internal fun OverviewScreen(
     snackbarHostState: SnackbarHostState = SnackbarHostState(),
 ) {
     val context = LocalContext.current
+    val analyticsHelper = LocalAnalyticsHelper.current
     val coroutineScope = rememberCoroutineScope()
     var showNotifications by remember {
         mutableStateOf(false)
@@ -139,6 +145,7 @@ internal fun OverviewScreen(
                             if (state is OverviewUiState.Success && !state.isUsingWidget) {
                                 IconButton(
                                     onClick = {
+                                        analyticsHelper.logClickEvent("Add to homescreen")
                                         coroutineScope.launch {
                                             context.askToAddToHomeScreen()
                                         }
@@ -152,7 +159,10 @@ internal fun OverviewScreen(
                             }
                             Box {
                                 IconButton(
-                                    onClick = { showNotifications = true },
+                                    onClick = {
+                                        analyticsHelper.logClickEvent("Open notifications")
+                                        showNotifications = true
+                                    },
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Notifications,
@@ -167,7 +177,10 @@ internal fun OverviewScreen(
                                     ) { Text(text = state.notifications.size.toString()) }
                                 }
                             }
-                            IconButton(onClick = navigateToSettings) {
+                            IconButton(onClick = {
+                                analyticsHelper.logClickEvent("Settings")
+                                navigateToSettings()
+                            }) {
                                 Icon(
                                     imageVector = Icons.Default.Settings,
                                     contentDescription = stringResource(R.string.a11y_content_description_settings_icon),
