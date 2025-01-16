@@ -16,7 +16,6 @@ fun openUrlAction(url: String): Action {
 
 fun openAppAction(context: Context): Action {
     val intent = Intent(context, Class.forName("dk.clausr.a1001albumsgenerator.MainActivity")).apply {
-        putExtra("open_notifications", true)
         setPackage(context.packageName)
         flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
     }
