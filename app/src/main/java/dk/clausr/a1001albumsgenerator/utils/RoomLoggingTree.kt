@@ -22,16 +22,9 @@ class RoomLoggingTree @Inject constructor(
 
         if (priority < Log.DEBUG) return
 
-        // Insert log into the database
-        val logEntity = OagLog(
-            message = message,
-            level = logLevel,
-            tag = tag.orEmpty(),
-        )
-
         // Make sure to use a coroutine since Room operations are suspending
         CoroutineScope(Dispatchers.IO).launch {
-            loggingRepository.insertLog(logEntity)
+            loggingRepository.insertLog(message = message, logLevel = logLevel, tag = tag.orEmpty())
         }
     }
 }

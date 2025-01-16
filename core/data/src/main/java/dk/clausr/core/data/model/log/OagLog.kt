@@ -7,7 +7,8 @@ data class OagLog(
     val message: String,
     val level: LogLevel,
     val tag: String,
-    val timestamp: Instant? = null,
+    val timestamp: Instant,
+    val dateTime: String,
 ) {
     enum class LogLevel(val priorityConstant: Int) {
         VERBOSE(Log.VERBOSE),
