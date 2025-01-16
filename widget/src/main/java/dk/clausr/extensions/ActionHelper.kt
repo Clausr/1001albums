@@ -1,5 +1,6 @@
 package dk.clausr.extensions
 
+import android.content.Context
 import android.content.Intent
 import androidx.core.net.toUri
 import androidx.glance.action.Action
@@ -11,4 +12,13 @@ fun openUrlAction(url: String): Action {
         flags = Intent.FLAG_ACTIVITY_NEW_TASK
     }
     return actionStartActivity(urlIntent)
+}
+
+fun openAppAction(context: Context): Action {
+    val intent = Intent(context, Class.forName("dk.clausr.a1001albumsgenerator.MainActivity")).apply {
+        setPackage(context.packageName)
+        flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+    }
+
+    return actionStartActivity(intent)
 }

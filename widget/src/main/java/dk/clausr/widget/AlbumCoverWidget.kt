@@ -1,7 +1,6 @@
 package dk.clausr.widget
 
 import android.content.Context
-import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -21,7 +20,6 @@ import androidx.glance.LocalContext
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
-import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.components.CircleIconButton
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
@@ -53,6 +51,7 @@ import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingService
 import dk.clausr.core.model.StreamingServices
 import dk.clausr.extensions.GlancePreview
+import dk.clausr.extensions.openAppAction
 import dk.clausr.worker.BurstUpdateWorker
 import dk.clausr.worker.PeriodicProjectUpdateWidgetWorker
 import kotlinx.coroutines.delay
@@ -73,9 +72,7 @@ class AlbumCoverWidget : GlanceAppWidget() {
 
             Timber.d("State updated: $state")
             GlanceTheme {
-                Content(
-                    state = state,
-                )
+                Content(state = state)
             }
         }
     }
@@ -162,15 +159,11 @@ private fun ShowAlbumCover(
         }
 
         if (state.data.unreadNotifications > 0 && !isPreview) {
-            val intent = Intent(context, Class.forName("dk.clausr.a1001albumsgenerator.MainActivity")).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            }
-            val actionIntent = actionStartActivity(intent)
             CircleIconButton(
                 modifier = GlanceModifier.size(36.dp),
                 imageProvider = ImageProvider(R.drawable.ic_notification_active),
                 contentDescription = null,
-                onClick = actionIntent,
+                onClick = openAppAction(context),
             )
         }
 
