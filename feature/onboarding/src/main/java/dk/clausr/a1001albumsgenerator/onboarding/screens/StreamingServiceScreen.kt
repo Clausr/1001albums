@@ -87,7 +87,7 @@ internal fun StreamingServiceScreen(
                             onClick = {
                                 analyticsHelper.logListItemSelected(
                                     listName = "Streaming service",
-                                    itemName = displayName
+                                    itemName = displayName,
                                 )
                                 selectedPlatform = platform
                                 if (!showSelectButton) {

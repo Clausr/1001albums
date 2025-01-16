@@ -53,7 +53,7 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
     private fun updateView() {
         setContent {
             CompositionLocalProvider(
-                LocalAnalyticsHelper provides analyticsHelper
+                LocalAnalyticsHelper provides analyticsHelper,
             ) {
                 TrackScreenViewEvent("AlbumWidgetConfigurationScreen")
                 val coroutineScope = rememberCoroutineScope()
@@ -63,7 +63,6 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
                     onNavigateUp = {},
                     onShowLogs = {},
                     onClickApply = {
-
                         analyticsHelper.logClickEvent("Done")
                         // Start updates and stuff
                         viewModel.updateWidgets()

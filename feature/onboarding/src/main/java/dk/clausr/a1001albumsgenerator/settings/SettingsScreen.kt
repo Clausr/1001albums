@@ -52,6 +52,7 @@ import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.chrisbanes.haze.materials.HazeMaterials
+import dk.clausr.a1001albumsgenerator.analytics.AnalyticsEvent
 import dk.clausr.a1001albumsgenerator.analytics.LocalAnalyticsHelper
 import dk.clausr.a1001albumsgenerator.feature.onboarding.R
 import dk.clausr.a1001albumsgenerator.onboarding.components.ProjectTextField
@@ -223,7 +224,20 @@ fun SettingsScreen(
                         )
                         .padding(16.dp),
                     enabled = viewState.editProjectIdEnabled,
-                    onProjectIdChange = onSetProjectId,
+                    onProjectIdChange = {
+                        analyticsHelper.logEvent(
+                            AnalyticsEvent(
+                                type = AnalyticsEvent.Types.CLICK_ITEM,
+                                extras = listOf(
+                                    AnalyticsEvent.Param(AnalyticsEvent.ParamKeys.EVENT_NAME, "Set project"),
+                                    AnalyticsEvent.Param("is_not_blank", it.isNotBlank().toString()),
+                                    AnalyticsEvent.Param("edit_project_enabled", viewState.editProjectIdEnabled.toString()),
+                                ),
+                            ),
+                        )
+
+                        onSetProjectId(it)
+                    },
                     existingProjectId = viewState.projectId.orEmpty(),
                     error = viewState.error,
                 )
@@ -238,7 +252,6 @@ fun SettingsScreen(
                         .padding(16.dp),
                     onSetStreamingPlatform = {
                         onSetStreamingPlatform(it)
-
                     },
                     preselectedPlatform = viewState.preferredStreamingPlatform,
                     showSelectButton = false,
