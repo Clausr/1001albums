@@ -21,6 +21,7 @@ data class AnalyticsEvent(
         const val SCREEN_VIEW = FirebaseAnalytics.Event.SCREEN_VIEW // (extras: SCREEN_NAME)
         const val SELECT_ITEM = FirebaseAnalytics.Event.SELECT_ITEM
         const val RATE_ALBUM = "rate_album"
+        const val CLICK_ITEM = "click_event"
     }
 
     /**
@@ -39,6 +40,8 @@ data class AnalyticsEvent(
     object ParamKeys {
         const val SCREEN_NAME = FirebaseAnalytics.Param.SCREEN_NAME
         const val ITEM_LIST_NAME = FirebaseAnalytics.Param.ITEM_LIST_NAME
+        const val ITEM_NAME = FirebaseAnalytics.Param.ITEM_LIST_NAME
         const val RATING = "rating"
+        const val EVENT_NAME = "event_name"
     }
 }

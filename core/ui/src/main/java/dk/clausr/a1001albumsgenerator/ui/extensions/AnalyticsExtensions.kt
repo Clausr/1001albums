@@ -33,6 +33,32 @@ fun AnalyticsHelper.logRatingGiven(gaveRating: Boolean) {
     )
 }
 
+fun AnalyticsHelper.logClickEvent(eventName: String) {
+    logEvent(
+        AnalyticsEvent(
+            type = AnalyticsEvent.Types.CLICK_ITEM,
+            extras = listOf(
+                AnalyticsEvent.Param(AnalyticsEvent.ParamKeys.EVENT_NAME, eventName),
+            ),
+        ),
+    )
+}
+
+fun AnalyticsHelper.logListItemSelected(
+    listName: String,
+    itemName: String,
+) {
+    logEvent(
+        AnalyticsEvent(
+            type = AnalyticsEvent.Types.SELECT_ITEM,
+            extras = listOf(
+                AnalyticsEvent.Param(AnalyticsEvent.ParamKeys.ITEM_LIST_NAME, listName),
+                AnalyticsEvent.Param(AnalyticsEvent.ParamKeys.ITEM_NAME, itemName),
+            ),
+        ),
+    )
+}
+
 /**
  * A side-effect which records a screen view event.
  */
@@ -46,5 +72,14 @@ fun TrackScreenViewEvent(
         screenName = screenName,
         extras = extras,
     )
+    onDispose {}
+}
+
+@Composable
+fun TrackClickedEvent(
+    event: String,
+    analyticsHelper: AnalyticsHelper = LocalAnalyticsHelper.current,
+) = DisposableEffect(Unit) {
+    analyticsHelper.logClickEvent(event)
     onDispose {}
 }
