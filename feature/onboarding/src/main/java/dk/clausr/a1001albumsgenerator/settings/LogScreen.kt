@@ -25,7 +25,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dk.clausr.a1001albumsgenerator.settings.log.LogViewModel
 import dk.clausr.core.data.model.log.OagLog
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun LogScreen(
@@ -64,12 +63,11 @@ fun LogScreen(
                     }
 
                     Column(modifier = Modifier.padding(start = 4.dp)) {
-                        log.timestamp?.let { timestamp ->
-                            Text(
-                                text = DateTimeFormatter.ISO_INSTANT.format(timestamp),
-                                fontSize = 10.sp,
-                            )
-                        }
+                        Text(
+                            text = log.dateTime,
+                            fontSize = 10.sp,
+                        )
+
                         Text(text = log.message, fontSize = 14.sp)
                     }
                 }
