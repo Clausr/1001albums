@@ -11,7 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Oag.SplashScreen"
-        tools:targetApi="34">
+        tools:targetApi="35">
 
         <!-- Deletable-->
         <activity

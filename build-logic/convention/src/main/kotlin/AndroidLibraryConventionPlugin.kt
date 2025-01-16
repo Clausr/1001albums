@@ -18,7 +18,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
 
             extensions.configure<LibraryExtension> {
                 configureKotlinAndroid(this)
-                defaultConfig.targetSdk = Versions.TargetVersion
+                defaultConfig.targetSdk = Versions.TARGET_VERSION
                 configureFlavors(this)
             }
 

@@ -15,7 +15,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
 
             extensions.configure<ApplicationExtension> {
                 configureKotlinAndroid(this)
-                defaultConfig.targetSdk = Versions.TargetVersion
+                defaultConfig.targetSdk = Versions.TARGET_VERSION
             }
         }
     }
