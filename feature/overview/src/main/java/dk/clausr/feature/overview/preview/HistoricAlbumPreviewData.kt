@@ -7,6 +7,7 @@ import dk.clausr.core.model.Rating
 import java.time.Instant
 
 internal fun albumPreviewData(slug: String = "paranoid") = Album(
+    id = "id_$slug",
     artist = "Black Sabbath",
     artistOrigin = "UK",
     name = "Paranoid",

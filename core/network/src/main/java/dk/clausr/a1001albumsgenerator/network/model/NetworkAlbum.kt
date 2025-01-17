@@ -1,9 +1,12 @@
 package dk.clausr.a1001albumsgenerator.network.model
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class NetworkAlbum(
+    @SerialName("uuid")
+    val id: String,
     val artist: String,
     val artistOrigin: String? = null,
     val images: List<NetworkAlbumImage>,

@@ -1,6 +1,7 @@
 package dk.clausr.core.model
 
 data class Album(
+    val id: String,
     val artist: String,
     val artistOrigin: String?,
     val imageUrl: String,

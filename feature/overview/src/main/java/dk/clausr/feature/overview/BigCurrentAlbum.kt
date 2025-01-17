@@ -265,6 +265,7 @@ private fun CurrentAlbumPreview() {
             openLink = {},
             onRating = {},
             album = Album(
+                id = "id",
                 artist = "Black Sabbath",
                 artistOrigin = "UK",
                 name = "Paranoid",
