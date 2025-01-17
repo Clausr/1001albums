@@ -22,7 +22,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,7 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import dk.clausr.core.common.extensions.toRelativeTimeString
+import dk.clausr.core.common.extensions.toLocalizedDateTime
 import dk.clausr.core.model.Notification
 import dk.clausr.core.model.NotificationType
 import dk.clausr.feature.overview.notifications.getBody
@@ -185,13 +185,13 @@ private fun NotificationSheetContent(
                         )
                         Text(text = notification.getBody(context) ?: "")
                         Text(
-                            text = notification.createdAt.toRelativeTimeString(),
+                            text = notification.createdAt.toLocalizedDateTime(),
                             style = MaterialTheme.typography.labelSmall,
                         )
                     }
                     if (onClickEnabled) {
                         Image(
-                            imageVector = Icons.AutoMirrored.Default.KeyboardArrowRight,
+                            imageVector = Icons.AutoMirrored.Default.OpenInNew,
                             contentDescription = null,
                             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
                         )

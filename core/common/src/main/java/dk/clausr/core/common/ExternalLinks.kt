@@ -13,6 +13,5 @@ object ExternalLinks {
             groupName: String,
             albumId: String,
         ): String = "$BASE_URL/group/$groupName/album/$albumId"
-
     }
 }

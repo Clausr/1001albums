@@ -33,9 +33,10 @@ dependencies {
     implementation(libs.coil3.coil.network.okhttp)
 
     implementation(libs.androidx.hilt.navigation.compose)
-    implementation(libs.androidx.compose.material.iconsExtended)
+
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.work.ktx)
     implementation(libs.androidx.hilt.work)
+
     ksp(libs.hilt.ext.compiler)
 }
