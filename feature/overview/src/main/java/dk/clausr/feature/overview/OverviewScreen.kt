@@ -57,12 +57,15 @@ import dk.clausr.a1001albumsgenerator.ui.extensions.ignoreHorizontalParentPaddin
 import dk.clausr.a1001albumsgenerator.ui.extensions.logClickEvent
 import dk.clausr.a1001albumsgenerator.ui.preview.PreviewSharedTransitionLayout
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
+import dk.clausr.core.common.ExternalLinks
 import dk.clausr.core.common.extensions.collectWithLifecycle
 import dk.clausr.core.common.extensions.formatToDate
+import dk.clausr.core.common.extensions.openLink
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.model.AlbumWidgetData
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Notification
+import dk.clausr.core.model.NotificationData
 import dk.clausr.core.model.NotificationType
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.StreamingPlatform
@@ -88,6 +91,7 @@ fun OverviewRoute(
 ) {
     TrackScreenViewEvent(screenName = "Overview")
 
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -107,6 +111,17 @@ fun OverviewRoute(
         readAllNotifications = viewModel::clearUnreadNotifications,
         openLink = viewModel::openStreamingLink,
         snackbarHostState = snackbarHostState,
+        onNotificationClick = {
+            when (val data = it.data) {
+                is NotificationData.GroupReviewData -> {
+                    // When we support more data per group album, navigate to the screen instead of the homepage
+                    context.openLink(ExternalLinks.Generator.groupRatingDetails(groupName = data.groupSlug, albumId = data.albumId))
+                }
+
+                else -> {}
+            }
+        },
+
     )
 }
 
@@ -114,6 +129,7 @@ fun OverviewRoute(
 internal fun OverviewScreen(
     state: OverviewUiState,
     navigateToSettings: () -> Unit,
+    onNotificationClick: (Notification) -> Unit,
     navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
     readAllNotifications: () -> Unit,
     openLink: (streamingLink: String) -> Unit,
@@ -266,6 +282,7 @@ internal fun OverviewScreen(
                 onDismiss = {
                     showNotifications = false
                 },
+                onNotificationClick = onNotificationClick,
                 notifications = state.notifications,
                 clearNotifications = readAllNotifications,
             )
@@ -419,6 +436,7 @@ private fun OverviewPreview() {
                 ),
                 readAllNotifications = {},
                 openLink = {},
+                onNotificationClick = {},
             )
         }
     }
