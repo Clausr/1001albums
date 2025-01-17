@@ -9,5 +9,4 @@ android {
 
 dependencies {
     project(":widget")
-    implementation(libs.androidx.compose.material.iconsExtended)
 }

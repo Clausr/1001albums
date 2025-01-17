@@ -8,5 +8,10 @@ object ExternalLinks {
 
     object Generator {
         const val BASE_URL = "https://1001albumsgenerator.com"
+
+        fun groupRatingDetails(
+            groupName: String,
+            albumId: String,
+        ): String = "$BASE_URL/group/$groupName/album/$albumId"
     }
 }

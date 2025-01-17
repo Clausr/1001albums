@@ -1,11 +1,11 @@
 package dk.clausr.core.common.extensions
 
-import android.text.format.DateUtils
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.util.Locale
 
 fun Instant.toLocalDateTime(zoneId: ZoneId = ZoneId.systemDefault()): LocalDateTime {
@@ -32,6 +32,10 @@ fun LocalDate.formatMonthAndYear(locale: Locale = Locale.getDefault()): String {
     return this.format(formatter)
 }
 
-fun Instant.toRelativeTimeString(): String {
-    return DateUtils.getRelativeTimeSpanString(this.toEpochMilli(), System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS).toString()
-}
+fun Instant.toLocalizedDateTime(): String = toLocalDateTime()
+    .format(
+        DateTimeFormatter.ofLocalizedDateTime(
+            /*dateStyle = */ FormatStyle.LONG,
+            /*timeStyle*/ FormatStyle.SHORT,
+        ),
+    )
