@@ -114,6 +114,7 @@ class OverviewViewModel @Inject constructor(
             notificationsRepository.readAll(projectId.value)
                 .doOnSuccess {
                     Timber.d("Notifications marked as read, update widget.")
+                    _viewEffect.send(ViewEffect.HideNotifications)
                     AlbumCoverWidget().updateAll(context = context)
                 }
                 .doOnFailure {
@@ -137,7 +138,7 @@ class OverviewViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             oagRepository.project.collectLatest { project ->
-                Timber.d("Project updated ${project?.name}")
+                Timber.d("Project loaded ${project?.name}")
                 project?.name?.let { projectId ->
                     notificationsRepository.updateNotifications(origin = "OverviewViewModel", projectId = projectId)
                     this@OverviewViewModel.projectId.value = projectId
@@ -158,6 +159,7 @@ class OverviewViewModel @Inject constructor(
 
     sealed interface ViewEffect {
         data class ShowSnackbar(val message: String) : ViewEffect
+        data object HideNotifications : ViewEffect
     }
 }
 

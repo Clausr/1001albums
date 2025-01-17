@@ -94,11 +94,18 @@ fun OverviewRoute(
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    var showNotifications by remember {
+        mutableStateOf(false)
+    }
 
     viewModel.viewEffect.collectWithLifecycle {
         when (it) {
             is OverviewViewModel.ViewEffect.ShowSnackbar -> {
                 snackbarHostState.showSnackbar(message = it.message)
+            }
+
+            OverviewViewModel.ViewEffect.HideNotifications -> {
+                showNotifications = false
             }
         }
     }
@@ -108,9 +115,17 @@ fun OverviewRoute(
         state = uiState,
         navigateToSettings = navigateToSettings,
         navigateToAlbumDetails = navigateToAlbumDetails,
-        readAllNotifications = viewModel::clearUnreadNotifications,
         openLink = viewModel::openStreamingLink,
         snackbarHostState = snackbarHostState,
+        openNotifications = { showNotifications = true },
+    )
+
+
+    NotificationUpperSheet(
+        showNotifications = showNotifications,
+        onDismiss = {
+            showNotifications = false
+        },
         onNotificationClick = {
             when (val data = it.data) {
                 is NotificationData.GroupReviewData -> {
@@ -121,7 +136,8 @@ fun OverviewRoute(
                 else -> {}
             }
         },
-
+        notifications = (uiState as? OverviewUiState.Success)?.notifications ?: persistentListOf(),
+        clearNotifications = viewModel::clearUnreadNotifications,
     )
 }
 
@@ -129,19 +145,15 @@ fun OverviewRoute(
 internal fun OverviewScreen(
     state: OverviewUiState,
     navigateToSettings: () -> Unit,
-    onNotificationClick: (Notification) -> Unit,
     navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
-    readAllNotifications: () -> Unit,
     openLink: (streamingLink: String) -> Unit,
+    openNotifications: () -> Unit,
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = SnackbarHostState(),
 ) {
     val context = LocalContext.current
     val analyticsHelper = LocalAnalyticsHelper.current
     val coroutineScope = rememberCoroutineScope()
-    var showNotifications by remember {
-        mutableStateOf(false)
-    }
 
     with(LocalSharedTransitionScope.current) {
         Scaffold(
@@ -177,7 +189,7 @@ internal fun OverviewScreen(
                                 IconButton(
                                     onClick = {
                                         analyticsHelper.logClickEvent("Open notifications")
-                                        showNotifications = true
+                                        openNotifications()
                                     },
                                 ) {
                                     Icon(
@@ -274,18 +286,6 @@ internal fun OverviewScreen(
                     }
                 }
             }
-        }
-
-        if (state is OverviewUiState.Success) {
-            NotificationUpperSheet(
-                showNotifications = showNotifications,
-                onDismiss = {
-                    showNotifications = false
-                },
-                onNotificationClick = onNotificationClick,
-                notifications = state.notifications,
-                clearNotifications = readAllNotifications,
-            )
         }
     }
 }
@@ -434,9 +434,8 @@ private fun OverviewPreview() {
                     ),
                     isUsingWidget = false,
                 ),
-                readAllNotifications = {},
                 openLink = {},
-                onNotificationClick = {},
+                openNotifications = {},
             )
         }
     }

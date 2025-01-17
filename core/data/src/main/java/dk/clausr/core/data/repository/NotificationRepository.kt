@@ -73,10 +73,13 @@ class NotificationRepository @Inject constructor(
     }
 
     suspend fun readAll(projectId: String) = withContext(ioDispatcher) {
+        // Save unread notifications so we're able to revert if endpoint fails
+        val unreadNotificationIds = notificationDao.getAllUnreadNotifications().map { it.id }
+        // Mark notifications as read locally
+        notificationDao.readNotifications()
+
         networkDataSource.readAll(projectId)
             .doOnSuccess {
-                notificationDao.readNotifications()
-
                 // Update widget data
                 widgetDataStore.updateData {
                     when (it) {
@@ -88,6 +91,7 @@ class NotificationRepository @Inject constructor(
                 }
             }
             .doOnFailure {
+                notificationDao.markNotificationsAsUnread(unreadNotificationIds)
                 Timber.e(it.cause, "Could not mark notifications as read")
             }
     }
