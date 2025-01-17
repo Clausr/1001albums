@@ -5,6 +5,7 @@ import dk.clausr.core.database.model.AlbumEntity
 import dk.clausr.core.model.Album
 
 fun NetworkAlbum.asExternalModel(): Album = Album(
+    id = id,
     artist = artist,
     artistOrigin = artistOrigin,
     imageUrl = images.maxBy { it.width }.url,
@@ -25,6 +26,7 @@ fun NetworkAlbum.asExternalModel(): Album = Album(
 )
 
 fun NetworkAlbum.toEntity(): AlbumEntity = AlbumEntity(
+    id = id,
     slug = slug,
     artist = artist,
     artistOrigin = artistOrigin,
@@ -43,6 +45,7 @@ fun NetworkAlbum.toEntity(): AlbumEntity = AlbumEntity(
 )
 
 fun AlbumEntity.asExternalModel(): Album = Album(
+    id = id,
     artist = artist,
     artistOrigin = artist,
     imageUrl = imageUrl,

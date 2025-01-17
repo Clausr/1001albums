@@ -1,6 +1,7 @@
 {
   "shareableUrl": "https://1001albumsgenerator.com/shares/651ef5d68a53974fd9aa7335",
   "currentAlbum": {
+    "uuid": "uuid_axis-as-bold-as-love",
     "artist": "Jimi Hendrix",
     "artistOrigin": "us",
     "images": [
@@ -51,6 +52,7 @@
   "history": [
     {
       "album": {
+        "uuid": "uuid_at-folsom-prison",
         "artist": "Johnny Cash",
         "artistOrigin": "us",
         "images": [
@@ -97,6 +99,7 @@
     },
     {
       "album": {
+        "uuid": "uuid_2112",
         "artist": "Rush",
         "artistOrigin": "other",
         "images": [
@@ -150,6 +153,7 @@
     },
     {
       "album": {
+        "uuid": "uuid_sister",
         "artist": "Sonic Youth",
         "artistOrigin": "us",
         "images": [
@@ -204,6 +208,7 @@
     },
     {
       "album": {
+        "uuid": "uuid_amerikkkas-most-wanted",
         "artist": "Ice Cube",
         "artistOrigin": "us",
         "images": [

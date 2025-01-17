@@ -3,10 +3,9 @@ package dk.clausr.core.database.model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(
-    tableName = "albums",
-)
+@Entity(tableName = "albums")
 data class AlbumEntity(
+    val id: String,
     @PrimaryKey
     val slug: String,
     val artist: String,
