@@ -11,7 +11,7 @@ internal object DatabaseMigrations {
 
     val MIGRATION_15_TO_16 = object : Migration(15, 16) {
         override fun migrate(db: SupportSQLiteDatabase) {
-            db.execSQL("ALTER TABLE albums ADD COLUMN id TEXT NOT NULL DEFAULT uuid")
+            db.execSQL("ALTER TABLE albums ADD COLUMN id TEXT NOT NULL DEFAULT ''")
         }
     }
 }
