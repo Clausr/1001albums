@@ -12,6 +12,6 @@ object ExternalLinks {
         fun groupRatingDetails(
             groupName: String,
             albumId: String,
-        ): String = "$BASE_URL/group/$groupName/album/$albumId"
+        ): String = "$BASE_URL/groups/$groupName/albums/$albumId"
     }
 }
