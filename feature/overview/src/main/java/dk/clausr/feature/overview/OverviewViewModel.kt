@@ -51,6 +51,8 @@ class OverviewViewModel @Inject constructor(
     private val _viewEffect = Channel<ViewEffect>(Channel.BUFFERED)
     val viewEffect = _viewEffect.receiveAsFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+
     private val _unreadNotifications = notificationsRepository.unreadNotifications
         .map { it.toPersistentList() }
 
@@ -67,6 +69,7 @@ class OverviewViewModel @Inject constructor(
         oagRepository.didNotListenAlbums,
         oagRepository.historicAlbums,
         oagRepository.topRatedAlbums,
+        _isRefreshing
     ) {
             project: Project?,
             currentAlbum: Album?,
@@ -77,6 +80,7 @@ class OverviewViewModel @Inject constructor(
             didNotListenAlbums,
             historicAlbums,
             topRatedAlbums,
+            isRefreshing,
         ->
         if (project != null) {
             OverviewUiState.Success(
@@ -89,6 +93,7 @@ class OverviewViewModel @Inject constructor(
                 groupedHistory = historicAlbums.groupedHistory().toImmutableMap(),
                 notifications = unreadNotifications,
                 isUsingWidget = isUsingWidget,
+                isRefreshing = isRefreshing,
             )
         } else {
             OverviewUiState.Error
@@ -149,6 +154,13 @@ class OverviewViewModel @Inject constructor(
         updateIsUsingWidget()
     }
 
+    fun refreshAlbums() = viewModelScope.launch {
+        analyticsHelper.logEvent(AnalyticsEvent(type = AnalyticsEvent.Types.REFRESH_ACTION))
+        _isRefreshing.emit(true)
+        oagRepository.updateProject(projectId.value)
+        _isRefreshing.emit(false)
+    }
+
     private fun updateIsUsingWidget() {
         viewModelScope.launch {
             val widgets = GlanceAppWidgetManager(context).getGlanceIds(AlbumCoverWidget::class.java)
@@ -175,6 +187,7 @@ sealed interface OverviewUiState {
         val groupedHistory: ImmutableMap<String, List<HistoricAlbum>>,
         val notifications: ImmutableList<Notification>,
         val isUsingWidget: Boolean,
+        val isRefreshing: Boolean,
     ) : OverviewUiState
 
     data object Error : OverviewUiState

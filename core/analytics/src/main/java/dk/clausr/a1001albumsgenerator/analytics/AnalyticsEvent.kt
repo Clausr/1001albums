@@ -22,6 +22,7 @@ data class AnalyticsEvent(
         const val SELECT_ITEM = FirebaseAnalytics.Event.SELECT_ITEM
         const val RATE_ALBUM = "rate_album"
         const val CLICK_ITEM = "click_event"
+        const val REFRESH_ACTION = "refresh_content"
     }
 
     /**

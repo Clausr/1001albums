@@ -34,6 +34,9 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -118,6 +121,7 @@ fun OverviewRoute(
         openLink = viewModel::openStreamingLink,
         snackbarHostState = snackbarHostState,
         openNotifications = { showNotifications = true },
+        onRefresh = viewModel::refreshAlbums,
     )
 
     NotificationUpperSheet(
@@ -147,6 +151,7 @@ internal fun OverviewScreen(
     navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
     openLink: (streamingLink: String) -> Unit,
     openNotifications: () -> Unit,
+    onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = SnackbarHostState(),
 ) {
@@ -233,54 +238,69 @@ internal fun OverviewScreen(
                     }
 
                     is OverviewUiState.Success -> {
-                        val prefStreamingPlatform =
-                            (state.widgetState as? SerializedWidgetState.Success)?.data?.preferredStreamingPlatform ?: StreamingPlatform.Undefined
-
-                        LazyVerticalGrid(
+                        val refreshState = rememberPullToRefreshState()
+                        PullToRefreshBox(
+                            isRefreshing = state.isRefreshing,
+                            onRefresh = onRefresh,
+                            state = refreshState,
                             modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.spacedBy(16.dp),
-                            contentPadding = PaddingValues(
-                                start = 16.dp,
-                                end = 16.dp,
-                                bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
-                            ),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            columns = GridCells.Fixed(count = 3),
-                        ) {
-                            item(
-                                span = { GridItemSpan(maxLineSpan) },
-                            ) {
-                                state.currentAlbum?.let {
-                                    BigCurrentAlbum(
-                                        modifier = Modifier.ignoreHorizontalParentPadding(16.dp),
-                                        state = state.widgetState,
-                                        album = it,
-                                        openLink = openLink,
-                                        startBurstUpdate = {
-                                            BurstUpdateWorker.enqueueUnique(context = context, projectId = state.project.name)
-                                        },
-                                    )
-                                }
+                            indicator = {
+                                PullToRefreshDefaults.Indicator(
+                                    modifier = Modifier.align(Alignment.TopCenter),
+                                    state = refreshState,
+                                    isRefreshing = state.isRefreshing,
+                                )
                             }
+                        ) {
+                            val prefStreamingPlatform =
+                                (state.widgetState as? SerializedWidgetState.Success)?.data?.preferredStreamingPlatform ?: StreamingPlatform.Undefined
 
-                            didNotListenSection(
-                                state = state,
-                                navigateToAlbumDetails = navigateToAlbumDetails,
-                                clickPlay = openLink,
-                            )
+                            LazyVerticalGrid(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalArrangement = Arrangement.spacedBy(16.dp),
+                                contentPadding = PaddingValues(
+                                    start = 16.dp,
+                                    end = 16.dp,
+                                    bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
+                                ),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                columns = GridCells.Fixed(count = 3),
+                            ) {
+                                item(
+                                    span = { GridItemSpan(maxLineSpan) },
+                                ) {
+                                    state.currentAlbum?.let {
+                                        BigCurrentAlbum(
+                                            modifier = Modifier.ignoreHorizontalParentPadding(16.dp),
+                                            state = state.widgetState,
+                                            album = it,
+                                            openLink = openLink,
+                                            startBurstUpdate = {
+                                                BurstUpdateWorker.enqueueUnique(context = context, projectId = state.project.name)
+                                            },
+                                        )
+                                    }
+                                }
 
-                            topRatedSection(
-                                state = state,
-                                navigateToAlbumDetails = navigateToAlbumDetails,
-                                clickPlay = openLink,
-                            )
+                                didNotListenSection(
+                                    state = state,
+                                    navigateToAlbumDetails = navigateToAlbumDetails,
+                                    clickPlay = openLink,
+                                )
 
-                            historySection(
-                                state = state,
-                                prefStreamingPlatform = prefStreamingPlatform,
-                                navigateToAlbumDetails = navigateToAlbumDetails,
-                                onClickPlay = openLink,
-                            )
+                                topRatedSection(
+                                    state = state,
+                                    navigateToAlbumDetails = navigateToAlbumDetails,
+                                    clickPlay = openLink,
+                                )
+
+                                historySection(
+                                    state = state,
+                                    prefStreamingPlatform = prefStreamingPlatform,
+                                    navigateToAlbumDetails = navigateToAlbumDetails,
+                                    onClickPlay = openLink,
+                                )
+                            }
                         }
                     }
                 }
@@ -432,9 +452,11 @@ private fun OverviewPreview() {
                         ),
                     ),
                     isUsingWidget = false,
+                    isRefreshing = false,
                 ),
                 openLink = {},
                 openNotifications = {},
+                onRefresh = {},
             )
         }
     }
