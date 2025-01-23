@@ -15,6 +15,7 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import java.time.Instant
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,7 +33,10 @@ class AlbumDetailsViewModel @Inject constructor(
         AlbumDetailsViewState(
             album = historicAlbum,
             streamingPlatform = streaming,
-            relatedAlbums = getRelatedAlbums(historicAlbum.album.artist),
+            relatedAlbums = getRelatedAlbums(
+                artist = historicAlbum.album.artist,
+                generatedAt = historicAlbum.metadata?.generatedAt
+            ),
         )
     }
         .stateIn(
@@ -41,9 +45,12 @@ class AlbumDetailsViewModel @Inject constructor(
             initialValue = AlbumDetailsViewState(),
         )
 
-    private suspend fun getRelatedAlbums(artist: String): ImmutableList<HistoricAlbum> {
+    private suspend fun getRelatedAlbums(
+        artist: String,
+        generatedAt: Instant?,
+    ): ImmutableList<HistoricAlbum> {
         return oagRepository.getSimilarAlbums(artist)
-            .filterNot { it.album.slug == albumSlug }
+            .filterNot { it.album.slug == albumSlug && it.metadata?.generatedAt == generatedAt }
             .toPersistentList()
     }
 

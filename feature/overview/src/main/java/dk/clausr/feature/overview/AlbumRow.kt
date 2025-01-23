@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,10 +48,10 @@ fun AlbumRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            items(
+            itemsIndexed(
                 items = albums,
-                key = { "$title-${it.album.slug}" },
-            ) { album ->
+                key = { i, album -> "${album.album.slug}-$i" },
+            ) { _, album ->
                 val streamingLink = StreamingServices
                     .from(album.album)
                     .getStreamingLinkFor(streamingPlatform)

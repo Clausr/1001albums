@@ -84,7 +84,7 @@ interface AlbumWithOptionalRatingDao {
         SELECT *
         FROM albums
         LEFT JOIN ratings ON albums.slug = ratings.albumSlug
-        WHERE LOWER(artist) LIKE LOWER(:artist)   -- Use LIKE for case-insensitive comparison
+        WHERE artist LIKE :artist
         ORDER BY releaseDate DESC
     """,
     )
