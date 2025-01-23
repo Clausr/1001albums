@@ -50,7 +50,7 @@ fun AlbumRow(
         ) {
             itemsIndexed(
                 items = albums,
-                key = { i, album -> "${album.album.slug}-$i" },
+                key = { i, album -> "$title-${album.album.slug}-$i" },
             ) { _, album ->
                 val streamingLink = StreamingServices
                     .from(album.album)
