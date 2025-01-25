@@ -59,7 +59,7 @@ jobs:
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
           GOOGLE_PLAY_SIGNING_KEY_ALIAS: ${{ secrets.GOOGLE_PLAY_SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
-        run: ./gradlew bundleProdRelease --stacktrace
+        run: ./gradlew bundleProdRelease assembleProdRelease
 
       - name: Upload Release Build to Artifacts
         if: github.ref_type == 'tag'
@@ -67,7 +67,7 @@ jobs:
         with:
           name: oag-prod-aab
           path: |
-            **/prodRelease/*.aab
+            **/prodRelease/app-prod-release.aab
 
       - name: Upload Symbols mapping
         if: github.ref_type == 'tag'
@@ -76,6 +76,14 @@ jobs:
           name: oag-prod-mapping
           path: |
             **/prodRelease/mapping.txt
+
+      - name: Upload release APK to artifacts
+        if: github.ref_type == 'tag'
+        uses: actions/upload-artifact@v4
+        with:
+          name: oag-prod-aab
+          path: |
+            **/app-prod-release.apk
 
   google_play_upload:
     if: github.ref_type == 'tag'
