@@ -116,10 +116,11 @@ class OverviewViewModel @Inject constructor(
     fun clearUnreadNotifications() {
         analyticsHelper.logEvent(AnalyticsEvent("Clear notifications"))
         viewModelScope.launch {
+            _viewEffect.send(ViewEffect.HideNotifications)
+
             notificationsRepository.readAll(projectId.value)
                 .doOnSuccess {
                     Timber.d("Notifications marked as read, update widget.")
-                    _viewEffect.send(ViewEffect.HideNotifications)
                     AlbumCoverWidget().updateAll(context = context)
                 }
                 .doOnFailure {
