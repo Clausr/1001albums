@@ -15,6 +15,7 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import java.time.Instant
 import javax.inject.Inject
 
@@ -52,6 +53,16 @@ class AlbumDetailsViewModel @Inject constructor(
         return oagRepository.getSimilarAlbums(artist)
             .filterNot { it.album.slug == albumSlug && it.metadata?.generatedAt == generatedAt }
             .toPersistentList()
+    }
+
+    init {
+        viewModelScope.launch {
+            getAlbumReviews()
+        }
+    }
+
+    private suspend fun getAlbumReviews() {
+        oagRepository.getAlbumReviews(albumSlug)
     }
 
     data class AlbumDetailsViewState(

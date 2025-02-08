@@ -15,7 +15,6 @@ import dk.clausr.core.data.model.toAlbumImageEntities
 import dk.clausr.core.data.model.toEntity
 import dk.clausr.core.data.model.toRatingEntity
 import dk.clausr.core.data_widget.SerializedWidgetState
-import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectId
 import dk.clausr.core.database.dao.AlbumDao
 import dk.clausr.core.database.dao.AlbumImageDao
 import dk.clausr.core.database.dao.AlbumWithOptionalRatingDao
@@ -38,6 +37,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -50,6 +50,7 @@ class OagRepository @Inject constructor(
     private val networkDataSource: OAGDataSource,
     @Dispatcher(OagDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
     private val widgetDataStore: DataStore<SerializedWidgetState>,
+    private val userDataRepository: UserRepository,
     private val albumDao: AlbumDao,
     private val projectDao: ProjectDao,
     private val ratingDao: RatingDao,
@@ -58,7 +59,9 @@ class OagRepository @Inject constructor(
 ) {
     val widgetState = widgetDataStore.data
 
-    val projectId: Flow<String?> = widgetDataStore.data.map {
+    private val userData = userDataRepository.userData
+
+    val projectId: Flow<String?> = userData.map {
         it.projectId
     }.distinctUntilChanged()
 
@@ -262,5 +265,22 @@ class OagRepository @Inject constructor(
 
     suspend fun getSimilarAlbums(artist: String): List<HistoricAlbum> = withContext(ioDispatcher) {
         albumWithOptionalRatingDao.getSimilarAlbumsWithRatings(artist).map(AlbumWithOptionalRating::mapToHistoricAlbum)
+    }
+
+    suspend fun getAlbumReviews(albumId: String) {
+        userData.firstOrNull()?.groupSlug?.let {
+            val albumReviews = networkDataSource.getGroupReviewsForAlbum(groupSlug = it, albumId = albumId)
+                .doOnSuccess {
+                    // Put in DB
+                }
+                .doOnFailure {
+                    Timber.e(it.cause, "Could not get reviews for")
+                }
+                .map {
+                    Timber.d("Result: $it")
+                }
+
+            Timber.d("Album reviews: $albumReviews")
+        }
     }
 }
