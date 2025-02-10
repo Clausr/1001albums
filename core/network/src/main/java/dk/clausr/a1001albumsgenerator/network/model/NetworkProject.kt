@@ -11,9 +11,21 @@ data class NetworkProject(
     val currentAlbum: NetworkAlbum,
     val currentAlbumNotes: String,
     val history: List<NetworkHistoricAlbum>,
-    val updateFrequency: NetworkUpdateFrequency,
+    internal val updateFrequency: NetworkUpdateFrequency,
     val shareableUrl: String,
-)
+    val group: NetworkGroup?,
+) {
+    // Groups updateFrequency overrides the individual
+    val frequency: NetworkUpdateFrequency
+        get() = group?.updateFrequency ?: updateFrequency
+
+    @Serializable
+    data class NetworkGroup(
+        val slug: String,
+        val updateFrequency: NetworkUpdateFrequency,
+        val paused: Boolean = false,
+    )
+}
 
 @Serializable
 data class NetworkHistoricAlbum(

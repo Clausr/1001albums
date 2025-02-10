@@ -250,7 +250,7 @@ internal fun OverviewScreen(
                                     state = refreshState,
                                     isRefreshing = state.isRefreshing,
                                 )
-                            }
+                            },
                         ) {
                             val prefStreamingPlatform =
                                 (state.widgetState as? SerializedWidgetState.Success)?.data?.preferredStreamingPlatform ?: StreamingPlatform.Undefined
@@ -420,6 +420,7 @@ private fun OverviewPreview() {
                         currentAlbumNotes = "",
                         updateFrequency = UpdateFrequency.DailyWithWeekends,
                         shareableUrl = "https://clausr.dk",
+                        group = null,
                     ),
                     currentAlbum = albumPreviewData(),
                     widgetState = SerializedWidgetState.Success(
