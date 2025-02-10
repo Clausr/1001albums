@@ -34,7 +34,7 @@ import dk.clausr.core.database.utils.DatabaseMigrations
         AutoMigration(from = 13, to = 14),
         AutoMigration(from = 14, to = 15, DatabaseMigrations.Schema14To15::class),
     ],
-    version = 16,
+    version = 17,
 )
 @TypeConverters(
     Converters::class,

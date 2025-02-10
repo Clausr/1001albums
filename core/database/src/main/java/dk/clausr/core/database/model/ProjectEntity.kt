@@ -12,4 +12,6 @@ data class ProjectEntity(
     val currentAlbumNotes: String,
     val updateFrequency: UpdateFrequency,
     val shareableUrl: String,
+    val groupSlug: String?,
+    val isGroupPaused: Boolean = false,
 )
