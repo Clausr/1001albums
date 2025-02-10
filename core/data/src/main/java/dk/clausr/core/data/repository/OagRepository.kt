@@ -268,10 +268,14 @@ class OagRepository @Inject constructor(
     }
 
     suspend fun getAlbumReviews(albumId: String) {
-        userData.firstOrNull()?.groupSlug?.let {
-            val albumReviews = networkDataSource.getGroupReviewsForAlbum(groupSlug = it, albumId = albumId)
+        project.firstOrNull()?.group?.slug?.let { groupSlug ->
+            val albumReviews = networkDataSource.getGroupReviewsForAlbum(
+                groupSlug = groupSlug,
+                albumId = albumId
+            )
                 .doOnSuccess {
                     // Put in DB
+                    Timber.d("Reviews: ${it.joinToString { it.rating + " " + it.review.orEmpty() }}")
                 }
                 .doOnFailure {
                     Timber.e(it.cause, "Could not get reviews for")

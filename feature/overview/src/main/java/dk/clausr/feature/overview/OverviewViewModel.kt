@@ -146,8 +146,10 @@ class OverviewViewModel @Inject constructor(
             oagRepository.project.collectLatest { project ->
                 Timber.d("Project loaded ${project?.name}")
                 project?.name?.let { projectId ->
-                    notificationsRepository.findGroupSlugFromNotifications(projectId) // Probably not the best way to do this...
-                    notificationsRepository.updateNotifications(origin = "OverviewViewModel", projectId = projectId)
+                    notificationsRepository.updateNotifications(
+                        origin = "OverviewViewModel",
+                        projectId = projectId,
+                    )
                     this@OverviewViewModel.projectId.value = projectId
                 }
             }
