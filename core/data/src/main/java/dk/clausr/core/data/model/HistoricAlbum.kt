@@ -6,7 +6,6 @@ import dk.clausr.core.database.model.RatingEntity
 import dk.clausr.core.database.model.RatingWithAlbum
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Metadata
-import dk.clausr.core.model.Rating
 
 fun NetworkHistoricAlbum.asExternalModel(): HistoricAlbum {
     return HistoricAlbum(
@@ -53,9 +52,3 @@ fun AlbumWithOptionalRating.mapToHistoricAlbum(): HistoricAlbum = HistoricAlbum(
         )
     },
 )
-
-private fun String?.mapToRating(): Rating = when (this) {
-    "did-not-listen" -> Rating.DidNotListen
-    null -> Rating.Unrated
-    else -> Rating.Rated(this.toInt())
-}

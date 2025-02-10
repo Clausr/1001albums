@@ -1,34 +1,21 @@
-[
-  {
-    "albumName": "Be",
-    "albumArtist": "Common",
-    "projectName": "oag_user",
-    "rating": 2,
-    "review": null,
-    "generatedAt": "2023-10-07T09:41:41.597Z"
-  },
-  {
-    "albumName": "Be",
-    "albumArtist": "Common",
-    "projectName": "oag_user",
-    "rating": 2,
-    "review": "Here's another review by the user himself..",
-    "generatedAt": "2023-11-23T04:15:08.712Z"
-  },
-  {
-    "albumName": "Be",
-    "albumArtist": "Common",
-    "projectName": "oag_user1",
-    "rating": 3,
-    "review": "Another comment goes here",
-    "generatedAt": "2023-11-23T04:15:08.716Z"
-  },
-  {
-    "albumName": "Be",
-    "albumArtist": "Common",
-    "projectName": "oag_user2",
-    "rating": 3,
-    "review": null,
-    "generatedAt": "2023-11-23T04:15:08.719Z"
-  }
-]
+{
+  "albumName": "Black Sabbath",
+  "albumArtist": "Black Sabbath",
+  "reviews": [
+    {
+      "projectName": "oag_user",
+      "rating": 5,
+      "review": "Stadugvæk en sindssyg debut plade."
+    },
+    {
+      "projectName": "oag_user1",
+      "rating": 5,
+      "review": "Kæft det her er fed. Sindssyge riffs, \"onde\" sange men også bare sådan lidt bøvede på den helt fede måde, ikke rigtig så mange Black Sabbath sange jeg kendte på papiret før jeg hørte den men det er bare wall of bangers"
+    },
+    {
+      "projectName": "oag_user2",
+      "rating": 4,
+      "review": "\\m/ jeg elsker at der var saxofon på Evil Woman"
+    }
+  ]
+}

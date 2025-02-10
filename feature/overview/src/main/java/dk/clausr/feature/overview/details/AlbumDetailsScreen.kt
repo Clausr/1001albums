@@ -236,26 +236,34 @@ fun AlbumDetailsScreen(
                     }
                 }
 
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp)
-                        .padding(horizontal = 16.dp),
-                    text = historicAlbum?.metadata?.rating?.ratingText(context).orEmpty(),
-                    style = MaterialTheme.typography.displaySmall,
-                    textAlign = TextAlign.Center,
-                )
+                state.reviews?.let { reviews ->
+                    Column(
+//                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    ) {
+                        reviews.reviews.forEach {
+                            Text(
+                                modifier = Modifier.padding(end = 8.dp),
+                                text = it.rating?.ratingText(context).orEmpty(),
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.displaySmall,
+                            )
 
-                if (historicAlbum?.metadata?.review?.isNotBlank() == true) {
-                    Text(
-                        text = "“${historicAlbum.metadata?.review}”",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                            .skipToLookaheadSize(),
-                        style = MaterialTheme.typography.headlineSmall.copy(fontStyle = FontStyle.Italic),
-                        textAlign = TextAlign.Center,
-                    )
+                            if (it.review?.isNotBlank() == true) {
+                                Text(
+                                    text = "“${it.review}”",
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .skipToLookaheadSize(),
+                                    style = MaterialTheme.typography.headlineSmall.copy(fontStyle = FontStyle.Italic),
+                                    textAlign = TextAlign.Center,
+                                )
+                            }
+
+                            Text("- ${it.projectName}")
+                        }
+                    }
                 }
 
                 if (state.relatedAlbums.isNotEmpty()) {

@@ -2,6 +2,7 @@ package dk.clausr.core.data.repository
 
 import androidx.datastore.core.DataStore
 import dk.clausr.a1001albumsgenerator.network.OAGDataSource
+import dk.clausr.a1001albumsgenerator.network.model.NetworkAlbumGroupReviews
 import dk.clausr.a1001albumsgenerator.network.model.NetworkProject
 import dk.clausr.core.common.model.Result
 import dk.clausr.core.common.model.doOnFailure
@@ -25,6 +26,7 @@ import dk.clausr.core.database.model.AlbumImageEntity
 import dk.clausr.core.database.model.AlbumWithOptionalRating
 import dk.clausr.core.database.model.RatingEntity
 import dk.clausr.core.model.Album
+import dk.clausr.core.model.AlbumGroupReviews
 import dk.clausr.core.model.AlbumWidgetData
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Project
@@ -259,32 +261,27 @@ class OagRepository @Inject constructor(
         CoverData.createCoverDataOrDefault(externalList = it)
     }
 
-    fun getHistoricAlbum(slug: String): Flow<HistoricAlbum> = albumWithOptionalRatingDao
-        .getAlbumBySlugFlow(slug)
+    fun getHistoricAlbum(id: String): Flow<HistoricAlbum> = albumWithOptionalRatingDao
+        .getAlbumByIdFlow(id)
         .map(AlbumWithOptionalRating::mapToHistoricAlbum)
 
     suspend fun getSimilarAlbums(artist: String): List<HistoricAlbum> = withContext(ioDispatcher) {
         albumWithOptionalRatingDao.getSimilarAlbumsWithRatings(artist).map(AlbumWithOptionalRating::mapToHistoricAlbum)
     }
 
-    suspend fun getAlbumReviews(albumId: String) {
-        project.firstOrNull()?.group?.slug?.let { groupSlug ->
-            val albumReviews = networkDataSource.getGroupReviewsForAlbum(
+    suspend fun getAlbumReviews(albumId: String): Result<AlbumGroupReviews, NetworkError> {
+        val groupSlug = project.firstOrNull()?.group?.slug
+
+        return groupSlug?.let {
+            // TODO Get cached reviews or get from network.
+            return networkDataSource.getGroupReviewsForAlbum(
                 groupSlug = groupSlug,
                 albumId = albumId
             )
-                .doOnSuccess {
-                    // Put in DB
-                    Timber.d("Reviews: ${it.joinToString { it.rating + " " + it.review.orEmpty() }}")
-                }
+                .map(NetworkAlbumGroupReviews::asExternalModel)
                 .doOnFailure {
                     Timber.e(it.cause, "Could not get reviews for")
                 }
-                .map {
-                    Timber.d("Result: $it")
-                }
-
-            Timber.d("Album reviews: $albumReviews")
-        }
+        } ?: Result.Failure(reason = NetworkError.NoGroup)
     }
 }
