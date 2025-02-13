@@ -16,14 +16,17 @@ import dk.clausr.feature.overview.navigation.OverviewDirections
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.time.Instant
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class AlbumDetailsViewModel @Inject constructor(
@@ -36,11 +39,13 @@ class AlbumDetailsViewModel @Inject constructor(
     // TODO This needs a loading state / error state
     private val reviews = MutableStateFlow<AlbumGroupReviews?>(null)
 
+    private val reviewViewState = MutableStateFlow<AlbumReviewsViewState>(AlbumReviewsViewState.None)
+
     val state = combine(
         oagRepository.getHistoricAlbum(albumId),
         oagRepository.preferredStreamingPlatform,
-        reviews,
-    ) { historicAlbum, streaming, albumReviews ->
+        reviewViewState,
+    ) { historicAlbum, streaming, reviewState ->
         AlbumDetailsViewState(
             album = historicAlbum,
             streamingPlatform = streaming,
@@ -48,7 +53,7 @@ class AlbumDetailsViewModel @Inject constructor(
                 artist = historicAlbum.album.artist,
                 generatedAt = historicAlbum.metadata?.generatedAt
             ),
-            reviews = albumReviews,
+            reviewViewState = reviewState,
         )
     }
         .stateIn(
@@ -72,14 +77,32 @@ class AlbumDetailsViewModel @Inject constructor(
         }
     }
 
+    private var retries = 0
+    private val maxRetries = 5
+
     private suspend fun getAlbumReviews() {
+        Timber.d("viewModelScope.isActive ${viewModelScope.isActive}")
+        reviewViewState.emit(AlbumReviewsViewState.Loading)
         oagRepository.getAlbumReviews(albumId = albumId)
             .doOnSuccess {
+                reviewViewState.emit(AlbumReviewsViewState.Success(it.reviews))
                 reviews.emit(it)
+                retries = 0
             }
             .doOnFailure {
-                if (it !is NetworkError.NoGroup) {
+                if (it is NetworkError.NoGroup) {
+                    reviewViewState.emit(AlbumReviewsViewState.None)
                     Timber.e(it.cause, "No group")
+                } else {
+                    reviewViewState.emit(AlbumReviewsViewState.Failed(it))
+                    if (it is NetworkError.TooManyRequests) {
+                        Timber.d("viewModelScope.isActive ${viewModelScope.isActive}")
+                        delay(20.seconds)
+                        if (viewModelScope.isActive && retries <= maxRetries) {
+                            retries += 1
+                            getAlbumReviews()
+                        }
+                    }
                 }
             }
     }
@@ -87,7 +110,14 @@ class AlbumDetailsViewModel @Inject constructor(
     data class AlbumDetailsViewState(
         val album: HistoricAlbum? = null,
         val streamingPlatform: StreamingPlatform = StreamingPlatform.Undefined,
-        val reviews: AlbumGroupReviews? = null,
+        val reviewViewState: AlbumReviewsViewState = AlbumReviewsViewState.None,
         val relatedAlbums: ImmutableList<HistoricAlbum> = persistentListOf(),
     )
+
+    sealed interface AlbumReviewsViewState {
+        data object Loading : AlbumReviewsViewState
+        data object None : AlbumReviewsViewState // Not in a group
+        data class Success(val reviews: List<AlbumGroupReviews.GroupReview>) : AlbumReviewsViewState
+        data class Failed(val error: NetworkError) : AlbumReviewsViewState
+    }
 }

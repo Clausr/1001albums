@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -52,6 +53,7 @@ import dk.clausr.a1001albumsgenerator.ui.components.LocalSharedTransitionScope
 import dk.clausr.a1001albumsgenerator.ui.extensions.TrackScreenViewEvent
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.common.extensions.openLink
+import dk.clausr.core.model.AlbumGroupReviews
 import dk.clausr.core.model.Rating
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
@@ -236,32 +238,51 @@ fun AlbumDetailsScreen(
                     }
                 }
 
-                state.reviews?.let { reviews ->
-                    Column(
-//                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    ) {
-                        reviews.reviews.forEach {
-                            Text(
-                                modifier = Modifier.padding(end = 8.dp),
-                                text = it.rating?.ratingText(context).orEmpty(),
-                                textAlign = TextAlign.Center,
-                                style = MaterialTheme.typography.displaySmall,
-                            )
+                when (val reviewState = state.reviewViewState) {
+                    is AlbumDetailsViewModel.AlbumReviewsViewState.Failed -> {
+                        Text(
+                            "Woopsie doopsie daisy..\n${reviewState.error.cause}",
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
 
-                            if (it.review?.isNotBlank() == true) {
+                    AlbumDetailsViewModel.AlbumReviewsViewState.Loading -> {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
+
+                    AlbumDetailsViewModel.AlbumReviewsViewState.None -> Unit
+                    is AlbumDetailsViewModel.AlbumReviewsViewState.Success -> {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        ) {
+                            // TODO REDESIGN PLEASE
+                            reviewState.reviews.forEach {
                                 Text(
-                                    text = "“${it.review}”",
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .skipToLookaheadSize(),
-                                    style = MaterialTheme.typography.headlineSmall.copy(fontStyle = FontStyle.Italic),
+                                    modifier = Modifier.padding(end = 8.dp),
+                                    text = it.rating?.ratingText(context).orEmpty(),
                                     textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.displaySmall,
                                 )
-                            }
 
-                            Text("- ${it.projectName}")
+                                if (it.review?.isNotBlank() == true) {
+                                    Text(
+                                        text = "“${it.review}”",
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .skipToLookaheadSize(),
+                                        style = MaterialTheme.typography.headlineSmall.copy(fontStyle = FontStyle.Italic),
+                                        textAlign = TextAlign.Center,
+                                    )
+                                }
+
+                                Text("- ${it.projectName}")
+                            }
                         }
                     }
                 }
@@ -307,6 +328,20 @@ private fun DetailsPreview() {
                             relatedAlbums = persistentListOf(
                                 historicAlbumPreviewData(slug = "1"),
                                 historicAlbumPreviewData(slug = "2"),
+                            ),
+                            reviewViewState = AlbumDetailsViewModel.AlbumReviewsViewState.Success(
+                                listOf(
+                                    AlbumGroupReviews.GroupReview(
+                                        projectName = "oag_user",
+                                        rating = Rating.Rated(5),
+                                        review = "Some preview review"
+                                    ),
+                                    AlbumGroupReviews.GroupReview(
+                                        projectName = "oag_user1",
+                                        rating = Rating.Rated(2),
+                                        review = "Some bad preview review :("
+                                    ),
+                                )
                             ),
                         ),
                         navigateToDetails = { _, _ -> },

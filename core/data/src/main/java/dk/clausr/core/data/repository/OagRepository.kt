@@ -269,6 +269,7 @@ class OagRepository @Inject constructor(
         albumWithOptionalRatingDao.getSimilarAlbumsWithRatings(artist).map(AlbumWithOptionalRating::mapToHistoricAlbum)
     }
 
+    // TODO Don't expose NetworkError - Maybe just a specialized type for this
     suspend fun getAlbumReviews(albumId: String): Result<AlbumGroupReviews, NetworkError> {
         val groupSlug = project.firstOrNull()?.group?.slug
 
