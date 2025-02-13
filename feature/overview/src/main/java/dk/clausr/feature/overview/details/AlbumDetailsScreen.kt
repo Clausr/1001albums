@@ -4,19 +4,15 @@ import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
@@ -30,11 +26,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
@@ -43,10 +36,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
 import dk.clausr.a1001albumsgenerator.analytics.AnalyticsEvent
+import dk.clausr.a1001albumsgenerator.ui.components.AlbumCover
 import dk.clausr.a1001albumsgenerator.ui.components.LocalNavAnimatedVisibilityScope
 import dk.clausr.a1001albumsgenerator.ui.components.LocalSharedTransitionScope
 import dk.clausr.a1001albumsgenerator.ui.extensions.TrackScreenViewEvent
@@ -60,7 +51,6 @@ import dk.clausr.feature.overview.R
 import dk.clausr.feature.overview.preview.historicAlbumPreviewData
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
-import kotlin.random.Random
 
 @Composable
 fun AlbumDetailsRoute(
@@ -116,36 +106,15 @@ fun AlbumDetailsScreen(
                     .navigationBarsPadding()
                     .padding(paddingValues),
             ) {
-                // TODO Maybe create a common AsyncImage that works in preview.
-                if (LocalInspectionMode.current) {
-                    fun randomColor() = Color(Random.nextInt(0xFF000000.toInt(), 0xFFFFFFFF.toInt()))
-                    Image(
-                        painter = painterResource(dk.clausr.a1001albumsgenerator.ui.R.drawable.album_cover_placeholder),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(randomColor())
-                            .aspectRatio(1f)
-                            .clip(shape = RoundedCornerShape(4.dp)),
-                    )
-                } else {
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(historicAlbum?.album?.imageUrl)
-                            .crossfade(true)
-                            .placeholderMemoryCacheKey(historicAlbum?.album?.slug)
-                            .memoryCacheKey(historicAlbum?.album?.slug)
-                            .build(),
-                        contentDescription = "Album cover",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .sharedElement(
-                                state = rememberSharedContentState(key = "$listName-cover-${historicAlbum?.album?.slug}"),
-                                animatedVisibilityScope = animatedContentScope,
-                            ),
-                        contentScale = ContentScale.FillWidth,
-                    )
-                }
+                AlbumCover(
+                    coverUrl = historicAlbum?.album?.imageUrl,
+                    albumSlug = historicAlbum?.album?.slug,
+                    modifier = Modifier
+                        .sharedElement(
+                            state = rememberSharedContentState(key = "$listName-cover-${historicAlbum?.album?.slug}"),
+                            animatedVisibilityScope = animatedContentScope,
+                        )
+                )
 
                 Text(
                     modifier = Modifier

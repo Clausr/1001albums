@@ -1,6 +1,5 @@
 package dk.clausr.feature.overview
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Star
@@ -25,18 +23,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import dk.clausr.a1001albumsgenerator.analytics.LocalAnalyticsHelper
+import dk.clausr.a1001albumsgenerator.ui.components.AlbumCover
 import dk.clausr.a1001albumsgenerator.ui.extensions.logClickEvent
 import dk.clausr.a1001albumsgenerator.ui.extensions.logRatingGiven
 import dk.clausr.a1001albumsgenerator.ui.helper.displayName
@@ -47,7 +41,7 @@ import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectUrl
 import dk.clausr.core.model.Album
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingService
-import kotlin.random.Random
+import dk.clausr.feature.overview.preview.albumPreviewData
 import dk.clausr.a1001albumsgenerator.ui.R as uiR
 
 // TODO State and album should be together...
@@ -119,26 +113,10 @@ fun BigCurrentAlbum(
             modifier = Modifier.aspectRatio(1f),
             contentAlignment = Alignment.Center,
         ) {
-            // TODO Maybe create a common AsyncImage that works in preview.
-            if (LocalInspectionMode.current) {
-                fun randomColor() = Color(Random.nextInt(0xFF000000.toInt(), 0xFFFFFFFF.toInt()))
-                Image(
-                    painter = painterResource(dk.clausr.a1001albumsgenerator.ui.R.drawable.album_cover_placeholder),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(randomColor())
-                        .aspectRatio(1f)
-                        .clip(shape = RoundedCornerShape(4.dp)),
-                )
-            } else {
-                AsyncImage(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentScale = ContentScale.FillWidth,
-                    model = album.imageUrl,
-                    contentDescription = "Cover",
-                )
-            }
+            AlbumCover(
+                coverUrl = album.imageUrl,
+                albumSlug = album.slug,
+            )
 
             if (newAlbumAvailable) {
                 Column(
@@ -256,7 +234,7 @@ fun BigCurrentAlbum(
 
 @Preview
 @Composable
-private fun CurrentAlbumPreview() {
+private fun NewAlbumAvailablePreview() {
     OagTheme {
         BigCurrentAlbum(
             newAlbumAvailable = true,
@@ -264,26 +242,23 @@ private fun CurrentAlbumPreview() {
             openProject = {},
             openLink = {},
             onRating = {},
-            album = Album(
-                id = "id",
-                artist = "Black Sabbath",
-                artistOrigin = "UK",
-                name = "Paranoid",
-                slug = "paranoid",
-                releaseDate = "1970",
-                globalReviewsUrl = "https://1001albumsgenerator.com/albums/7DBES3oV6jjAmWob7kJg6P/paranoid",
-                wikipediaUrl = "https://en.wikipedia.org/wiki/Paranoid_(album)",
-                spotifyId = "7DBES3oV6jjAmWob7kJg6P",
-                appleMusicId = "785232473",
-                tidalId = 34450059,
-                amazonMusicId = "B073JYN27B",
-                youtubeMusicId = "OLAK5uy_l-gXxtv23EojUteRu5Zq1rKW3InI_bwsU",
-                genres = emptyList(),
-                subGenres = emptyList(),
-                imageUrl = "https://i.scdn.co/image/ab2eae28bb2a55667ee727711aeccc7f37498414",
-                qobuzId = null,
-                deezerId = null,
-            ),
+            album = albumPreviewData("black-sabbath"),
         )
     }
 }
+
+@Preview
+@Composable
+private fun CurrentAlbumPreview() {
+    OagTheme {
+        BigCurrentAlbum(
+            newAlbumAvailable = false,
+            streamingService = StreamingService("id", StreamingPlatform.Spotify),
+            openProject = {},
+            openLink = {},
+            onRating = {},
+            album = albumPreviewData("black-sabbath"),
+        )
+    }
+}
+
