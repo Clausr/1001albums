@@ -69,7 +69,7 @@ fun CoverGrid(
 private fun CoverGridPreview() {
     OagTheme {
         Column(Modifier.fillMaxSize()) {
-            CoverGrid(modifier = Modifier.fillMaxHeight(0.5f))
+            CoverGrid(modifier = Modifier.fillMaxHeight())
         }
     }
 }
