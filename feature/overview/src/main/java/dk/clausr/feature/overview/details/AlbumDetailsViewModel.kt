@@ -5,10 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.clausr.core.common.android.require
-import dk.clausr.core.common.model.doOnFailure
-import dk.clausr.core.common.model.doOnSuccess
+import dk.clausr.core.common.model.Result
 import dk.clausr.core.data.repository.OagRepository
-import dk.clausr.core.model.AlbumGroupReviews
+import dk.clausr.core.model.GroupReview
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.network.NetworkError
@@ -17,12 +16,13 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.time.Instant
 import javax.inject.Inject
@@ -33,13 +33,46 @@ class AlbumDetailsViewModel @Inject constructor(
     private val oagRepository: OagRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-    private val albumId by savedStateHandle.require<String>(OverviewDirections.Args.ALBUM_ID)
     val listName = savedStateHandle.get<String>(OverviewDirections.Args.LIST_NAME)
 
-    // TODO This needs a loading state / error state
-    private val reviews = MutableStateFlow<AlbumGroupReviews?>(null)
+    private val albumId by savedStateHandle.require<String>(OverviewDirections.Args.ALBUM_ID)
+    private var retries = 0
+    private val maxRetries = 5
 
-    private val reviewViewState = MutableStateFlow<AlbumReviewsViewState>(AlbumReviewsViewState.None)
+    private val reviewViewState: StateFlow<AlbumReviewsViewState> = oagRepository.getAlbumReviews2(albumId)
+        .onStart {
+            AlbumReviewsViewState.Loading
+        }
+        .map {
+            when (it) {
+                is Result.Failure -> {
+                    if (it.reason is NetworkError.NoGroup) {
+                        Timber.e(it.reason.cause, "No group")
+                        AlbumReviewsViewState.None
+                    } else {
+                        if (it.reason is NetworkError.TooManyRequests) {
+                            Timber.d("viewModelScope.isActive ${viewModelScope.isActive}")
+                            delay(20.seconds)
+                            if (viewModelScope.isActive && retries <= maxRetries) {
+                                retries += 1
+                                Timber.i("Retrying for reviews: $retries")
+//                                getAlbumReviews()
+                            }
+                        }
+                        AlbumReviewsViewState.Failed(it.reason)
+                    }
+                }
+
+                is Result.Success -> {
+                    AlbumReviewsViewState.Success(it.value)
+                }
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = AlbumReviewsViewState.None,
+        )
 
     val state = combine(
         oagRepository.getHistoricAlbum(albumId),
@@ -71,42 +104,6 @@ class AlbumDetailsViewModel @Inject constructor(
             .toPersistentList()
     }
 
-    init {
-        viewModelScope.launch {
-            getAlbumReviews()
-        }
-    }
-
-    private var retries = 0
-    private val maxRetries = 5
-
-    private suspend fun getAlbumReviews() {
-        Timber.d("viewModelScope.isActive ${viewModelScope.isActive}")
-        reviewViewState.emit(AlbumReviewsViewState.Loading)
-        oagRepository.getAlbumReviews(albumId = albumId)
-            .doOnSuccess {
-                reviewViewState.emit(AlbumReviewsViewState.Success(it.reviews))
-                reviews.emit(it)
-                retries = 0
-            }
-            .doOnFailure {
-                if (it is NetworkError.NoGroup) {
-                    reviewViewState.emit(AlbumReviewsViewState.None)
-                    Timber.e(it.cause, "No group")
-                } else {
-                    reviewViewState.emit(AlbumReviewsViewState.Failed(it))
-                    if (it is NetworkError.TooManyRequests) {
-                        Timber.d("viewModelScope.isActive ${viewModelScope.isActive}")
-                        delay(20.seconds)
-                        if (viewModelScope.isActive && retries <= maxRetries) {
-                            retries += 1
-                            getAlbumReviews()
-                        }
-                    }
-                }
-            }
-    }
-
     data class AlbumDetailsViewState(
         val album: HistoricAlbum? = null,
         val streamingPlatform: StreamingPlatform = StreamingPlatform.Undefined,
@@ -117,7 +114,7 @@ class AlbumDetailsViewModel @Inject constructor(
     sealed interface AlbumReviewsViewState {
         data object Loading : AlbumReviewsViewState
         data object None : AlbumReviewsViewState // Not in a group
-        data class Success(val reviews: List<AlbumGroupReviews.GroupReview>) : AlbumReviewsViewState
+        data class Success(val reviews: List<GroupReview>) : AlbumReviewsViewState
         data class Failed(val error: NetworkError) : AlbumReviewsViewState
     }
 }

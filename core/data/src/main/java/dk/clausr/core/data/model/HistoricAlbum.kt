@@ -3,7 +3,6 @@ package dk.clausr.core.data.model
 import dk.clausr.a1001albumsgenerator.network.model.NetworkHistoricAlbum
 import dk.clausr.core.database.model.AlbumWithOptionalRating
 import dk.clausr.core.database.model.RatingEntity
-import dk.clausr.core.database.model.RatingWithAlbum
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Metadata
 
@@ -27,17 +26,6 @@ fun NetworkHistoricAlbum.toRatingEntity(): RatingEntity = RatingEntity(
     generatedAt = generatedAt,
     globalRating = globalRating,
     isRevealed = isRevealed,
-)
-
-fun RatingWithAlbum.mapToHistoricAlbum(): HistoricAlbum = HistoricAlbum(
-    album = album.asExternalModel(),
-    metadata = Metadata(
-        rating = rating.rating.mapToRating(),
-        review = rating.review,
-        generatedAt = rating.generatedAt,
-        globalRating = rating.globalRating,
-        isRevealed = rating.isRevealed,
-    ),
 )
 
 fun AlbumWithOptionalRating.mapToHistoricAlbum(): HistoricAlbum = HistoricAlbum(

@@ -53,7 +53,7 @@ import dk.clausr.a1001albumsgenerator.ui.components.LocalSharedTransitionScope
 import dk.clausr.a1001albumsgenerator.ui.extensions.TrackScreenViewEvent
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.common.extensions.openLink
-import dk.clausr.core.model.AlbumGroupReviews
+import dk.clausr.core.model.GroupReview
 import dk.clausr.core.model.Rating
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
@@ -281,7 +281,7 @@ fun AlbumDetailsScreen(
                                     )
                                 }
 
-                                Text("- ${it.projectName}")
+                                Text("- ${it.author}")
                             }
                         }
                     }
@@ -331,13 +331,13 @@ private fun DetailsPreview() {
                             ),
                             reviewViewState = AlbumDetailsViewModel.AlbumReviewsViewState.Success(
                                 listOf(
-                                    AlbumGroupReviews.GroupReview(
-                                        projectName = "oag_user",
+                                    GroupReview(
+                                        author = "oag_user",
                                         rating = Rating.Rated(5),
                                         review = "Some preview review"
                                     ),
-                                    AlbumGroupReviews.GroupReview(
-                                        projectName = "oag_user1",
+                                    GroupReview(
+                                        author = "oag_user1",
                                         rating = Rating.Rated(2),
                                         review = "Some bad preview review :("
                                     ),
