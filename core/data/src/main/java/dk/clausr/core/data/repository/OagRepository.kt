@@ -37,10 +37,10 @@ import dk.clausr.core.network.NetworkError
 import dk.clausr.core.ui.CoverData
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -269,38 +269,21 @@ class OagRepository @Inject constructor(
         albumWithOptionalRatingDao.getSimilarAlbumsWithRatings(artist).map(AlbumWithOptionalRating::mapToHistoricAlbum)
     }
 
-    fun getAlbumReviews2(albumId: String): Flow<Result<List<GroupReview>, NetworkError>> {
-        val cachedReviewsFlow: Flow<Result<List<GroupReview>, NetworkError>> =
-            groupReviewDao.getReviewsForFlow(albumId)
-                .map { reviews -> Result.Success(reviews.asExternalModel()) }
+    fun getAlbumReviews(albumId: String): Flow<Result<List<GroupReview>, NetworkError>> = channelFlow {
+        val groupSlug = project.firstOrNull()?.group?.slug ?: return@channelFlow send(Result.Failure(NetworkError.NoGroup))
 
-        val networkReviewsFlow: Flow<Result<List<GroupReview>, NetworkError>> = flow {
-            project.firstOrNull()?.group?.slug?.let { groupSlug ->
-                val result = networkDataSource.getGroupReviewsForAlbum(groupSlug, albumId)
-                    .map { groupReviews ->
-                        groupReviewDao.insert(groupReviews.toEntity(albumId)) // Store in DB
-                        groupReviews.asExternalModel()
-                    }
-                    .doOnFailure {
-                        Timber.e(it.cause, "Could not get reviews for $albumId")
-                        emit(Result.Failure(NetworkError.Generic(it.cause))) // Emit error
-                    }
-                emit(result)
-            } ?: emit(Result.Failure(NetworkError.NoGroup))
-        }
+        // Emit dao results
+        val cachedReviewsFlow = groupReviewDao.getReviewsFor(albumId).asExternalModel()
+        send(Result.Success(cachedReviewsFlow))
 
-        val canBeResult = combine(cachedReviewsFlow, networkReviewsFlow) { cache, network ->
-//            network ?: cache
-            cache ?: network
-        }
-        return canBeResult
-//        return cachedReviewsFlow
-//        return cachedReviewsFlow
-//            .combine(networkReviewsFlow) { cachedResult, networkResult ->
-//                when {
-//                    networkResult is Result.Success -> networkResult // Show network result if success
-//                    else -> cachedResult // Fall back to cached result
-//                }
-//            }
+        networkDataSource.getGroupReviewsForAlbum(groupSlug, albumId)
+            .doOnSuccess {
+                val groupReviewEntities = it.toEntity(albumId)
+                groupReviewDao.insert(groupReviewEntities)
+                send(Result.Success(groupReviewEntities.asExternalModel()))
+            }
+            .doOnFailure {
+                send(Result.Failure(it))
+            }
     }
 }

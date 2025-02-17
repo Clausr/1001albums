@@ -39,7 +39,7 @@ class AlbumDetailsViewModel @Inject constructor(
     private var retries = 0
     private val maxRetries = 5
 
-    private val reviewViewState: StateFlow<AlbumReviewsViewState> = oagRepository.getAlbumReviews2(albumId)
+    private val reviewViewState: StateFlow<AlbumReviewsViewState> = oagRepository.getAlbumReviews(albumId)
         .onStart {
             AlbumReviewsViewState.Loading
         }
