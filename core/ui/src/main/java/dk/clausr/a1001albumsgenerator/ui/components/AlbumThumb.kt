@@ -1,11 +1,8 @@
 package dk.clausr.a1001albumsgenerator.ui.components
 
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,22 +19,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
 import dk.clausr.a1001albumsgenerator.ui.preview.PreviewSharedTransitionLayout
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.model.HistoricAlbum
-import kotlin.random.Random
-import dk.clausr.a1001albumsgenerator.ui.R as uiR
 
 @Composable
 fun AlbumThumb(
@@ -72,38 +60,14 @@ fun AlbumThumb(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.BottomEnd,
                 ) {
-                    if (LocalInspectionMode.current) {
-                        fun randomColor() = Color(Random.nextInt(0xFF000000.toInt(), 0xFFFFFFFF.toInt()))
-                        Image(
-                            painter = painterResource(uiR.drawable.album_cover_placeholder),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(randomColor())
-                                .aspectRatio(1f)
-                                .clip(shape = RoundedCornerShape(4.dp)),
+                    AlbumCover(
+                        coverUrl = coverUrl,
+                        albumSlug = albumSlug,
+                        modifier = Modifier.sharedElement(
+                            state = rememberSharedContentState(key = "$listName-cover-$albumSlug"),
+                            animatedVisibilityScope = animatedContentScope,
                         )
-                    } else {
-                        AsyncImage(
-                            model = ImageRequest
-                                .Builder(LocalContext.current)
-                                .data(coverUrl)
-                                .crossfade(true)
-                                .placeholderMemoryCacheKey(albumSlug)
-                                .memoryCacheKey(albumSlug)
-                                .build(),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .aspectRatio(1f)
-                                .sharedElement(
-                                    state = rememberSharedContentState(key = "$listName-cover-$albumSlug"),
-                                    animatedVisibilityScope = animatedContentScope,
-                                )
-                                .clip(shape = RoundedCornerShape(4.dp)),
-                            contentScale = ContentScale.FillWidth,
-                        )
-                    }
+                    )
 
                     onClickPlay?.let { onClickPlay ->
                         FilledTonalIconButton(

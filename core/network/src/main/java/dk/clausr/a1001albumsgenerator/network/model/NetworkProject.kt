@@ -13,7 +13,7 @@ data class NetworkProject(
     val history: List<NetworkHistoricAlbum>,
     internal val updateFrequency: NetworkUpdateFrequency,
     val shareableUrl: String,
-    val group: NetworkGroup?,
+    val group: NetworkGroup? = null,
 ) {
     // Groups updateFrequency overrides the individual
     val frequency: NetworkUpdateFrequency
