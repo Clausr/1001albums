@@ -38,7 +38,7 @@ ksp = "2.1.10-1.0.30"
 room = "2.6.1"
 coreSplashscreen = "1.0.1"
 detektComposeRulesPluginVersion = "0.4.22"
-detektPluginVersion = "1.23.7"
+detektPluginVersion = "1.23.8"
 firebaseCrashlyticsPlugin = "3.0.3"
 
 [libraries]
