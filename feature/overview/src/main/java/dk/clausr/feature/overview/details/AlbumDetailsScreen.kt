@@ -7,13 +7,14 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.CircularProgressIndicator
@@ -101,170 +102,180 @@ fun AlbumDetailsScreen(
             containerColor = MaterialTheme.colorScheme.background,
         ) { paddingValues ->
 
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
                     .navigationBarsPadding()
                     .padding(paddingValues),
             ) {
-                AlbumCover(
-                    coverUrl = historicAlbum?.album?.imageUrl,
-                    albumSlug = historicAlbum?.album?.slug,
-                    modifier = Modifier
-                        .sharedElement(
-                            state = rememberSharedContentState(key = "$listName-cover-${historicAlbum?.album?.slug}"),
-                            animatedVisibilityScope = animatedContentScope,
+                item {
+                    AlbumCover(
+                        coverUrl = historicAlbum?.album?.imageUrl,
+                        albumSlug = historicAlbum?.album?.slug,
+                        modifier = Modifier
+                            .sharedElement(
+                                state = rememberSharedContentState(key = "$listName-cover-${historicAlbum?.album?.slug}"),
+                                animatedVisibilityScope = animatedContentScope,
+                            )
+                    )
+                }
+
+                item {
+                    Column {
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp)
+                                .sharedBounds(
+                                    sharedContentState = rememberSharedContentState(key = "$listName-title-${historicAlbum?.album?.slug}"),
+                                    animatedVisibilityScope = animatedContentScope,
+                                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(
+                                        contentScale = ContentScale.FillWidth,
+                                        alignment = Alignment.CenterStart,
+                                    ),
+                                ),
+                            text = historicAlbum?.album?.name.orEmpty(),
+                            style = MaterialTheme.typography.headlineMedium,
+                            textAlign = TextAlign.Center,
                         )
-                )
 
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp)
-                        .sharedBounds(
-                            sharedContentState = rememberSharedContentState(key = "$listName-title-${historicAlbum?.album?.slug}"),
-                            animatedVisibilityScope = animatedContentScope,
-                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(
-                                contentScale = ContentScale.FillWidth,
-                                alignment = Alignment.CenterStart,
-                            ),
-                        ),
-                    text = historicAlbum?.album?.name.orEmpty(),
-                    style = MaterialTheme.typography.headlineMedium,
-                    textAlign = TextAlign.Center,
-                )
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .sharedBounds(
+                                    sharedContentState = rememberSharedContentState(key = "$listName-artist-${historicAlbum?.album?.slug}"),
+                                    animatedVisibilityScope = animatedContentScope,
+                                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(
+                                        contentScale = ContentScale.FillWidth,
+                                        alignment = Alignment.CenterStart,
+                                    ),
+                                ),
+                            text = historicAlbum?.album?.artist.orEmpty(),
+                            style = MaterialTheme.typography.titleLarge,
+                            textAlign = TextAlign.Center,
+                        )
 
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .sharedBounds(
-                            sharedContentState = rememberSharedContentState(key = "$listName-artist-${historicAlbum?.album?.slug}"),
-                            animatedVisibilityScope = animatedContentScope,
-                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(
-                                contentScale = ContentScale.FillWidth,
-                                alignment = Alignment.CenterStart,
-                            ),
-                        ),
-                    text = historicAlbum?.album?.artist.orEmpty(),
-                    style = MaterialTheme.typography.titleLarge,
-                    textAlign = TextAlign.Center,
-                )
-
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp)
-                        .sharedBounds(
-                            sharedContentState = rememberSharedContentState(key = "$listName-date-${historicAlbum?.album?.slug}"),
-                            animatedVisibilityScope = animatedContentScope,
-                        ),
-                    text = historicAlbum?.album?.releaseDate.orEmpty(),
-                    textAlign = TextAlign.Center,
-                )
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp)
+                                .sharedBounds(
+                                    sharedContentState = rememberSharedContentState(key = "$listName-date-${historicAlbum?.album?.slug}"),
+                                    animatedVisibilityScope = animatedContentScope,
+                                ),
+                            text = historicAlbum?.album?.releaseDate.orEmpty(),
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                }
 
                 if (historicAlbum?.album != null) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .sharedBounds(
-                                sharedContentState = rememberSharedContentState(key = "$listName-play-${historicAlbum.album.slug}"),
-                                animatedVisibilityScope = animatedContentScope,
-                                resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(),
-                            ),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.CenterHorizontally),
-                    ) {
-                        StreamingServices.from(historicAlbum.album)
-                            .getStreamingLinkFor(state.streamingPlatform)
-                            ?.let { streamingLink ->
-                                FilledTonalButton(
-                                    modifier = Modifier,
-                                    onClick = {
-                                        context.openLink(streamingLink)
-                                    },
-                                ) {
-                                    Icon(
-                                        modifier = Modifier.padding(end = 8.dp),
-                                        imageVector = Icons.Default.PlayArrow,
-                                        contentDescription = "Play",
-                                    )
-                                    Text(text = stringResource(R.string.play_button_title))
-                                }
-                            }
-
-                        FilledTonalButton(
-                            onClick = {
-                                context.openLink(historicAlbum.album.wikipediaUrl)
-                            },
+                    item {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .sharedBounds(
+                                    sharedContentState = rememberSharedContentState(key = "$listName-play-${historicAlbum.album.slug}"),
+                                    animatedVisibilityScope = animatedContentScope,
+                                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(),
+                                ),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.CenterHorizontally),
                         ) {
-                            Icon(
-                                modifier = Modifier.padding(end = 8.dp),
-                                painter = painterResource(id = dk.clausr.a1001albumsgenerator.ui.R.drawable.ic_wiki),
-                                contentDescription = "Wikipedia",
-                            )
-                            Text(text = stringResource(R.string.wikipedia_button_title))
+                            StreamingServices.from(historicAlbum.album)
+                                .getStreamingLinkFor(state.streamingPlatform)
+                                ?.let { streamingLink ->
+                                    FilledTonalButton(
+                                        modifier = Modifier,
+                                        onClick = {
+                                            context.openLink(streamingLink)
+                                        },
+                                    ) {
+                                        Icon(
+                                            modifier = Modifier.padding(end = 8.dp),
+                                            imageVector = Icons.Default.PlayArrow,
+                                            contentDescription = "Play",
+                                        )
+                                        Text(text = stringResource(R.string.play_button_title))
+                                    }
+                                }
+
+                            FilledTonalButton(
+                                onClick = {
+                                    context.openLink(historicAlbum.album.wikipediaUrl)
+                                },
+                            ) {
+                                Icon(
+                                    modifier = Modifier.padding(end = 8.dp),
+                                    painter = painterResource(id = dk.clausr.a1001albumsgenerator.ui.R.drawable.ic_wiki),
+                                    contentDescription = "Wikipedia",
+                                )
+                                Text(text = stringResource(R.string.wikipedia_button_title))
+                            }
                         }
                     }
                 }
 
-                when (val reviewState = state.reviewViewState) {
-                    is AlbumDetailsViewModel.AlbumReviewsViewState.Failed -> {
-                        Text(
-                            "Woopsie doopsie daisy..\n${reviewState.error.cause}",
-                            color = MaterialTheme.colorScheme.error
-                        )
-                    }
+                item {
+                    Column(
+                        modifier = Modifier.padding(
+                            vertical = 8.dp,
+                            horizontal = 16.dp,
+                        ),
+                    ) {
+                        when (val reviewState = state.reviewViewState) {
+                            is AlbumDetailsViewModel.AlbumReviewsViewState.Failed -> {
 
-                    AlbumDetailsViewModel.AlbumReviewsViewState.Loading -> {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            CircularProgressIndicator()
-                        }
-                    }
-
-                    AlbumDetailsViewModel.AlbumReviewsViewState.None -> Unit
-                    is AlbumDetailsViewModel.AlbumReviewsViewState.Success -> {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.padding(horizontal = 16.dp)
-                        ) {
-                            // TODO REDESIGN PLEASE
-                            reviewState.reviews.forEach {
                                 Text(
-                                    modifier = Modifier.padding(end = 8.dp),
-                                    text = it.rating?.ratingText(context).orEmpty(),
-                                    textAlign = TextAlign.Center,
-                                    style = MaterialTheme.typography.displaySmall,
+                                    "Woopsie doopsie daisy..\n${reviewState.error.cause}",
+                                    color = MaterialTheme.colorScheme.error
                                 )
+                            }
 
-                                if (it.review?.isNotBlank() == true) {
-                                    Text(
-                                        text = "“${it.review}”",
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .skipToLookaheadSize(),
-                                        style = MaterialTheme.typography.headlineSmall.copy(fontStyle = FontStyle.Italic),
-                                        textAlign = TextAlign.Center,
-                                    )
+                            AlbumDetailsViewModel.AlbumReviewsViewState.Loading -> {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    CircularProgressIndicator()
                                 }
+                            }
 
-                                Text("- ${it.author}")
+                            AlbumDetailsViewModel.AlbumReviewsViewState.None -> Unit
+                            is AlbumDetailsViewModel.AlbumReviewsViewState.Success -> {
+                                reviewState.reviews.forEachIndexed { index, review ->
+                                    Text(
+                                        text = "${review.author} ${review.rating?.ratingText(context).orEmpty()}",
+                                        style = MaterialTheme.typography.labelLarge,
+                                    )
+                                    if (review.review?.isNotBlank() == true) {
+                                        Text(
+                                            text = "${review.review}",
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .skipToLookaheadSize(),
+                                            style = MaterialTheme.typography.bodyLarge.copy(fontStyle = FontStyle.Italic),
+                                        )
+                                    }
+                                    if (index < reviewState.reviews.size) {
+                                        Spacer(Modifier.height(8.dp))
+                                    }
+                                }
                             }
                         }
                     }
                 }
 
                 if (state.relatedAlbums.isNotEmpty()) {
-                    AlbumRow(
-                        title = stringResource(R.string.related_albums_title),
-                        albums = state.relatedAlbums,
-                        onClickAlbum = navigateToDetails,
-                        streamingPlatform = state.streamingPlatform,
-                        tertiaryTextTransform = { "${it.metadata?.rating?.ratingText(context)}\n${it.album.releaseDate}" },
-                        onClickPlay = { context.openLink(it) },
-                    )
+                    item {
+                        AlbumRow(
+                            title = stringResource(R.string.related_albums_title),
+                            albums = state.relatedAlbums,
+                            onClickAlbum = navigateToDetails,
+                            streamingPlatform = state.streamingPlatform,
+                            tertiaryTextTransform = { "${it.metadata?.rating?.ratingText(context)}\n${it.album.releaseDate}" },
+                            onClickPlay = { context.openLink(it) },
+                        )
+                    }
                 }
             }
         }
@@ -274,7 +285,7 @@ fun AlbumDetailsScreen(
 private fun Rating?.ratingText(context: Context): String {
     return when (this) {
         Rating.DidNotListen -> context.getString(R.string.rating_did_not_listen)
-        is Rating.Rated -> context.getString(R.string.rating_text_rated, rating)
+        is Rating.Rated -> List(size = rating) { "⭐" }.joinToString("")
         Rating.Unrated -> context.getString(R.string.rating_text_unrated)
         else -> ""
     }

@@ -2,6 +2,7 @@ package dk.clausr.core.data.repository
 
 import androidx.datastore.core.DataStore
 import dk.clausr.a1001albumsgenerator.network.OAGDataSource
+import dk.clausr.a1001albumsgenerator.network.model.NetworkAlbumGroupReviews
 import dk.clausr.a1001albumsgenerator.network.model.NetworkProject
 import dk.clausr.core.common.model.Result
 import dk.clausr.core.common.model.doOnFailure
@@ -24,6 +25,7 @@ import dk.clausr.core.database.dao.RatingDao
 import dk.clausr.core.database.model.AlbumEntity
 import dk.clausr.core.database.model.AlbumImageEntity
 import dk.clausr.core.database.model.AlbumWithOptionalRating
+import dk.clausr.core.database.model.GroupReviewEntity
 import dk.clausr.core.database.model.RatingEntity
 import dk.clausr.core.model.Album
 import dk.clausr.core.model.AlbumWidgetData
@@ -37,7 +39,6 @@ import dk.clausr.core.network.NetworkError
 import dk.clausr.core.ui.CoverData
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
@@ -61,13 +62,13 @@ class OagRepository @Inject constructor(
     private val albumWithOptionalRatingDao: AlbumWithOptionalRatingDao,
     private val groupReviewDao: GroupReviewDao,
 ) {
-    val widgetState = widgetDataStore.data
-
     private val userData = userDataRepository.userData
 
-    val projectId: Flow<String?> = userData.map {
-        it.projectId
-    }.distinctUntilChanged()
+    val widgetState = widgetDataStore.data
+
+    val albumCovers: Flow<CoverData> = albumImageDao.getAlbumCovers().map {
+        CoverData.createCoverDataOrDefault(externalList = it)
+    }
 
     val preferredStreamingPlatform: Flow<StreamingPlatform> = widgetDataStore.data.map {
         when (it) {
@@ -94,6 +95,9 @@ class OagRepository @Inject constructor(
             .distinctUntilChanged()
 
     val project: Flow<Project?> = projectDao.getProject().map { it?.asExternalModel() }
+    val projectId: Flow<String?> = userData.map {
+        it.projectId
+    }.distinctUntilChanged()
 
     val currentAlbum = combine(
         historicAlbums,
@@ -257,10 +261,6 @@ class OagRepository @Inject constructor(
         return getAndUpdateProject(projectId)
     }
 
-    val albumCovers: Flow<CoverData> = albumImageDao.getAlbumCovers().map {
-        CoverData.createCoverDataOrDefault(externalList = it)
-    }
-
     fun getHistoricAlbum(id: String): Flow<HistoricAlbum> = albumWithOptionalRatingDao
         .getAlbumByIdFlow(id)
         .map(AlbumWithOptionalRating::mapToHistoricAlbum)
@@ -269,21 +269,31 @@ class OagRepository @Inject constructor(
         albumWithOptionalRatingDao.getSimilarAlbumsWithRatings(artist).map(AlbumWithOptionalRating::mapToHistoricAlbum)
     }
 
-    fun getAlbumReviews(albumId: String): Flow<Result<List<GroupReview>, NetworkError>> = channelFlow {
-        val groupSlug = project.firstOrNull()?.group?.slug ?: return@channelFlow send(Result.Failure(NetworkError.NoGroup))
+    // Get album reviews and insert into database
+    suspend fun getAlbumReviews(albumId: String): Result<List<GroupReview>, NetworkError> {
+        val groupSlug = project.firstOrNull()?.group?.slug
 
-        // Emit dao results
-        val cachedReviewsFlow = groupReviewDao.getReviewsFor(albumId).asExternalModel()
-        send(Result.Success(cachedReviewsFlow))
-
-        networkDataSource.getGroupReviewsForAlbum(groupSlug, albumId)
-            .doOnSuccess {
-                val groupReviewEntities = it.toEntity(albumId)
-                groupReviewDao.insert(groupReviewEntities)
-                send(Result.Success(groupReviewEntities.asExternalModel()))
-            }
-            .doOnFailure {
-                send(Result.Failure(it))
-            }
+        return if (groupSlug == null) {
+            val historicAlbum = getHistoricAlbum(albumId).firstOrNull()
+            Result.Success(
+                listOf(
+                    GroupReview(
+                        author = project.firstOrNull()?.name.orEmpty(),
+                        rating = historicAlbum?.metadata?.rating,
+                        review = historicAlbum?.metadata?.review
+                    )
+                )
+            )
+        } else {
+            networkDataSource.getGroupReviewsForAlbum(groupSlug, albumId)
+                .doOnSuccess {
+                    val groupReviewEntities = it.toEntity(albumId)
+                    groupReviewDao.insert(groupReviewEntities)
+                }
+                .map(NetworkAlbumGroupReviews::asExternalModel)
+        }
     }
+
+    fun getReviewsFromDatabase(id: String): Flow<List<GroupReview>> = groupReviewDao.getReviewsForFlow(id)
+        .map(List<GroupReviewEntity>::asExternalModel)
 }

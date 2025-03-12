@@ -5,7 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.clausr.core.common.android.require
-import dk.clausr.core.common.model.Result
+import dk.clausr.core.common.model.doOnFailure
+import dk.clausr.core.common.model.doOnSuccess
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.model.GroupReview
 import dk.clausr.core.model.HistoricAlbum
@@ -16,14 +17,12 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.isActive
-import timber.log.Timber
+import kotlinx.coroutines.launch
 import java.time.Instant
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
@@ -39,45 +38,71 @@ class AlbumDetailsViewModel @Inject constructor(
     private var retries = 0
     private val maxRetries = 5
 
-    private val reviewViewState: StateFlow<AlbumReviewsViewState> = oagRepository.getAlbumReviews(albumId)
-        .onStart {
-            AlbumReviewsViewState.Loading
-        }
-        .map {
-            when (it) {
-                is Result.Failure -> {
-                    if (it.reason is NetworkError.NoGroup) {
-                        Timber.e(it.reason.cause, "No group")
-                        AlbumReviewsViewState.None
-                    } else {
-                        if (it.reason is NetworkError.TooManyRequests) {
-                            Timber.d("viewModelScope.isActive ${viewModelScope.isActive}")
-                            delay(20.seconds)
-                            if (viewModelScope.isActive && retries <= maxRetries) {
-                                retries += 1
-                                Timber.i("Retrying for reviews: $retries")
-//                                getAlbumReviews()
-                            }
-                        }
-                        AlbumReviewsViewState.Failed(it.reason)
-                    }
+    private val isError: MutableStateFlow<NetworkError?> = MutableStateFlow(null)
+    private val isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
+
+    private val _reviewState: MutableStateFlow<AlbumReviewsViewState> = MutableStateFlow(AlbumReviewsViewState.None)
+    private val reviewState: Flow<AlbumReviewsViewState> = _reviewState
+
+    private suspend fun getAlbumReviewsFromNetwork() {
+        isLoading.emit(true)
+        oagRepository.getAlbumReviews(albumId)
+            .doOnSuccess {
+                isError.emit(null)
+                isLoading.emit(false)
+
+                _reviewState.emit(AlbumReviewsViewState.Success(it))
+            }
+            .doOnFailure {
+                if (it is NetworkError.NoGroup) {
+
+                    isError.emit(null)
+                    isLoading.emit(false)
+                    _reviewState.emit(AlbumReviewsViewState.None)
+                    return
+                }
+                // Don't override cached response with an error
+                if (_reviewState.value !is AlbumReviewsViewState.Success) {
+                    isError.emit(it)
+                    _reviewState.emit(AlbumReviewsViewState.Failed(it))
                 }
 
-                is Result.Success -> {
-                    AlbumReviewsViewState.Success(it.value)
+                if (it is NetworkError.TooManyRequests && maxRetries < retries) {
+                    delay(20.seconds)
+                    retries++
+                    getAlbumReviewsFromNetwork()
+                } else {
+                    isLoading.emit(false)
                 }
             }
+    }
+
+    init {
+        // Query backend
+        viewModelScope.launch {
+            getAlbumReviewsFromNetwork()
         }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = AlbumReviewsViewState.None,
-        )
+
+        // Listen for DAO changes...
+        viewModelScope.launch {
+            oagRepository.getReviewsFromDatabase(albumId)
+                .collect {
+                    _reviewState.emit(
+                        if (it.isEmpty()) {
+                            AlbumReviewsViewState.None
+                        } else {
+                            AlbumReviewsViewState.Success(it)
+                        }
+                    )
+                }
+        }
+    }
+
 
     val state = combine(
         oagRepository.getHistoricAlbum(albumId),
         oagRepository.preferredStreamingPlatform,
-        reviewViewState,
+        reviewState,
     ) { historicAlbum, streaming, reviewState ->
         AlbumDetailsViewState(
             album = historicAlbum,
