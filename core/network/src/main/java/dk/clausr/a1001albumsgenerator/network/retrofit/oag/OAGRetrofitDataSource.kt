@@ -1,6 +1,7 @@
 package dk.clausr.a1001albumsgenerator.network.retrofit.oag
 
 import dk.clausr.a1001albumsgenerator.network.OAGDataSource
+import dk.clausr.a1001albumsgenerator.network.model.NetworkAlbumGroupReviews
 import dk.clausr.a1001albumsgenerator.network.model.NetworkProject
 import dk.clausr.a1001albumsgenerator.utils.doNetwork
 import dk.clausr.core.common.model.Result
@@ -15,5 +16,12 @@ class OAGRetrofitDataSource @Inject constructor(
 
     override suspend fun getProject(projectId: String): Result<NetworkProject, NetworkError> = doNetwork {
         api.getProject(projectId)
+    }
+
+    override suspend fun getGroupReviewsForAlbum(
+        groupSlug: String,
+        albumId: String,
+    ): Result<NetworkAlbumGroupReviews, NetworkError> = doNetwork {
+        api.getGroupReviewsForAlbum(groupSlug, albumId)
     }
 }

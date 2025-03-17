@@ -68,6 +68,16 @@ interface AlbumWithOptionalRatingDao {
 
     @Query(
         """
+        SELECT *
+        FROM albums
+        LEFT JOIN ratings ON albums.slug = ratings.albumSlug
+        WHERE id = (:id)
+        """,
+    )
+    fun getAlbumByIdFlow(id: String): Flow<AlbumWithOptionalRating>
+
+    @Query(
+        """
         SELECT * 
         FROM albums
         LEFT JOIN ratings ON albums.slug = ratings.albumSlug

@@ -258,5 +258,10 @@
     }
   ],
   "updateFrequency": "dailyWithWeekends",
-  "name": "oag_user"
+  "name": "oag_user",
+  "group": {
+    "slug": "oag_group",
+    "paused": false,
+    "updateFrequency": "dailyWithWeekends"
+  }
 }

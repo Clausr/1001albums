@@ -35,4 +35,7 @@ object DaosModule {
 
     @Provides
     fun providesAlbumWithOptionalRating(database: OagDatabase): AlbumWithOptionalRatingDao = database.albumWithOptionalRatingDao()
+
+    @Provides
+    fun providesGroupReviewDao(database: OagDatabase) = database.groupReviewDao()
 }

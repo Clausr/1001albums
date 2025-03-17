@@ -1,0 +1,21 @@
+{
+  "albumName": "Black Sabbath",
+  "albumArtist": "Black Sabbath",
+  "reviews": [
+    {
+      "projectName": "oag_user",
+      "rating": 5,
+      "review": "Stadugvæk en sindssyg debut plade."
+    },
+    {
+      "projectName": "oag_user1",
+      "rating": 5,
+      "review": "Kæft det her er fed. Sindssyge riffs, \"onde\" sange men også bare sådan lidt bøvede på den helt fede måde, ikke rigtig så mange Black Sabbath sange jeg kendte på papiret før jeg hørte den men det er bare wall of bangers"
+    },
+    {
+      "projectName": "oag_user2",
+      "rating": 4,
+      "review": "\\m/ jeg elsker at der var saxofon på Evil Woman"
+    }
+  ]
+}
