@@ -25,7 +25,6 @@ import dk.clausr.core.database.dao.RatingDao
 import dk.clausr.core.database.model.AlbumEntity
 import dk.clausr.core.database.model.AlbumImageEntity
 import dk.clausr.core.database.model.AlbumWithOptionalRating
-import dk.clausr.core.database.model.GroupReviewEntity
 import dk.clausr.core.database.model.RatingEntity
 import dk.clausr.core.model.Album
 import dk.clausr.core.model.AlbumWidgetData
@@ -121,6 +120,7 @@ class OagRepository @Inject constructor(
                         (oldData as? SerializedWidgetState.Success)?.data?.preferredStreamingPlatform ?: StreamingPlatform.Undefined
                     SerializedWidgetState.Loading(projectId, oldPreferredStreamingPlatform)
                 }
+
                 projectDao.clearTable()
                 albumDao.clearTable()
                 ratingDao.clearTable()
@@ -285,6 +285,14 @@ class OagRepository @Inject constructor(
                 )
             )
         } else {
+            /**
+             * TODO Get review from database here
+             * We know we're in a group, so look for data in:
+             * 1. The reviews database
+             * 2. Query backend
+             * 3. notifications?
+             */
+
             networkDataSource.getGroupReviewsForAlbum(groupSlug, albumId)
                 .doOnSuccess {
                     val groupReviewEntities = it.toEntity(albumId)
@@ -293,7 +301,4 @@ class OagRepository @Inject constructor(
                 .map(NetworkAlbumGroupReviews::asExternalModel)
         }
     }
-
-    fun getReviewsFromDatabase(id: String): Flow<List<GroupReview>> = groupReviewDao.getReviewsForFlow(id)
-        .map(List<GroupReviewEntity>::asExternalModel)
 }

@@ -224,7 +224,6 @@ fun AlbumDetailsScreen(
                     ) {
                         when (val reviewState = state.reviewViewState) {
                             is AlbumDetailsViewModel.AlbumReviewsViewState.Failed -> {
-
                                 Text(
                                     "Woopsie doopsie daisy..\n${reviewState.error.cause}",
                                     color = MaterialTheme.colorScheme.error

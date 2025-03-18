@@ -20,7 +20,5 @@ class UserRepository @Inject constructor(
 
     suspend fun setOnboardingCompleted() = preferenceDataStore.setHasOnboarded(true)
 
-    suspend fun setGroupName(groupSlug: String?) = preferenceDataStore.setGroupSlug(groupSlug)
-
     suspend fun setProjectId(id: String) = preferenceDataStore.setProjectId(id)
 }

@@ -14,6 +14,9 @@ interface ProjectDao {
     @Query(value = "SELECT * FROM project")
     fun getProject(): Flow<ProjectEntity?>
 
+    @Query(value = "SELECT groupSlug FROM project")
+    suspend fun getGroupId(): String?
+
     @Query(value = "SELECT currentAlbumSlug FROM project LIMIT 1")
     suspend fun getCurrentAlbumSlug(): String?
 
