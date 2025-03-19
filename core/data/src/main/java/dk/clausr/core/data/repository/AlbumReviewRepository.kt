@@ -4,11 +4,11 @@ import dk.clausr.a1001albumsgenerator.network.OAGDataSource
 import dk.clausr.core.common.model.Result
 import dk.clausr.core.common.network.Dispatcher
 import dk.clausr.core.common.network.OagDispatchers
+import dk.clausr.core.data.model.ReviewData
 import dk.clausr.core.data.model.asExternalModel
 import dk.clausr.core.data.model.toEntity
 import dk.clausr.core.database.dao.GroupReviewDao
 import dk.clausr.core.database.dao.ProjectDao
-import dk.clausr.core.model.GroupReview
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -25,25 +25,39 @@ class AlbumReviewRepository @Inject constructor(
     private val groupReviewDao: GroupReviewDao,
     private val projectDao: ProjectDao,
 ) {
-
-    fun getGroupReviews(albumId: String): Flow<List<GroupReview>> {
+    fun getGroupReviews(albumId: String): Flow<ReviewData> {
         return flow {
             val groupId = projectDao.getGroupId()
 
             val localReviews = groupReviewDao.getReviewsFor(albumId).map {
                 it.asExternalModel()
             }
-            emit(localReviews)
 
-            if (groupId != null) {
+            emit(
+                ReviewData(
+                    reviews = localReviews,
+                    isLoading = localReviews.isEmpty(),
+                )
+            )
+
+            val networkReviews = if (groupId != null) {
                 val networkResponse = retryNetworkCall {
                     networkDataSource.getGroupReviewsForAlbum(groupId, albumId)
                 }
 
                 groupReviewDao.insert(networkResponse.toEntity(albumId))
 
-                emit(networkResponse.asExternalModel())
+                networkResponse.asExternalModel()
+            } else {
+                emptyList()
             }
+
+            emit(
+                ReviewData(
+                    reviews = networkReviews,
+                    isLoading = false
+                )
+            )
         }.flowOn(ioDispatcher)
     }
 

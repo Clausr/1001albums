@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import java.time.Instant
 import javax.inject.Inject
@@ -34,12 +33,13 @@ class AlbumDetailsViewModel @Inject constructor(
     private val albumId by savedStateHandle.require<String>(OverviewDirections.Args.ALBUM_ID)
 
     private val reviewState = albumReviewRepository.getGroupReviews(albumId)
-        .onStart { AlbumReviewsViewState.Loading }
         .map {
-            if (it.isEmpty()) {
+            if (it.isLoading) {
+                AlbumReviewsViewState.Loading
+            } else if (it.reviews.isEmpty()) {
                 AlbumReviewsViewState.None
             } else {
-                AlbumReviewsViewState.Success(it)
+                AlbumReviewsViewState.Success(it.reviews)
             }
         }
         .catch {
