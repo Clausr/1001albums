@@ -19,7 +19,6 @@ import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.database.dao.AlbumDao
 import dk.clausr.core.database.dao.AlbumImageDao
 import dk.clausr.core.database.dao.AlbumWithOptionalRatingDao
-import dk.clausr.core.database.dao.GroupReviewDao
 import dk.clausr.core.database.dao.ProjectDao
 import dk.clausr.core.database.dao.RatingDao
 import dk.clausr.core.database.model.AlbumEntity
@@ -59,10 +58,7 @@ class OagRepository @Inject constructor(
     private val ratingDao: RatingDao,
     private val albumImageDao: AlbumImageDao,
     private val albumWithOptionalRatingDao: AlbumWithOptionalRatingDao,
-    private val groupReviewDao: GroupReviewDao,
 ) {
-    private val userData = userDataRepository.userData
-
     val widgetState = widgetDataStore.data
 
     val albumCovers: Flow<CoverData> = albumImageDao.getAlbumCovers().map {
@@ -94,8 +90,14 @@ class OagRepository @Inject constructor(
             .distinctUntilChanged()
 
     val project: Flow<Project?> = projectDao.getProject().map { it?.asExternalModel() }
-    val projectId: Flow<String?> = userData.map {
-        it.projectId
+    val projectId: Flow<String?> = combine(project, userDataRepository.userData) { project, userData ->
+        // Migrate projectId to DataStore
+        if (userData.projectId == null && project?.name != null) {
+            userDataRepository.setProjectId(project.name)
+            project.name
+        } else {
+            userData.projectId
+        }
     }.distinctUntilChanged()
 
     val currentAlbum = combine(
@@ -112,7 +114,6 @@ class OagRepository @Inject constructor(
 
     suspend fun setProject(projectId: String): Result<Project, NetworkError> {
         Timber.d("Set new project $projectId")
-
         return networkDataSource.getProject(projectId)
             .doOnSuccess { networkProject ->
                 widgetDataStore.updateData { oldData ->
@@ -293,12 +294,10 @@ class OagRepository @Inject constructor(
              * 3. notifications?
              */
 
-            networkDataSource.getGroupReviewsForAlbum(groupSlug, albumId)
-                .doOnSuccess {
-                    val groupReviewEntities = it.toEntity(albumId)
-                    groupReviewDao.insert(groupReviewEntities)
-                }
-                .map(NetworkAlbumGroupReviews::asExternalModel)
+            networkDataSource.getGroupReviewsForAlbum(
+                groupSlug = groupSlug,
+                albumId = albumId
+            ).map(NetworkAlbumGroupReviews::asExternalModel)
         }
     }
 }

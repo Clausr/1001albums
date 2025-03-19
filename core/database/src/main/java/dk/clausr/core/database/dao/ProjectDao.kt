@@ -17,6 +17,9 @@ interface ProjectDao {
     @Query(value = "SELECT groupSlug FROM project")
     suspend fun getGroupId(): String?
 
+    @Query(value = "SELECT name FROM project")
+    suspend fun getProjectId(): String?
+
     @Query(value = "SELECT currentAlbumSlug FROM project LIMIT 1")
     suspend fun getCurrentAlbumSlug(): String?
 

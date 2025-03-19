@@ -6,9 +6,12 @@ import dk.clausr.core.common.network.Dispatcher
 import dk.clausr.core.common.network.OagDispatchers
 import dk.clausr.core.data.model.ReviewData
 import dk.clausr.core.data.model.asExternalModel
+import dk.clausr.core.data.model.mapToHistoricAlbum
 import dk.clausr.core.data.model.toEntity
+import dk.clausr.core.database.dao.AlbumWithOptionalRatingDao
 import dk.clausr.core.database.dao.GroupReviewDao
 import dk.clausr.core.database.dao.ProjectDao
+import dk.clausr.core.model.GroupReview
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -23,20 +26,33 @@ class AlbumReviewRepository @Inject constructor(
     private val networkDataSource: OAGDataSource,
     @Dispatcher(OagDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
     private val groupReviewDao: GroupReviewDao,
+    private val albumWithOptionalRatingDao: AlbumWithOptionalRatingDao,
     private val projectDao: ProjectDao,
 ) {
     fun getGroupReviews(albumId: String): Flow<ReviewData> {
         return flow {
             val groupId = projectDao.getGroupId()
 
-            val localReviews = groupReviewDao.getReviewsFor(albumId).map {
-                it.asExternalModel()
+            val localReviews = if (groupId == null) {
+                albumWithOptionalRatingDao.getAlbumById(id = albumId).mapToHistoricAlbum().metadata?.let { metadata ->
+                    listOf(
+                        GroupReview(
+                            author = projectDao.getProjectId()!!,
+                            rating = metadata.rating,
+                            review = metadata.review,
+                        )
+                    )
+                } ?: emptyList()
+            } else {
+                groupReviewDao.getReviewsFor(albumId).map {
+                    it.asExternalModel()
+                }
             }
 
             emit(
                 ReviewData(
                     reviews = localReviews,
-                    isLoading = localReviews.isEmpty(),
+                    isLoading = localReviews.isEmpty() && groupId != null,
                 )
             )
 
@@ -49,7 +65,7 @@ class AlbumReviewRepository @Inject constructor(
 
                 networkResponse.asExternalModel()
             } else {
-                emptyList()
+                localReviews
             }
 
             emit(

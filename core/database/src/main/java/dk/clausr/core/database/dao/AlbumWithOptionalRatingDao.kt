@@ -110,4 +110,15 @@ interface AlbumWithOptionalRatingDao {
         """,
     )
     suspend fun getAlbumWithSlug(slug: String): AlbumWithOptionalRating
+
+    @Transaction
+    @Query(
+        """
+        SELECT *
+        FROM albums
+        LEFT JOIN ratings ON albums.slug = ratings.albumSlug
+        WHERE id = (:id)
+        """,
+    )
+    fun getAlbumById(id: String): AlbumWithOptionalRating
 }
