@@ -32,17 +32,16 @@ class AlbumReviewRepository @Inject constructor(
     fun getGroupReviews(albumId: String): Flow<ReviewData> {
         return flow {
             val groupId = projectDao.getGroupId()
+            val projectId = projectDao.getProjectId()
 
+            val personalReview = listOfNotNull(
+                getPersonalReview(
+                    projectId = projectId,
+                    albumId = albumId,
+                ),
+            )
             val localReviews = if (groupId == null) {
-                albumWithOptionalRatingDao.getAlbumById(id = albumId).mapToHistoricAlbum().metadata?.let { metadata ->
-                    listOf(
-                        GroupReview(
-                            author = projectDao.getProjectId()!!,
-                            rating = metadata.rating,
-                            review = metadata.review,
-                        )
-                    )
-                } ?: emptyList()
+                personalReview
             } else {
                 groupReviewDao.getReviewsFor(albumId).map {
                     it.asExternalModel()
@@ -52,8 +51,8 @@ class AlbumReviewRepository @Inject constructor(
             emit(
                 ReviewData(
                     reviews = localReviews,
-                    isLoading = localReviews.isEmpty() && groupId != null,
-                )
+                    isLoading = localReviews.size <= 1 && groupId != null,
+                ),
             )
 
             val networkReviews = if (groupId != null) {
@@ -71,10 +70,23 @@ class AlbumReviewRepository @Inject constructor(
             emit(
                 ReviewData(
                     reviews = networkReviews,
-                    isLoading = false
-                )
+                    isLoading = false,
+                ),
             )
         }.flowOn(ioDispatcher)
+    }
+
+    private fun getPersonalReview(
+        projectId: String,
+        albumId: String,
+    ): GroupReview? {
+        return albumWithOptionalRatingDao.getAlbumById(id = albumId).mapToHistoricAlbum().metadata?.let { metadata ->
+            GroupReview(
+                author = projectId,
+                rating = metadata.rating,
+                review = metadata.review,
+            )
+        }
     }
 
     @Throws(IllegalStateException::class)
