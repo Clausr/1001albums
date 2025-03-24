@@ -1,6 +1,8 @@
 package dk.clausr.a1001albumsgenerator.network.di
 
 import android.content.Context
+import android.os.storage.StorageManager
+import androidx.core.content.getSystemService
 import coil3.ImageLoader
 import coil3.disk.DiskCache
 import coil3.disk.directory
@@ -26,6 +28,7 @@ import dk.clausr.core.common.network.OagDispatchers
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
+import okhttp3.Cache
 import okhttp3.Call
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -57,8 +60,22 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun okHttpCallFactory(appInformation: AppInformation): Call.Factory {
+    fun provideOkHttpCache(@ApplicationContext context: Context): Cache {
+        val defaultCacheSize: Long = 50 * 1024 * 1024 // 50 MiB
+        val storageManager = context.getSystemService<StorageManager>()
+        val cacheSize = storageManager?.getCacheQuotaBytes(storageManager.getUuidForPath(context.cacheDir)) ?: defaultCacheSize
+
+        return Cache(context.cacheDir.resolve("http_cache"), cacheSize.coerceAtMost(defaultCacheSize))
+    }
+
+    @Provides
+    @Singleton
+    fun okHttpCallFactory(
+        appInformation: AppInformation,
+        cache: Cache,
+    ): Call.Factory {
         val okHttpClient = OkHttpClient.Builder()
+            .cache(cache)
             .readTimeout(15, TimeUnit.SECONDS)
             .writeTimeout(timeout = 15, TimeUnit.SECONDS)
             .connectTimeout(timeout = 30, TimeUnit.SECONDS)
