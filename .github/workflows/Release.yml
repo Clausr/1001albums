@@ -31,10 +31,9 @@ jobs:
           java-version: 17
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
-          validate-wrappers: true
-          gradle-home-cache-cleanup: true
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
       - name: Set version code/name
         env:
@@ -59,7 +58,7 @@ jobs:
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
           GOOGLE_PLAY_SIGNING_KEY_ALIAS: ${{ secrets.GOOGLE_PLAY_SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
-        run: ./gradlew bundleProdRelease assembleProdRelease
+        run: ./gradlew bundleProdRelease assembleProdRelease --configuration-cache
 
       - name: Upload Release Build to Artifacts
         if: github.ref_type == 'tag'
