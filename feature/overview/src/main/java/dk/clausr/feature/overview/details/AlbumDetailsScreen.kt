@@ -231,12 +231,7 @@ fun AlbumDetailsScreen(
                             }
 
                             AlbumDetailsViewModel.AlbumReviewsViewState.Loading -> {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.Center
-                                ) {
-                                    CircularProgressIndicator()
-                                }
+                                LoadingRow()
                             }
 
                             AlbumDetailsViewModel.AlbumReviewsViewState.None -> Unit
@@ -259,6 +254,9 @@ fun AlbumDetailsScreen(
                                         Spacer(Modifier.height(8.dp))
                                     }
                                 }
+                                AnimatedVisibility(reviewState.loading) {
+                                    LoadingRow()
+                                }
                             }
                         }
                     }
@@ -278,6 +276,16 @@ fun AlbumDetailsScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun LoadingRow() {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        CircularProgressIndicator()
     }
 }
 

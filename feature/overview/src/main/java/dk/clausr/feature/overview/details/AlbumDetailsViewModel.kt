@@ -34,12 +34,15 @@ class AlbumDetailsViewModel @Inject constructor(
 
     private val reviewState = albumReviewRepository.getGroupReviews(albumId)
         .map {
-            if (it.isLoading) {
+            if (it.reviews.isEmpty() && it.isLoading) {
                 AlbumReviewsViewState.Loading
             } else if (it.reviews.isEmpty()) {
                 AlbumReviewsViewState.None
             } else {
-                AlbumReviewsViewState.Success(it.reviews)
+                AlbumReviewsViewState.Success(
+                    reviews = it.reviews,
+                    loading = it.isLoading
+                )
             }
         }
         .catch {
@@ -86,7 +89,7 @@ class AlbumDetailsViewModel @Inject constructor(
     sealed interface AlbumReviewsViewState {
         data object Loading : AlbumReviewsViewState
         data object None : AlbumReviewsViewState // Not in a group
-        data class Success(val reviews: List<GroupReview>) : AlbumReviewsViewState
+        data class Success(val reviews: List<GroupReview>, val loading: Boolean = false) : AlbumReviewsViewState
         data class Failed(val error: NetworkError) : AlbumReviewsViewState
     }
 }

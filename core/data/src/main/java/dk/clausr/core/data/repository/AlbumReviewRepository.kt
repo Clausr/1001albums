@@ -40,36 +40,38 @@ class AlbumReviewRepository @Inject constructor(
                     albumId = albumId,
                 ),
             )
+
             val localReviews = if (groupId == null) {
                 personalReview
             } else {
-                groupReviewDao.getReviewsFor(albumId).map {
+                val dbGroupReviews = groupReviewDao.getReviewsFor(albumId).map {
                     it.asExternalModel()
+                }.ifEmpty {
+                    // Emit users own rating:
+                    emit(
+                        ReviewData(
+                            reviews = personalReview,
+                            isLoading = true,
+                        )
+                    )
+
+                    // Continue getting the data and saving it locally
+                    val networkResponse = retryNetworkCall {
+                        networkDataSource.getGroupReviewsForAlbum(groupId, albumId)
+                    }
+
+                    groupReviewDao.insert(networkResponse.toEntity(albumId))
+
+                    networkResponse.asExternalModel()
                 }
+
+                // Fallback to personal review if nothing is in database
+                dbGroupReviews.takeIf { it.isNotEmpty() } ?: personalReview
             }
 
             emit(
                 ReviewData(
                     reviews = localReviews,
-                    isLoading = localReviews.size <= 1 && groupId != null,
-                ),
-            )
-
-            val networkReviews = if (groupId != null) {
-                val networkResponse = retryNetworkCall {
-                    networkDataSource.getGroupReviewsForAlbum(groupId, albumId)
-                }
-
-                groupReviewDao.insert(networkResponse.toEntity(albumId))
-
-                networkResponse.asExternalModel()
-            } else {
-                localReviews
-            }
-
-            emit(
-                ReviewData(
-                    reviews = networkReviews,
                     isLoading = false,
                 ),
             )
