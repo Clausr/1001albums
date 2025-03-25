@@ -3,10 +3,8 @@ package dk.clausr.core.data.model
 import dk.clausr.a1001albumsgenerator.network.model.NetworkHistoricAlbum
 import dk.clausr.core.database.model.AlbumWithOptionalRating
 import dk.clausr.core.database.model.RatingEntity
-import dk.clausr.core.database.model.RatingWithAlbum
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Metadata
-import dk.clausr.core.model.Rating
 
 fun NetworkHistoricAlbum.asExternalModel(): HistoricAlbum {
     return HistoricAlbum(
@@ -30,17 +28,6 @@ fun NetworkHistoricAlbum.toRatingEntity(): RatingEntity = RatingEntity(
     isRevealed = isRevealed,
 )
 
-fun RatingWithAlbum.mapToHistoricAlbum(): HistoricAlbum = HistoricAlbum(
-    album = album.asExternalModel(),
-    metadata = Metadata(
-        rating = rating.rating.mapToRating(),
-        review = rating.review,
-        generatedAt = rating.generatedAt,
-        globalRating = rating.globalRating,
-        isRevealed = rating.isRevealed,
-    ),
-)
-
 fun AlbumWithOptionalRating.mapToHistoricAlbum(): HistoricAlbum = HistoricAlbum(
     album = album.asExternalModel(),
     metadata = rating?.let {
@@ -53,9 +40,3 @@ fun AlbumWithOptionalRating.mapToHistoricAlbum(): HistoricAlbum = HistoricAlbum(
         )
     },
 )
-
-private fun String?.mapToRating(): Rating = when (this) {
-    "did-not-listen" -> Rating.DidNotListen
-    null -> Rating.Unrated
-    else -> Rating.Rated(this.toInt())
-}

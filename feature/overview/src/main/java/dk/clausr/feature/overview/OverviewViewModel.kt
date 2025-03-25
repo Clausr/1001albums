@@ -69,7 +69,7 @@ class OverviewViewModel @Inject constructor(
         oagRepository.didNotListenAlbums,
         oagRepository.historicAlbums,
         oagRepository.topRatedAlbums,
-        _isRefreshing
+        _isRefreshing,
     ) {
             project: Project?,
             currentAlbum: Album?,
@@ -146,7 +146,10 @@ class OverviewViewModel @Inject constructor(
             oagRepository.project.collectLatest { project ->
                 Timber.d("Project loaded ${project?.name}")
                 project?.name?.let { projectId ->
-                    notificationsRepository.updateNotifications(origin = "OverviewViewModel", projectId = projectId)
+                    notificationsRepository.updateNotifications(
+                        origin = "OverviewViewModel",
+                        projectId = projectId,
+                    )
                     this@OverviewViewModel.projectId.value = projectId
                 }
             }

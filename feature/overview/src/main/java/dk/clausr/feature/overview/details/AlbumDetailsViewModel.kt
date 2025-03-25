@@ -5,15 +5,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.clausr.core.common.android.require
+import dk.clausr.core.data.repository.AlbumReviewRepository
 import dk.clausr.core.data.repository.OagRepository
+import dk.clausr.core.model.GroupReview
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.StreamingPlatform
+import dk.clausr.core.network.NetworkError
 import dk.clausr.feature.overview.navigation.OverviewDirections
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import java.time.Instant
 import javax.inject.Inject
@@ -21,22 +26,42 @@ import javax.inject.Inject
 @HiltViewModel
 class AlbumDetailsViewModel @Inject constructor(
     private val oagRepository: OagRepository,
+    private val albumReviewRepository: AlbumReviewRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-    private val albumSlug by savedStateHandle.require<String>(OverviewDirections.Args.ALBUM_SLUG)
     val listName = savedStateHandle.get<String>(OverviewDirections.Args.LIST_NAME)
+    private val albumId by savedStateHandle.require<String>(OverviewDirections.Args.ALBUM_ID)
+
+    private val reviewState = albumReviewRepository.getGroupReviews(albumId)
+        .map {
+            if (it.reviews.isEmpty() && it.isLoading) {
+                AlbumReviewsViewState.Loading
+            } else if (it.reviews.isEmpty()) {
+                AlbumReviewsViewState.None
+            } else {
+                AlbumReviewsViewState.Success(
+                    reviews = it.reviews,
+                    loading = it.isLoading,
+                )
+            }
+        }
+        .catch {
+            AlbumReviewsViewState.Failed(NetworkError.TooManyRequests(it))
+        }
 
     val state = combine(
-        oagRepository.getHistoricAlbum(albumSlug),
+        oagRepository.getHistoricAlbum(albumId),
         oagRepository.preferredStreamingPlatform,
-    ) { historicAlbum, streaming ->
+        reviewState,
+    ) { historicAlbum, streaming, reviewState ->
         AlbumDetailsViewState(
             album = historicAlbum,
             streamingPlatform = streaming,
             relatedAlbums = getRelatedAlbums(
                 artist = historicAlbum.album.artist,
-                generatedAt = historicAlbum.metadata?.generatedAt
+                generatedAt = historicAlbum.metadata?.generatedAt,
             ),
+            reviewViewState = reviewState,
         )
     }
         .stateIn(
@@ -50,13 +75,21 @@ class AlbumDetailsViewModel @Inject constructor(
         generatedAt: Instant?,
     ): ImmutableList<HistoricAlbum> {
         return oagRepository.getSimilarAlbums(artist)
-            .filterNot { it.album.slug == albumSlug && it.metadata?.generatedAt == generatedAt }
+            .filterNot { it.album.id == albumId && it.metadata?.generatedAt == generatedAt }
             .toPersistentList()
     }
 
     data class AlbumDetailsViewState(
         val album: HistoricAlbum? = null,
         val streamingPlatform: StreamingPlatform = StreamingPlatform.Undefined,
+        val reviewViewState: AlbumReviewsViewState = AlbumReviewsViewState.None,
         val relatedAlbums: ImmutableList<HistoricAlbum> = persistentListOf(),
     )
+
+    sealed interface AlbumReviewsViewState {
+        data object Loading : AlbumReviewsViewState
+        data object None : AlbumReviewsViewState // Not in a group
+        data class Success(val reviews: List<GroupReview>, val loading: Boolean = false) : AlbumReviewsViewState
+        data class Failed(val error: NetworkError) : AlbumReviewsViewState
+    }
 }

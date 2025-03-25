@@ -66,7 +66,7 @@ fun AlbumThumb(
                         modifier = Modifier.sharedElement(
                             state = rememberSharedContentState(key = "$listName-cover-$albumSlug"),
                             animatedVisibilityScope = animatedContentScope,
-                        )
+                        ),
                     )
 
                     onClickPlay?.let { onClickPlay ->

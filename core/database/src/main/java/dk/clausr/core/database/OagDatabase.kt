@@ -7,12 +7,14 @@ import androidx.room.TypeConverters
 import dk.clausr.core.database.dao.AlbumDao
 import dk.clausr.core.database.dao.AlbumImageDao
 import dk.clausr.core.database.dao.AlbumWithOptionalRatingDao
+import dk.clausr.core.database.dao.GroupReviewDao
 import dk.clausr.core.database.dao.LogDao
 import dk.clausr.core.database.dao.NotificationDao
 import dk.clausr.core.database.dao.ProjectDao
 import dk.clausr.core.database.dao.RatingDao
 import dk.clausr.core.database.model.AlbumEntity
 import dk.clausr.core.database.model.AlbumImageEntity
+import dk.clausr.core.database.model.GroupReviewEntity
 import dk.clausr.core.database.model.LogEntity
 import dk.clausr.core.database.model.NotificationEntity
 import dk.clausr.core.database.model.ProjectEntity
@@ -28,13 +30,15 @@ import dk.clausr.core.database.utils.DatabaseMigrations
         AlbumImageEntity::class,
         NotificationEntity::class,
         LogEntity::class,
+        GroupReviewEntity::class,
     ],
     autoMigrations = [
         AutoMigration(from = 12, to = 13),
         AutoMigration(from = 13, to = 14),
         AutoMigration(from = 14, to = 15, DatabaseMigrations.Schema14To15::class),
+        AutoMigration(from = 17, to = 18),
     ],
-    version = 17,
+    version = 18,
 )
 @TypeConverters(
     Converters::class,
@@ -47,4 +51,5 @@ abstract class OagDatabase : RoomDatabase() {
     abstract fun notificationDao(): NotificationDao
     abstract fun logDao(): LogDao
     abstract fun albumWithOptionalRatingDao(): AlbumWithOptionalRatingDao
+    abstract fun groupReviewDao(): GroupReviewDao
 }

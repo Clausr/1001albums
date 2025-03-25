@@ -3,6 +3,7 @@ package dk.clausr.a1001albumsgenerator.network.retrofit.oag
 import dk.LocalAssetManager
 import dk.clausr.a1001albumsgenerator.network.OAGDataSource
 import dk.clausr.a1001albumsgenerator.network.fake.FakeAssetManager
+import dk.clausr.a1001albumsgenerator.network.model.NetworkAlbumGroupReviews
 import dk.clausr.a1001albumsgenerator.network.model.NetworkProject
 import dk.clausr.core.common.model.Result
 import dk.clausr.core.common.network.Dispatcher
@@ -23,5 +24,12 @@ class OAGMockDataSource @Inject constructor(
 ) : OAGDataSource {
     override suspend fun getProject(projectId: String): Result<NetworkProject, NetworkError> = withContext(ioDispatcher) {
         Result.Success(assets.open("mock_project_response.json").use(json::decodeFromStream))
+    }
+
+    override suspend fun getGroupReviewsForAlbum(
+        groupSlug: String,
+        albumId: String,
+    ): Result<NetworkAlbumGroupReviews, NetworkError> = withContext(ioDispatcher) {
+        Result.Success(assets.open("mock_album_group_review.json").use(json::decodeFromStream))
     }
 }

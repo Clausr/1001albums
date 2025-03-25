@@ -67,10 +67,8 @@ import dk.clausr.a1001albumsgenerator.ui.extensions.ignoreHorizontalParentPaddin
 import dk.clausr.a1001albumsgenerator.ui.extensions.logClickEvent
 import dk.clausr.a1001albumsgenerator.ui.preview.PreviewSharedTransitionLayout
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
-import dk.clausr.core.common.ExternalLinks
 import dk.clausr.core.common.extensions.collectWithLifecycle
 import dk.clausr.core.common.extensions.formatToDate
-import dk.clausr.core.common.extensions.openLink
 import dk.clausr.core.data_widget.SerializedWidgetState
 import dk.clausr.core.model.AlbumWidgetData
 import dk.clausr.core.model.HistoricAlbum
@@ -95,7 +93,7 @@ import java.time.Instant
 @Composable
 fun OverviewRoute(
     navigateToSettings: () -> Unit,
-    navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
+    navigateToAlbumDetails: (id: String, listName: String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: OverviewViewModel = hiltViewModel(),
 ) {
@@ -139,8 +137,9 @@ fun OverviewRoute(
         onNotificationClick = {
             when (val data = it.data) {
                 is NotificationData.GroupReviewData -> {
+                    navigateToAlbumDetails(/*id =*/ data.albumId, /*listName =*/ "notifications")
                     // When we support more data per group album, navigate to the screen instead of the homepage
-                    context.openLink(ExternalLinks.Generator.groupRatingDetails(groupName = data.groupSlug, albumId = data.albumId))
+//                    context.openLink(ExternalLinks.Generator.groupRatingDetails(groupName = data.groupSlug, albumId = data.albumId))
                 }
 
                 else -> {}
@@ -156,7 +155,7 @@ fun OverviewRoute(
 internal fun OverviewScreen(
     state: OverviewUiState,
     navigateToSettings: () -> Unit,
-    navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
+    navigateToAlbumDetails: (id: String, listName: String) -> Unit,
     openLink: (streamingLink: String) -> Unit,
     openNotifications: () -> Unit,
     onRefresh: () -> Unit,
@@ -387,7 +386,7 @@ private fun LazyGridScope.topRatedSection(
 private fun LazyGridScope.historySection(
     state: OverviewUiState.Success,
     prefStreamingPlatform: StreamingPlatform,
-    navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
+    navigateToAlbumDetails: (id: String, listName: String) -> Unit,
     onClickPlay: (String) -> Unit,
 ) {
     state.groupedHistory.forEach { (date, albums) ->
@@ -413,7 +412,7 @@ private fun LazyGridScope.historySection(
 
             AlbumThumb(
                 album = historicAlbum,
-                onClick = { navigateToAlbumDetails(historicAlbum.album.slug, "history-$date") },
+                onClick = { navigateToAlbumDetails(historicAlbum.album.id, "history-$date") },
                 onClickPlay = onPlay,
                 tertiaryText = historicAlbum.metadata?.generatedAt?.formatToDate(),
                 listName = "history-$date",

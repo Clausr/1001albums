@@ -36,7 +36,7 @@ fun NetworkProject.getGroupAsExternal(): Project.Group? = group?.let {
     Project.Group(
         slug = it.slug,
         updateFrequency = it.updateFrequency.asExternalModel(),
-        paused = it.paused
+        paused = it.paused,
     )
 }
 

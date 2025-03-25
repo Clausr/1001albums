@@ -15,7 +15,6 @@ import dk.clausr.core.data.model.toAlbumImageEntities
 import dk.clausr.core.data.model.toEntity
 import dk.clausr.core.data.model.toRatingEntity
 import dk.clausr.core.data_widget.SerializedWidgetState
-import dk.clausr.core.data_widget.SerializedWidgetState.Companion.projectId
 import dk.clausr.core.database.dao.AlbumDao
 import dk.clausr.core.database.dao.AlbumImageDao
 import dk.clausr.core.database.dao.AlbumWithOptionalRatingDao
@@ -50,6 +49,7 @@ class OagRepository @Inject constructor(
     private val networkDataSource: OAGDataSource,
     @Dispatcher(OagDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
     private val widgetDataStore: DataStore<SerializedWidgetState>,
+    userDataRepository: UserRepository,
     private val albumDao: AlbumDao,
     private val projectDao: ProjectDao,
     private val ratingDao: RatingDao,
@@ -58,9 +58,9 @@ class OagRepository @Inject constructor(
 ) {
     val widgetState = widgetDataStore.data
 
-    val projectId: Flow<String?> = widgetDataStore.data.map {
-        it.projectId
-    }.distinctUntilChanged()
+    val albumCovers: Flow<CoverData> = albumImageDao.getAlbumCovers().map {
+        CoverData.createCoverDataOrDefault(externalList = it)
+    }
 
     val preferredStreamingPlatform: Flow<StreamingPlatform> = widgetDataStore.data.map {
         when (it) {
@@ -87,6 +87,15 @@ class OagRepository @Inject constructor(
             .distinctUntilChanged()
 
     val project: Flow<Project?> = projectDao.getProject().map { it?.asExternalModel() }
+    val projectId: Flow<String?> = combine(project, userDataRepository.userData) { project, userData ->
+        // Migrate projectId to DataStore
+        if (userData.projectId == null && project?.name != null) {
+            userDataRepository.setProjectId(project.name)
+            project.name
+        } else {
+            userData.projectId
+        }
+    }.distinctUntilChanged()
 
     val currentAlbum = combine(
         historicAlbums,
@@ -102,7 +111,6 @@ class OagRepository @Inject constructor(
 
     suspend fun setProject(projectId: String): Result<Project, NetworkError> {
         Timber.d("Set new project $projectId")
-
         return networkDataSource.getProject(projectId)
             .doOnSuccess { networkProject ->
                 widgetDataStore.updateData { oldData ->
@@ -110,6 +118,7 @@ class OagRepository @Inject constructor(
                         (oldData as? SerializedWidgetState.Success)?.data?.preferredStreamingPlatform ?: StreamingPlatform.Undefined
                     SerializedWidgetState.Loading(projectId, oldPreferredStreamingPlatform)
                 }
+
                 projectDao.clearTable()
                 albumDao.clearTable()
                 ratingDao.clearTable()
@@ -135,13 +144,6 @@ class OagRepository @Inject constructor(
         // Insert project into DB
         projectDao.insertProject(networkProject.toEntity())
 
-        // Insert current album into DB
-        with(networkProject.currentAlbum) {
-            Timber.i("Current album from network: $artist - $name..")
-            albumDao.insert(this.toEntity())
-            albumImageDao.insertAll(this.toAlbumImageEntities())
-        }
-
         // Insert albums with ratings into DB
         val albumEntities = mutableListOf<AlbumEntity>()
         val ratingEntities = mutableListOf<RatingEntity>()
@@ -155,6 +157,13 @@ class OagRepository @Inject constructor(
         albumDao.insertAlbums(albumEntities)
         ratingDao.insertRatings(ratingEntities)
         albumImageDao.insertAll(albumImageEntities)
+
+        // Insert current album into DB
+        with(networkProject.currentAlbum) {
+            Timber.i("Current album from network: $artist - $name..")
+            albumDao.insert(this.toEntity())
+            albumImageDao.insertAll(this.toAlbumImageEntities())
+        }
     }
 
     private suspend fun getAndUpdateProject(projectId: String): Result<Project, NetworkError> = withContext(ioDispatcher) {
@@ -174,9 +183,7 @@ class OagRepository @Inject constructor(
             .doOnFailure { error ->
                 Timber.e(error.cause, "Could not getAndUpdate project ${error.cause}")
             }
-            .map {
-                it.asExternalModel()
-            }
+            .map(NetworkProject::asExternalModel)
     }
 
     suspend fun isLatestAlbumRated(): Boolean {
@@ -252,12 +259,8 @@ class OagRepository @Inject constructor(
         return getAndUpdateProject(projectId)
     }
 
-    val albumCovers: Flow<CoverData> = albumImageDao.getAlbumCovers().map {
-        CoverData.createCoverDataOrDefault(externalList = it)
-    }
-
-    fun getHistoricAlbum(slug: String): Flow<HistoricAlbum> = albumWithOptionalRatingDao
-        .getAlbumBySlugFlow(slug)
+    fun getHistoricAlbum(id: String): Flow<HistoricAlbum> = albumWithOptionalRatingDao
+        .getAlbumByIdFlow(id)
         .map(AlbumWithOptionalRating::mapToHistoricAlbum)
 
     suspend fun getSimilarAlbums(artist: String): List<HistoricAlbum> = withContext(ioDispatcher) {

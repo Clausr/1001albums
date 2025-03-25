@@ -69,6 +69,7 @@ fun ProjectTextField(
                 is NetworkError.Generic -> "Something went wrong"
                 is NetworkError.ProjectNotFound -> "Project not found, try to create one!"
                 is NetworkError.TooManyRequests -> "Please wait a bit and try again"
+                NetworkError.NoGroup -> null
                 null -> null
             }
 

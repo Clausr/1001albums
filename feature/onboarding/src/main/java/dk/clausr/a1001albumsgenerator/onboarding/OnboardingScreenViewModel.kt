@@ -42,6 +42,7 @@ class OnboardingScreenViewModel @Inject constructor(
                 oagRepository.setProject(projectId)
                     .doOnSuccess {
                         sendViewEffect(IntroViewEffects.ProjectSet)
+                        userRepository.setProjectId(projectId)
                         this@OnboardingScreenViewModel._projectId.value = projectId
                     }
                     .doOnFailure { error ->

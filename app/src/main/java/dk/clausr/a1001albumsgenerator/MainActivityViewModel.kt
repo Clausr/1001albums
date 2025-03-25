@@ -11,8 +11,8 @@ class MainActivityViewModel @Inject constructor(
     userRepo: UserRepository,
 ) : ViewModel() {
 
-    val uiState = userRepo.hasOnboarded.map {
-        MainViewState.Success(hasOnboarded = it)
+    val uiState = userRepo.userData.map {
+        MainViewState.Success(hasOnboarded = it.hasOnboarded)
     }
 }
 

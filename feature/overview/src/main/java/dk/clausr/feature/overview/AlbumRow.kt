@@ -28,7 +28,7 @@ import kotlinx.collections.immutable.persistentListOf
 fun AlbumRow(
     title: String,
     albums: ImmutableList<HistoricAlbum>,
-    onClickAlbum: (slug: String, listName: String) -> Unit,
+    onClickAlbum: (id: String, listName: String) -> Unit,
     onClickPlay: (link: String) -> Unit,
     streamingPlatform: StreamingPlatform,
     tertiaryTextTransform: (HistoricAlbum) -> String?,
@@ -65,7 +65,7 @@ fun AlbumRow(
                 AlbumThumb(
                     modifier = Modifier.width(120.dp),
                     album = album,
-                    onClick = { onClickAlbum(album.album.slug, title) },
+                    onClick = { onClickAlbum(album.album.id, title) },
                     onClickPlay = playClick,
                     tertiaryText = tertiaryTextTransform(album),
                     listName = title,
