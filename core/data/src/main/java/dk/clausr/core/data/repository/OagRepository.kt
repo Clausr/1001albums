@@ -2,7 +2,6 @@ package dk.clausr.core.data.repository
 
 import androidx.datastore.core.DataStore
 import dk.clausr.a1001albumsgenerator.network.OAGDataSource
-import dk.clausr.a1001albumsgenerator.network.model.NetworkAlbumGroupReviews
 import dk.clausr.a1001albumsgenerator.network.model.NetworkProject
 import dk.clausr.core.common.model.Result
 import dk.clausr.core.common.model.doOnFailure
@@ -27,7 +26,6 @@ import dk.clausr.core.database.model.AlbumWithOptionalRating
 import dk.clausr.core.database.model.RatingEntity
 import dk.clausr.core.model.Album
 import dk.clausr.core.model.AlbumWidgetData
-import dk.clausr.core.model.GroupReview
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Project
 import dk.clausr.core.model.Rating
@@ -39,7 +37,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -268,36 +265,5 @@ class OagRepository @Inject constructor(
 
     suspend fun getSimilarAlbums(artist: String): List<HistoricAlbum> = withContext(ioDispatcher) {
         albumWithOptionalRatingDao.getSimilarAlbumsWithRatings(artist).map(AlbumWithOptionalRating::mapToHistoricAlbum)
-    }
-
-    // Get album reviews and insert into database
-    suspend fun getAlbumReviews(albumId: String): Result<List<GroupReview>, NetworkError> {
-        val groupSlug = project.firstOrNull()?.group?.slug
-
-        return if (groupSlug == null) {
-            val historicAlbum = getHistoricAlbum(albumId).firstOrNull()
-            Result.Success(
-                listOf(
-                    GroupReview(
-                        author = project.firstOrNull()?.name.orEmpty(),
-                        rating = historicAlbum?.metadata?.rating,
-                        review = historicAlbum?.metadata?.review
-                    )
-                )
-            )
-        } else {
-            /**
-             * TODO Get review from database here
-             * We know we're in a group, so look for data in:
-             * 1. The reviews database
-             * 2. Query backend
-             * 3. notifications?
-             */
-
-            networkDataSource.getGroupReviewsForAlbum(
-                groupSlug = groupSlug,
-                albumId = albumId
-            ).map(NetworkAlbumGroupReviews::asExternalModel)
-        }
     }
 }
