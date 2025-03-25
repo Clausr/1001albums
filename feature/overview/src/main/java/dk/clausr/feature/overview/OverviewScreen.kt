@@ -242,9 +242,15 @@ internal fun OverviewScreen(
                     .fillMaxSize(),
             ) {
                 when (state) {
-                    OverviewUiState.Error -> Text("Error")
+                    OverviewUiState.Error -> Text(
+                        modifier = Modifier.padding(innerPadding),
+                        text = "Error",
+                    )
+
                     OverviewUiState.Loading -> Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .fillMaxSize(),
                         contentAlignment = Alignment.Center,
                     ) {
                         CircularProgressIndicator()
@@ -256,10 +262,13 @@ internal fun OverviewScreen(
                             isRefreshing = state.isRefreshing,
                             onRefresh = onRefresh,
                             state = refreshState,
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier
+                                .fillMaxSize(),
                             indicator = {
                                 PullToRefreshDefaults.Indicator(
-                                    modifier = Modifier.align(Alignment.TopCenter),
+                                    modifier = Modifier
+                                        .padding(innerPadding)
+                                        .align(Alignment.TopCenter),
                                     state = refreshState,
                                     isRefreshing = state.isRefreshing,
                                 )
