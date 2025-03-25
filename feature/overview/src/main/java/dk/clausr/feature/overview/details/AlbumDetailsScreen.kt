@@ -116,7 +116,7 @@ fun AlbumDetailsScreen(
                             .sharedElement(
                                 state = rememberSharedContentState(key = "$listName-cover-${historicAlbum?.album?.slug}"),
                                 animatedVisibilityScope = animatedContentScope,
-                            )
+                            ),
                     )
                 }
 
@@ -226,7 +226,7 @@ fun AlbumDetailsScreen(
                             is AlbumDetailsViewModel.AlbumReviewsViewState.Failed -> {
                                 Text(
                                     "Woopsie doopsie daisy..\n${reviewState.error.cause}",
-                                    color = MaterialTheme.colorScheme.error
+                                    color = MaterialTheme.colorScheme.error,
                                 )
                             }
 
@@ -280,10 +280,10 @@ fun AlbumDetailsScreen(
 }
 
 @Composable
-private fun LoadingRow() {
+private fun LoadingRow(modifier: Modifier = Modifier) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
     ) {
         CircularProgressIndicator()
     }
@@ -321,14 +321,14 @@ private fun DetailsPreview() {
                                     GroupReview(
                                         author = "oag_user",
                                         rating = Rating.Rated(5),
-                                        review = "Some preview review"
+                                        review = "Some preview review",
                                     ),
                                     GroupReview(
                                         author = "oag_user1",
                                         rating = Rating.Rated(2),
-                                        review = "Some bad preview review :("
+                                        review = "Some bad preview review :(",
                                     ),
-                                )
+                                ),
                             ),
                         ),
                         navigateToDetails = { _, _ -> },

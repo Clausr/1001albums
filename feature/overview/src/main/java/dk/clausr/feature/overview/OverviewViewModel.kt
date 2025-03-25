@@ -69,7 +69,7 @@ class OverviewViewModel @Inject constructor(
         oagRepository.didNotListenAlbums,
         oagRepository.historicAlbums,
         oagRepository.topRatedAlbums,
-        _isRefreshing
+        _isRefreshing,
     ) {
             project: Project?,
             currentAlbum: Album?,

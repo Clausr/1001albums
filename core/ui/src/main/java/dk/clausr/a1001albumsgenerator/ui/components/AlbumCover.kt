@@ -62,7 +62,7 @@ fun AlbumCover(
 
 @Preview
 @Composable
-fun AlbumCoverPreview() {
+private fun AlbumCoverPreview() {
     AlbumCover(
         coverUrl = null,
         albumSlug = "null",

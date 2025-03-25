@@ -14,4 +14,3 @@ data class Project(
         val paused: Boolean,
     )
 }
-

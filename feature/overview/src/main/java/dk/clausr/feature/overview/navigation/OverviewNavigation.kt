@@ -24,8 +24,8 @@ fun NavGraphBuilder.overviewGraph(
                     navHostController.navigate(
                         OverviewDirections.albumDetails(
                             id = id,
-                            listName = listName
-                        )
+                            listName = listName,
+                        ),
                     )
                 },
             )
@@ -43,8 +43,8 @@ fun NavGraphBuilder.overviewGraph(
                     navHostController.navigate(
                         OverviewDirections.albumDetails(
                             id = id,
-                            listName = list
-                        )
+                            listName = list,
+                        ),
                     ) {
                         popUpTo(OverviewDirections.Routes.ALBUM_DETAILS) { inclusive = true }
                     }

@@ -16,7 +16,7 @@ fun NetworkAlbumGroupReviews.toEntity(albumId: String): List<GroupReviewEntity> 
 fun GroupReviewEntity.asExternalModel(): GroupReview = GroupReview(
     author = author,
     rating = rating.mapToRating(),
-    review = review
+    review = review,
 )
 
 fun List<GroupReviewEntity>.asExternalModel(): List<GroupReview> = map(GroupReviewEntity::asExternalModel)

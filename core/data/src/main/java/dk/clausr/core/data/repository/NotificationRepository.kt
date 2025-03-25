@@ -27,7 +27,6 @@ class NotificationRepository @Inject constructor(
     @Dispatcher(OagDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
     private val notificationDao: NotificationDao,
     private val widgetDataStore: DataStore<SerializedWidgetState>,
-    private val userDataRepository: UserRepository,
 ) {
     val unreadNotifications: Flow<List<Notification>> = notificationDao.getUnreadNotifications()
         .map { entities ->

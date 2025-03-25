@@ -29,19 +29,19 @@ fun OagPullToRefreshIndicator(
             state = state,
             isRefreshing = isRefreshing,
             containerColor = PullToRefreshDefaults.containerColor,
-            threshold = PullToRefreshDefaults.PositionalThreshold
+            threshold = PullToRefreshDefaults.PositionalThreshold,
         ),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Crossfade(
             targetState = isRefreshing,
             animationSpec = tween(durationMillis = CROSSFADE_DURATION_MILLIS),
-            modifier = Modifier.align(Alignment.Center)
+            modifier = Modifier.align(Alignment.Center),
         ) { refreshing ->
             if (refreshing) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(16.dp),
-                    strokeWidth = 2.5.dp
+                    strokeWidth = 2.5.dp,
                 )
             } else {
                 val distanceFraction = { state.distanceFraction.coerceIn(0f, 1f) }
@@ -55,7 +55,7 @@ fun OagPullToRefreshIndicator(
                             this.alpha = progress
                             this.scaleX = progress
                             this.scaleY = progress
-                        }
+                        },
                 )
             }
         }

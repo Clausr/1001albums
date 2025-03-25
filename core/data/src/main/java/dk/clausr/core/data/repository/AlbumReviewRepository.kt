@@ -52,7 +52,7 @@ class AlbumReviewRepository @Inject constructor(
                         ReviewData(
                             reviews = personalReview,
                             isLoading = true,
-                        )
+                        ),
                     )
 
                     // Continue getting the data and saving it locally

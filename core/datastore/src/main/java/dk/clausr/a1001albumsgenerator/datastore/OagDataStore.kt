@@ -21,7 +21,7 @@ class OagDataStore @Inject constructor(
         UserData(
             hasOnboarded = preferences[IS_ONBOARDED] == true,
             projectId = preferences[PROJECT_ID],
-            groupSlug = preferences[GROUP_SLUG]
+            groupSlug = preferences[GROUP_SLUG],
         )
     }
 

@@ -41,7 +41,7 @@ class AlbumDetailsViewModel @Inject constructor(
             } else {
                 AlbumReviewsViewState.Success(
                     reviews = it.reviews,
-                    loading = it.isLoading
+                    loading = it.isLoading,
                 )
             }
         }
@@ -59,7 +59,7 @@ class AlbumDetailsViewModel @Inject constructor(
             streamingPlatform = streaming,
             relatedAlbums = getRelatedAlbums(
                 artist = historicAlbum.album.artist,
-                generatedAt = historicAlbum.metadata?.generatedAt
+                generatedAt = historicAlbum.metadata?.generatedAt,
             ),
             reviewViewState = reviewState,
         )

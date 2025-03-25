@@ -5,6 +5,3 @@ data class GroupReview(
     val rating: Rating?,
     val review: String?,
 )
-
-
-
