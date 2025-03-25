@@ -34,6 +34,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -45,12 +46,18 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
+import dev.chrisbanes.haze.materials.HazeMaterials
 import dk.clausr.a1001albumsgenerator.analytics.LocalAnalyticsHelper
 import dk.clausr.a1001albumsgenerator.ui.components.AlbumThumb
 import dk.clausr.a1001albumsgenerator.ui.components.LocalNavAnimatedVisibilityScope
@@ -144,6 +151,7 @@ fun OverviewRoute(
     )
 }
 
+@OptIn(ExperimentalHazeMaterialsApi::class)
 @Composable
 internal fun OverviewScreen(
     state: OverviewUiState,
@@ -158,7 +166,7 @@ internal fun OverviewScreen(
     val context = LocalContext.current
     val analyticsHelper = LocalAnalyticsHelper.current
     val coroutineScope = rememberCoroutineScope()
-
+    val hazeState = remember { HazeState() }
     with(LocalSharedTransitionScope.current) {
         Scaffold(
             snackbarHost = {
@@ -171,8 +179,13 @@ internal fun OverviewScreen(
                     TopAppBar(
                         modifier = Modifier
                             .renderInSharedTransitionScopeOverlay(zIndexInOverlay = 1f)
-                            .animateEnterExit(enter = fadeIn() + slideInVertically(), exit = fadeOut() + slideOutVertically()),
-                        title = { Text(text = stringResource(R.string.overview_app_bar_title)) },
+                            .animateEnterExit(enter = fadeIn() + slideInVertically(), exit = fadeOut() + slideOutVertically())
+                            .hazeEffect(
+                                state = hazeState,
+                                style = HazeMaterials.regular(containerColor = TopAppBarDefaults.topAppBarColors().containerColor),
+                            ),
+                        title = { },
+                        colors = TopAppBarDefaults.topAppBarColors().copy(containerColor = Color.Transparent),
                         actions = {
                             if (state is OverviewUiState.Success && !state.isUsingWidget) {
                                 IconButton(
@@ -225,8 +238,8 @@ internal fun OverviewScreen(
         ) { innerPadding ->
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
+                    .hazeSource(state = hazeState)
+                    .fillMaxSize(),
             ) {
                 when (state) {
                     OverviewUiState.Error -> Text("Error")
@@ -262,6 +275,7 @@ internal fun OverviewScreen(
                                     start = 16.dp,
                                     end = 16.dp,
                                     bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
+                                    top = innerPadding.calculateTopPadding(),
                                 ),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                                 columns = GridCells.Fixed(count = 3),
