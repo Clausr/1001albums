@@ -17,7 +17,10 @@ object DatabaseModule {
     @Singleton
     fun providesOagDatabase(@ApplicationContext context: Context): OagDatabase = Room
         .databaseBuilder(context, OagDatabase::class.java, "oag_database")
-        .addMigrations(DatabaseMigrations.MIGRATION_15_TO_16)
+        .addMigrations(
+            DatabaseMigrations.MIGRATION_15_TO_16,
+            DatabaseMigrations.MIGRATION_16_TO_17,
+        )
         .fallbackToDestructiveMigration()
         .build()
 }

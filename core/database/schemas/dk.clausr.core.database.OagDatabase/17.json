@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 17,
-    "identityHash": "c0d3722a8dff6c95b3492c8a8819a819",
+    "identityHash": "02e29c931e66741eaf0673fdc7b2f937",
     "entities": [
       {
         "tableName": "project",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `currentAlbumSlug` TEXT NOT NULL, `currentAlbumNotes` TEXT NOT NULL, `updateFrequency` TEXT NOT NULL, `shareableUrl` TEXT NOT NULL, `groupSlug` TEXT, `isGroupPaused` INTEGER NOT NULL, PRIMARY KEY(`name`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `currentAlbumSlug` TEXT NOT NULL, `currentAlbumNotes` TEXT NOT NULL, `updateFrequency` TEXT NOT NULL, `shareableUrl` TEXT NOT NULL, `groupSlug` TEXT, `isGroupPaused` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`name`))",
         "fields": [
           {
             "fieldPath": "name",
@@ -48,7 +48,8 @@
             "fieldPath": "isGroupPaused",
             "columnName": "isGroupPaused",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": true,
+            "defaultValue": "0"
           }
         ],
         "primaryKey": {
@@ -359,12 +360,51 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "group_reviews",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`author` TEXT NOT NULL, `albumId` TEXT NOT NULL, `rating` TEXT, `review` TEXT, PRIMARY KEY(`albumId`, `author`))",
+        "fields": [
+          {
+            "fieldPath": "author",
+            "columnName": "author",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "albumId",
+            "columnName": "albumId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rating",
+            "columnName": "rating",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "review",
+            "columnName": "review",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "albumId",
+            "author"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c0d3722a8dff6c95b3492c8a8819a819')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '02e29c931e66741eaf0673fdc7b2f937')"
     ]
   }
 }
