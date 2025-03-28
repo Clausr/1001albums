@@ -14,10 +14,4 @@ internal object DatabaseMigrations {
             db.execSQL("ALTER TABLE albums ADD COLUMN id TEXT NOT NULL DEFAULT ''")
         }
     }
-
-    val MIGRATION_16_TO_17 = object : Migration(16, 17) {
-        override fun migrate(db: SupportSQLiteDatabase) {
-            db.execSQL("ALTER TABLE project ADD COLUMN isGroupPaused INTEGER NOT NULL DEFAULT 0")
-        }
-    }
 }
