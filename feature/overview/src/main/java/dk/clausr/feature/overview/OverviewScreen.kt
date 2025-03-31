@@ -138,8 +138,6 @@ fun OverviewRoute(
             when (val data = it.data) {
                 is NotificationData.GroupReviewData -> {
                     navigateToAlbumDetails(/*id =*/ data.albumId, /*listName =*/ "notifications")
-                    // When we support more data per group album, navigate to the screen instead of the homepage
-//                    context.openLink(ExternalLinks.Generator.groupRatingDetails(groupName = data.groupSlug, albumId = data.albumId))
                 }
 
                 else -> {}
