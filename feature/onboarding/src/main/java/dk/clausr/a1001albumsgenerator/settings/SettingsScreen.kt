@@ -259,7 +259,6 @@ fun SettingsScreen(
                     showSelectButton = false,
                 )
 
-
                 if (!showBack) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
