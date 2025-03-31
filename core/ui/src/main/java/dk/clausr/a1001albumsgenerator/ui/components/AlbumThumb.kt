@@ -19,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -88,16 +87,7 @@ fun AlbumThumb(
                 }
 
                 Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .sharedBounds(
-                            sharedContentState = rememberSharedContentState(key = "$listName-title-$albumSlug"),
-                            animatedVisibilityScope = animatedContentScope,
-                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(
-                                contentScale = ContentScale.FillHeight,
-                                alignment = Alignment.Center,
-                            ),
-                        ),
+                    modifier = Modifier.fillMaxWidth(),
                     text = name,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
@@ -105,16 +95,7 @@ fun AlbumThumb(
                 )
 
                 Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .sharedBounds(
-                            sharedContentState = rememberSharedContentState(key = "$listName-artist-$albumSlug"),
-                            animatedVisibilityScope = animatedContentScope,
-                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(
-                                contentScale = ContentScale.FillHeight,
-                                alignment = Alignment.Center,
-                            ),
-                        ),
+                    modifier = Modifier.fillMaxWidth(),
                     text = artist,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -122,16 +103,7 @@ fun AlbumThumb(
 
                 tertiaryText?.let {
                     Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .sharedBounds(
-                                sharedContentState = rememberSharedContentState(key = "$listName-date-$albumSlug"),
-                                animatedVisibilityScope = animatedContentScope,
-                                resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(
-                                    contentScale = ContentScale.FillHeight,
-                                    alignment = Alignment.Center,
-                                ),
-                            ),
+                        modifier = Modifier.fillMaxWidth(),
                         text = it,
                     )
                 }

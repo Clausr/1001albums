@@ -53,6 +53,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.chrisbanes.haze.HazeProgressive
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
@@ -182,7 +183,9 @@ internal fun OverviewScreen(
                             .hazeEffect(
                                 state = hazeState,
                                 style = HazeMaterials.regular(containerColor = TopAppBarDefaults.topAppBarColors().containerColor),
-                            ),
+                            ) {
+                                progressive = HazeProgressive.verticalGradient(startIntensity = 1f, endIntensity = 0f)
+                            },
                         title = { },
                         colors = TopAppBarDefaults.topAppBarColors().copy(containerColor = Color.Transparent),
                         actions = {

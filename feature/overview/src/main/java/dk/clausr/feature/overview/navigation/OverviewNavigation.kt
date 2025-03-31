@@ -39,6 +39,9 @@ fun NavGraphBuilder.overviewGraph(
             ),
         ) {
             AlbumDetailsRoute(
+                onNavigateBack = {
+                    navHostController.navigateUp()
+                },
                 navigateToDetails = { id, list ->
                     navHostController.navigate(
                         OverviewDirections.albumDetails(

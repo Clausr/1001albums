@@ -6,29 +6,36 @@ import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -38,6 +45,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.chrisbanes.haze.HazeProgressive
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
+import dev.chrisbanes.haze.materials.HazeMaterials
 import dk.clausr.a1001albumsgenerator.analytics.AnalyticsEvent
 import dk.clausr.a1001albumsgenerator.ui.components.AlbumCover
 import dk.clausr.a1001albumsgenerator.ui.components.LocalNavAnimatedVisibilityScope
@@ -58,6 +71,7 @@ import kotlinx.collections.immutable.toPersistentList
 @Composable
 fun AlbumDetailsRoute(
     navigateToDetails: (slug: String, list: String) -> Unit,
+    onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AlbumDetailsViewModel = hiltViewModel(),
 ) {
@@ -76,21 +90,25 @@ fun AlbumDetailsRoute(
     AlbumDetailsScreen(
         modifier = modifier,
         state = state,
-        navigateToDetails = navigateToDetails,
+        onNavigateToDetails = navigateToDetails,
         listName = viewModel.listName ?: "nozhing",
+        onNavigateBack = onNavigateBack,
     )
 }
 
+@OptIn(ExperimentalHazeMaterialsApi::class)
 @Composable
 fun AlbumDetailsScreen(
     state: AlbumDetailsViewModel.AlbumDetailsViewState,
-    navigateToDetails: (slug: String, list: String) -> Unit,
+    onNavigateToDetails: (slug: String, list: String) -> Unit,
+    onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     listName: String = "List",
 ) {
     val context = LocalContext.current
     val historicAlbum = state.album
     val animatedContentScope = LocalNavAnimatedVisibilityScope.current
+    val hazeState = remember { HazeState() }
     with(LocalSharedTransitionScope.current) {
         Scaffold(
             modifier = modifier
@@ -100,19 +118,46 @@ fun AlbumDetailsScreen(
                 ),
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
             containerColor = MaterialTheme.colorScheme.background,
+            topBar = {
+                TopAppBar(
+                    modifier = Modifier.hazeEffect(
+                        state = hazeState,
+                        style = HazeMaterials.regular(),
+                    ) {
+                        progressive = HazeProgressive.verticalGradient(startIntensity = 1f, endIntensity = 0f)
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+                    title = {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = historicAlbum?.album?.artist.orEmpty(),
+                            style = MaterialTheme.typography.titleLarge,
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onNavigateBack) {
+                            Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = null)
+                        }
+                    },
+                )
+            },
         ) { paddingValues ->
-
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .navigationBarsPadding()
-                    .padding(paddingValues),
+                    .hazeSource(state = hazeState),
+                contentPadding = PaddingValues(
+                    top = paddingValues.calculateTopPadding(),
+                    bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
+                )
             ) {
                 item {
                     AlbumCover(
                         coverUrl = historicAlbum?.album?.imageUrl,
                         albumSlug = historicAlbum?.album?.slug,
                         modifier = Modifier
+                            .padding(horizontal = 32.dp)
+                            .padding(bottom = 16.dp)
                             .sharedElement(
                                 state = rememberSharedContentState(key = "$listName-cover-${historicAlbum?.album?.slug}"),
                                 animatedVisibilityScope = animatedContentScope,
@@ -123,17 +168,7 @@ fun AlbumDetailsScreen(
                 item {
                     Column {
                         Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 8.dp)
-                                .sharedBounds(
-                                    sharedContentState = rememberSharedContentState(key = "$listName-title-${historicAlbum?.album?.slug}"),
-                                    animatedVisibilityScope = animatedContentScope,
-                                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(
-                                        contentScale = ContentScale.FillWidth,
-                                        alignment = Alignment.CenterStart,
-                                    ),
-                                ),
+                            modifier = Modifier.fillMaxWidth(),
                             text = historicAlbum?.album?.name.orEmpty(),
                             style = MaterialTheme.typography.headlineMedium,
                             textAlign = TextAlign.Center,
@@ -142,27 +177,7 @@ fun AlbumDetailsScreen(
                         Text(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .sharedBounds(
-                                    sharedContentState = rememberSharedContentState(key = "$listName-artist-${historicAlbum?.album?.slug}"),
-                                    animatedVisibilityScope = animatedContentScope,
-                                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(
-                                        contentScale = ContentScale.FillWidth,
-                                        alignment = Alignment.CenterStart,
-                                    ),
-                                ),
-                            text = historicAlbum?.album?.artist.orEmpty(),
-                            style = MaterialTheme.typography.titleLarge,
-                            textAlign = TextAlign.Center,
-                        )
-
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 16.dp)
-                                .sharedBounds(
-                                    sharedContentState = rememberSharedContentState(key = "$listName-date-${historicAlbum?.album?.slug}"),
-                                    animatedVisibilityScope = animatedContentScope,
-                                ),
+                                .padding(bottom = 16.dp),
                             text = historicAlbum?.album?.releaseDate.orEmpty(),
                             textAlign = TextAlign.Center,
                         )
@@ -172,20 +187,18 @@ fun AlbumDetailsScreen(
                 if (historicAlbum?.album != null) {
                     item {
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .sharedBounds(
-                                    sharedContentState = rememberSharedContentState(key = "$listName-play-${historicAlbum.album.slug}"),
-                                    animatedVisibilityScope = animatedContentScope,
-                                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(),
-                                ),
+                            modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.CenterHorizontally),
                         ) {
                             StreamingServices.from(historicAlbum.album)
                                 .getStreamingLinkFor(state.streamingPlatform)
                                 ?.let { streamingLink ->
                                     FilledTonalButton(
-                                        modifier = Modifier,
+                                        modifier = Modifier.sharedBounds(
+                                            sharedContentState = rememberSharedContentState(key = "$listName-play-${historicAlbum.album.slug}"),
+                                            animatedVisibilityScope = animatedContentScope,
+                                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(),
+                                        ),
                                         onClick = {
                                             context.openLink(streamingLink)
                                         },
@@ -267,7 +280,7 @@ fun AlbumDetailsScreen(
                         AlbumRow(
                             title = stringResource(R.string.related_albums_title),
                             albums = state.relatedAlbums,
-                            onClickAlbum = navigateToDetails,
+                            onClickAlbum = onNavigateToDetails,
                             streamingPlatform = state.streamingPlatform,
                             tertiaryTextTransform = { "${it.metadata?.rating?.ratingText(context)}\n${it.album.releaseDate}" },
                             onClickPlay = { context.openLink(it) },
@@ -331,7 +344,8 @@ private fun DetailsPreview() {
                                 ),
                             ),
                         ),
-                        navigateToDetails = { _, _ -> },
+                        onNavigateToDetails = { _, _ -> },
+                        onNavigateBack = {},
                     )
                 }
             }
