@@ -4,18 +4,26 @@ import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -31,12 +39,24 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
@@ -45,6 +65,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
+import coil3.request.placeholder
 import dev.chrisbanes.haze.HazeProgressive
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
@@ -109,6 +133,20 @@ fun AlbumDetailsScreen(
     val historicAlbum = state.album
     val animatedContentScope = LocalNavAnimatedVisibilityScope.current
     val hazeState = remember { HazeState() }
+
+    var something by remember { mutableStateOf(false) }
+//    var coverBackgroundAlpha by remember { mutableFloatStateOf(0f) }
+    val fromAlpha = if (LocalInspectionMode.current) 0.75f else 0.1f
+    val animatedThing by animateFloatAsState(
+        targetValue = if (something) 0.5f else fromAlpha,
+        animationSpec = tween(durationMillis = 5000)
+    )
+    val scale by animateFloatAsState(targetValue = if (something) 1f else 0.8f, animationSpec = tween(durationMillis = 5000))
+    LaunchedEffect(Unit) {
+//        coverBackgroundAlpha = 1f
+        something = true
+    }
+
     with(LocalSharedTransitionScope.current) {
         Scaffold(
             modifier = modifier
@@ -147,22 +185,49 @@ fun AlbumDetailsScreen(
                     .fillMaxSize()
                     .hazeSource(state = hazeState),
                 contentPadding = PaddingValues(
-                    top = paddingValues.calculateTopPadding(),
                     bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
-                )
+                ),
             ) {
                 item {
-                    AlbumCover(
-                        coverUrl = historicAlbum?.album?.imageUrl,
-                        albumSlug = historicAlbum?.album?.slug,
-                        modifier = Modifier
-                            .padding(horizontal = 32.dp)
-                            .padding(bottom = 16.dp)
-                            .sharedElement(
-                                state = rememberSharedContentState(key = "$listName-cover-${historicAlbum?.album?.slug}"),
-                                animatedVisibilityScope = animatedContentScope,
-                            ),
-                    )
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.TopCenter,
+                    ) {
+                        // Background
+//                        AlbumCover(
+//                            coverUrl = historicAlbum?.album?.imageUrl,
+//                            albumSlug = historicAlbum?.album?.slug,
+//                            shape = RectangleShape,
+//                            contentScale = ContentScale.Crop,
+//                            modifier = Modifier
+//                                .widthIn(maxWidth)
+//                                .graphicsLayer(
+//                                    alpha = animatedThing,
+////                                    clip = true,
+////                                    translationY = -paddingValues.calculateTopPadding().value,
+//                                )
+////                                .heightIn(min = maxWidth + paddingValues.calculateTopPadding())
+////                                .padding(bottom = 16.dp),
+//                                .blur(radius = 20.dp),
+//                        )
+
+                        // Foreground
+                        AlbumCover(
+                            coverUrl = historicAlbum?.album?.imageUrl,
+                            albumSlug = historicAlbum?.album?.slug,
+                            modifier = Modifier
+                                .padding(horizontal = 32.dp)
+                                .padding(
+                                    bottom = 16.dp,
+                                    top = paddingValues.calculateTopPadding() + 16.dp,
+                                )
+                                .sharedElement(
+                                    state = rememberSharedContentState(key = "$listName-cover-${historicAlbum?.album?.slug}"),
+                                    animatedVisibilityScope = animatedContentScope,
+                                )
+                                .shadow(elevation = 8.dp),
+                        )
+                    }
                 }
 
                 item {

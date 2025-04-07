@@ -40,6 +40,7 @@ fun AlbumCover(
         Image(
             painter = painterResource(placeholderResId),
             contentDescription = null,
+            contentScale = contentScale,
             modifier = sharedModifier
                 .background(consistentRandomColor(albumSlug.orEmpty())),
         )
