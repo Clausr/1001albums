@@ -59,28 +59,26 @@ class AlbumReviewRepository @Inject constructor(
 
         emitAll(
             groupReviewDao.getReviewsForFlow(albumId)
-                .map { dbGroupReviews ->
-                    Timber.v("emit dbReviews: ${dbGroupReviews.size}")
-                    ReviewData(
-                        reviews = dbGroupReviews.map { it.asExternalModel() }.ifEmpty { personalReview },
-                        isLoading = true,
-                    )
-                }
                 .onStart {
                     Timber.v("flowOnStart - Get network reviews")
                     // Trigger network refresh async
                     groupId?.let {
-                        val test = retryNetworkCall {
+                        retryNetworkCall {
                             networkDataSource.getGroupReviewsForAlbum(it, albumId)
                                 .doOnSuccess { reviews ->
                                     groupReviewDao.insert(reviews.toEntity(albumId))
                                 }
                         }
-                        Timber.v("Network responded with ${test.reviews.size} reviews")
+                        Unit
                     }
                 }
+                .map { dbGroupReviews ->
+                    ReviewData(
+                        reviews = dbGroupReviews.map { it.asExternalModel() }.ifEmpty { personalReview },
+                        isLoading = true,
+                    )
+                }
                 .mapLatest { cachedData ->
-                    Timber.v("mapLatest - Set loading to false")
                     cachedData.copy(isLoading = false)
                 },
         )
