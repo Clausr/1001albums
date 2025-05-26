@@ -67,7 +67,7 @@ import dk.clausr.core.common.extensions.openLink
 import dk.clausr.core.model.StreamingPlatform
 
 @Composable
-fun SettingsRoute(
+fun SettingsScreen(
     onNavigateUp: () -> Unit,
     onClickApply: () -> Unit,
     onShowLogs: () -> Unit,
@@ -78,7 +78,7 @@ fun SettingsRoute(
     TrackScreenViewEvent("SettingsScreen")
     val viewState by viewModel.viewState.collectAsStateWithLifecycle()
 
-    SettingsScreen(
+    SettingsContent(
         modifier = modifier,
         viewState = viewState,
         onNavigateUp = onNavigateUp,
@@ -95,7 +95,7 @@ fun SettingsRoute(
 
 @OptIn(ExperimentalHazeMaterialsApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun SettingsScreen(
+fun SettingsContent(
     onNavigateUp: () -> Unit,
     viewState: SettingsViewModel.ViewState,
     onSetStreamingPlatform: (StreamingPlatform) -> Unit,
@@ -293,7 +293,7 @@ fun SettingsScreen(
 @Composable
 private fun SettingsPreview() {
     OagTheme {
-        SettingsScreen(
+        SettingsContent(
             onNavigateUp = {},
             onSetStreamingPlatform = {},
             onSetProjectId = {},
