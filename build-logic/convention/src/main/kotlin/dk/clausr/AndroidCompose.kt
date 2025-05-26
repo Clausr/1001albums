@@ -27,10 +27,7 @@ internal fun Project.configureAndroidCompose(commonExtension: CommonExtension<*,
     tasks.withType<KotlinCompile>().configureEach {
         compilerOptions {
             freeCompilerArgs.addAll(
-                listOf(
-                    "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
-                    "-opt-in=androidx.compose.animation.ExperimentalSharedTransitionApi",
-                ),
+                listOf(),
             )
         }
     }
