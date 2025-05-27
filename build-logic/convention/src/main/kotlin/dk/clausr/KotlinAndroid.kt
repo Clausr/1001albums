@@ -67,7 +67,8 @@ private fun Project.configureKotlin() {
             allWarningsAsErrors.set(warningsAsErrors.toBoolean())
             freeCompilerArgs.addAll(
                 listOf(
-                    "-opt-in=androidx.compose.animation.ExperimentalSharedTransitionApi",
+                    // Enable experimental coroutines APIs
+                    "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
                 ),
             )
         }
