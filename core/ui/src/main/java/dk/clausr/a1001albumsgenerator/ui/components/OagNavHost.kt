@@ -22,7 +22,7 @@ val LocalSharedTransitionScope = compositionLocalOf<SharedTransitionScope> {
 @Composable
 fun OagNavHost(
     navController: NavHostController,
-    startDestination: String,
+    startDestination: Any,
     modifier: Modifier = Modifier,
     contentAlignment: Alignment = Alignment.Center,
     builder: NavGraphBuilder.() -> Unit,

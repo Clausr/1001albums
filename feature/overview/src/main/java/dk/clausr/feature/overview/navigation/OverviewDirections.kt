@@ -1,23 +1,47 @@
 package dk.clausr.feature.overview.navigation
 
-import dk.clausr.core.common.android.navArg
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavOptions
+import androidx.navigation.navOptions
+import androidx.navigation.navigation
+import dk.clausr.a1001albumsgenerator.ui.navigation.sharedTransitionComposable
+import dk.clausr.feature.overview.OverviewRoute
+import dk.clausr.feature.overview.details.AlbumDetailsScreen
+import kotlinx.serialization.Serializable
 
-object OverviewDirections {
-    object Routes {
-        internal const val OVERVIEW_ROOT = "OverviewRoot"
-        internal const val OVERVIEW = "$OVERVIEW_ROOT/Overview"
-        internal const val ALBUM_DETAILS = "$OVERVIEW_ROOT/AlbumDetails/{${Args.ALBUM_ID}}?${Args.LIST_NAME}={${Args.LIST_NAME}}"
+@Serializable
+data object OverviewBaseRoute
+
+@Serializable
+data object OverviewRoute
+
+@Serializable
+data class AlbumDetailsRoute(val albumId: String, val listName: String)
+
+fun NavController.navigateToAlbumDetails(
+    albumId: String,
+    listName: String,
+    navOptions: NavOptions = navOptions { },
+) = navigate(route = AlbumDetailsRoute(albumId, listName), navOptions)
+
+fun NavGraphBuilder.overviewGraph(
+    navigateToSettings: () -> Unit,
+    navigateToAlbumDetails: (albumId: String, list: String) -> Unit,
+) {
+    navigation<OverviewBaseRoute>(startDestination = OverviewRoute) {
+        sharedTransitionComposable<OverviewRoute> {
+            OverviewRoute(
+                navigateToSettings = navigateToSettings,
+                navigateToAlbumDetails = navigateToAlbumDetails,
+            )
+        }
+        sharedTransitionComposable<AlbumDetailsRoute> {
+            AlbumDetailsScreen(
+                navigateToDetails = { id, list ->
+                    navigateToAlbumDetails(id, list)
+                },
+            )
+        }
     }
-
-    object Args {
-        const val ALBUM_ID = "albumId"
-        const val LIST_NAME = "listName"
-    }
-
-    fun root() = Routes.OVERVIEW_ROOT
-    fun overview() = Routes.OVERVIEW
-    fun albumDetails(
-        id: String,
-        listName: String,
-    ) = Routes.ALBUM_DETAILS.navArg(Args.ALBUM_ID, id).navArg(Args.LIST_NAME, listName)
 }
