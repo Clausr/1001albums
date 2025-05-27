@@ -66,7 +66,9 @@ private fun Project.configureKotlin() {
             val warningsAsErrors: String? by project
             allWarningsAsErrors.set(warningsAsErrors.toBoolean())
             freeCompilerArgs.addAll(
-                listOf("-opt-in=kotlin.RequiresOptIn"),
+                listOf(
+                    "-opt-in=androidx.compose.animation.ExperimentalSharedTransitionApi",
+                ),
             )
         }
     }
