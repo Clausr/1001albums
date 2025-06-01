@@ -49,11 +49,14 @@ class AlbumReviewRepository @Inject constructor(
         // Get initial cached reviews
         val cachedReviews = groupReviewDao.getReviewsFor(albumId).map { it.asExternalModel() }
 
+        // Don't show loading if we're in a group and we already have some reviews
+        val showLoading = groupId != null && cachedReviews.size <= 1
+
         // Emit cached reviews first; fallback to personalReviews if empty
         emit(
             ReviewData(
                 reviews = cachedReviews.ifEmpty { personalReview },
-                isLoading = true, // Show loading state since network fetch will begin
+                isLoading = showLoading, // Show loading state since network fetch will begin
             ),
         )
 
