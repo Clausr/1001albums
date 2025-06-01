@@ -56,7 +56,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 
 @Composable
-fun AlbumDetailsRoute(
+fun AlbumDetailsScreen(
     navigateToDetails: (slug: String, list: String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AlbumDetailsViewModel = hiltViewModel(),
@@ -64,7 +64,7 @@ fun AlbumDetailsRoute(
     TrackScreenViewEvent(
         screenName = "Album details",
         extras = listOfNotNull(
-            if (!viewModel.listName.isNullOrBlank()) {
+            if (viewModel.listName.isNotBlank()) {
                 AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.ITEM_LIST_NAME, viewModel.listName)
             } else {
                 null
@@ -73,16 +73,16 @@ fun AlbumDetailsRoute(
     )
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    AlbumDetailsScreen(
+    AlbumDetailsContent(
         modifier = modifier,
         state = state,
         navigateToDetails = navigateToDetails,
-        listName = viewModel.listName ?: "nozhing",
+        listName = viewModel.listName,
     )
 }
 
 @Composable
-fun AlbumDetailsScreen(
+fun AlbumDetailsContent(
     state: AlbumDetailsViewModel.AlbumDetailsViewState,
     navigateToDetails: (slug: String, list: String) -> Unit,
     modifier: Modifier = Modifier,
@@ -307,7 +307,7 @@ private fun DetailsPreview() {
                     LocalNavAnimatedVisibilityScope provides this@AnimatedVisibility,
                     LocalSharedTransitionScope provides this,
                 ) {
-                    AlbumDetailsScreen(
+                    AlbumDetailsContent(
                         state = AlbumDetailsViewModel.AlbumDetailsViewState(
                             album = historicAlbumPreviewData(),
                             streamingPlatform = StreamingPlatform.Tidal,

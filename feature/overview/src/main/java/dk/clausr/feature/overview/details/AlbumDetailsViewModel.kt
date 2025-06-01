@@ -3,15 +3,15 @@ package dk.clausr.feature.overview.details
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dk.clausr.core.common.android.require
 import dk.clausr.core.data.repository.AlbumReviewRepository
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.model.GroupReview
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.network.NetworkError
-import dk.clausr.feature.overview.navigation.OverviewDirections
+import dk.clausr.feature.overview.navigation.AlbumDetailsRoute
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
@@ -26,11 +26,12 @@ import javax.inject.Inject
 @HiltViewModel
 class AlbumDetailsViewModel @Inject constructor(
     private val oagRepository: OagRepository,
-    private val albumReviewRepository: AlbumReviewRepository,
+    albumReviewRepository: AlbumReviewRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-    val listName = savedStateHandle.get<String>(OverviewDirections.Args.LIST_NAME)
-    private val albumId by savedStateHandle.require<String>(OverviewDirections.Args.ALBUM_ID)
+    private val navArgs: AlbumDetailsRoute = savedStateHandle.toRoute<AlbumDetailsRoute>()
+    val listName = navArgs.listName
+    private val albumId = navArgs.albumId
 
     private val reviewState = albumReviewRepository.getGroupReviews(albumId)
         .map {
