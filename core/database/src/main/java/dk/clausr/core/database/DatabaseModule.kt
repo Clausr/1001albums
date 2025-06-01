@@ -18,6 +18,6 @@ object DatabaseModule {
     fun providesOagDatabase(@ApplicationContext context: Context): OagDatabase = Room
         .databaseBuilder(context, OagDatabase::class.java, "oag_database")
         .addMigrations(DatabaseMigrations.MIGRATION_15_TO_16)
-        .fallbackToDestructiveMigration()
+        .fallbackToDestructiveMigration(dropAllTables = true)
         .build()
 }
