@@ -112,11 +112,10 @@ fun AlbumDetailsContent(
                     AlbumCover(
                         coverUrl = historicAlbum?.album?.imageUrl,
                         albumSlug = historicAlbum?.album?.slug,
-                        modifier = Modifier
-                            .sharedElement(
-                                state = rememberSharedContentState(key = "$listName-cover-${historicAlbum?.album?.slug}"),
-                                animatedVisibilityScope = animatedContentScope,
-                            ),
+                        modifier = Modifier.sharedElement(
+                            sharedContentState = rememberSharedContentState(key = "$listName-cover-${historicAlbum?.album?.slug}"),
+                            animatedVisibilityScope = animatedContentScope,
+                        ),
                     )
                 }
 
