@@ -29,7 +29,7 @@ import dk.clausr.core.model.HistoricAlbum
 @Composable
 fun AlbumThumb(
     albumSlug: String,
-    artist: String,
+    artist: String?,
     name: String,
     coverUrl: String,
     tertiaryText: String?,
@@ -94,12 +94,14 @@ fun AlbumThumb(
                     overflow = TextOverflow.Ellipsis,
                 )
 
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = artist,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
+                artist?.let {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = artist,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
 
                 tertiaryText?.let {
                     Text(
@@ -120,10 +122,11 @@ fun AlbumThumb(
     modifier: Modifier = Modifier,
     tertiaryText: String? = null,
     listName: String = "List",
+    showArtist: Boolean = true,
 ) {
     AlbumThumb(
         albumSlug = album.album.slug,
-        artist = album.album.artist,
+        artist = album.album.artist.takeIf { showArtist },
         name = album.album.name,
         coverUrl = album.album.imageUrl,
         tertiaryText = tertiaryText,

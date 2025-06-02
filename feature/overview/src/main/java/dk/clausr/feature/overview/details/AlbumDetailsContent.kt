@@ -7,7 +7,6 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,15 +14,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -46,15 +41,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
@@ -65,10 +57,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
-import coil3.request.placeholder
 import dev.chrisbanes.haze.HazeProgressive
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
@@ -134,17 +122,16 @@ fun AlbumDetailsContent(
     val animatedContentScope = LocalNavAnimatedVisibilityScope.current
     val hazeState = remember { HazeState() }
 
-    var something by remember { mutableStateOf(false) }
-//    var coverBackgroundAlpha by remember { mutableFloatStateOf(0f) }
+    var enterAnimationRunning by remember { mutableStateOf(false) }
     val fromAlpha = if (LocalInspectionMode.current) 0.75f else 0.1f
-    val animatedThing by animateFloatAsState(
-        targetValue = if (something) 0.5f else fromAlpha,
-        animationSpec = tween(durationMillis = 5000)
+    val animatedAlpha by animateFloatAsState(
+        targetValue = if (enterAnimationRunning) 0.5f else fromAlpha,
+        animationSpec = tween(durationMillis = 2500)
     )
-    val scale by animateFloatAsState(targetValue = if (something) 1f else 0.8f, animationSpec = tween(durationMillis = 5000))
+
+    // Run album cover background animation
     LaunchedEffect(Unit) {
-//        coverBackgroundAlpha = 1f
-        something = true
+        enterAnimationRunning = true
     }
 
     with(LocalSharedTransitionScope.current) {
@@ -168,7 +155,7 @@ fun AlbumDetailsContent(
                     title = {
                         Text(
                             modifier = Modifier.fillMaxWidth(),
-                            text = historicAlbum?.album?.artist.orEmpty(),
+                            text = historicAlbum?.album?.name.orEmpty(),
                             style = MaterialTheme.typography.titleLarge,
                         )
                     },
@@ -189,27 +176,24 @@ fun AlbumDetailsContent(
                 ),
             ) {
                 item {
-                    Box(
+                    BoxWithConstraints(
                         modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.TopCenter,
                     ) {
+                        val width = maxWidth
                         // Background
-//                        AlbumCover(
-//                            coverUrl = historicAlbum?.album?.imageUrl,
-//                            albumSlug = historicAlbum?.album?.slug,
-//                            shape = RectangleShape,
-//                            contentScale = ContentScale.Crop,
-//                            modifier = Modifier
-//                                .widthIn(maxWidth)
-//                                .graphicsLayer(
-//                                    alpha = animatedThing,
-////                                    clip = true,
-////                                    translationY = -paddingValues.calculateTopPadding().value,
-//                                )
-////                                .heightIn(min = maxWidth + paddingValues.calculateTopPadding())
-////                                .padding(bottom = 16.dp),
-//                                .blur(radius = 20.dp),
-//                        )
+                        AlbumCover(
+                            coverUrl = historicAlbum?.album?.imageUrl,
+                            albumSlug = historicAlbum?.album?.slug,
+                            shape = RectangleShape,
+                            contentScale = ContentScale.FillHeight,
+                            modifier = Modifier
+                                .graphicsLayer(
+                                    alpha = animatedAlpha,
+                                )
+                                .height(width + paddingValues.calculateTopPadding())
+                                .blur(radius = 20.dp),
+                        )
 
                         // Foreground
                         AlbumCover(
@@ -230,26 +214,25 @@ fun AlbumDetailsContent(
                     }
                 }
 
-                item {
-                    Column {
-                        Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = historicAlbum?.album?.name.orEmpty(),
-                            style = MaterialTheme.typography.headlineMedium,
-                            textAlign = TextAlign.Center,
-                        )
-
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 16.dp),
-                            text = historicAlbum?.album?.releaseDate.orEmpty(),
-                            textAlign = TextAlign.Center,
-                        )
-                    }
-                }
 
                 if (historicAlbum?.album != null) {
+                    item {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = historicAlbum.album.artist.orEmpty(),
+                                    style = MaterialTheme.typography.headlineSmall,
+                                )
+
+                                Spacer(Modifier.weight(1f))
+
+                                Text(
+                                    text = historicAlbum.album.releaseDate.orEmpty(),
+                                    textAlign = TextAlign.Center,
+                                )
+                            }
+                        }
+                    }
                     item {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -343,9 +326,9 @@ fun AlbumDetailsContent(
                 if (state.relatedAlbums.isNotEmpty()) {
                     item {
                         AlbumRow(
-                            title = stringResource(R.string.related_albums_title),
+                            title = stringResource(R.string.related_albums_title, state.relatedAlbums.first().album.artist),
                             albums = state.relatedAlbums,
-                            onClickAlbum = onNavigateToDetails,
+                            onClickAlbum = navigateToDetails,
                             streamingPlatform = state.streamingPlatform,
                             tertiaryTextTransform = { "${it.metadata?.rating?.ratingText(context)}\n${it.album.releaseDate}" },
                             onClickPlay = { context.openLink(it) },
@@ -409,8 +392,8 @@ private fun DetailsPreview() {
                                 ),
                             ),
                         ),
-                        onNavigateToDetails = { _, _ -> },
-                        onNavigateBack = {},
+                        navigateToDetails = { _, _ -> },
+                        onNavigateBack = { },
                     )
                 }
             }

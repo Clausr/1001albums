@@ -26,6 +26,7 @@ fun NavController.navigateToAlbumDetails(
 ) = navigate(route = AlbumDetailsRoute(albumId, listName), navOptions)
 
 fun NavGraphBuilder.overviewGraph(
+    navigateBack: () -> Unit,
     navigateToSettings: () -> Unit,
     navigateToAlbumDetails: (albumId: String, list: String) -> Unit,
 ) {
@@ -41,6 +42,7 @@ fun NavGraphBuilder.overviewGraph(
                 navigateToDetails = { id, list ->
                     navigateToAlbumDetails(id, list)
                 },
+                onNavigateBack = navigateBack,
             )
         }
     }

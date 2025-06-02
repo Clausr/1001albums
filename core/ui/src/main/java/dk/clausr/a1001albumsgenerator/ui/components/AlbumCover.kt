@@ -2,7 +2,6 @@ package dk.clausr.a1001albumsgenerator.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -33,7 +32,6 @@ fun AlbumCover(
 ) {
     val sharedModifier = modifier
         .fillMaxWidth()
-        .aspectRatio(1f)
         .clip(shape = shape)
 
     if (LocalInspectionMode.current) {
