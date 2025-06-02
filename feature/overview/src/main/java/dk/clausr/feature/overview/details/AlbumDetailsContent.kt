@@ -126,7 +126,7 @@ fun AlbumDetailsContent(
     val fromAlpha = if (LocalInspectionMode.current) 0.75f else 0.1f
     val animatedAlpha by animateFloatAsState(
         targetValue = if (enterAnimationRunning) 0.5f else fromAlpha,
-        animationSpec = tween(durationMillis = 2500)
+        animationSpec = tween(durationMillis = 2500),
     )
 
     // Run album cover background animation
@@ -213,7 +213,6 @@ fun AlbumDetailsContent(
                         )
                     }
                 }
-
 
                 if (historicAlbum?.album != null) {
                     item {
