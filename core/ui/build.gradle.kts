@@ -14,8 +14,8 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.compose.ui)
-    implementation(libs.compose.animation)
-    implementation(libs.compose.animation.core)
+    implementation(libs.androidx.compose.animation)
+    implementation(libs.androidx.compose.animation.core)
 
     implementation(libs.coil3)
     implementation(libs.coil3.coil.compose)

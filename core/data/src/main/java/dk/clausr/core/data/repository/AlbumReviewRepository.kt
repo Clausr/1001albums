@@ -49,38 +49,39 @@ class AlbumReviewRepository @Inject constructor(
         // Get initial cached reviews
         val cachedReviews = groupReviewDao.getReviewsFor(albumId).map { it.asExternalModel() }
 
+        // Don't show loading if we're in a group and we already have some reviews
+        val showLoading = groupId != null && cachedReviews.size <= 1
+
         // Emit cached reviews first; fallback to personalReviews if empty
         emit(
             ReviewData(
                 reviews = cachedReviews.ifEmpty { personalReview },
-                isLoading = true, // Show loading state since network fetch will begin
+                isLoading = showLoading, // Show loading state since network fetch will begin
             ),
         )
 
         emitAll(
             groupReviewDao.getReviewsForFlow(albumId)
-                .map { dbGroupReviews ->
-                    Timber.v("emit dbReviews: ${dbGroupReviews.size}")
-                    ReviewData(
-                        reviews = dbGroupReviews.map { it.asExternalModel() }.ifEmpty { personalReview },
-                        isLoading = true,
-                    )
-                }
                 .onStart {
                     Timber.v("flowOnStart - Get network reviews")
                     // Trigger network refresh async
                     groupId?.let {
-                        val test = retryNetworkCall {
+                        retryNetworkCall {
                             networkDataSource.getGroupReviewsForAlbum(it, albumId)
                                 .doOnSuccess { reviews ->
                                     groupReviewDao.insert(reviews.toEntity(albumId))
                                 }
                         }
-                        Timber.v("Network responded with ${test.reviews.size} reviews")
+                        Unit
                     }
                 }
+                .map { dbGroupReviews ->
+                    ReviewData(
+                        reviews = dbGroupReviews.map { it.asExternalModel() }.ifEmpty { personalReview },
+                        isLoading = true,
+                    )
+                }
                 .mapLatest { cachedData ->
-                    Timber.v("mapLatest - Set loading to false")
                     cachedData.copy(isLoading = false)
                 },
         )

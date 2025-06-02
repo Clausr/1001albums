@@ -13,7 +13,7 @@ import androidx.glance.appwidget.GlanceAppWidgetManager
 import dagger.hilt.android.AndroidEntryPoint
 import dk.clausr.a1001albumsgenerator.analytics.AnalyticsHelper
 import dk.clausr.a1001albumsgenerator.analytics.LocalAnalyticsHelper
-import dk.clausr.a1001albumsgenerator.settings.SettingsRoute
+import dk.clausr.a1001albumsgenerator.settings.SettingsScreen
 import dk.clausr.a1001albumsgenerator.ui.extensions.TrackScreenViewEvent
 import dk.clausr.a1001albumsgenerator.ui.extensions.logClickEvent
 import dk.clausr.widget.AlbumCoverWidget
@@ -58,7 +58,7 @@ class AlbumWidgetConfigurationActivity : ComponentActivity() {
                 TrackScreenViewEvent("AlbumWidgetConfigurationScreen")
                 val coroutineScope = rememberCoroutineScope()
 
-                SettingsRoute(
+                SettingsScreen(
                     showBack = false,
                     onNavigateUp = {},
                     onShowLogs = {},

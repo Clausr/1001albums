@@ -67,7 +67,7 @@ import dk.clausr.core.common.extensions.openLink
 import dk.clausr.core.model.StreamingPlatform
 
 @Composable
-fun SettingsRoute(
+fun SettingsScreen(
     onNavigateUp: () -> Unit,
     onClickApply: () -> Unit,
     onShowLogs: () -> Unit,
@@ -78,7 +78,7 @@ fun SettingsRoute(
     TrackScreenViewEvent("SettingsScreen")
     val viewState by viewModel.viewState.collectAsStateWithLifecycle()
 
-    SettingsScreen(
+    SettingsContent(
         modifier = modifier,
         viewState = viewState,
         onNavigateUp = onNavigateUp,
@@ -95,7 +95,7 @@ fun SettingsRoute(
 
 @OptIn(ExperimentalHazeMaterialsApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun SettingsScreen(
+fun SettingsContent(
     onNavigateUp: () -> Unit,
     viewState: SettingsViewModel.ViewState,
     onSetStreamingPlatform: (StreamingPlatform) -> Unit,
@@ -214,33 +214,35 @@ fun SettingsScreen(
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(32.dp),
             ) {
-                ProjectTextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(shape = MaterialTheme.shapes.medium)
-                        .hazeEffect(
-                            state = hazeState,
-                            style = HazeMaterials.ultraThin(),
-                        )
-                        .padding(16.dp),
-                    enabled = viewState.editProjectIdEnabled,
-                    onProjectIdChange = {
-                        analyticsHelper.logEvent(
-                            AnalyticsEvent(
-                                type = AnalyticsEvent.Types.CLICK_ITEM,
-                                extras = listOf(
-                                    AnalyticsEvent.Param(AnalyticsEvent.ParamKeys.EVENT_NAME, "Set project"),
-                                    AnalyticsEvent.Param("is_not_blank", it.isNotBlank().toString()),
-                                    AnalyticsEvent.Param("edit_project_enabled", viewState.editProjectIdEnabled.toString()),
+                if (!showBack) {
+                    ProjectTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(shape = MaterialTheme.shapes.medium)
+                            .hazeEffect(
+                                state = hazeState,
+                                style = HazeMaterials.ultraThin(),
+                            )
+                            .padding(16.dp),
+                        enabled = viewState.editProjectIdEnabled,
+                        onProjectIdChange = {
+                            analyticsHelper.logEvent(
+                                AnalyticsEvent(
+                                    type = AnalyticsEvent.Types.CLICK_ITEM,
+                                    extras = listOf(
+                                        AnalyticsEvent.Param(AnalyticsEvent.ParamKeys.EVENT_NAME, "Set project"),
+                                        AnalyticsEvent.Param("is_not_blank", it.isNotBlank().toString()),
+                                        AnalyticsEvent.Param("edit_project_enabled", viewState.editProjectIdEnabled.toString()),
+                                    ),
                                 ),
-                            ),
-                        )
+                            )
 
-                        onSetProjectId(it)
-                    },
-                    existingProjectId = viewState.projectId.orEmpty(),
-                    error = viewState.error,
-                )
+                            onSetProjectId(it)
+                        },
+                        existingProjectId = viewState.projectId.orEmpty(),
+                        error = viewState.error,
+                    )
+                }
 
                 StreamingServiceScreen(
                     modifier = Modifier
@@ -257,27 +259,29 @@ fun SettingsScreen(
                     showSelectButton = false,
                 )
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                ) {
-                    Button(
-                        onClick = {
-                            onClickApply()
-                            analyticsHelper.logClickEvent("Done")
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Transparent,
-                            contentColor = MaterialTheme.colorScheme.onBackground,
-                        ),
-                        modifier = Modifier
-                            .clip(shape = CircleShape)
-                            .hazeEffect(
-                                state = hazeState,
-                                style = HazeMaterials.regular(),
-                            ),
+                if (!showBack) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
                     ) {
-                        Text(text = "Done", modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+                        Button(
+                            onClick = {
+                                onClickApply()
+                                analyticsHelper.logClickEvent("Done")
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent,
+                                contentColor = MaterialTheme.colorScheme.onBackground,
+                            ),
+                            modifier = Modifier
+                                .clip(shape = CircleShape)
+                                .hazeEffect(
+                                    state = hazeState,
+                                    style = HazeMaterials.regular(),
+                                ),
+                        ) {
+                            Text(text = "Done", modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+                        }
                     }
                 }
             }
@@ -289,7 +293,7 @@ fun SettingsScreen(
 @Composable
 private fun SettingsPreview() {
     OagTheme {
-        SettingsScreen(
+        SettingsContent(
             onNavigateUp = {},
             onSetStreamingPlatform = {},
             onSetProjectId = {},

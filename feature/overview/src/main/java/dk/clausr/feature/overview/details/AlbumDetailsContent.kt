@@ -93,7 +93,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 
 @Composable
-fun AlbumDetailsRoute(
+fun AlbumDetailsScreen(
     navigateToDetails: (slug: String, list: String) -> Unit,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
@@ -102,7 +102,7 @@ fun AlbumDetailsRoute(
     TrackScreenViewEvent(
         screenName = "Album details",
         extras = listOfNotNull(
-            if (!viewModel.listName.isNullOrBlank()) {
+            if (viewModel.listName.isNotBlank()) {
                 AnalyticsEvent.Param(key = AnalyticsEvent.ParamKeys.ITEM_LIST_NAME, viewModel.listName)
             } else {
                 null
@@ -111,20 +111,20 @@ fun AlbumDetailsRoute(
     )
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    AlbumDetailsScreen(
+    AlbumDetailsContent(
         modifier = modifier,
         state = state,
-        onNavigateToDetails = navigateToDetails,
-        listName = viewModel.listName ?: "nozhing",
+        navigateToDetails = navigateToDetails,
+        listName = viewModel.listName,
         onNavigateBack = onNavigateBack,
     )
 }
 
 @OptIn(ExperimentalHazeMaterialsApi::class)
 @Composable
-fun AlbumDetailsScreen(
+fun AlbumDetailsContent(
     state: AlbumDetailsViewModel.AlbumDetailsViewState,
-    onNavigateToDetails: (slug: String, list: String) -> Unit,
+    navigateToDetails: (slug: String, list: String) -> Unit,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     listName: String = "List",
@@ -222,7 +222,7 @@ fun AlbumDetailsScreen(
                                     top = paddingValues.calculateTopPadding() + 16.dp,
                                 )
                                 .sharedElement(
-                                    state = rememberSharedContentState(key = "$listName-cover-${historicAlbum?.album?.slug}"),
+                                    sharedContentState = rememberSharedContentState(key = "$listName-cover-${historicAlbum?.album?.slug}"),
                                     animatedVisibilityScope = animatedContentScope,
                                 )
                                 .shadow(elevation = 8.dp),
@@ -255,6 +255,19 @@ fun AlbumDetailsScreen(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.CenterHorizontally),
                         ) {
+                            FilledTonalButton(
+                                onClick = {
+                                    context.openLink(historicAlbum.album.wikipediaUrl)
+                                },
+                            ) {
+                                Icon(
+                                    modifier = Modifier.padding(end = 8.dp),
+                                    painter = painterResource(id = dk.clausr.a1001albumsgenerator.ui.R.drawable.ic_wiki),
+                                    contentDescription = "Wikipedia",
+                                )
+                                Text(text = stringResource(R.string.wikipedia_button_title))
+                            }
+
                             StreamingServices.from(historicAlbum.album)
                                 .getStreamingLinkFor(state.streamingPlatform)
                                 ?.let { streamingLink ->
@@ -276,19 +289,6 @@ fun AlbumDetailsScreen(
                                         Text(text = stringResource(R.string.play_button_title))
                                     }
                                 }
-
-                            FilledTonalButton(
-                                onClick = {
-                                    context.openLink(historicAlbum.album.wikipediaUrl)
-                                },
-                            ) {
-                                Icon(
-                                    modifier = Modifier.padding(end = 8.dp),
-                                    painter = painterResource(id = dk.clausr.a1001albumsgenerator.ui.R.drawable.ic_wiki),
-                                    contentDescription = "Wikipedia",
-                                )
-                                Text(text = stringResource(R.string.wikipedia_button_title))
-                            }
                         }
                     }
                 }
@@ -386,7 +386,7 @@ private fun DetailsPreview() {
                     LocalNavAnimatedVisibilityScope provides this@AnimatedVisibility,
                     LocalSharedTransitionScope provides this,
                 ) {
-                    AlbumDetailsScreen(
+                    AlbumDetailsContent(
                         state = AlbumDetailsViewModel.AlbumDetailsViewState(
                             album = historicAlbumPreviewData(),
                             streamingPlatform = StreamingPlatform.Tidal,

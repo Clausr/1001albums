@@ -63,7 +63,7 @@ fun AlbumThumb(
                         coverUrl = coverUrl,
                         albumSlug = albumSlug,
                         modifier = Modifier.sharedElement(
-                            state = rememberSharedContentState(key = "$listName-cover-$albumSlug"),
+                            sharedContentState = rememberSharedContentState(key = "$listName-cover-$albumSlug"),
                             animatedVisibilityScope = animatedContentScope,
                         ),
                     )
