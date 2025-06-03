@@ -29,7 +29,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -46,8 +45,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dk.clausr.a1001albumsgenerator.ui.extensions.TrackScreenViewEvent
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
-import dk.clausr.core.common.extensions.collectWithLifecycle
 import dk.clausr.core.model.NotificationData
 import dk.clausr.feature.overview.R
 import kotlinx.collections.immutable.persistentListOf
@@ -63,6 +62,7 @@ fun NotificationUpperSheet(
     modifier: Modifier = Modifier,
     viewModel: NotificationsSheetViewModel = hiltViewModel(),
 ) {
+    TrackScreenViewEvent(screenName = "Notifications")
     val viewState by viewModel.viewState.collectAsStateWithLifecycle()
     var showNotifications by remember { mutableStateOf(false) }
 
@@ -71,12 +71,6 @@ fun NotificationUpperSheet(
         showNotifications = false
         delay(DISMISS_DELAY)
         onDismiss()
-    }
-
-    viewModel.viewEffect.collectWithLifecycle {
-        when (it) {
-            NotificationViewEffect.HideNotifications -> onClose()
-        }
     }
 
     LaunchedEffect(Unit) { showNotifications = true }
@@ -111,7 +105,6 @@ fun NotificationUpperSheet(
             viewState = viewState,
             onNotificationClick = onNotificationClick,
             onClose = { onClose() },
-            clearNotifications = { viewModel.clearUnreadNotifications() },
         )
     }
 }
@@ -120,7 +113,6 @@ fun NotificationUpperSheet(
 private fun NotificationSheetContent(
     viewState: NotificationViewState,
     onNotificationClick: (NotificationData) -> Unit,
-    clearNotifications: () -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -151,13 +143,6 @@ private fun NotificationSheetContent(
                         .weight(1f),
                     style = MaterialTheme.typography.titleMedium,
                 )
-                AnimatedVisibility(
-                    visible = viewState.showClearButton,
-                    enter = fadeIn(),
-                    exit = fadeOut(),
-                ) {
-                    TextButton(onClick = clearNotifications) { Text(stringResource(R.string.notifications_clear_all_button_title)) }
-                }
                 IconButton(onClick = onClose) {
                     Icon(Icons.Default.Close, contentDescription = "Close")
                 }
@@ -183,43 +168,54 @@ private fun NotificationSheetContent(
                         }
                     }
 
-                    is NotificationViewState.ShowNotification -> {
-                        items(items = viewState.unreadNotifications) { notification ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable(enabled = notification.onClickEnabled) {
-                                        notification.notificationData?.let(onNotificationClick)
-                                    }
-                                    .padding(horizontal = 16.dp)
-                                    .animateItem(),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Column(
-                                    modifier = Modifier.weight(1f),
-                                ) {
-                                    Text(
-                                        text = notification.title,
-                                        style = MaterialTheme.typography.labelLarge,
-                                    )
-                                    Text(text = notification.body)
-                                    Text(
-                                        text = notification.createdAt,
-                                        style = MaterialTheme.typography.labelSmall,
-                                    )
-                                }
-                                if (notification.onClickEnabled) {
-                                    Image(
-                                        imageVector = Icons.AutoMirrored.Default.OpenInNew,
-                                        contentDescription = null,
-                                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
-                                    )
-                                }
-                            }
+                    is NotificationViewState.ShowNotifications -> {
+                        items(items = viewState.notifications) { notification ->
+                            NotificationRow(
+                                notification = notification,
+                                onNotificationClick = onNotificationClick,
+                            )
                         }
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun NotificationRow(
+    notification: NotificationRowData,
+    onNotificationClick: (NotificationData) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(enabled = notification.onClickEnabled) {
+                notification.notificationData?.let(onNotificationClick)
+            }
+            .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(
+            modifier = Modifier.weight(1f),
+        ) {
+            Text(
+                text = notification.title,
+                style = MaterialTheme.typography.labelLarge,
+            )
+
+            Text(text = notification.body)
+            Text(
+                text = notification.createdAt,
+                style = MaterialTheme.typography.labelSmall,
+            )
+        }
+        if (notification.onClickEnabled) {
+            Image(
+                imageVector = Icons.AutoMirrored.Default.OpenInNew,
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
+            )
         }
     }
 }
@@ -231,7 +227,6 @@ private fun EmptyStatePreview() {
         NotificationSheetContent(
             viewState = NotificationViewState.EmptyState,
             onNotificationClick = {},
-            clearNotifications = {},
             onClose = {},
         )
     }
@@ -242,10 +237,10 @@ private fun EmptyStatePreview() {
 private fun NotificationsStatePreview() {
     OagTheme {
         NotificationSheetContent(
-            viewState = NotificationViewState.ShowNotification(
-                unreadNotifications = persistentListOf(
+            viewState = NotificationViewState.ShowNotifications(
+                notifications = persistentListOf(
                     NotificationRowData(
-                        createdAt = "January 1, 1970 at 00:01",
+                        createdAt = "January 1, 1970 at 00:02",
                         read = false,
                         title = "Title",
                         body = "Body",
@@ -253,7 +248,7 @@ private fun NotificationsStatePreview() {
                         onClickEnabled = false,
                     ),
                     NotificationRowData(
-                        createdAt = "January 1, 1970 at 00:00",
+                        createdAt = "January 1, 1970 at 00:01",
                         read = false,
                         title = "Title",
                         body = "Body with action",
@@ -263,7 +258,6 @@ private fun NotificationsStatePreview() {
                 ),
             ),
             onNotificationClick = {},
-            clearNotifications = {},
             onClose = {},
         )
     }

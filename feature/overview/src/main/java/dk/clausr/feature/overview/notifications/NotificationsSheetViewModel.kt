@@ -6,8 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dk.clausr.a1001albumsgenerator.analytics.AnalyticsEvent
-import dk.clausr.a1001albumsgenerator.analytics.AnalyticsHelper
 import dk.clausr.core.common.extensions.toLocalizedDateTime
 import dk.clausr.core.common.model.doOnFailure
 import dk.clausr.core.common.model.doOnSuccess
@@ -16,10 +14,8 @@ import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.model.Notification
 import dk.clausr.widget.AlbumCoverWidget
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -30,23 +26,29 @@ class NotificationsSheetViewModel @Inject constructor(
     private val oagRepository: OagRepository,
     @ApplicationContext private val context: Context,
     private val notificationRepository: NotificationRepository,
-    private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
-    private val _viewEffect = Channel<NotificationViewEffect>(Channel.BUFFERED)
-    val viewEffect = _viewEffect.receiveAsFlow()
+    // Temporary counter to hold on to read notifications
+    private var unreadNotificationCount = 10
 
     val viewState = combine(
         notificationRepository.notifications,
         notificationRepository.unreadNotifications
     ) { readNotifications, unreadNotifications ->
-        if (unreadNotifications.isNotEmpty()) {
-            NotificationViewState.ShowNotification(
-                unreadNotifications = unreadNotifications.map { it.mapToRowData() }.toPersistentList(),
-                readNotifications = readNotifications.map { it.mapToRowData() }.toPersistentList(),
-                showClearButton = unreadNotifications.isNotEmpty(),
-            )
-        } else {
+        if (readNotifications.isEmpty() && unreadNotifications.isEmpty() && unreadNotificationCount == 0) {
             NotificationViewState.EmptyState
+        } else {
+            if (unreadNotifications.isEmpty() && unreadNotificationCount > 0) {
+                NotificationViewState.ShowNotifications(
+                    notifications = readNotifications.take(unreadNotificationCount).map { it.mapToRowData() }.toPersistentList(),
+                )
+            } else {
+                // Set amount of unread notifications to be able to show them in the read state
+                unreadNotificationCount = unreadNotifications.size
+
+                NotificationViewState.ShowNotifications(
+                    notifications = unreadNotifications.map { it.mapToRowData() }.toPersistentList(),
+                )
+            }
         }
     }.stateIn(
         scope = viewModelScope,
@@ -54,22 +56,28 @@ class NotificationsSheetViewModel @Inject constructor(
         initialValue = NotificationViewState.EmptyState,
     )
 
-    fun clearUnreadNotifications() {
-        analyticsHelper.logEvent(AnalyticsEvent("Clear notifications"))
+    init {
+        // Clear notifications when opening the sheet
         viewModelScope.launch {
-            _viewEffect.send(NotificationViewEffect.HideNotifications)
-
-            oagRepository.projectId.collect { projectId ->
-                val id = projectId ?: return@collect
-                notificationRepository.readAll(id)
-                    .doOnSuccess {
-                        Timber.d("Notifications marked as read, update widget.")
-                        AlbumCoverWidget().updateAll(context = context)
-                    }
-                    .doOnFailure {
-                        Timber.e(it.cause, "Could not read all notifications")
-                    }
+            notificationRepository.unreadNotifications.collect { unreadNotifications ->
+                if (unreadNotifications.isNotEmpty()) {
+                    clearUnreadNotifications()
+                }
             }
+        }
+    }
+
+    private suspend fun clearUnreadNotifications() {
+        oagRepository.projectId.collect { projectId ->
+            val id = projectId ?: return@collect
+            notificationRepository.readAll(id)
+                .doOnSuccess {
+                    Timber.d("Notifications marked as read, update widget.")
+                    AlbumCoverWidget().updateAll(context = context)
+                }
+                .doOnFailure {
+                    Timber.e(it.cause, "Could not read all notifications")
+                }
         }
     }
 
