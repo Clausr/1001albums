@@ -33,6 +33,7 @@ fun AlbumRow(
     streamingPlatform: StreamingPlatform,
     tertiaryTextTransform: (HistoricAlbum) -> String?,
     modifier: Modifier = Modifier,
+    showArtist: Boolean = true,
 ) {
     Column(
         modifier = modifier,
@@ -69,6 +70,7 @@ fun AlbumRow(
                     onClickPlay = playClick,
                     tertiaryText = tertiaryTextTransform(album),
                     listName = title,
+                    showArtist = showArtist,
                 )
             }
         }
@@ -92,6 +94,29 @@ private fun Preview() {
                 streamingPlatform = StreamingPlatform.Spotify,
                 tertiaryTextTransform = { null },
                 onClickPlay = {},
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewWithoutArtist() {
+    OagTheme {
+        PreviewSharedTransitionLayout {
+            AlbumRow(
+                title = "Title goes here",
+                albums = persistentListOf(
+                    historicAlbumPreviewData(slug = "0"),
+                    historicAlbumPreviewData(slug = "1"),
+                    historicAlbumPreviewData(slug = "2"),
+                    historicAlbumPreviewData(slug = "3"),
+                ),
+                onClickAlbum = { _, _ -> },
+                streamingPlatform = StreamingPlatform.Spotify,
+                tertiaryTextTransform = { null },
+                onClickPlay = {},
+                showArtist = false,
             )
         }
     }

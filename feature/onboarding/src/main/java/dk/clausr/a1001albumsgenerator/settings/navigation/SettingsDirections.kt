@@ -20,11 +20,9 @@ data object SettingsRoute
 @Serializable
 data object DebugLogsRoute
 
-fun NavController.navigateToSettings(navOptions: NavOptions = navOptions { }) =
-    navigate(route = SettingsRoute, navOptions = navOptions)
+fun NavController.navigateToSettings(navOptions: NavOptions = navOptions { }) = navigate(route = SettingsRoute, navOptions = navOptions)
 
-fun NavController.navigateToDebugLogs(navOptions: NavOptions = navOptions { }) =
-    navigate(route = DebugLogsRoute, navOptions = navOptions)
+fun NavController.navigateToDebugLogs(navOptions: NavOptions = navOptions { }) = navigate(route = DebugLogsRoute, navOptions = navOptions)
 
 fun NavGraphBuilder.settingsGraph(navHostController: NavHostController) {
     navigation<SettingsBaseRoute>(startDestination = SettingsRoute) {

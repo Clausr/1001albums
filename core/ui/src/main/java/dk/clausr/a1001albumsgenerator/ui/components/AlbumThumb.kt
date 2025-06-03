@@ -19,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -30,7 +29,7 @@ import dk.clausr.core.model.HistoricAlbum
 @Composable
 fun AlbumThumb(
     albumSlug: String,
-    artist: String,
+    artist: String?,
     name: String,
     coverUrl: String,
     tertiaryText: String?,
@@ -88,50 +87,25 @@ fun AlbumThumb(
                 }
 
                 Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .sharedBounds(
-                            sharedContentState = rememberSharedContentState(key = "$listName-title-$albumSlug"),
-                            animatedVisibilityScope = animatedContentScope,
-                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(
-                                contentScale = ContentScale.FillHeight,
-                                alignment = Alignment.Center,
-                            ),
-                        ),
+                    modifier = Modifier.fillMaxWidth(),
                     text = name,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
 
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .sharedBounds(
-                            sharedContentState = rememberSharedContentState(key = "$listName-artist-$albumSlug"),
-                            animatedVisibilityScope = animatedContentScope,
-                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(
-                                contentScale = ContentScale.FillHeight,
-                                alignment = Alignment.Center,
-                            ),
-                        ),
-                    text = artist,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
+                artist?.let {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = artist,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
 
                 tertiaryText?.let {
                     Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .sharedBounds(
-                                sharedContentState = rememberSharedContentState(key = "$listName-date-$albumSlug"),
-                                animatedVisibilityScope = animatedContentScope,
-                                resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(
-                                    contentScale = ContentScale.FillHeight,
-                                    alignment = Alignment.Center,
-                                ),
-                            ),
+                        modifier = Modifier.fillMaxWidth(),
                         text = it,
                     )
                 }
@@ -148,10 +122,11 @@ fun AlbumThumb(
     modifier: Modifier = Modifier,
     tertiaryText: String? = null,
     listName: String = "List",
+    showArtist: Boolean = true,
 ) {
     AlbumThumb(
         albumSlug = album.album.slug,
-        artist = album.album.artist,
+        artist = album.album.artist.takeIf { showArtist },
         name = album.album.name,
         coverUrl = album.album.imageUrl,
         tertiaryText = tertiaryText,
