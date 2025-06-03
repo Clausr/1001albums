@@ -31,6 +31,7 @@ fun MainAppNavHost(
                         overviewGraph(
                             navigateToAlbumDetails = navHostController::navigateToAlbumDetails,
                             navigateToSettings = navHostController::navigateToSettings,
+                            navigateBack = navHostController::navigateUp,
                         )
 
                         settingsGraph(navHostController = navHostController)

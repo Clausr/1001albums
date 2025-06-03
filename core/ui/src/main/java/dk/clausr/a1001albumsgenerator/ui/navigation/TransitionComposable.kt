@@ -64,4 +64,3 @@ inline fun <reified T : Any> NavGraphBuilder.sharedTransitionComposable(
         },
     )
 }
-

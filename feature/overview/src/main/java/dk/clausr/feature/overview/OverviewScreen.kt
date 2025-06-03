@@ -53,6 +53,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.chrisbanes.haze.HazeProgressive
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
@@ -99,7 +100,6 @@ fun OverviewRoute(
 ) {
     TrackScreenViewEvent(screenName = "Overview")
 
-    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     var showNotifications by remember {
@@ -167,7 +167,10 @@ internal fun OverviewScreen(
     with(LocalSharedTransitionScope.current) {
         Scaffold(
             snackbarHost = {
-                SnackbarHost(hostState = snackbarHostState, modifier = Modifier.navigationBarsPadding())
+                SnackbarHost(
+                    hostState = snackbarHostState,
+                    modifier = Modifier.navigationBarsPadding(),
+                )
             },
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
             modifier = modifier,
@@ -176,11 +179,16 @@ internal fun OverviewScreen(
                     TopAppBar(
                         modifier = Modifier
                             .renderInSharedTransitionScopeOverlay(zIndexInOverlay = 1f)
-                            .animateEnterExit(enter = fadeIn() + slideInVertically(), exit = fadeOut() + slideOutVertically())
+                            .animateEnterExit(
+                                enter = fadeIn() + slideInVertically(),
+                                exit = fadeOut() + slideOutVertically(),
+                            )
                             .hazeEffect(
                                 state = hazeState,
                                 style = HazeMaterials.regular(containerColor = TopAppBarDefaults.topAppBarColors().containerColor),
-                            ),
+                            ) {
+                                progressive = HazeProgressive.verticalGradient(startIntensity = 1f, endIntensity = 0f)
+                            },
                         title = { },
                         colors = TopAppBarDefaults.topAppBarColors().copy(containerColor = Color.Transparent),
                         actions = {
