@@ -112,10 +112,6 @@ fun OverviewRoute(
             is OverviewViewModel.ViewEffect.ShowSnackbar -> {
                 snackbarHostState.showSnackbar(message = it.message)
             }
-
-            OverviewViewModel.ViewEffect.HideNotifications -> {
-                showNotifications = false
-            }
         }
     }
 

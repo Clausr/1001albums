@@ -156,7 +156,6 @@ class OverviewViewModel @Inject constructor(
 
     sealed interface ViewEffect {
         data class ShowSnackbar(val message: String) : ViewEffect
-        data object HideNotifications : ViewEffect
     }
 }
 
