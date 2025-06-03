@@ -3,6 +3,7 @@ package dk.clausr.feature.overview.notifications
 import android.content.Context
 import dk.clausr.core.model.Notification
 import dk.clausr.core.model.NotificationData
+import dk.clausr.core.model.NotificationType
 import dk.clausr.feature.overview.R
 
 fun Notification.getTitle(context: Context): String? {
@@ -28,3 +29,14 @@ fun Notification.getBody(context: Context): String? {
         null -> null
     }
 }
+
+val Notification.isClickable: Boolean
+    get() = when (type) {
+        NotificationType.GroupReview -> true
+        NotificationType.ReviewThumbUp,
+        NotificationType.AlbumsRated,
+        NotificationType.GroupAlbumsGenerated,
+        NotificationType.NewGroupMember,
+        NotificationType.Unknown,
+            -> false
+    }

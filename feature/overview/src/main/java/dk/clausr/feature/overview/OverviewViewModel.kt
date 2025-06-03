@@ -3,7 +3,6 @@ package dk.clausr.feature.overview
 import android.content.ActivityNotFoundException
 import android.content.Context
 import androidx.glance.appwidget.GlanceAppWidgetManager
-import androidx.glance.appwidget.updateAll
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,8 +12,6 @@ import dk.clausr.a1001albumsgenerator.analytics.AnalyticsHelper
 import dk.clausr.core.common.extensions.formatMonthAndYear
 import dk.clausr.core.common.extensions.openLink
 import dk.clausr.core.common.extensions.toLocalDateTime
-import dk.clausr.core.common.model.doOnFailure
-import dk.clausr.core.common.model.doOnSuccess
 import dk.clausr.core.data.repository.NotificationRepository
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.data_widget.SerializedWidgetState
@@ -112,22 +109,6 @@ class OverviewViewModel @Inject constructor(
             val date = LocalDate.of(generated.year, generated.monthValue, 1)
             date.formatMonthAndYear().replaceFirstChar(Char::uppercase)
         }
-
-    fun clearUnreadNotifications() {
-        analyticsHelper.logEvent(AnalyticsEvent("Clear notifications"))
-        viewModelScope.launch {
-            _viewEffect.send(ViewEffect.HideNotifications)
-
-            notificationsRepository.readAll(projectId.value)
-                .doOnSuccess {
-                    Timber.d("Notifications marked as read, update widget.")
-                    AlbumCoverWidget().updateAll(context = context)
-                }
-                .doOnFailure {
-                    Timber.e(it.cause, "Could not read all notifications")
-                }
-        }
-    }
 
     fun openStreamingLink(url: String) {
         try {
