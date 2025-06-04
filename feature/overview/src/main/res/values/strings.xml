@@ -24,6 +24,7 @@
     <string name="overview_section_did_not_listen_title">Did not listen</string>
     <string name="wikipedia_button_title">Wikipedia</string>
     <string name="play_button_title">Play</string>
+    <string name="history_link_button_title">History</string>
     <string name="rating_did_not_listen">Did not listen</string>
     <string name="rating_text_rated">%1$d⭐️</string>
     <string name="rating_text_unrated">Unrated</string>
