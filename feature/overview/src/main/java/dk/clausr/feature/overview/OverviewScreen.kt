@@ -81,6 +81,7 @@ import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
 import dk.clausr.core.model.UpdateFrequency
 import dk.clausr.extensions.askToAddToHomeScreen
+import dk.clausr.feature.overview.notifications.NotificationUpperSheet
 import dk.clausr.feature.overview.preview.albumPreviewData
 import dk.clausr.feature.overview.preview.historicAlbumPreviewData
 import dk.clausr.worker.BurstUpdateWorker
@@ -111,10 +112,6 @@ fun OverviewRoute(
             is OverviewViewModel.ViewEffect.ShowSnackbar -> {
                 snackbarHostState.showSnackbar(message = it.message)
             }
-
-            OverviewViewModel.ViewEffect.HideNotifications -> {
-                showNotifications = false
-            }
         }
     }
 
@@ -129,23 +126,22 @@ fun OverviewRoute(
         onRefresh = viewModel::refreshAlbums,
     )
 
-    NotificationUpperSheet(
-        showNotifications = showNotifications,
-        onDismiss = {
-            showNotifications = false
-        },
-        onNotificationClick = {
-            when (val data = it.data) {
-                is NotificationData.GroupReviewData -> {
-                    navigateToAlbumDetails(/*id =*/ data.albumId, /*listName =*/ "notifications")
-                }
+    if (showNotifications) {
+        NotificationUpperSheet(
+            onDismiss = {
+                showNotifications = false
+            },
+            onNotificationClick = {
+                when (it) {
+                    is NotificationData.GroupReviewData -> {
+                        navigateToAlbumDetails(/*id =*/ it.albumId, /*listName =*/ "notifications")
+                    }
 
-                else -> {}
-            }
-        },
-        notifications = (uiState as? OverviewUiState.Success)?.notifications ?: persistentListOf(),
-        clearNotifications = viewModel::clearUnreadNotifications,
-    )
+                    else -> {}
+                }
+            },
+        )
+    }
 }
 
 @OptIn(ExperimentalHazeMaterialsApi::class)

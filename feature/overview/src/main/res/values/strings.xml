@@ -20,7 +20,6 @@
     <string name="overview_app_bar_title">Your project</string>
     <string name="notifications_title">Notifications</string>
     <string name="a11y_content_description_settings_icon">Configure project</string>
-    <string name="notifications_clear_all_button_title">Clear all</string>
     <string name="overview_section_top_rated_albums_title">5⭐️ albums</string>
     <string name="overview_section_did_not_listen_title">Did not listen</string>
     <string name="wikipedia_button_title">Wikipedia</string>
