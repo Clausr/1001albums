@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dk.clausr.core.common.ExternalLinks
 import dk.clausr.core.data.repository.AlbumReviewRepository
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.model.GroupReview
@@ -33,6 +34,15 @@ class AlbumDetailsViewModel @Inject constructor(
     val listName = navArgs.listName
     private val albumId = navArgs.albumId
 
+    private val _historyLink = oagRepository.projectId
+        .map {
+            val projectId = it ?: return@map null
+            ExternalLinks.Generator.historyLink(
+                projectId = projectId,
+                albumId = albumId,
+            )
+        }
+
     private val reviewState = albumReviewRepository.getGroupReviews(albumId)
         .map {
             if (it.reviews.isEmpty() && it.isLoading) {
@@ -54,7 +64,8 @@ class AlbumDetailsViewModel @Inject constructor(
         oagRepository.getHistoricAlbum(albumId),
         oagRepository.preferredStreamingPlatform,
         reviewState,
-    ) { historicAlbum, streaming, reviewState ->
+        _historyLink,
+    ) { historicAlbum, streaming, reviewState, historyLink ->
         AlbumDetailsViewState(
             album = historicAlbum,
             streamingPlatform = streaming,
@@ -63,6 +74,7 @@ class AlbumDetailsViewModel @Inject constructor(
                 generatedAt = historicAlbum.metadata?.generatedAt,
             ),
             reviewViewState = reviewState,
+            historyLink = historyLink,
         )
     }
         .stateIn(
@@ -85,12 +97,17 @@ class AlbumDetailsViewModel @Inject constructor(
         val streamingPlatform: StreamingPlatform = StreamingPlatform.Undefined,
         val reviewViewState: AlbumReviewsViewState = AlbumReviewsViewState.None,
         val relatedAlbums: ImmutableList<HistoricAlbum> = persistentListOf(),
+        val historyLink: String? = null,
     )
 
     sealed interface AlbumReviewsViewState {
         data object Loading : AlbumReviewsViewState
         data object None : AlbumReviewsViewState // Not in a group
-        data class Success(val reviews: List<GroupReview>, val loading: Boolean = false) : AlbumReviewsViewState
+        data class Success(
+            val reviews: List<GroupReview>,
+            val loading: Boolean = false,
+        ) : AlbumReviewsViewState
+
         data class Failed(val error: NetworkError) : AlbumReviewsViewState
     }
 }

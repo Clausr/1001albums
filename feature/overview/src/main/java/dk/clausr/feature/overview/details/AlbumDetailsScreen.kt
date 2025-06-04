@@ -110,7 +110,7 @@ fun AlbumDetailsScreen(
 
 @OptIn(ExperimentalHazeMaterialsApi::class)
 @Composable
-fun AlbumDetailsContent(
+private fun AlbumDetailsContent(
     state: AlbumDetailsViewModel.AlbumDetailsViewState,
     navigateToDetails: (slug: String, list: String) -> Unit,
     onNavigateBack: () -> Unit,
@@ -271,6 +271,21 @@ fun AlbumDetailsContent(
                                         Text(text = stringResource(R.string.play_button_title))
                                     }
                                 }
+
+                            state.historyLink?.let { historyLink ->
+                                FilledTonalButton(
+                                    onClick = {
+                                        context.openLink(historyLink)
+                                    },
+                                ) {
+                                    Icon(
+                                        modifier = Modifier.padding(end = 8.dp),
+                                        painter = painterResource(id = dk.clausr.a1001albumsgenerator.ui.R.drawable.ic_open_external),
+                                        contentDescription = "Open in history",
+                                    )
+                                    Text(text = stringResource(R.string.history_link_button_title))
+                                }
+                            }
                         }
                     }
                 }
