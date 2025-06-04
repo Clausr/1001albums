@@ -28,15 +28,16 @@ class NotificationsSheetViewModel @Inject constructor(
     private val notificationRepository: NotificationRepository,
 ) : ViewModel() {
     // Temporary counter to hold on to read notifications
-    private var unreadNotificationCount = 10
+    private var unreadNotificationCount = 0
 
     val viewState = combine(
         notificationRepository.notifications,
         notificationRepository.unreadNotifications
     ) { readNotifications, unreadNotifications ->
-        if (readNotifications.isEmpty() && unreadNotifications.isEmpty() && unreadNotificationCount == 0) {
+        if (unreadNotifications.isEmpty() && unreadNotificationCount == 0) {
             NotificationViewState.EmptyState
         } else {
+            // Show previously read notifications
             if (unreadNotifications.isEmpty() && unreadNotificationCount > 0) {
                 NotificationViewState.ShowNotifications(
                     notifications = readNotifications.take(unreadNotificationCount).map { it.mapToRowData() }.toPersistentList(),
