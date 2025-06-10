@@ -355,11 +355,11 @@ private fun SharedTransitionScope.DetailsCoverArt(
     listName: String,
     animatedContentScope: AnimatedVisibilityScope,
 ) {
+    val topBarHeight = remember { paddingValues.calculateTopPadding() }
     BoxWithConstraints(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.TopCenter,
     ) {
-        val width = maxWidth
         // Background
         AlbumCover(
             coverUrl = historicAlbum?.album?.imageUrl,
@@ -367,10 +367,8 @@ private fun SharedTransitionScope.DetailsCoverArt(
             shape = RectangleShape,
             contentScale = ContentScale.FillHeight,
             modifier = Modifier
-                .graphicsLayer(
-                    alpha = animatedAlpha,
-                )
-                .height(width + paddingValues.calculateTopPadding())
+                .graphicsLayer(alpha = animatedAlpha)
+                .height(maxWidth + topBarHeight)
                 .blur(radius = 20.dp),
         )
 
@@ -380,10 +378,7 @@ private fun SharedTransitionScope.DetailsCoverArt(
             albumSlug = historicAlbum?.album?.slug,
             modifier = Modifier
                 .padding(horizontal = 32.dp)
-                .padding(
-                    bottom = 16.dp,
-                    top = paddingValues.calculateTopPadding() + 16.dp,
-                )
+                .padding(top = topBarHeight + 32.dp)
                 .sharedElement(
                     sharedContentState = rememberSharedContentState(key = "$listName-cover-${historicAlbum?.album?.slug}"),
                     animatedVisibilityScope = animatedContentScope,
