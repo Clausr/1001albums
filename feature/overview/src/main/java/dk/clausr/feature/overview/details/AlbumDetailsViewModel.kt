@@ -17,11 +17,10 @@ import dk.clausr.feature.overview.navigation.AlbumDetailsRoute
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import java.time.Instant
@@ -37,28 +36,13 @@ class AlbumDetailsViewModel @Inject constructor(
     val listName = navArgs.listName
     private val albumId = navArgs.albumId
 
-    private val _historyLink = oagRepository.projectId
-        .map {
-            val projectId = it ?: return@map null
-            ExternalLinks.Generator.historyLink(
-                projectId = projectId,
-                albumId = albumId,
-            )
-        }
-
-    private val externalRatingLink = oagRepository.projectId.flatMapConcat { pId ->
-        val projectId = pId ?: return@flatMapConcat flowOf(null)
-        albumReviewRepository.getPersonalReviewFlow(projectId, albumId)
-    }.map { personalReview ->
-        if (personalReview?.rating !is Rating.Rated) {
+    private val externalRatingLink: Flow<String?> = albumReviewRepository.getPersonalReviewFlow(albumId)
+        .map { personalReview ->
             ExternalLinks.Generator.historyLink(
                 projectId = personalReview?.author.orEmpty(),
                 albumId = albumId,
-            )
-        } else {
-            null
+            ).takeIf { personalReview?.rating !is Rating.Rated }
         }
-    }
 
     private val reviewState = albumReviewRepository.getGroupReviews(albumId)
         .map {

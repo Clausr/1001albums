@@ -11,7 +11,7 @@ fun Context.openProject(
     rating: Int? = null,
 ) {
     val baseUri = ExternalLinks.Generator.BASE_URL
-    val uri = Uri.parse(baseUri).buildUpon()
+    val uri = baseUri.toUri().buildUpon()
         .appendPath(projectId)
         .apply {
             rating?.let {

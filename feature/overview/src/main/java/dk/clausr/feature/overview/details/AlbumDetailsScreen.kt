@@ -190,7 +190,7 @@ private fun AlbumDetailsContent(
                         animatedAlpha = animatedAlpha,
                         paddingValues = paddingValues,
                         listName = listName,
-                        animatedContentScope = animatedContentScope
+                        animatedContentScope = animatedContentScope,
                     )
                 }
 
@@ -280,9 +280,10 @@ private fun SharedTransitionScope.LinkButtons(
     listName: String,
     animatedContentScope: AnimatedVisibilityScope,
     openLink: (String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     FlowRow(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.CenterHorizontally),
@@ -329,8 +330,11 @@ private fun SharedTransitionScope.LinkButtons(
 }
 
 @Composable
-private fun AlbumDetails(historicAlbum: HistoricAlbum) {
-    Column(modifier = Modifier.padding(16.dp)) {
+private fun AlbumDetails(
+    historicAlbum: HistoricAlbum,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier.padding(16.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = historicAlbum.album.artist,
@@ -354,10 +358,11 @@ private fun SharedTransitionScope.DetailsCoverArt(
     paddingValues: PaddingValues,
     listName: String,
     animatedContentScope: AnimatedVisibilityScope,
+    modifier: Modifier = Modifier,
 ) {
     val topBarHeight = remember { paddingValues.calculateTopPadding() }
     BoxWithConstraints(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         contentAlignment = Alignment.TopCenter,
     ) {
         // Background

@@ -46,7 +46,7 @@ fun NavGraphBuilder.overviewGraph(
                     navigateToAlbumDetails(id, list)
                 },
                 onNavigateBack = navigateBack,
-                openLink = { uriHandler.openUri(it) }
+                openLink = { uriHandler.openUri(it) },
             )
         }
     }
