@@ -2,6 +2,7 @@ package dk.clausr.feature.overview.details
 
 import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.animateFloatAsState
@@ -9,6 +10,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -69,8 +71,10 @@ import dk.clausr.a1001albumsgenerator.ui.components.LocalNavAnimatedVisibilitySc
 import dk.clausr.a1001albumsgenerator.ui.components.LocalSharedTransitionScope
 import dk.clausr.a1001albumsgenerator.ui.extensions.TrackScreenViewEvent
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
+import dk.clausr.core.common.ExternalLinks
 import dk.clausr.core.common.extensions.openLink
 import dk.clausr.core.model.GroupReview
+import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Rating
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
@@ -84,9 +88,12 @@ import kotlinx.collections.immutable.toPersistentList
 fun AlbumDetailsScreen(
     navigateToDetails: (slug: String, list: String) -> Unit,
     onNavigateBack: () -> Unit,
+    openLink: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AlbumDetailsViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
+
     TrackScreenViewEvent(
         screenName = "Album details",
         extras = listOfNotNull(
@@ -105,6 +112,7 @@ fun AlbumDetailsScreen(
         navigateToDetails = navigateToDetails,
         listName = viewModel.listName,
         onNavigateBack = onNavigateBack,
+        openLink = openLink,
     )
 }
 
@@ -113,6 +121,7 @@ fun AlbumDetailsScreen(
 private fun AlbumDetailsContent(
     state: AlbumDetailsViewModel.AlbumDetailsViewState,
     navigateToDetails: (slug: String, list: String) -> Unit,
+    openLink: (String) -> Unit,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     listName: String = "List",
@@ -176,117 +185,27 @@ private fun AlbumDetailsContent(
                 ),
             ) {
                 item {
-                    BoxWithConstraints(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.TopCenter,
-                    ) {
-                        val width = maxWidth
-                        // Background
-                        AlbumCover(
-                            coverUrl = historicAlbum?.album?.imageUrl,
-                            albumSlug = historicAlbum?.album?.slug,
-                            shape = RectangleShape,
-                            contentScale = ContentScale.FillHeight,
-                            modifier = Modifier
-                                .graphicsLayer(
-                                    alpha = animatedAlpha,
-                                )
-                                .height(width + paddingValues.calculateTopPadding())
-                                .blur(radius = 20.dp),
-                        )
-
-                        // Foreground
-                        AlbumCover(
-                            coverUrl = historicAlbum?.album?.imageUrl,
-                            albumSlug = historicAlbum?.album?.slug,
-                            modifier = Modifier
-                                .padding(horizontal = 32.dp)
-                                .padding(
-                                    bottom = 16.dp,
-                                    top = paddingValues.calculateTopPadding() + 16.dp,
-                                )
-                                .sharedElement(
-                                    sharedContentState = rememberSharedContentState(key = "$listName-cover-${historicAlbum?.album?.slug}"),
-                                    animatedVisibilityScope = animatedContentScope,
-                                )
-                                .shadow(elevation = 8.dp),
-                        )
-                    }
+                    DetailsCoverArt(
+                        historicAlbum = historicAlbum,
+                        animatedAlpha = animatedAlpha,
+                        paddingValues = paddingValues,
+                        listName = listName,
+                        animatedContentScope = animatedContentScope
+                    )
                 }
 
                 if (historicAlbum?.album != null) {
                     item {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(
-                                    text = historicAlbum.album.artist.orEmpty(),
-                                    style = MaterialTheme.typography.headlineSmall,
-                                )
-
-                                Spacer(Modifier.weight(1f))
-
-                                Text(
-                                    text = historicAlbum.album.releaseDate.orEmpty(),
-                                    textAlign = TextAlign.Center,
-                                )
-                            }
-                        }
+                        AlbumDetails(historicAlbum)
                     }
                     item {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.CenterHorizontally),
-                        ) {
-                            FilledTonalButton(
-                                onClick = {
-                                    context.openLink(historicAlbum.album.wikipediaUrl)
-                                },
-                            ) {
-                                Icon(
-                                    modifier = Modifier.padding(end = 8.dp),
-                                    painter = painterResource(id = dk.clausr.a1001albumsgenerator.ui.R.drawable.ic_wiki),
-                                    contentDescription = "Wikipedia",
-                                )
-                                Text(text = stringResource(R.string.wikipedia_button_title))
-                            }
-
-                            StreamingServices.from(historicAlbum.album)
-                                .getStreamingLinkFor(state.streamingPlatform)
-                                ?.let { streamingLink ->
-                                    FilledTonalButton(
-                                        modifier = Modifier.sharedBounds(
-                                            sharedContentState = rememberSharedContentState(key = "$listName-play-${historicAlbum.album.slug}"),
-                                            animatedVisibilityScope = animatedContentScope,
-                                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(),
-                                        ),
-                                        onClick = {
-                                            context.openLink(streamingLink)
-                                        },
-                                    ) {
-                                        Icon(
-                                            modifier = Modifier.padding(end = 8.dp),
-                                            imageVector = Icons.Default.PlayArrow,
-                                            contentDescription = "Play",
-                                        )
-                                        Text(text = stringResource(R.string.play_button_title))
-                                    }
-                                }
-
-                            state.historyLink?.let { historyLink ->
-                                FilledTonalButton(
-                                    onClick = {
-                                        context.openLink(historyLink)
-                                    },
-                                ) {
-                                    Icon(
-                                        modifier = Modifier.padding(end = 8.dp),
-                                        painter = painterResource(id = dk.clausr.a1001albumsgenerator.ui.R.drawable.ic_open_external),
-                                        contentDescription = "Open in history",
-                                    )
-                                    Text(text = stringResource(R.string.history_link_button_title))
-                                }
-                            }
-                        }
+                        LinkButtons(
+                            historicAlbum = historicAlbum,
+                            state = state,
+                            listName = listName,
+                            animatedContentScope = animatedContentScope,
+                            openLink = openLink,
+                        )
                     }
                 }
 
@@ -355,6 +274,126 @@ private fun AlbumDetailsContent(
 }
 
 @Composable
+private fun SharedTransitionScope.LinkButtons(
+    historicAlbum: HistoricAlbum,
+    state: AlbumDetailsViewModel.AlbumDetailsViewState,
+    listName: String,
+    animatedContentScope: AnimatedVisibilityScope,
+    openLink: (String) -> Unit,
+) {
+    FlowRow(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.CenterHorizontally),
+    ) {
+        IconButton(onClick = { openLink(historicAlbum.album.wikipediaUrl) }) {
+            Icon(
+                painter = painterResource(id = dk.clausr.a1001albumsgenerator.ui.R.drawable.ic_wiki),
+                contentDescription = "Wikipedia",
+            )
+        }
+
+        StreamingServices.from(historicAlbum.album)
+            .getStreamingLinkFor(state.streamingPlatform)
+            ?.let { streamingLink ->
+                FilledTonalButton(
+                    modifier = Modifier
+                        .sharedBounds(
+                            sharedContentState = rememberSharedContentState(key = "$listName-play-${historicAlbum.album.slug}"),
+                            animatedVisibilityScope = animatedContentScope,
+                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(),
+                        ),
+                    onClick = {
+                        openLink(streamingLink)
+                    },
+                ) {
+                    Icon(
+                        modifier = Modifier.padding(end = 8.dp),
+                        imageVector = Icons.Default.PlayArrow,
+                        contentDescription = "Play",
+                    )
+                    Text(text = stringResource(R.string.play_button_title))
+                }
+            }
+
+        state.historyLink?.let { historyLink ->
+            IconButton(onClick = { openLink(historyLink) }) {
+                Icon(
+                    painter = painterResource(id = dk.clausr.a1001albumsgenerator.ui.R.drawable.ic_open_external),
+                    contentDescription = "Open in history",
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun AlbumDetails(historicAlbum: HistoricAlbum) {
+    Column(modifier = Modifier.padding(16.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = historicAlbum.album.artist,
+                style = MaterialTheme.typography.headlineSmall,
+            )
+
+            Spacer(Modifier.weight(1f))
+
+            Text(
+                text = historicAlbum.album.releaseDate,
+                textAlign = TextAlign.Center,
+            )
+        }
+    }
+}
+
+@Composable
+private fun SharedTransitionScope.DetailsCoverArt(
+    historicAlbum: HistoricAlbum?,
+    animatedAlpha: Float,
+    paddingValues: PaddingValues,
+    listName: String,
+    animatedContentScope: AnimatedVisibilityScope,
+) {
+    BoxWithConstraints(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.TopCenter,
+    ) {
+        val width = maxWidth
+        // Background
+        AlbumCover(
+            coverUrl = historicAlbum?.album?.imageUrl,
+            albumSlug = historicAlbum?.album?.slug,
+            shape = RectangleShape,
+            contentScale = ContentScale.FillHeight,
+            modifier = Modifier
+                .graphicsLayer(
+                    alpha = animatedAlpha,
+                )
+                .height(width + paddingValues.calculateTopPadding())
+                .blur(radius = 20.dp),
+        )
+
+        // Foreground
+        AlbumCover(
+            coverUrl = historicAlbum?.album?.imageUrl,
+            albumSlug = historicAlbum?.album?.slug,
+            modifier = Modifier
+                .padding(horizontal = 32.dp)
+                .padding(
+                    bottom = 16.dp,
+                    top = paddingValues.calculateTopPadding() + 16.dp,
+                )
+                .sharedElement(
+                    sharedContentState = rememberSharedContentState(key = "$listName-cover-${historicAlbum?.album?.slug}"),
+                    animatedVisibilityScope = animatedContentScope,
+                )
+                .shadow(elevation = 8.dp),
+        )
+    }
+}
+
+@Composable
 private fun LoadingRow(modifier: Modifier = Modifier) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -391,6 +430,7 @@ private fun DetailsPreview() {
                                 historicAlbumPreviewData(slug = "1"),
                                 historicAlbumPreviewData(slug = "2"),
                             ),
+                            historyLink = ExternalLinks.Generator.BASE_URL,
                             reviewViewState = AlbumDetailsViewModel.AlbumReviewsViewState.Success(
                                 listOf(
                                     GroupReview(
@@ -408,6 +448,7 @@ private fun DetailsPreview() {
                         ),
                         navigateToDetails = { _, _ -> },
                         onNavigateBack = { },
+                        openLink = { },
                     )
                 }
             }

@@ -87,6 +87,23 @@ class AlbumReviewRepository @Inject constructor(
         )
     }.flowOn(ioDispatcher)
 
+    fun getPersonalReviewFlow(
+        projectId: String,
+        albumId: String,
+    ): Flow<GroupReview?> {
+        return albumWithOptionalRatingDao
+            .getAlbumByIdFlow(id = albumId)
+            .map {
+                it.mapToHistoricAlbum().metadata?.let { metadata ->
+                    GroupReview(
+                        author = projectId,
+                        rating = metadata.rating,
+                        review = metadata.review,
+                    )
+                }
+            }
+    }
+
     private fun getPersonalReview(
         projectId: String,
         albumId: String,

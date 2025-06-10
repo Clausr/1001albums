@@ -10,6 +10,7 @@ import dk.clausr.core.data.repository.AlbumReviewRepository
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.model.GroupReview
 import dk.clausr.core.model.HistoricAlbum
+import dk.clausr.core.model.Rating
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.network.NetworkError
 import dk.clausr.feature.overview.navigation.AlbumDetailsRoute
@@ -19,6 +20,8 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import java.time.Instant
@@ -43,6 +46,20 @@ class AlbumDetailsViewModel @Inject constructor(
             )
         }
 
+    private val externalRatingLink = oagRepository.projectId.flatMapConcat { pId ->
+        val projectId = pId ?: return@flatMapConcat flowOf(null)
+        albumReviewRepository.getPersonalReviewFlow(projectId, albumId)
+    }.map { personalReview ->
+        if (personalReview?.rating !is Rating.Rated) {
+            ExternalLinks.Generator.historyLink(
+                projectId = personalReview?.author.orEmpty(),
+                albumId = albumId,
+            )
+        } else {
+            null
+        }
+    }
+
     private val reviewState = albumReviewRepository.getGroupReviews(albumId)
         .map {
             if (it.reviews.isEmpty() && it.isLoading) {
@@ -64,8 +81,8 @@ class AlbumDetailsViewModel @Inject constructor(
         oagRepository.getHistoricAlbum(albumId),
         oagRepository.preferredStreamingPlatform,
         reviewState,
-        _historyLink,
-    ) { historicAlbum, streaming, reviewState, historyLink ->
+        externalRatingLink,
+    ) { historicAlbum, streaming, reviewState, externalRatingLink ->
         AlbumDetailsViewState(
             album = historicAlbum,
             streamingPlatform = streaming,
@@ -74,7 +91,7 @@ class AlbumDetailsViewModel @Inject constructor(
                 generatedAt = historicAlbum.metadata?.generatedAt,
             ),
             reviewViewState = reviewState,
-            historyLink = historyLink,
+            historyLink = externalRatingLink,
         )
     }
         .stateIn(
