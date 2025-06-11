@@ -32,7 +32,7 @@ class NotificationsSheetViewModel @Inject constructor(
 
     val viewState = combine(
         notificationRepository.notifications,
-        notificationRepository.unreadNotifications
+        notificationRepository.unreadNotifications,
     ) { readNotifications, unreadNotifications ->
         if (unreadNotifications.isEmpty() && unreadNotificationCount == 0) {
             NotificationViewState.EmptyState

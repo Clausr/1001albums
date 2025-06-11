@@ -117,7 +117,7 @@ private fun NotificationSheetContent(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        modifier = Modifier.animateContentSize(),
+        modifier = modifier.animateContentSize(),
         shape = MaterialTheme.shapes.medium.copy(
             topStart = CornerSize(0.dp),
             topEnd = CornerSize(0.dp),
@@ -148,7 +148,7 @@ private fun NotificationSheetContent(
                 }
             }
             LazyColumn(
-                modifier = modifier.padding(bottom = 16.dp),
+                modifier = Modifier.padding(bottom = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 when (viewState) {
@@ -186,9 +186,10 @@ private fun NotificationSheetContent(
 private fun NotificationRow(
     notification: NotificationRowData,
     onNotificationClick: (NotificationData) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable(enabled = notification.onClickEnabled) {
                 notification.notificationData?.let(onNotificationClick)

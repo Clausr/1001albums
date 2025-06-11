@@ -87,7 +87,7 @@ class AlbumReviewRepository @Inject constructor(
         )
     }.flowOn(ioDispatcher)
 
-    private fun getPersonalReview(
+    fun getPersonalReview(
         projectId: String,
         albumId: String,
     ): GroupReview? {
@@ -99,6 +99,21 @@ class AlbumReviewRepository @Inject constructor(
             )
         }
     }
+
+    fun getPersonalReviewFlow(albumId: String): Flow<GroupReview?> = flow<GroupReview?> {
+        val projectId = projectDao.getProjectId()
+
+        val metadata = albumWithOptionalRatingDao.getAlbumById(id = albumId).mapToHistoricAlbum().metadata
+
+        emit(
+            GroupReview(
+                author = projectId,
+                rating = metadata?.rating,
+                review = metadata?.review,
+            ),
+        )
+    }
+        .flowOn(ioDispatcher)
 
     @Throws(IllegalStateException::class)
     private suspend fun <T, E> retryNetworkCall(networkCall: suspend () -> Result<T, E>): T {

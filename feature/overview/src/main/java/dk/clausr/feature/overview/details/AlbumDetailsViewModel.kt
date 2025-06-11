@@ -10,12 +10,14 @@ import dk.clausr.core.data.repository.AlbumReviewRepository
 import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.model.GroupReview
 import dk.clausr.core.model.HistoricAlbum
+import dk.clausr.core.model.Rating
 import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.network.NetworkError
 import dk.clausr.feature.overview.navigation.AlbumDetailsRoute
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
@@ -34,13 +36,12 @@ class AlbumDetailsViewModel @Inject constructor(
     val listName = navArgs.listName
     private val albumId = navArgs.albumId
 
-    private val _historyLink = oagRepository.projectId
-        .map {
-            val projectId = it ?: return@map null
+    private val externalRatingLink: Flow<String?> = albumReviewRepository.getPersonalReviewFlow(albumId)
+        .map { personalReview ->
             ExternalLinks.Generator.historyLink(
-                projectId = projectId,
+                projectId = personalReview?.author.orEmpty(),
                 albumId = albumId,
-            )
+            ).takeIf { personalReview?.rating !is Rating.Rated }
         }
 
     private val reviewState = albumReviewRepository.getGroupReviews(albumId)
@@ -64,8 +65,8 @@ class AlbumDetailsViewModel @Inject constructor(
         oagRepository.getHistoricAlbum(albumId),
         oagRepository.preferredStreamingPlatform,
         reviewState,
-        _historyLink,
-    ) { historicAlbum, streaming, reviewState, historyLink ->
+        externalRatingLink,
+    ) { historicAlbum, streaming, reviewState, externalRatingLink ->
         AlbumDetailsViewState(
             album = historicAlbum,
             streamingPlatform = streaming,
@@ -74,7 +75,7 @@ class AlbumDetailsViewModel @Inject constructor(
                 generatedAt = historicAlbum.metadata?.generatedAt,
             ),
             reviewViewState = reviewState,
-            historyLink = historyLink,
+            historyLink = externalRatingLink,
         )
     }
         .stateIn(

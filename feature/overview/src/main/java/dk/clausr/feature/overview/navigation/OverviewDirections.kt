@@ -1,5 +1,6 @@
 package dk.clausr.feature.overview.navigation
 
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -38,11 +39,14 @@ fun NavGraphBuilder.overviewGraph(
             )
         }
         sharedTransitionComposable<AlbumDetailsRoute> {
+            val uriHandler = LocalUriHandler.current
+
             AlbumDetailsScreen(
                 navigateToDetails = { id, list ->
                     navigateToAlbumDetails(id, list)
                 },
                 onNavigateBack = navigateBack,
+                openLink = { uriHandler.openUri(it) },
             )
         }
     }

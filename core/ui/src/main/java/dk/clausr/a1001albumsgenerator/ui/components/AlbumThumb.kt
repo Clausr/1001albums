@@ -3,6 +3,7 @@ package dk.clausr.a1001albumsgenerator.ui.components
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -62,10 +63,12 @@ fun AlbumThumb(
                     AlbumCover(
                         coverUrl = coverUrl,
                         albumSlug = albumSlug,
-                        modifier = Modifier.sharedElement(
-                            sharedContentState = rememberSharedContentState(key = "$listName-cover-$albumSlug"),
-                            animatedVisibilityScope = animatedContentScope,
-                        ),
+                        modifier = Modifier
+                            .aspectRatio(1f)
+                            .sharedElement(
+                                sharedContentState = rememberSharedContentState(key = "$listName-cover-$albumSlug"),
+                                animatedVisibilityScope = animatedContentScope,
+                            ),
                     )
 
                     onClickPlay?.let { onClickPlay ->
