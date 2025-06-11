@@ -92,8 +92,6 @@ fun AlbumDetailsScreen(
     modifier: Modifier = Modifier,
     viewModel: AlbumDetailsViewModel = hiltViewModel(),
 ) {
-    val context = LocalContext.current
-
     TrackScreenViewEvent(
         screenName = "Album details",
         extras = listOfNotNull(
