@@ -69,6 +69,7 @@ private fun Project.configureKotlin() {
                 listOf(
                     // Enable experimental coroutines APIs
                     "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                    "-Xannotation-default-target=param-property",
                 ),
             )
         }

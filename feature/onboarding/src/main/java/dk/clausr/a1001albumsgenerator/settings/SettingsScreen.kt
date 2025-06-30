@@ -42,7 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.invisibleToUser
+import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -157,7 +157,7 @@ fun SettingsContent(
                                     state = hazeState,
                                     style = HazeMaterials.regular(),
                                 )
-                                .clearAndSetSemantics { invisibleToUser() },
+                                .clearAndSetSemantics { hideFromAccessibility() },
                         ) {
                             if (hideContent) {
                                 Icon(imageVector = Icons.Default.VisibilityOff, contentDescription = "Visibility ")
