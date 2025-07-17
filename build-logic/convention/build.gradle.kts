@@ -24,6 +24,13 @@ dependencies {
     compileOnly(libs.firebase.crashlytics.gradlePlugin)
 }
 
+tasks {
+    validatePlugins {
+        enableStricterValidation = true
+        failOnWarning = true
+    }
+}
+
 gradlePlugin {
     plugins {
         register("androidApplicationCompose") {

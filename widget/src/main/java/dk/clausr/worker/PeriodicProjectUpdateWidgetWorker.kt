@@ -93,10 +93,10 @@ class PeriodicProjectUpdateWidgetWorker @AssistedInject constructor(
 
         Timber.d(
             "Periodic Worker result: ${
-                when {
-                    workerResult == Result.success() -> "Success"
-                    workerResult == Result.retry() -> "Retry"
-                    workerResult == Result.failure() -> "Failure"
+                when (workerResult) {
+                    Result.success() -> "Success"
+                    Result.retry() -> "Retry"
+                    Result.failure() -> "Failure"
                     else -> "Unknown"
                 }
             }",
