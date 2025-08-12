@@ -15,7 +15,7 @@ import javax.inject.Inject
 val Context.oagDataStore: DataStore<Preferences> by preferencesDataStore(name = OagDataStore.OAG_DATASTORE_NAME)
 
 class OagDataStore @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
 ) {
     val userData: Flow<UserData> = context.oagDataStore.data.map { preferences ->
         UserData(
@@ -24,11 +24,6 @@ class OagDataStore @Inject constructor(
             groupSlug = preferences[GROUP_SLUG],
         )
     }
-
-    val hasOnboarded: Flow<Boolean> = context.oagDataStore.data
-        .map { preferences ->
-            preferences[IS_ONBOARDED] == true
-        }
 
     suspend fun setHasOnboarded(value: Boolean) {
         context.oagDataStore.edit { preferences ->

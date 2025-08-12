@@ -17,6 +17,10 @@ dependencies {
     implementation(libs.androidx.compose.animation)
     implementation(libs.androidx.compose.animation.core)
 
+    implementation(libs.androidx.compose.material3.adaptive)
+    implementation(libs.androidx.compose.material3.adaptive.layout)
+    implementation(libs.androidx.compose.material3.window.size)
+
     implementation(libs.coil3)
     implementation(libs.coil3.coil.compose)
     implementation(libs.coil3.coil.network.okhttp)

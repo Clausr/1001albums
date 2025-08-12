@@ -20,7 +20,7 @@ import javax.inject.Inject
 class NotificationsMockDataSource @Inject constructor(
     private val json: Json,
     private val assets: FakeAssetManager = LocalAssetManager,
-    @Dispatcher(OagDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(OagDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : NotificationsDataSource {
     override suspend fun getNotifications(
         projectId: String,
