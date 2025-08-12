@@ -20,7 +20,7 @@ import javax.inject.Inject
 class OAGMockDataSource @Inject constructor(
     private val json: Json,
     private val assets: FakeAssetManager = LocalAssetManager,
-    @Dispatcher(OagDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
+    @param:Dispatcher(OagDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : OAGDataSource {
     override suspend fun getProject(projectId: String): Result<NetworkProject, NetworkError> = withContext(ioDispatcher) {
         Result.Success(assets.open("mock_project_response.json").use(json::decodeFromStream))
