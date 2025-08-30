@@ -59,16 +59,18 @@ class SettingsViewModel @Inject constructor(
 
     fun setProjectId(projectId: String) {
         Timber.d("setProjectId $projectId")
+        val encodedProjectId = projectId.replace(" ", "-")
+
         viewModelScope.launch {
             val existingProject = oagRepository.project.firstOrNull()
-            if (existingProject != null && existingProject.name.equals(projectId, ignoreCase = true)) {
+            if (existingProject != null && existingProject.name.equals(encodedProjectId, ignoreCase = true)) {
                 Timber.d("Same as existing project: ${existingProject.name}")
             } else {
-                val asyncSetProject = async { oagRepository.setProject(projectId) }
+                val asyncSetProject = async { oagRepository.setProject(encodedProjectId) }
                 val asyncUpdateNotifications = async {
                     notificationRepository.updateNotifications(
                         origin = "SettingsVM",
-                        projectId = projectId,
+                        projectId = encodedProjectId,
                         getRead = false,
                     )
                 }
