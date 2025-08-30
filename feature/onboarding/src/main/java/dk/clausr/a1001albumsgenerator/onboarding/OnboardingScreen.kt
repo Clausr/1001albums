@@ -23,7 +23,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navigation
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
@@ -60,7 +59,7 @@ fun OnboardingRoute(
 
             IntroViewEffects.ProjectSet -> {
                 error = null
-                internalNavController.navigate(OnboardingDirections.streamingPlatform())
+                internalNavController.navigateToStreamingPlatform()
             }
 
             IntroViewEffects.OnboardingDone -> {
@@ -109,44 +108,38 @@ internal fun OnboardingScreen(
         ) {
             NavHost(
                 navController = navHostController,
-                startDestination = OnboardingDirections.Routes.ROOT,
+                startDestination = ProjectNameRoute,
             ) {
-                navigation(
-                    route = OnboardingDirections.Routes.ROOT,
-                    startDestination = OnboardingDirections.projectName(),
-                ) {
-                    composable(route = OnboardingDirections.projectName()) {
-                        ProjectNameScreen(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
-                                .clip(shape = MaterialTheme.shapes.medium)
-                                .hazeEffect(
-                                    state = hazeState,
-                                    style = HazeMaterials.ultraThin(),
-                                )
-                                .padding(all = 16.dp),
-                            prefilledProjectId = projectId.orEmpty(),
-                            onSetProjectId = onSetProjectId,
-                            error = error,
-                        )
-                    }
-
-                    composable(route = OnboardingDirections.streamingPlatform()) {
-                        StreamingServiceScreen(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
-                                .clip(shape = MaterialTheme.shapes.medium)
-                                .hazeEffect(
-                                    state = hazeState,
-                                    style = HazeMaterials.ultraThin(),
-                                )
-                                .padding(all = 16.dp),
-                            onSetStreamingPlatform = onSetStreamingPlatform,
-                            preselectedPlatform = preferredStreamingPlatform,
-                        )
-                    }
+                composable<ProjectNameRoute> {
+                    ProjectNameScreen(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .clip(shape = MaterialTheme.shapes.medium)
+                            .hazeEffect(
+                                state = hazeState,
+                                style = HazeMaterials.ultraThin(),
+                            )
+                            .padding(all = 16.dp),
+                        prefilledProjectId = projectId.orEmpty(),
+                        onSetProjectId = onSetProjectId,
+                        error = error,
+                    )
+                }
+                composable<StreamingPlatformRoute> {
+                    StreamingServiceScreen(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .clip(shape = MaterialTheme.shapes.medium)
+                            .hazeEffect(
+                                state = hazeState,
+                                style = HazeMaterials.ultraThin(),
+                            )
+                            .padding(all = 16.dp),
+                        onSetStreamingPlatform = onSetStreamingPlatform,
+                        preselectedPlatform = preferredStreamingPlatform,
+                    )
                 }
             }
         }
