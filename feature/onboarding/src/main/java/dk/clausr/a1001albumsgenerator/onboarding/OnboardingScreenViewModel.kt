@@ -33,17 +33,18 @@ class OnboardingScreenViewModel @Inject constructor(
     val streamingPlatform: Flow<StreamingPlatform?> = _streamingPlatform
 
     fun setProjectId(projectId: String) {
+        val encodedProjectId = projectId.replace(" ", "-")
         viewModelScope.launch {
             // If user goes back, don't query backend again
             val existingProject = oagRepository.project.firstOrNull()
-            if (existingProject != null && existingProject.name.equals(projectId, ignoreCase = true)) {
+            if (existingProject != null && existingProject.name.equals(encodedProjectId, ignoreCase = true)) {
                 sendViewEffect(IntroViewEffects.ProjectSet)
             } else {
-                oagRepository.setProject(projectId)
+                oagRepository.setProject(encodedProjectId)
                     .doOnSuccess {
                         sendViewEffect(IntroViewEffects.ProjectSet)
-                        userRepository.setProjectId(projectId)
-                        this@OnboardingScreenViewModel._projectId.value = projectId
+                        userRepository.setProjectId(encodedProjectId)
+                        this@OnboardingScreenViewModel._projectId.value = encodedProjectId
                     }
                     .doOnFailure { error ->
                         Timber.e(error.cause, "Could not set projectId")
