@@ -12,7 +12,6 @@ dependencies {
     implementation(project(":widget"))
 
     implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.material3)
     implementation(libs.coil3)
     implementation(libs.coil3.coil.compose)
     implementation(libs.coil3.coil.network.okhttp)
