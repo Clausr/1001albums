@@ -38,5 +38,5 @@ val Notification.isClickable: Boolean
         NotificationType.GroupAlbumsGenerated,
         NotificationType.NewGroupMember,
         NotificationType.Unknown,
-            -> false
+        -> false
     }
