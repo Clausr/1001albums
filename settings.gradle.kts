@@ -6,12 +6,13 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
+@Suppress("UnstableApiUsage")
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
-        maven("https://jitpack.io") // Necessary for the gradle to be able to download github packages
     }
 }
 
