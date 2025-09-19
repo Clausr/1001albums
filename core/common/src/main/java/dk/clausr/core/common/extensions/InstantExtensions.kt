@@ -12,8 +12,8 @@ fun Instant.toLocalDateTime(zoneId: ZoneId = ZoneId.systemDefault()): LocalDateT
     return this.atZone(zoneId).toLocalDateTime()
 }
 
-fun LocalDateTime.formatToLocalDate(locale: Locale = Locale.getDefault()): String {
-    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", locale)
+fun LocalDateTime.formatToLocalDate(): String {
+    val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
     return this.format(formatter)
 }
 
