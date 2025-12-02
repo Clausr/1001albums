@@ -18,7 +18,7 @@ object ExternalLinks {
             .scheme("https")
             .authority("1001albumsgenerator.com")
             .path("$projectId/history")
-            .fragment("project-history--rating-col-$albumId")
+            .fragment("project-history--album-row-$albumId-true")
             .build()
             .toString()
     }
