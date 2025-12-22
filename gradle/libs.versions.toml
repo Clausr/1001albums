@@ -1,5 +1,5 @@
 [versions]
-activityCompose = "1.12.0"
+activityCompose = "1.12.2"
 androidDesugarJdkLibs = "2.1.5"
 androidGradlePlugin = "8.13.2"
 androidx-test-ext-junit = "1.1.5"
