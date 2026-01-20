@@ -21,7 +21,7 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:ui"))
     implementation(project(":feature:onboarding"))
-    implementation("com.google.guava:guava:33.4.8-android")
+    implementation("com.google.guava:guava:33.5.0-android")
     implementation(libs.kotlinx.collections.immutable)
 
     implementation(libs.androidx.glance.preview)
