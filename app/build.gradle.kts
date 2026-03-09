@@ -14,8 +14,6 @@ plugins {
 val keystorePropertiesFile = rootProject.file("signing/secrets.properties")
 val keystoreProperties = Properties()
 
-apply("${project.rootDir}/gradle/script-git-version.gradle.kts")
-
 val gitVersionName = GitVersion.resolveVersionName(project)
 val gitVersionCode = GitVersion.resolveVersionCode(project)
 
