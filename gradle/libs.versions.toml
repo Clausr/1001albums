@@ -1,7 +1,7 @@
 [versions]
 activityCompose = "1.12.4"
 androidDesugarJdkLibs = "2.1.5"
-androidGradlePlugin = "8.13.2"
+androidGradlePlugin = "9.1.0"
 androidx-test-ext-junit = "1.1.5"
 androidxHiltNavigationCompose = "1.3.0"
 androidxLifecycle = "2.10.0"
@@ -22,7 +22,7 @@ firebaseCrashlyticsPlugin = "3.0.6"
 glance = "1.1.1"
 googleServicesVersion = "4.4.4"
 haze = "1.7.2"
-hilt = "2.58"
+hilt = "2.59.2"
 hiltExt = "1.3.0"
 junit = "4.13.2"
 kotlin = "2.3.10"
@@ -30,13 +30,16 @@ kotlinxCollectionsImmutable = "0.4.0"
 kotlinxCoroutines = "1.10.2"
 kotlinxSerializationJson = "1.10.0"
 ksp = "2.3.4"
-lintVersion = "32.0.0" # "$(androidGradlePlugin + 23)"
+lintVersion = "32.1.0" # "$(androidGradlePlugin + 23)"
 materialVersion = "1.13.0"
 okhttp = "5.3.2"
 retrofit = "3.0.0"
 retrofitKotlinxSerializationJson = "1.0.0"
 room = "2.8.4"
 timber = "5.0.1"
+
+jdk = "21"
+jvmTarget = "21"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -112,5 +115,13 @@ hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 room = { id = "androidx.room", version.ref = "room" }
+
+oag-android-application = { id = "a1001albums.android.application" }
+oag-android-application-compose = { id = "a1001albums.android.application.compose" }
+oag-android-feature = { id = "a1001albums.android.feature" }
+oag-android-application-flavors = { id = "a1001albums.android.application.flavors" }
+oag-android-library = { id = "a1001albums.android.library" }
+oag-android-library-compose = { id = "a1001albums.android.library.compose" }
+oag-android-hilt = { id = "a1001albums.android.hilt" }
+oag-android-room = { id = "a1001albums.android.room" }

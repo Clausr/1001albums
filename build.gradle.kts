@@ -2,11 +2,8 @@
 
 plugins {
     alias(libs.plugins.android.application) apply false
-    alias(libs.plugins.org.jetbrains.kotlin.android) apply false
     alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.hilt) apply false
-    alias(libs.plugins.android.library) apply false
-    alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.detekt).version(libs.versions.detektPluginVersion.get())
@@ -14,6 +11,12 @@ plugins {
     alias(libs.plugins.google.services) apply false
     alias(libs.plugins.firebase.crashlytics) apply false
     alias(libs.plugins.room) apply false
+
+    alias(libs.plugins.oag.android.application) apply false
+    alias(libs.plugins.oag.android.application.compose) apply false
+    alias(libs.plugins.oag.android.application.flavors) apply false
+    alias(libs.plugins.oag.android.room) apply false
+    alias(libs.plugins.oag.android.hilt) apply false
 }
 
 detekt {
@@ -26,7 +29,6 @@ detekt {
     debug = false
 }
 
-@Suppress("UnstableApiUsage")
 configurations {
     detektPlugins
 }
