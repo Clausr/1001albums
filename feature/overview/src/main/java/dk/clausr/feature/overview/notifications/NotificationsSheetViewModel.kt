@@ -16,6 +16,7 @@ import dk.clausr.widget.AlbumCoverWidget
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -78,6 +79,26 @@ class NotificationsSheetViewModel @Inject constructor(
                     clearUnreadNotifications()
                 }
             }
+        }
+
+        viewModelScope.launch {
+            combine(
+                notificationRepository.notifications,
+                showAllNotifications,
+                oagRepository.projectId,
+            ) {
+                    notifications,
+                    showAll,
+                    projectId,
+                ->
+                if (notifications.isEmpty() && showAll && projectId != null) {
+                    notificationRepository.updateNotifications(
+                        origin = "NotificationsVM",
+                        projectId = projectId,
+                        getRead = true,
+                    )
+                }
+            }.collect()
         }
     }
 
