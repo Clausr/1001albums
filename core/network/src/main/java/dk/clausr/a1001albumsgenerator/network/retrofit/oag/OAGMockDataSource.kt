@@ -4,6 +4,7 @@ import dk.LocalAssetManager
 import dk.clausr.a1001albumsgenerator.network.OAGDataSource
 import dk.clausr.a1001albumsgenerator.network.fake.FakeAssetManager
 import dk.clausr.a1001albumsgenerator.network.model.NetworkAlbumGroupReviews
+import dk.clausr.a1001albumsgenerator.network.model.NetworkGroup
 import dk.clausr.a1001albumsgenerator.network.model.NetworkProject
 import dk.clausr.core.common.model.Result
 import dk.clausr.core.common.network.Dispatcher
@@ -31,5 +32,9 @@ class OAGMockDataSource @Inject constructor(
         albumId: String,
     ): Result<NetworkAlbumGroupReviews, NetworkError> = withContext(ioDispatcher) {
         Result.Success(assets.open("mock_album_group_review.json").use(json::decodeFromStream))
+    }
+
+    override suspend fun getGroup(groupSlug: String): Result<NetworkGroup, NetworkError> {
+        TODO("Not yet implemented")
     }
 }
