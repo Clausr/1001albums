@@ -7,14 +7,14 @@ import org.gradle.api.Project
 object GitVersion {
 
     fun resolveVersionName(project: Project): String {
-        return project.gradleProperty("VIPPS_VERSION_NAME")
+        return project.gradleProperty("OAG_VERSION_NAME")
             ?: describeGitVersion(project)
     }
 
     fun resolveVersionCode(project: Project): Int {
-        return project.gradleProperty("VIPPS_VERSION_CODE")
+        return project.gradleProperty("OAG_VERSION_CODE")
             ?.toInt()
-            ?: if (project.isCiBuild) error("VIPPS_VERSION_CODE must be set on CI builds") else 1
+            ?: if (project.isCiBuild) error("OAG_VERSION_CODE must be set on CI builds") else 1
     }
 
     private val Project.isCiBuild get() = gradleProperty("CI_BUILD") == "true"
@@ -53,7 +53,7 @@ object GitVersion {
 
                     ## NOTE! ##
                     You need to configure git user.email and git user.name:
-                        git config user.email "your.vmp.email@vippsmobilepay.com"
+                        git config user.email "your@email.com"
                         git config user.name "User Example"
                     """.trimIndent(),
                     e,
