@@ -778,34 +778,12 @@ style:
 
 Compose:
   excludes: *excludedFolders
-  CompositionLocalAllowlist:
-    active: true
-    # You can optionally define a list of CompositionLocals that are allowed here
-    allowedCompositionLocals:
-      - 'LocalVippsColors'
-      - 'LocalVippsType'
-      - 'LocalVippsShapes'
-      - 'LocalVippsIllustrations'
-      - 'LocalBrandTexts'
-      - 'LocalVippsTheme'
-      - 'LocalVippsActionSheetState'
-      - 'LocalVippsAppBarConfigured'
-      - 'LocalVippsAppBarState'
-      - 'LocalDynamikActionSheet'
   ContentEmitterReturningValues:
     active: true
     # You can optionally add your own composables here
     # contentEmitters: MyComposable,MyOtherComposable
   DefaultsVisibility:
     active: true
-  ModifierComposable:
-    active: true
-  ModifierMissing:
-    active: true
-    checkModifiersForVisibility: 'all'
-    # You can optionally control the visibility of which composables to check for here
-    # Possible values are: `only_public`, `public_and_internal` and `all` (default is `only_public`)
-    # checkModifiersForVisibility: only_public
   ModifierNaming:
     active: true
   ModifierNotUsedAtRoot:

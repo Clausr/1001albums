@@ -1,8 +1,7 @@
 plugins {
     id("org.jetbrains.kotlin.plugin.compose")
-    id("a1001albums.android.widget")
-    id("a1001albums.android.hilt")
-    id("kotlinx-serialization")
+    alias(libs.plugins.oag.android.widget)
+    alias(libs.plugins.oag.android.hilt)
     id("com.google.devtools.ksp")
 }
 

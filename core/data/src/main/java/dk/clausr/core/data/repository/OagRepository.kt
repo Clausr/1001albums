@@ -179,6 +179,13 @@ class OagRepository @Inject constructor(
                     currentAlbum = networkProject.currentAlbum.asExternalModel(),
                     historicAlbums = networkProject.history.map { it.asExternalModel() },
                 )
+
+                networkProject.group?.slug?.let { groupSlug ->
+                    networkDataSource.getGroup(groupSlug)
+                }
+                    ?.doOnSuccess { group ->
+                        Timber.d("Group: $group")
+                    }
             }
             .doOnFailure { error ->
                 Timber.e(error.cause, "Could not getAndUpdate project ${error.cause}")

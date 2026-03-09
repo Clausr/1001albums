@@ -1,18 +1,21 @@
+import dk.clausr.GitVersion
 import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
-    id("a1001albums.android.application")
-    id("a1001albums.android.application.compose")
-    id("a1001albums.android.application.flavors")
-    id("a1001albums.android.hilt")
-    id("a1001albums.android.firebase")
+    alias(libs.plugins.oag.android.application)
+    alias(libs.plugins.oag.android.application.compose)
+    alias(libs.plugins.oag.android.application.flavors)
+    alias(libs.plugins.oag.android.hilt)
+    alias(libs.plugins.oag.android.room)
+    alias(libs.plugins.oag.android.firebase)
 }
 
 val keystorePropertiesFile = rootProject.file("signing/secrets.properties")
 val keystoreProperties = Properties()
 
-apply("${project.rootDir}/gradle/script-git-version.gradle.kts")
+val gitVersionName = GitVersion.resolveVersionName(project)
+val gitVersionCode = GitVersion.resolveVersionCode(project)
 
 android {
     namespace = "dk.clausr.a1001albumsgenerator"
@@ -21,8 +24,6 @@ android {
     defaultConfig {
         applicationId = "dk.clausr.a1001albumsgenerator"
 
-        val gitVersionName: String by extra
-        val gitVersionCode: Int by extra
         versionName = gitVersionName
         versionCode = gitVersionCode
 

@@ -1,6 +1,7 @@
 package dk.clausr.a1001albumsgenerator.network
 
 import dk.clausr.a1001albumsgenerator.network.model.NetworkAlbumGroupReviews
+import dk.clausr.a1001albumsgenerator.network.model.NetworkGroup
 import dk.clausr.a1001albumsgenerator.network.model.NetworkProject
 import dk.clausr.core.common.model.Result
 import dk.clausr.core.network.NetworkError
@@ -12,4 +13,6 @@ interface OAGDataSource {
         groupSlug: String,
         albumId: String,
     ): Result<NetworkAlbumGroupReviews, NetworkError>
+
+    suspend fun getGroup(groupSlug: String): Result<NetworkGroup, NetworkError>
 }
