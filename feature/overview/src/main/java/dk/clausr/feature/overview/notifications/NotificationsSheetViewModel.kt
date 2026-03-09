@@ -14,6 +14,7 @@ import dk.clausr.core.data.repository.OagRepository
 import dk.clausr.core.model.Notification
 import dk.clausr.widget.AlbumCoverWidget
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
@@ -28,24 +29,34 @@ class NotificationsSheetViewModel @Inject constructor(
     private val notificationRepository: NotificationRepository,
 ) : ViewModel() {
     // Temporary counter to hold on to read notifications
-    private var unreadNotificationCount = 0
+    private val unreadNotificationCount = MutableStateFlow(0)
+    private val showAllNotifications = MutableStateFlow(false)
 
     val viewState = combine(
         notificationRepository.notifications,
         notificationRepository.unreadNotifications,
-    ) { readNotifications, unreadNotifications ->
-        if (unreadNotifications.isEmpty() && unreadNotificationCount == 0) {
+        unreadNotificationCount,
+        showAllNotifications,
+    ) {
+            readNotifications,
+            unreadNotifications,
+            internalUnreadNotificationCount,
+            showAllNotifications,
+        ->
+
+        if (showAllNotifications) {
+            NotificationViewState.ShowNotifications(
+                notifications = readNotifications.map { it.mapToRowData() }.toPersistentList(),
+            )
+        } else if (unreadNotifications.isEmpty() && internalUnreadNotificationCount == 0) {
             NotificationViewState.EmptyState
         } else {
             // Show previously read notifications
-            if (unreadNotifications.isEmpty() && unreadNotificationCount > 0) {
+            if (unreadNotifications.isEmpty() && internalUnreadNotificationCount > 0) {
                 NotificationViewState.ShowNotifications(
-                    notifications = readNotifications.take(unreadNotificationCount).map { it.mapToRowData() }.toPersistentList(),
+                    notifications = readNotifications.take(internalUnreadNotificationCount).map { it.mapToRowData() }.toPersistentList(),
                 )
             } else {
-                // Set amount of unread notifications to be able to show them in the read state
-                unreadNotificationCount = unreadNotifications.size
-
                 NotificationViewState.ShowNotifications(
                     notifications = unreadNotifications.map { it.mapToRowData() }.toPersistentList(),
                 )
@@ -62,6 +73,8 @@ class NotificationsSheetViewModel @Inject constructor(
         viewModelScope.launch {
             notificationRepository.unreadNotifications.collect { unreadNotifications ->
                 if (unreadNotifications.isNotEmpty()) {
+                    unreadNotificationCount.value = unreadNotifications.size
+
                     clearUnreadNotifications()
                 }
             }
@@ -80,6 +93,10 @@ class NotificationsSheetViewModel @Inject constructor(
                     Timber.e(it.cause, "Could not read all notifications")
                 }
         }
+    }
+
+    internal fun toggleAllNotifications() {
+        showAllNotifications.value = !showAllNotifications.value
     }
 
     private fun Notification.mapToRowData(): NotificationRowData {

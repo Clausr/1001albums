@@ -29,6 +29,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -105,6 +106,7 @@ fun NotificationUpperSheet(
             viewState = viewState,
             onNotificationClick = onNotificationClick,
             onClose = { onClose() },
+            onClickShowAllNotifications = { viewModel.toggleAllNotifications() },
         )
     }
 }
@@ -113,6 +115,7 @@ fun NotificationUpperSheet(
 private fun NotificationSheetContent(
     viewState: NotificationViewState,
     onNotificationClick: (NotificationData) -> Unit,
+    onClickShowAllNotifications: () -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -122,7 +125,7 @@ private fun NotificationSheetContent(
             topStart = CornerSize(0.dp),
             topEnd = CornerSize(0.dp),
         ),
-        shadowElevation = 2.dp,
+        shadowElevation = 0.dp,
         color = MaterialTheme.colorScheme.surfaceContainer,
     ) {
         Column(
@@ -148,7 +151,7 @@ private fun NotificationSheetContent(
                 }
             }
             LazyColumn(
-                modifier = Modifier.padding(bottom = 16.dp),
+                modifier = Modifier.padding(bottom = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 when (viewState) {
@@ -177,6 +180,10 @@ private fun NotificationSheetContent(
                         }
                     }
                 }
+            }
+
+            TextButton(onClick = onClickShowAllNotifications) {
+                Text(stringResource(R.string.show_all_notifications))
             }
         }
     }
@@ -229,6 +236,7 @@ private fun EmptyStatePreview() {
             viewState = NotificationViewState.EmptyState,
             onNotificationClick = {},
             onClose = {},
+            onClickShowAllNotifications = {},
         )
     }
 }
@@ -260,6 +268,7 @@ private fun NotificationsStatePreview() {
             ),
             onNotificationClick = {},
             onClose = {},
+            onClickShowAllNotifications = {},
         )
     }
 }
