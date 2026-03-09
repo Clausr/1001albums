@@ -34,7 +34,7 @@ class OAGMockDataSource @Inject constructor(
         Result.Success(assets.open("mock_album_group_review.json").use(json::decodeFromStream))
     }
 
-    override suspend fun getGroup(groupSlug: String): Result<NetworkGroup, NetworkError> {
-        TODO("Not yet implemented")
+    override suspend fun getGroup(groupSlug: String): Result<NetworkGroup, NetworkError> = withContext(ioDispatcher) {
+        Result.Success(assets.open("mock_group_response.json").use(json::decodeFromStream))
     }
 }

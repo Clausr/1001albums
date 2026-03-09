@@ -1,4 +1,5 @@
 import com.android.build.api.dsl.LibraryExtension
+import dk.clausr.configureFlavors
 import dk.clausr.configureKotlinAndroid
 import dk.clausr.libs
 import org.gradle.api.Plugin
@@ -17,7 +18,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
 
             extensions.configure<LibraryExtension> {
                 configureKotlinAndroid(this)
-//                defaultConfig.targetSdk = Versions.TARGET_VERSION
+                configureFlavors(this)
             }
 
             dependencies {

@@ -1,6 +1,6 @@
 plugins {
-    id("a1001albums.android.library")
-    id("a1001albums.android.hilt")
+    alias(libs.plugins.oag.android.library)
+    alias(libs.plugins.oag.android.hilt)
     id("kotlinx-serialization")
 }
 

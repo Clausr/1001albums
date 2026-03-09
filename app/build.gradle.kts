@@ -8,11 +8,7 @@ plugins {
     alias(libs.plugins.oag.android.application.flavors)
     alias(libs.plugins.oag.android.hilt)
     alias(libs.plugins.oag.android.room)
-//    id("a1001albums.android.application")
-//    id("a1001albums.android.application.compose")
-//    id("a1001albums.android.application.flavors")
-//    id("a1001albums.android.hilt")
-    id("a1001albums.android.firebase")
+    alias(libs.plugins.oag.android.firebase)
 }
 
 val keystorePropertiesFile = rootProject.file("signing/secrets.properties")

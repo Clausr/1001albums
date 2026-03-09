@@ -125,3 +125,6 @@ oag-android-library = { id = "a1001albums.android.library" }
 oag-android-library-compose = { id = "a1001albums.android.library.compose" }
 oag-android-hilt = { id = "a1001albums.android.hilt" }
 oag-android-room = { id = "a1001albums.android.room" }
+oag-android-firebase = { id = "a1001albums.android.firebase" }
+oag-android-widget = { id = "a1001albums.android.widget" }
+oag-jvm-library = { id = "a1001albums.jvm.library" }
