@@ -183,7 +183,7 @@ private fun NotificationSheetContent(
             }
 
             TextButton(onClick = onClickShowAllNotifications) {
-                Text("Show all notifications")
+                Text(stringResource(R.string.show_all_notifications))
             }
         }
     }

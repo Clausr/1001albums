@@ -57,9 +57,6 @@ class NotificationsSheetViewModel @Inject constructor(
                     notifications = readNotifications.take(internalUnreadNotificationCount).map { it.mapToRowData() }.toPersistentList(),
                 )
             } else {
-                // Set amount of unread notifications to be able to show them in the read state
-                // unreadNotificationCount.value = unreadNotifications.size
-
                 NotificationViewState.ShowNotifications(
                     notifications = unreadNotifications.map { it.mapToRowData() }.toPersistentList(),
                 )
