@@ -1,7 +1,7 @@
 plugins {
-    id("a1001albums.android.library")
-    id("a1001albums.android.library.compose")
-    id("a1001albums.android.hilt")
+    alias(libs.plugins.oag.android.library)
+    alias(libs.plugins.oag.android.library.compose)
+    alias(libs.plugins.oag.android.hilt)
 }
 
 android {

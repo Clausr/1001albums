@@ -1,0 +1,819 @@
+{
+  "id": "6523012005dd510fed9bb282",
+  "name": "Oag group 0-1-2",
+  "slug": "oag-group-0-1-2",
+  "members": [
+    {
+      "id": "0",
+      "name": "oag_user"
+    },
+    {
+      "id": "1",
+      "name": "oag_user1"
+    },
+    {
+      "id": "2",
+      "name": "oag_user2"
+    }
+  ],
+  "updateFrequency": "dailyWithWeekends",
+  "filteredSelection": {
+    "selections": [],
+    "genres": []
+  },
+  "currentAlbum": {
+    "uuid": "5f34ee8bf0857e55ed5ebf0a",
+    "artist": "Le Tigre",
+    "artistOrigin": "us",
+    "images": [
+      {
+        "height": 640,
+        "url": "https://i.scdn.co/image/8f18d7311f8a9a3043442abdef7b85e10184ea77",
+        "width": 640
+      },
+      {
+        "height": 300,
+        "url": "https://i.scdn.co/image/abc7a04f3380ee9c0074663ebc6f9753bf9611ec",
+        "width": 300
+      },
+      {
+        "height": 64,
+        "url": "https://i.scdn.co/image/91b9a5da9d88ae9c61aff3450cc1b47510b69360",
+        "width": 64
+      }
+    ],
+    "genres": [
+      "rock",
+      "punk",
+      "electronica"
+    ],
+    "styles": [
+      "electro",
+      "indie-rock"
+    ],
+    "subGenres": [
+      "alternative-dance",
+      "dance-punk",
+      "new-rave",
+      "queercore",
+      "riot-grrrl"
+    ],
+    "name": "Le Tigre",
+    "slug": "le-tigre",
+    "releaseDate": "1999",
+    "globalReviewsUrl": "https://1001albumsgenerator.com/albums/3N4rp7pLbDlWo2EvtONFMG/le-tigre",
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Le_Tigre_(album)",
+    "spotifyId": "3N4rp7pLbDlWo2EvtONFMG",
+    "appleMusicId": "1585119052",
+    "tidalId": 92268617,
+    "amazonMusicId": "B00K6AUMCA",
+    "youtubeMusicId": "OLAK5uy_mdEJzQGEQ5cQHLuwD4gUGvPMDJrSTYRPs",
+    "qobuzId": "mqo28qafeaibb",
+    "deezerId": "84945022"
+  },
+  "currentUserAlbum": null,
+  "latestAlbum": {
+    "uuid": "5f34ee8bf0857e55ed5ebdc7",
+    "artist": "Fred Neil",
+    "artistOrigin": "us",
+    "images": [
+      {
+        "height": 640,
+        "url": "https://i.scdn.co/image/ab67616d0000b273e947f4b2de84a522265b52e6",
+        "width": 640
+      },
+      {
+        "height": 300,
+        "url": "https://i.scdn.co/image/ab67616d00001e02e947f4b2de84a522265b52e6",
+        "width": 300
+      },
+      {
+        "height": 64,
+        "url": "https://i.scdn.co/image/ab67616d00004851e947f4b2de84a522265b52e6",
+        "width": 64
+      }
+    ],
+    "genres": [
+      "folk"
+    ],
+    "styles": [
+      "singer-songwriter",
+      "folk-rock",
+      "psychedelic-rock"
+    ],
+    "subGenres": [
+      "american-folk-revival",
+      "country-rock",
+      "folk",
+      "folk-rock",
+      "psychedelic-rock",
+      "singer-songwriter"
+    ],
+    "name": "Fred Neil",
+    "slug": "fred-neil",
+    "releaseDate": "1966",
+    "globalReviewsUrl": "https://1001albumsgenerator.com/albums/7wpo5k9gqXQHfxISH1jatO/fred-neil",
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Fred_Neil_(album)",
+    "spotifyId": "7wpo5k9gqXQHfxISH1jatO",
+    "appleMusicId": "716399348",
+    "tidalId": 123255939,
+    "amazonMusicId": "B081V4PRV4",
+    "youtubeMusicId": "OLAK5uy_korOrzsKfhq76WdNfoVCYxOv0pgs5nGJU",
+    "qobuzId": "vamf2xhwk50gb",
+    "deezerId": "120281272",
+    "votes": 2,
+    "totalRating": 5,
+    "averageRating": 2.5,
+    "listenedAt": "2026-03-04T04:15:04.559Z"
+  },
+  "highestRatedAlbums": [
+    {
+      "uuid": "5f34ee8bf0857e55ed5ec0a4",
+      "artist": "Sigur Rós",
+      "artistOrigin": "other",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://i.scdn.co/image/53b38840e696a9332e64612e611691a2f3bfcf83",
+          "width": 640
+        },
+        {
+          "height": 300,
+          "url": "https://i.scdn.co/image/14f52d613a1f0525e2bc213388496b6173112088",
+          "width": 300
+        },
+        {
+          "height": 64,
+          "url": "https://i.scdn.co/image/4251e620acee1552a503fb98ec796cf4d487dce6",
+          "width": 64
+        }
+      ],
+      "genres": [
+        "rock"
+      ],
+      "styles": [
+        "dream-pop",
+        "post-rock",
+        "ethereal"
+      ],
+      "subGenres": [
+        "compositional-ambient",
+        "dream-pop",
+        "ethereal-wave",
+        "icelandic-rock",
+        "melancholia",
+        "nordic-post-rock",
+        "post-rock"
+      ],
+      "name": "Ágætis Byrjun",
+      "slug": "agaetis-byrjun",
+      "releaseDate": "1999",
+      "globalReviewsUrl": "https://1001albumsgenerator.com/albums/7LKQtdC6uWxqLzSbDonFij/agaetis-byrjun",
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/%C3%81g%C3%A6tis_byrjun",
+      "spotifyId": "7LKQtdC6uWxqLzSbDonFij",
+      "appleMusicId": "1447442814",
+      "tidalId": 101349508,
+      "amazonMusicId": "B07M5C4FVQ",
+      "youtubeMusicId": "OLAK5uy_kS0xK-8stFnvAtN5wIIAidUD2MAXSOxAI",
+      "qobuzId": "n41lasrtg8blc",
+      "deezerId": "102202562",
+      "votes": 3,
+      "totalRating": 15,
+      "averageRating": 5,
+      "listenedAt": "2024-03-13T04:15:06.999Z"
+    },
+    {
+      "uuid": "5f34ee8bf0857e55ed5ec099",
+      "artist": "Black Sabbath",
+      "artistOrigin": "uk",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://i.scdn.co/image/ab2eae28bb2a55667ee727711aeccc7f37498414",
+          "width": 640
+        },
+        {
+          "height": 300,
+          "url": "https://i.scdn.co/image/940cb8bad50269081a3c0bca7286e8ff5a5d84d5",
+          "width": 300
+        },
+        {
+          "height": 64,
+          "url": "https://i.scdn.co/image/22046ce2b8e0d559c5364b31b7616edeac85a114",
+          "width": 64
+        }
+      ],
+      "genres": [
+        "metal",
+        "rock"
+      ],
+      "styles": [
+        "stoner-rock",
+        "heavy-metal"
+      ],
+      "subGenres": [
+        "album-rock",
+        "birmingham-metal",
+        "classic-rock",
+        "hard-rock",
+        "metal",
+        "rock",
+        "stoner-rock",
+        "uk-doom-metal"
+      ],
+      "name": "Paranoid",
+      "slug": "paranoid",
+      "releaseDate": "1970",
+      "globalReviewsUrl": "https://1001albumsgenerator.com/albums/7DBES3oV6jjAmWob7kJg6P/paranoid",
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Paranoid_(album)",
+      "spotifyId": "7DBES3oV6jjAmWob7kJg6P",
+      "appleMusicId": "785232473",
+      "tidalId": 34450059,
+      "amazonMusicId": "B073JYN27B",
+      "youtubeMusicId": "OLAK5uy_l-gXxtv23EojUteRu5Zq1rKW3InI_bwsU",
+      "qobuzId": "ropegbnkpjj1b",
+      "deezerId": "177888572",
+      "votes": 3,
+      "totalRating": 15,
+      "averageRating": 5,
+      "listenedAt": "2024-05-07T03:15:07.045Z"
+    },
+    {
+      "uuid": "5f34ee8bf0857e55ed5ebf9d",
+      "artist": "Sparks",
+      "artistOrigin": "us",
+      "images": [
+        {
+          "height": 634,
+          "url": "https://i.scdn.co/image/2b0f2f87a41e4ef93def9b081a25ab78ea570f52",
+          "width": 640
+        },
+        {
+          "height": 297,
+          "url": "https://i.scdn.co/image/90bbda34115c2d2fd6254ffeec865232bbcf92ab",
+          "width": 300
+        },
+        {
+          "height": 63,
+          "url": "https://i.scdn.co/image/388c6bb547a930f93c508977e49b6190bd5ee792",
+          "width": 64
+        }
+      ],
+      "genres": [
+        "pop",
+        "rock"
+      ],
+      "styles": [
+        "new-wave",
+        "art-rock",
+        "glam",
+        "pop-rock"
+      ],
+      "subGenres": [
+        "art-rock",
+        "glam-rock",
+        "new-romantic",
+        "new-wave",
+        "new-wave-pop",
+        "synthpop",
+        "zolo"
+      ],
+      "name": "Kimono My House",
+      "slug": "kimono-my-house",
+      "releaseDate": "1974",
+      "globalReviewsUrl": "https://1001albumsgenerator.com/albums/4jwO7dt0trrGu0ozSVNRgo/kimono-my-house",
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Kimono_My_House",
+      "spotifyId": "4jwO7dt0trrGu0ozSVNRgo",
+      "appleMusicId": "1443839065",
+      "tidalId": 34780355,
+      "amazonMusicId": "B004028060",
+      "youtubeMusicId": "OLAK5uy_l5wJr5nRHOD3Tk6uMGfTubBfUv1xcOkWQ",
+      "qobuzId": "0060251791277",
+      "deezerId": "684797",
+      "votes": 3,
+      "totalRating": 15,
+      "averageRating": 5,
+      "listenedAt": "2024-12-01T04:15:09.730Z"
+    },
+    {
+      "uuid": "5f34ee8bf0857e55ed5ebf21",
+      "artist": "Pink Floyd",
+      "artistOrigin": "uk",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://i.scdn.co/image/cee9e4e565ff57f338222d8cbf05b7d19080b6e8",
+          "width": 640
+        },
+        {
+          "height": 300,
+          "url": "https://i.scdn.co/image/c61eee6e4322b187faf78e94b72979d831a60f4e",
+          "width": 300
+        },
+        {
+          "height": 64,
+          "url": "https://i.scdn.co/image/a81408cd6fd303da7c5f1fe26f5eea49a4665d60",
+          "width": 64
+        }
+      ],
+      "genres": [
+        "rock"
+      ],
+      "styles": [
+        "psychedelic-rock",
+        "art-rock",
+        "symphonic-rock",
+        "prog-rock"
+      ],
+      "subGenres": [
+        "album-rock",
+        "art-rock",
+        "classic-rock",
+        "progressive-rock",
+        "psychedelic-rock",
+        "rock",
+        "symphonic-rock"
+      ],
+      "name": "The Dark Side Of The Moon",
+      "slug": "the-dark-side-of-the-moon",
+      "releaseDate": "1973",
+      "globalReviewsUrl": "https://1001albumsgenerator.com/albums/3a0UOgDWw2pTajw85QPMiz/the-dark-side-of-the-moon",
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/The_Dark_Side_of_the_Moon_(album)",
+      "spotifyId": "3a0UOgDWw2pTajw85QPMiz",
+      "appleMusicId": "1065973699",
+      "tidalId": 55391786,
+      "amazonMusicId": "B019HKJTCI",
+      "youtubeMusicId": "OLAK5uy_mXoi-FuQb9Gw7Mguhdx5F4jltT0L1qOCw",
+      "qobuzId": "5099902984056",
+      "deezerId": "59853992",
+      "votes": 3,
+      "totalRating": 15,
+      "averageRating": 5,
+      "listenedAt": "2024-12-15T04:15:10.139Z"
+    },
+    {
+      "uuid": "5f34ee8bf0857e55ed5ec0cd",
+      "artist": "Jimi Hendrix",
+      "artistOrigin": "us",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://i.scdn.co/image/df53a186c41bf130c6f56627334c9b751d27ff84",
+          "width": 640
+        },
+        {
+          "height": 300,
+          "url": "https://i.scdn.co/image/bad0306a070fb9b09a0b9ee40872ed566e23d61f",
+          "width": 300
+        },
+        {
+          "height": 64,
+          "url": "https://i.scdn.co/image/332ecce39c8c1691d45dff32acc438c98bbccc6e",
+          "width": 64
+        }
+      ],
+      "genres": [
+        "rock",
+        "blues"
+      ],
+      "styles": [
+        "hard-rock",
+        "psychedelic-rock",
+        "acid-rock",
+        "blues-rock"
+      ],
+      "subGenres": [
+        "acid-rock",
+        "album-rock",
+        "blues-rock",
+        "classic-rock",
+        "hard-rock",
+        "proto-metal",
+        "psychedelic-rock",
+        "rock"
+      ],
+      "name": "Are You Experienced",
+      "slug": "are-you-experienced",
+      "releaseDate": "1967",
+      "globalReviewsUrl": "https://1001albumsgenerator.com/albums/7rSZXXHHvIhF4yUFdaOCy9/are-you-experienced",
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Are_You_Experienced_(album)",
+      "spotifyId": "7rSZXXHHvIhF4yUFdaOCy9",
+      "appleMusicId": "357225315",
+      "tidalId": 3254525,
+      "amazonMusicId": "B0030CQFYK",
+      "youtubeMusicId": "OLAK5uy_n64_HXAiX0TjY749vjmYR9jJ822quWyf0",
+      "qobuzId": "0884977413885",
+      "deezerId": "455130",
+      "votes": 3,
+      "totalRating": 15,
+      "averageRating": 5,
+      "listenedAt": "2025-01-04T04:15:07.088Z"
+    }
+  ],
+  "lowestRatedAlbums": [
+    {
+      "uuid": "5f34ee8bf0857e55ed5ebe37",
+      "artist": "Dwight Yoakam",
+      "artistOrigin": "us",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://i.scdn.co/image/5263e2013669dc6e1e5e2deb6b054013b8000865",
+          "width": 640
+        },
+        {
+          "height": 300,
+          "url": "https://i.scdn.co/image/758f9ae8cbb7a88120f93bdf4fd05cbd1cc85ab3",
+          "width": 300
+        },
+        {
+          "height": 64,
+          "url": "https://i.scdn.co/image/279dd0e13aae09fcdfbc8ab428fd7adbb4d8a671",
+          "width": 64
+        }
+      ],
+      "genres": [
+        "country"
+      ],
+      "styles": [
+        "bakersfield-sound"
+      ],
+      "subGenres": [
+        "bakersfield-sound",
+        "country",
+        "country-rock"
+      ],
+      "name": "Buenas Noches From A Lonely Room",
+      "slug": "buenas-noches-from-a-lonely-room",
+      "releaseDate": "1988",
+      "globalReviewsUrl": "https://1001albumsgenerator.com/albums/1NZ8YBYnruBPeKLuvTBARx/buenas-noches-from-a-lonely-room",
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Buenas_Noches_from_a_Lonely_Room",
+      "spotifyId": "1NZ8YBYnruBPeKLuvTBARx",
+      "appleMusicId": "963442988",
+      "tidalId": 3120937,
+      "amazonMusicId": "B002Q6UKL0",
+      "youtubeMusicId": "OLAK5uy_kJfpwpJMDx4NaYhPHnNQLZfBZkX7-qmmQ&feature=share",
+      "qobuzId": "0603497961023",
+      "deezerId": "398846",
+      "votes": 3,
+      "totalRating": 3,
+      "averageRating": 1,
+      "listenedAt": "2025-11-20T04:15:03.866Z"
+    },
+    {
+      "uuid": "5f34ee8bf0857e55ed5ec0cc",
+      "artist": "Ryan Adams",
+      "artistOrigin": "us",
+      "images": [
+        {
+          "height": 634,
+          "url": "https://i.scdn.co/image/6184d04b71730a8624bf3442d32b687891eecc15",
+          "width": 640
+        },
+        {
+          "height": 297,
+          "url": "https://i.scdn.co/image/e71b85a0a809a2d1fc517b49fe76f1ae1b6790cc",
+          "width": 300
+        },
+        {
+          "height": 63,
+          "url": "https://i.scdn.co/image/0569c68d59f07d0fdb5a2c6c9ce3b0be0517aad1",
+          "width": 64
+        }
+      ],
+      "genres": [
+        "country",
+        "rock"
+      ],
+      "styles": [
+        "singer-songwriter",
+        "indie-rock",
+        "pop-rock",
+        "alternative-rock",
+        "folk-rock"
+      ],
+      "subGenres": [
+        "alternative-country",
+        "folk",
+        "indie-rock",
+        "neo-mellow",
+        "new-americana",
+        "pop-rock",
+        "roots-rock",
+        "singer-songwriter",
+        "stomp-and-holler"
+      ],
+      "name": "Gold",
+      "slug": "gold",
+      "releaseDate": "2001",
+      "globalReviewsUrl": "https://1001albumsgenerator.com/albums/7rIwXFX7SXc8FVBMUnRIvJ/gold",
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Gold_(Ryan_Adams_album)",
+      "spotifyId": "7rIwXFX7SXc8FVBMUnRIvJ",
+      "appleMusicId": "1442452272",
+      "tidalId": 77660993,
+      "amazonMusicId": "B073HXW57H",
+      "youtubeMusicId": "OLAK5uy_n2ppUJj2M6w4GapgCOhn92CwHmop27mFE",
+      "qobuzId": "0060253798922",
+      "deezerId": "229120",
+      "votes": 3,
+      "totalRating": 3,
+      "averageRating": 1,
+      "listenedAt": "2025-10-24T03:15:03.892Z"
+    },
+    {
+      "uuid": "5f34ee8bf0857e55ed5ebe13",
+      "artist": "The Incredible String Band",
+      "artistOrigin": "uk",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://i.scdn.co/image/2ee543049a1cd09d25434e473906895f658df100",
+          "width": 632
+        },
+        {
+          "height": 300,
+          "url": "https://i.scdn.co/image/5e541a2380451c432ee5677167bb44d669c1e3fd",
+          "width": 296
+        },
+        {
+          "height": 64,
+          "url": "https://i.scdn.co/image/28a2eed1e1cfa87a359fa3b449ef0acd06e22200",
+          "width": 63
+        }
+      ],
+      "genres": [
+        "folk",
+        "rock"
+      ],
+      "styles": [
+        "psychedelic-rock",
+        "experimental",
+        "folk-rock"
+      ],
+      "subGenres": [
+        "british-folk",
+        "experimental",
+        "folk-rock",
+        "psychedelic-folk",
+        "psychedelic-rock"
+      ],
+      "name": "The Hangman's Beautiful Daughter",
+      "slug": "the-hangmans-beautiful-daughter",
+      "releaseDate": "1968",
+      "globalReviewsUrl": "https://1001albumsgenerator.com/albums/168tPkaBJZKYxSrWDo4n1h/the-hangmans-beautiful-daughter",
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/The_Hangman%27s_Beautiful_Daughter",
+      "spotifyId": "168tPkaBJZKYxSrWDo4n1h",
+      "appleMusicId": "397029395",
+      "tidalId": 4718623,
+      "amazonMusicId": "B0046B38K8",
+      "youtubeMusicId": "OLAK5uy_mvJJ0idsJc6VAIzoFPEpa2lxkBgy5Z2ac",
+      "qobuzId": "0603497947409",
+      "deezerId": "687041",
+      "votes": 3,
+      "totalRating": 3,
+      "averageRating": 1,
+      "listenedAt": "2025-05-16T03:15:06.651Z"
+    },
+    {
+      "uuid": "5f34ee8bf0857e55ed5ec050",
+      "artist": "k.d. lang",
+      "artistOrigin": "other",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://i.scdn.co/image/8a37d844697c31a3f1a5215c4851ba55328045f6",
+          "width": 640
+        },
+        {
+          "height": 300,
+          "url": "https://i.scdn.co/image/27d71f8e3e7c58593f84649272b9f0b896a6bf78",
+          "width": 300
+        },
+        {
+          "height": 64,
+          "url": "https://i.scdn.co/image/34862567995cf3f8d82350fdc1573909eb24b41e",
+          "width": 64
+        }
+      ],
+      "genres": [
+        "country",
+        "pop"
+      ],
+      "styles": [
+        "singer-songwriter",
+        "folk-rock",
+        "vocal",
+        "honky-tonk",
+        "western-swing"
+      ],
+      "subGenres": [
+        "canadian-country",
+        "canadian-pop",
+        "canadian-singer-songwriter",
+        "folk",
+        "folk-rock",
+        "lilith",
+        "mellow-gold",
+        "new-wave-pop",
+        "permanent-wave",
+        "queer-country",
+        "singer-songwriter",
+        "womens-music"
+      ],
+      "name": "Shadowland",
+      "slug": "shadowland",
+      "releaseDate": "1988",
+      "globalReviewsUrl": "https://1001albumsgenerator.com/albums/6PmH3vQpsBfkQdnDr4AzLs/shadowland",
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Shadowland_(k.d._lang_album)",
+      "spotifyId": "6PmH3vQpsBfkQdnDr4AzLs",
+      "appleMusicId": "413929065",
+      "tidalId": 5389721,
+      "amazonMusicId": "B0053XCILS",
+      "youtubeMusicId": "OLAK5uy_kNwLhpe872XPfOR63q-g3_eZH9AGn845k",
+      "qobuzId": "0075992572460",
+      "deezerId": "754212",
+      "votes": 3,
+      "totalRating": 3,
+      "averageRating": 1,
+      "listenedAt": "2025-05-14T03:15:06.546Z"
+    },
+    {
+      "uuid": "5f34ee8bf0857e55ed5ec018",
+      "artist": "Cheap Trick",
+      "artistOrigin": "us",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://i.scdn.co/image/e65d3b71e4f983e8a2eb65580bb43ea942b34626",
+          "width": 640
+        },
+        {
+          "height": 300,
+          "url": "https://i.scdn.co/image/8b00ada452b678eee2ebda2b402a7c9f55525b32",
+          "width": 300
+        },
+        {
+          "height": 64,
+          "url": "https://i.scdn.co/image/d7f998d8b3e82fe1c150819259fe55571ebe8e83",
+          "width": 64
+        }
+      ],
+      "genres": [
+        "rock"
+      ],
+      "styles": [
+        "hard-rock",
+        "art-rock",
+        "pop-rock",
+        "power-pop",
+        "soft-rock",
+        "arena-rock"
+      ],
+      "subGenres": [
+        "album-rock",
+        "art-rock",
+        "beatlesque",
+        "classic-rock",
+        "glam-metal",
+        "glam-rock",
+        "hard-rock",
+        "heartland-rock",
+        "mellow-gold",
+        "new-wave-pop",
+        "pop-rock",
+        "power-pop",
+        "rock",
+        "soft-rock"
+      ],
+      "name": "At Budokan",
+      "slug": "at-budokan",
+      "releaseDate": "1979",
+      "globalReviewsUrl": "https://1001albumsgenerator.com/albums/5ttDbNMKXczvp0Z8QRgKs6/at-budokan",
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Cheap_Trick_at_Budokan",
+      "spotifyId": "5ttDbNMKXczvp0Z8QRgKs6",
+      "appleMusicId": "193204065",
+      "tidalId": 1781026,
+      "amazonMusicId": "B00136LR7A",
+      "youtubeMusicId": "OLAK5uy_mFOgVb5O0NQaFFqxq3qXda7DmZW2NT_bw",
+      "qobuzId": "0696998644823",
+      "deezerId": "78180",
+      "votes": 3,
+      "totalRating": 3,
+      "averageRating": 1,
+      "listenedAt": "2025-04-27T03:15:06.217Z"
+    }
+  ],
+  "favoriteGenres": [
+    {
+      "numberOfAlbums": 35,
+      "totalRating": 360,
+      "votes": 105,
+      "genre": "funk",
+      "rating": 3.43,
+      "numberOfVotes": 105
+    },
+    {
+      "numberOfAlbums": 48,
+      "totalRating": 483,
+      "votes": 144,
+      "genre": "metal",
+      "rating": 3.35,
+      "numberOfVotes": 144
+    },
+    {
+      "numberOfAlbums": 52,
+      "totalRating": 516,
+      "votes": 155,
+      "genre": "punk",
+      "rating": 3.33,
+      "numberOfVotes": 155
+    }
+  ],
+  "worstGenres": [
+    {
+      "numberOfAlbums": 46,
+      "totalRating": 355,
+      "votes": 138,
+      "genre": "country",
+      "rating": 2.57,
+      "numberOfVotes": 138
+    },
+    {
+      "numberOfAlbums": 22,
+      "totalRating": 176,
+      "votes": 66,
+      "genre": "world",
+      "rating": 2.67,
+      "numberOfVotes": 66
+    },
+    {
+      "numberOfAlbums": 11,
+      "totalRating": 94,
+      "votes": 33,
+      "genre": "latin",
+      "rating": 2.85,
+      "numberOfVotes": 33
+    }
+  ],
+  "ratingByDecade": [
+    {
+      "totalRating": 409,
+      "votes": 117,
+      "numberOfAlbums": 39,
+      "decade": "2010",
+      "rating": 3.5
+    },
+    {
+      "totalRating": 2285,
+      "votes": 680,
+      "numberOfAlbums": 227,
+      "decade": "1970",
+      "rating": 3.36
+    },
+    {
+      "totalRating": 1184,
+      "votes": 374,
+      "numberOfAlbums": 125,
+      "decade": "1960",
+      "rating": 3.17
+    },
+    {
+      "totalRating": 1536,
+      "votes": 498,
+      "numberOfAlbums": 166,
+      "decade": "1980",
+      "rating": 3.08
+    },
+    {
+      "totalRating": 174,
+      "votes": 57,
+      "numberOfAlbums": 19,
+      "decade": "1950",
+      "rating": 3.05
+    },
+    {
+      "totalRating": 1694,
+      "votes": 564,
+      "numberOfAlbums": 188,
+      "decade": "1990",
+      "rating": 3
+    },
+    {
+      "totalRating": 965,
+      "votes": 333,
+      "numberOfAlbums": 111,
+      "decade": "2000",
+      "rating": 2.9
+    },
+    {
+      "totalRating": 32,
+      "votes": 12,
+      "numberOfAlbums": 4,
+      "decade": "2020",
+      "rating": 2.67
+    }
+  ],
+  "numberOfGeneratedAlbums": 879,
+  "totalVotes": 2635,
+  "averageRating": 3.14
+}

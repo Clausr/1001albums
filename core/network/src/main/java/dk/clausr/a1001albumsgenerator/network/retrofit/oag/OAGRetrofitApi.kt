@@ -1,6 +1,7 @@
 package dk.clausr.a1001albumsgenerator.network.retrofit.oag
 
 import dk.clausr.a1001albumsgenerator.network.model.NetworkAlbumGroupReviews
+import dk.clausr.a1001albumsgenerator.network.model.NetworkGroup
 import dk.clausr.a1001albumsgenerator.network.model.NetworkProject
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -14,4 +15,9 @@ interface OAGRetrofitApi {
         @Path("groupSlug") groupSlug: String,
         @Path("albumUuid") albumId: String,
     ): NetworkAlbumGroupReviews
+
+    @GET("api/v1/groups/{groupSlug}")
+    suspend fun getGroup(
+        @Path("groupSlug") groupSlug: String,
+    ): NetworkGroup
 }

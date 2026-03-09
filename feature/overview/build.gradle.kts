@@ -1,6 +1,6 @@
 plugins {
-    id("a1001albums.android.feature")
-    id("a1001albums.android.library.compose")
+    alias(libs.plugins.oag.android.feature)
+    alias(libs.plugins.oag.android.library.compose)
 }
 
 android {

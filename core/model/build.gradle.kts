@@ -1,5 +1,5 @@
 plugins {
-    id("a1001albums.jvm.library")
+    alias(libs.plugins.oag.jvm.library)
     id("kotlinx-serialization")
 }
 
