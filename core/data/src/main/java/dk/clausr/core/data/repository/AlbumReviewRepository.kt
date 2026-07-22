@@ -39,7 +39,7 @@ class AlbumReviewRepository @Inject constructor(
     private val projectDao: ProjectDao,
 ) {
     fun getGroupReviews(albumId: String): Flow<ReviewData> = flow {
-        val groupId = projectDao.getGroupId()
+        val groupSlug = projectDao.getGroupSlug()
         val projectId = projectDao.getProjectId()
 
         val personalReview = listOfNotNull(
@@ -53,7 +53,7 @@ class AlbumReviewRepository @Inject constructor(
         val cachedReviews = groupReviewDao.getReviewsFor(albumId).map { it.asExternalModel() }
 
         // Don't show loading if we're in a group and we already have some reviews
-        val showLoading = groupId != null && cachedReviews.size <= 1
+        val showLoading = groupSlug != null && cachedReviews.size <= 1
 
         // Emit cached reviews first; fallback to personalReviews if empty
         emit(
@@ -68,7 +68,7 @@ class AlbumReviewRepository @Inject constructor(
                 .onStart {
                     Timber.v("flowOnStart - Get network reviews")
                     // Trigger network refresh async
-                    groupId?.let {
+                    groupSlug?.let {
                         retryNetworkCall {
                             networkDataSource.getGroupReviewsForAlbum(it, albumId)
                                 .doOnSuccess { reviews ->
@@ -109,6 +109,9 @@ class AlbumReviewRepository @Inject constructor(
         if (existing.rating == mine.rating && existing.review == mine.review.orEmpty()) return
         ratingDao.insertRatings(listOf(existing.copy(rating = mine.rating, review = mine.review.orEmpty())))
     }
+
+    /** Current group's UUID (from /groups/{slug}), or null when the user isn't in a group. */
+    suspend fun getGroupId(): String? = projectDao.getGroupId()
 
     fun getPersonalReview(
         projectId: String,

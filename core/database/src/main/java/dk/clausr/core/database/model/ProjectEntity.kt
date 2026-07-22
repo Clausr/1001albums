@@ -14,6 +14,8 @@ data class ProjectEntity(
     val updateFrequency: UpdateFrequency,
     val shareableUrl: String,
     val groupSlug: String?,
+    // Group UUID from the /groups/{slug} endpoint; used as the history-page deep-link row suffix.
+    val groupId: String? = null,
     @ColumnInfo(defaultValue = "0")
     val isGroupPaused: Boolean = false,
 )
