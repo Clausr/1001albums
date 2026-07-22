@@ -19,10 +19,11 @@ object ExternalLinks {
             .scheme("https")
             .authority("1001albumsgenerator.com")
             .path("$projectId/history")
-            // The row id suffix is the group the album was generated in (or "false" when solo).
+            // Row id suffix is the id of the group the album was generated in; solo albums render
+            // an empty suffix on the site (confirmed: id="...-<albumId>-"), so null -> "".
             // ponytail: uses the current group id for every row — correct for single-group users;
             // per-album group tagging would need the API to expose it in the project history.
-            .fragment("project-history--album-row-$albumId-${groupId ?: "false"}")
+            .fragment("project-history--album-row-$albumId-${groupId.orEmpty()}")
             .build()
             .toString()
     }
