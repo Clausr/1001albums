@@ -1,6 +1,7 @@
 package dk.clausr.core.data.repository
 
 import dk.clausr.a1001albumsgenerator.network.OAGDataSource
+import dk.clausr.a1001albumsgenerator.network.model.NetworkAlbumGroupReviews
 import dk.clausr.core.common.model.Result
 import dk.clausr.core.common.model.doOnSuccess
 import dk.clausr.core.common.network.Dispatcher
@@ -12,6 +13,7 @@ import dk.clausr.core.data.model.toEntity
 import dk.clausr.core.database.dao.AlbumWithOptionalRatingDao
 import dk.clausr.core.database.dao.GroupReviewDao
 import dk.clausr.core.database.dao.ProjectDao
+import dk.clausr.core.database.dao.RatingDao
 import dk.clausr.core.model.GroupReview
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
@@ -33,6 +35,7 @@ class AlbumReviewRepository @Inject constructor(
     @Dispatcher(OagDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
     private val groupReviewDao: GroupReviewDao,
     private val albumWithOptionalRatingDao: AlbumWithOptionalRatingDao,
+    private val ratingDao: RatingDao,
     private val projectDao: ProjectDao,
 ) {
     fun getGroupReviews(albumId: String): Flow<ReviewData> = flow {
@@ -70,6 +73,7 @@ class AlbumReviewRepository @Inject constructor(
                             networkDataSource.getGroupReviewsForAlbum(it, albumId)
                                 .doOnSuccess { reviews ->
                                     groupReviewDao.insert(reviews.toEntity(albumId))
+                                    persistOwnRating(albumId, projectId, reviews)
                                 }
                         }
                         Unit
@@ -86,6 +90,25 @@ class AlbumReviewRepository @Inject constructor(
                 },
         )
     }.flowOn(ioDispatcher)
+
+    /**
+     * Mirror the user's own review from the group-reviews response into the local `ratings` row so the
+     * reactive Flows behind the details screen and the home "Did not listen" list reflect a rating made
+     * on the external website — without a full project sync, reusing the call we already make here.
+     *
+     * ponytail: group-only. Solo projects have no per-album endpoint, so their rating still lands via
+     * the next full project sync (pull-to-refresh / worker).
+     */
+    private suspend fun persistOwnRating(
+        albumId: String,
+        projectId: String,
+        reviews: NetworkAlbumGroupReviews,
+    ) {
+        val mine = reviews.reviews.firstOrNull { it.projectName == projectId } ?: return
+        val existing = albumWithOptionalRatingDao.getAlbumById(albumId).rating ?: return
+        if (existing.rating == mine.rating && existing.review == mine.review.orEmpty()) return
+        ratingDao.insertRatings(listOf(existing.copy(rating = mine.rating, review = mine.review.orEmpty())))
+    }
 
     fun getPersonalReview(
         projectId: String,
