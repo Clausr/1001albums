@@ -15,7 +15,13 @@ interface ProjectDao {
     fun getProject(): Flow<ProjectEntity?>
 
     @Query(value = "SELECT groupSlug FROM project")
+    suspend fun getGroupSlug(): String?
+
+    @Query(value = "SELECT groupId FROM project")
     suspend fun getGroupId(): String?
+
+    @Query(value = "UPDATE project SET groupId = :groupId")
+    suspend fun setGroupId(groupId: String?)
 
     @Query(value = "SELECT name FROM project")
     suspend fun getProjectId(): String

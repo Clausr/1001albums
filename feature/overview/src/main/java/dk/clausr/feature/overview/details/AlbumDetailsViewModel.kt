@@ -41,6 +41,7 @@ class AlbumDetailsViewModel @Inject constructor(
             ExternalLinks.Generator.historyLink(
                 projectId = personalReview?.author.orEmpty(),
                 albumId = albumId,
+                groupId = albumReviewRepository.getGroupId(),
             ).takeIf { personalReview?.rating !is Rating.Rated }
         }
 

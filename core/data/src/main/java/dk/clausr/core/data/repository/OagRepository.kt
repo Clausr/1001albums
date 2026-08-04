@@ -185,6 +185,9 @@ class OagRepository @Inject constructor(
                 }
                     ?.doOnSuccess { group ->
                         Timber.d("Group: $group")
+                        // Persist the group UUID for the history deep-link suffix; the project
+                        // response's embedded group only carries the slug, not the id.
+                        projectDao.setGroupId(group.id)
                     }
             }
             .doOnFailure { error ->
