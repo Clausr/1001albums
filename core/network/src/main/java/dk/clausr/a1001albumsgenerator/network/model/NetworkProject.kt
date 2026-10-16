@@ -21,10 +21,6 @@ data class NetworkProject(
     val frequency: NetworkUpdateFrequency
         get() = group?.updateFrequency ?: updateFrequency
 
-    // No explicit flag in the API; the URL check covers the first user album before userAlbumHistory has entries
-    val isCurrentAlbumUserAlbum: Boolean
-        get() = userAlbumHistory.isNotEmpty() || "/user-albums/" in currentAlbum.globalReviewsUrl
-
     @Serializable
     data class NetworkGroup(
         val slug: String,

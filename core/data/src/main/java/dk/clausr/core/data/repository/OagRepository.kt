@@ -162,7 +162,9 @@ class OagRepository @Inject constructor(
         // Insert current album into DB
         with(networkProject.currentAlbum) {
             Timber.i("Current album from network: $artist - $name..")
-            albumDao.insert(this.toEntity(networkProject.isCurrentAlbumUserAlbum))
+            // The API doesn't say which list the current album is from, so it's only flagged once it shows up in userAlbumHistory
+            val isUserAlbum = networkProject.userAlbumHistory.any { it.album.slug == slug }
+            albumDao.insert(this.toEntity(isUserAlbum))
             albumImageDao.insertAll(this.toAlbumImageEntities())
         }
     }

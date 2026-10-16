@@ -56,7 +56,7 @@ class OverviewViewModel @Inject constructor(
     // Default to true, so it only shows later
     private val _isUsingWidget = MutableStateFlow(true)
 
-    // null until the user picks a tab; the user albums tab is the default once it has albums
+    // null until the user picks a tab; defaults to the list the latest generated album came from
     private val _showUserAlbums = MutableStateFlow<Boolean?>(null)
 
     val uiState = dk.clausr.core.common.extensions.combine(
@@ -86,12 +86,17 @@ class OverviewViewModel @Inject constructor(
         ->
         if (project != null) {
             val hasUserAlbums = historicAlbums.any { it.album.isUserAlbum }
-            val showUserAlbums = hasUserAlbums && (showUserAlbumsChoice ?: true)
+            val isLatestUserAlbum = historicAlbums
+                .mapNotNull { historic -> historic.metadata?.let { it.generatedAt to historic.album.isUserAlbum } }
+                .maxByOrNull { (generatedAt, _) -> generatedAt }
+                ?.second == true
+            val showUserAlbums = hasUserAlbums && (showUserAlbumsChoice ?: isLatestUserAlbum)
             fun List<HistoricAlbum>.inSelectedList() = filter { it.album.isUserAlbum == showUserAlbums }
 
             OverviewUiState.Success(
                 project = project,
-                currentAlbum = currentAlbum?.takeIf { it.isUserAlbum == showUserAlbums },
+                // Shown on both tabs, as we can't tell which list it's from until it's in the history
+                currentAlbum = currentAlbum,
                 widgetState = widgetState,
                 didNotListen = didNotListenAlbums.inSelectedList().toPersistentList(),
                 topRated = topRatedAlbums.inSelectedList().toPersistentList(),
