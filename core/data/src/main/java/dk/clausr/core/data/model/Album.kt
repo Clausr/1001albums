@@ -25,7 +25,7 @@ fun NetworkAlbum.asExternalModel(): Album = Album(
     qobuzId = qobuzId,
 )
 
-fun NetworkAlbum.toEntity(): AlbumEntity = AlbumEntity(
+fun NetworkAlbum.toEntity(isUserAlbum: Boolean = false): AlbumEntity = AlbumEntity(
     id = id,
     slug = slug,
     artist = artist,
@@ -42,6 +42,7 @@ fun NetworkAlbum.toEntity(): AlbumEntity = AlbumEntity(
     imageUrl = images.maxBy { it.width }.url,
     deezerId = deezerId,
     qobuzId = qobuzId,
+    isUserAlbum = isUserAlbum,
 )
 
 fun AlbumEntity.asExternalModel(): Album = Album(
@@ -63,4 +64,5 @@ fun AlbumEntity.asExternalModel(): Album = Album(
     youtubeMusicId = youtubeMusicId,
     deezerId = deezerId,
     qobuzId = qobuzId,
+    isUserAlbum = isUserAlbum,
 )

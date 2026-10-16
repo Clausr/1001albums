@@ -20,8 +20,11 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Album
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Badge
@@ -29,6 +32,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -40,6 +45,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -124,6 +130,7 @@ fun OverviewRoute(
         snackbarHostState = snackbarHostState,
         openNotifications = { showNotifications = true },
         onRefresh = viewModel::refreshAlbums,
+        showUserAlbums = viewModel::showUserAlbums,
     )
 
     if (showNotifications) {
@@ -154,6 +161,7 @@ internal fun OverviewScreen(
     openNotifications: () -> Unit,
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
+    showUserAlbums: (Boolean) -> Unit = {},
     snackbarHostState: SnackbarHostState = SnackbarHostState(),
 ) {
     val context = LocalContext.current
@@ -170,6 +178,33 @@ internal fun OverviewScreen(
             },
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
             modifier = modifier,
+            bottomBar = {
+                if (state is OverviewUiState.Success && state.hasUserAlbums) {
+                    with(LocalNavAnimatedVisibilityScope.current) {
+                        NavigationBar(
+                            modifier = Modifier
+                                .renderInSharedTransitionScopeOverlay(zIndexInOverlay = 1f)
+                                .animateEnterExit(
+                                    enter = fadeIn() + slideInVertically { it },
+                                    exit = fadeOut() + slideOutVertically { it },
+                                ),
+                        ) {
+                            NavigationBarItem(
+                                selected = !state.showUserAlbums,
+                                onClick = { showUserAlbums(false) },
+                                icon = { Icon(imageVector = Icons.Default.Album, contentDescription = null) },
+                                label = { Text(text = stringResource(R.string.overview_tab_1001_albums)) },
+                            )
+                            NavigationBarItem(
+                                selected = state.showUserAlbums,
+                                onClick = { showUserAlbums(true) },
+                                icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
+                                label = { Text(text = stringResource(R.string.overview_tab_user_albums)) },
+                            )
+                        }
+                    }
+                }
+            },
             topBar = {
                 with(LocalNavAnimatedVisibilityScope.current) {
                     TopAppBar(
@@ -280,11 +315,16 @@ internal fun OverviewScreen(
 
                             LazyVerticalGrid(
                                 modifier = Modifier.fillMaxSize(),
+                                // New scroll state per tab, so switching starts at the top
+                                state = key(state.showUserAlbums) { rememberLazyGridState() },
                                 verticalArrangement = Arrangement.spacedBy(16.dp),
                                 contentPadding = PaddingValues(
                                     start = 16.dp,
                                     end = 16.dp,
-                                    bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
+                                    bottom = maxOf(
+                                        innerPadding.calculateBottomPadding(),
+                                        WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
+                                    ),
                                     top = innerPadding.calculateTopPadding(),
                                 ),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),

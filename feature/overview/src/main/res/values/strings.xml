@@ -30,4 +30,6 @@
     <string name="rating_text_unrated">Unrated</string>
     <string name="related_albums_title">Previous albums by %1$s</string>
     <string name="show_all_notifications">Show all notifications</string>
+    <string name="overview_tab_1001_albums">1001 albums</string>
+    <string name="overview_tab_user_albums">User albums</string>
 </resources>
