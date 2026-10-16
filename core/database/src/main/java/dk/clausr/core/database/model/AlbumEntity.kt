@@ -1,5 +1,6 @@
 package dk.clausr.core.database.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -22,4 +23,6 @@ data class AlbumEntity(
     val youtubeMusicId: String?,
     val qobuzId: String?,
     val deezerId: String?,
+    @ColumnInfo(defaultValue = "0")
+    val isUserAlbum: Boolean = false,
 )

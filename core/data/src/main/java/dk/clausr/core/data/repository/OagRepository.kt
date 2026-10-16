@@ -129,7 +129,7 @@ class OagRepository @Inject constructor(
                 updateWidgetData(
                     project = networkProject.asExternalModel(),
                     currentAlbum = networkProject.currentAlbum.asExternalModel(),
-                    historicAlbums = networkProject.history.map { it.asExternalModel() },
+                    historicAlbums = (networkProject.history + networkProject.userAlbumHistory).map { it.asExternalModel() },
                 )
             }
             .doOnFailure {
@@ -149,8 +149,9 @@ class OagRepository @Inject constructor(
         val ratingEntities = mutableListOf<RatingEntity>()
         val albumImageEntities = mutableListOf<AlbumImageEntity>()
 
-        for (historicAlbum in networkProject.history) {
-            albumEntities.add(historicAlbum.album.toEntity())
+        val history = networkProject.history.map { it to false } + networkProject.userAlbumHistory.map { it to true }
+        for ((historicAlbum, isUserAlbum) in history) {
+            albumEntities.add(historicAlbum.album.toEntity(isUserAlbum))
             albumImageEntities.addAll(historicAlbum.album.toAlbumImageEntities())
             ratingEntities.add(historicAlbum.toRatingEntity())
         }
@@ -161,7 +162,9 @@ class OagRepository @Inject constructor(
         // Insert current album into DB
         with(networkProject.currentAlbum) {
             Timber.i("Current album from network: $artist - $name..")
-            albumDao.insert(this.toEntity())
+            // The API doesn't say which list the current album is from, so it's only flagged once it shows up in userAlbumHistory
+            val isUserAlbum = networkProject.userAlbumHistory.any { it.album.slug == slug }
+            albumDao.insert(this.toEntity(isUserAlbum))
             albumImageDao.insertAll(this.toAlbumImageEntities())
         }
     }
@@ -177,7 +180,7 @@ class OagRepository @Inject constructor(
                 updateWidgetData(
                     project = networkProject.asExternalModel(),
                     currentAlbum = networkProject.currentAlbum.asExternalModel(),
-                    historicAlbums = networkProject.history.map { it.asExternalModel() },
+                    historicAlbums = (networkProject.history + networkProject.userAlbumHistory).map { it.asExternalModel() },
                 )
 
                 networkProject.group?.slug?.let { groupSlug ->

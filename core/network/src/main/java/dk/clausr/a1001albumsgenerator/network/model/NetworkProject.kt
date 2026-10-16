@@ -14,6 +14,8 @@ data class NetworkProject(
     internal val updateFrequency: NetworkUpdateFrequency,
     val shareableUrl: String,
     val group: NetworkGroup? = null,
+    // Albums generated from user submissions after the 1001 list is finished
+    val userAlbumHistory: List<NetworkHistoricAlbum> = emptyList(),
 ) {
     // Groups updateFrequency overrides the individual
     val frequency: NetworkUpdateFrequency

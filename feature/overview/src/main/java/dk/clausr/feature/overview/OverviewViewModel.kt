@@ -56,6 +56,9 @@ class OverviewViewModel @Inject constructor(
     // Default to true, so it only shows later
     private val _isUsingWidget = MutableStateFlow(true)
 
+    // null until the user picks a tab; defaults to the list the latest generated album came from
+    private val _showUserAlbums = MutableStateFlow<Boolean?>(null)
+
     val uiState = dk.clausr.core.common.extensions.combine(
         oagRepository.project,
         oagRepository.currentAlbum,
@@ -67,6 +70,7 @@ class OverviewViewModel @Inject constructor(
         oagRepository.historicAlbums,
         oagRepository.topRatedAlbums,
         _isRefreshing,
+        _showUserAlbums,
     ) {
             project: Project?,
             currentAlbum: Album?,
@@ -78,19 +82,31 @@ class OverviewViewModel @Inject constructor(
             historicAlbums,
             topRatedAlbums,
             isRefreshing,
+            showUserAlbumsChoice,
         ->
         if (project != null) {
+            val hasUserAlbums = historicAlbums.any { it.album.isUserAlbum }
+            val isLatestUserAlbum = historicAlbums
+                .mapNotNull { historic -> historic.metadata?.let { it.generatedAt to historic.album.isUserAlbum } }
+                .maxByOrNull { (generatedAt, _) -> generatedAt }
+                ?.second == true
+            val showUserAlbums = hasUserAlbums && (showUserAlbumsChoice ?: isLatestUserAlbum)
+            fun List<HistoricAlbum>.inSelectedList() = filter { it.album.isUserAlbum == showUserAlbums }
+
             OverviewUiState.Success(
                 project = project,
+                // Shown on both tabs, as we can't tell which list it's from until it's in the history
                 currentAlbum = currentAlbum,
                 widgetState = widgetState,
-                didNotListen = didNotListenAlbums.toPersistentList(),
-                topRated = topRatedAlbums.toPersistentList(),
+                didNotListen = didNotListenAlbums.inSelectedList().toPersistentList(),
+                topRated = topRatedAlbums.inSelectedList().toPersistentList(),
                 streamingPlatform = platform,
-                groupedHistory = historicAlbums.groupedHistory().toImmutableMap(),
+                groupedHistory = historicAlbums.inSelectedList().groupedHistory().toImmutableMap(),
                 notifications = unreadNotifications,
                 isUsingWidget = isUsingWidget,
                 isRefreshing = isRefreshing,
+                hasUserAlbums = hasUserAlbums,
+                showUserAlbums = showUserAlbums,
             )
         } else {
             OverviewUiState.Error
@@ -139,6 +155,10 @@ class OverviewViewModel @Inject constructor(
         updateIsUsingWidget()
     }
 
+    fun showUserAlbums(show: Boolean) {
+        _showUserAlbums.value = show
+    }
+
     fun refreshAlbums() = viewModelScope.launch {
         analyticsHelper.logEvent(AnalyticsEvent(type = AnalyticsEvent.Types.REFRESH_ACTION))
         _isRefreshing.emit(true)
@@ -172,6 +192,8 @@ sealed interface OverviewUiState {
         val notifications: ImmutableList<Notification>,
         val isUsingWidget: Boolean,
         val isRefreshing: Boolean,
+        val hasUserAlbums: Boolean = false,
+        val showUserAlbums: Boolean = false,
     ) : OverviewUiState
 
     data object Error : OverviewUiState
