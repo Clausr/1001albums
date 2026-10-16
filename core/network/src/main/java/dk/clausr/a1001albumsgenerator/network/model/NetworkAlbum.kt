@@ -11,7 +11,7 @@ data class NetworkAlbum(
     val artistOrigin: String? = null,
     val images: List<NetworkAlbumImage>,
     val genres: List<String>,
-    val subGenres: List<String>,
+    val subGenres: List<String> = emptyList(),
     val name: String,
     val slug: String,
     val releaseDate: String,
