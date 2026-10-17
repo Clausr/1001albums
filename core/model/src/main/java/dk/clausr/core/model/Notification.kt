@@ -5,6 +5,8 @@ import dk.clausr.core.model.NotificationType.GroupAlbumsGenerated
 import dk.clausr.core.model.NotificationType.GroupReview
 import dk.clausr.core.model.NotificationType.NewGroupMember
 import dk.clausr.core.model.NotificationType.ReviewThumbUp
+import dk.clausr.core.model.NotificationType.Signup
+import dk.clausr.core.model.NotificationType.UserAlbumRated
 import dk.clausr.core.model.serializer.NotificationSerializer
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
@@ -50,6 +52,14 @@ sealed class NotificationType {
     data object ReviewThumbUp : NotificationType()
 
     @Serializable
+    @SerialName("signup")
+    data object Signup : NotificationType()
+
+    @Serializable
+    @SerialName("notifyUserAlbumSubmitter")
+    data object UserAlbumRated : NotificationType()
+
+    @Serializable
     @SerialName("unknown")
     data object Unknown : NotificationType()
 }
@@ -60,6 +70,8 @@ val notificationTypeMap: Map<String, NotificationType> = mapOf(
     "newGroupMember" to NewGroupMember,
     "groupAlbumsGenerated" to GroupAlbumsGenerated,
     "reviewThumpUp" to ReviewThumbUp,
+    "signup" to Signup,
+    "notifyUserAlbumSubmitter" to UserAlbumRated,
 )
 
 @Serializable
@@ -103,5 +115,19 @@ sealed class NotificationData {
         val albumSlug: String,
         val thumbsUp: Int,
         val isUserAlbum: Boolean? = false,
+    ) : NotificationData()
+
+    @Serializable
+    @SerialName("signup")
+    data class SignupData(
+        val projectName: String,
+    ) : NotificationData()
+
+    @Serializable
+    @SerialName("notifyUserAlbumSubmitter")
+    data class UserAlbumRatedData(
+        val albumId: String,
+        val albumSlug: String,
+        val rating: Int,
     ) : NotificationData()
 }

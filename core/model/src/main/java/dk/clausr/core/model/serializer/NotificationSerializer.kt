@@ -41,6 +41,8 @@ object NotificationSerializer : KSerializer<Notification> {
 
             NotificationType.NewGroupMember -> decoder.json.decodeFromJsonElement<NotificationData.NewGroupMemberData>(jsonObject["data"]!!)
             NotificationType.ReviewThumbUp -> decoder.json.decodeFromJsonElement<NotificationData.ReviewThumbUpData>(jsonObject["data"]!!)
+            NotificationType.Signup -> decoder.json.decodeFromJsonElement<NotificationData.SignupData>(jsonObject["data"]!!)
+            NotificationType.UserAlbumRated -> decoder.json.decodeFromJsonElement<NotificationData.UserAlbumRatedData>(jsonObject["data"]!!)
             NotificationType.Unknown -> null
         }
 
