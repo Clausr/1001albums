@@ -13,7 +13,7 @@ fun NetworkHistoricAlbum.asExternalModel(): HistoricAlbum {
             rating = rating.mapToRating(),
             review = review,
             generatedAt = generatedAt,
-            globalRating = globalRating,
+            globalRating = globalRating ?: 0.0,
             isRevealed = isRevealed,
         ),
     )
@@ -24,7 +24,7 @@ fun NetworkHistoricAlbum.toRatingEntity(): RatingEntity = RatingEntity(
     rating = rating,
     review = review,
     generatedAt = generatedAt,
-    globalRating = globalRating,
+    globalRating = globalRating ?: 0.0,
     isRevealed = isRevealed,
 )
 
