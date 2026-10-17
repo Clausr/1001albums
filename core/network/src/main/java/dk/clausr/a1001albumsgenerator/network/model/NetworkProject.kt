@@ -35,7 +35,7 @@ data class NetworkHistoricAlbum(
     val rating: String? = null,
     val review: String = "",
     @Contextual val generatedAt: Instant,
-    val globalRating: Double,
+    val globalRating: Double? = null,
     @SerialName("revealedAlbum")
     val isRevealed: Boolean = false,
 )
