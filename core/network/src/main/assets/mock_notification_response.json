@@ -18,6 +18,20 @@
       "__v": 0
     },
     {
+      "_id": "6ad24e665b8e917bde0a38ec",
+      "project": "651ef5d68a53974fd9aa7335",
+      "createdAt": "2024-08-27T16:18:46.257Z",
+      "read": false,
+      "type": "notifyUserAlbumSubmitter",
+      "data": {
+        "projectId": "5ffe022e18cab5358459e93d",
+        "rating": 4,
+        "albumId": "6WcZTpAxpMYHAunYfI24X7",
+        "albumSlug": "miss-machine"
+      },
+      "__v": 0
+    },
+    {
       "_id": "65a2da7d0f9936381bbaeef0",
       "project": "651ef5d68a53974fd9aa7335",
       "createdAt": "2024-01-13T18:46:21.014Z",

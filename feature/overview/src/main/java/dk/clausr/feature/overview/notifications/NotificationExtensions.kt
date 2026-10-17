@@ -13,6 +13,8 @@ fun Notification.getTitle(context: Context): String? {
         is NotificationData.GroupReviewData -> context.getString(R.string.notification_group_review_title)
         is NotificationData.NewGroupMemberData -> context.getString(R.string.notification_new_group_member_title)
         is NotificationData.ReviewThumbUpData -> context.getString(R.string.notification_thumb_up_title)
+        is NotificationData.SignupData -> context.getString(R.string.notification_signup_title)
+        is NotificationData.UserAlbumRatedData -> context.getString(R.string.notification_user_album_rated_title)
         null -> null
     }
 }
@@ -26,6 +28,8 @@ fun Notification.getBody(context: Context): String? {
 
         is NotificationData.NewGroupMemberData -> context.getString(R.string.notification_new_group_member_body)
         is NotificationData.ReviewThumbUpData -> context.getString(R.string.notification_thumb_up_body, data.albumName, data.thumbsUp)
+        is NotificationData.SignupData -> context.getString(R.string.notification_signup_body, data.projectName)
+        is NotificationData.UserAlbumRatedData -> context.getString(R.string.notification_user_album_rated_body, data.rating)
         null -> null
     }
 }
@@ -37,6 +41,8 @@ val Notification.isClickable: Boolean
         NotificationType.AlbumsRated,
         NotificationType.GroupAlbumsGenerated,
         NotificationType.NewGroupMember,
+        NotificationType.Signup,
+        NotificationType.UserAlbumRated,
         NotificationType.Unknown,
         -> false
     }

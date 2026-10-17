@@ -15,6 +15,12 @@
     <string name="notification_albums_rated_title">🍺 Project milestone!</string>
     <string name="notification_albums_rated_body">You\'ve just rated album #%1$d</string>
 
+    <string name="notification_signup_title">👋 Welcome!</string>
+    <string name="notification_signup_body">Your project %1$s was created</string>
+
+    <string name="notification_user_album_rated_title">💿 User album rating</string>
+    <string name="notification_user_album_rated_body">Your submitted album just received a %1$d star rating!</string>
+
     <string name="notifications_empty_state_title">No unread notifications 🎉</string>
 
     <string name="overview_app_bar_title">Your project</string>

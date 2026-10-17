@@ -5,7 +5,6 @@ import dk.clausr.core.model.Notification
 import dk.clausr.core.model.NotificationData
 import dk.clausr.core.model.NotificationType
 import dk.clausr.core.model.notificationTypeMap
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 fun List<Notification>.toEntities(): List<NotificationEntity> = map(Notification::toEntity)
@@ -35,6 +34,8 @@ fun NotificationEntity.asExternalModel(): Notification {
         NotificationType.GroupAlbumsGenerated -> json.decodeFromString<NotificationData.GroupAlbumsGeneratedData>(this.data)
         NotificationType.NewGroupMember -> json.decodeFromString<NotificationData.NewGroupMemberData>(this.data)
         NotificationType.ReviewThumbUp -> json.decodeFromString<NotificationData.ReviewThumbUpData>(this.data)
+        NotificationType.Signup -> json.decodeFromString<NotificationData.SignupData>(this.data)
+        NotificationType.UserAlbumRated -> json.decodeFromString<NotificationData.UserAlbumRatedData>(this.data)
         NotificationType.Unknown -> null
     }
 
