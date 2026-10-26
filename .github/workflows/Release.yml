@@ -15,26 +15,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Sanity check before a release is uploaded; PRs and main are covered by Detekt.yml itself
   detekt:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checking out branch
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: 17
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
-
-      - name: Run detekt
-        run: ./gradlew detekt
+    if: github.ref_type == 'tag'
+    uses: ./.github/workflows/Detekt.yml
+    secrets: inherit
 
   build:
     runs-on: ubuntu-latest
@@ -107,7 +92,7 @@ jobs:
 
   google_play_upload:
     if: github.ref_type == 'tag'
-    needs: build
+    needs: [build, detekt]
     runs-on: ubuntu-latest
 
     steps:
