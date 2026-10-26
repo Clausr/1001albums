@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.onStart
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 @Singleton
@@ -38,7 +39,13 @@ class AlbumReviewRepository @Inject constructor(
     private val ratingDao: RatingDao,
     private val projectDao: ProjectDao,
 ) {
-    fun getGroupReviews(albumId: String): Flow<ReviewData> = flow {
+    /**
+     * @param networkDelay Wait before fetching from the network, so cancelling the collection (e.g. swiping on) skips the call.
+     */
+    fun getGroupReviews(
+        albumId: String,
+        networkDelay: Duration = Duration.ZERO,
+    ): Flow<ReviewData> = flow {
         val groupSlug = projectDao.getGroupSlug()
         val projectId = projectDao.getProjectId()
 
@@ -69,6 +76,7 @@ class AlbumReviewRepository @Inject constructor(
                     Timber.v("flowOnStart - Get network reviews")
                     // Trigger network refresh async
                     groupSlug?.let {
+                        delay(networkDelay)
                         retryNetworkCall {
                             networkDataSource.getGroupReviewsForAlbum(it, albumId)
                                 .doOnSuccess { reviews ->

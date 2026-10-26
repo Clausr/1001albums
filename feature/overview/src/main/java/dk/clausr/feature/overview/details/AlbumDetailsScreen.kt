@@ -5,9 +5,11 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -16,12 +18,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.PlayArrow
@@ -37,10 +44,14 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -66,10 +77,12 @@ import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.chrisbanes.haze.materials.HazeMaterials
 import dk.clausr.a1001albumsgenerator.analytics.AnalyticsEvent
+import dk.clausr.a1001albumsgenerator.analytics.LocalAnalyticsHelper
 import dk.clausr.a1001albumsgenerator.ui.components.AlbumCover
 import dk.clausr.a1001albumsgenerator.ui.components.LocalNavAnimatedVisibilityScope
 import dk.clausr.a1001albumsgenerator.ui.components.LocalSharedTransitionScope
 import dk.clausr.a1001albumsgenerator.ui.extensions.TrackScreenViewEvent
+import dk.clausr.a1001albumsgenerator.ui.extensions.logAlbumSwiped
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.common.ExternalLinks
 import dk.clausr.core.common.extensions.openLink
@@ -80,13 +93,21 @@ import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
 import dk.clausr.feature.overview.AlbumRow
 import dk.clausr.feature.overview.R
+import dk.clausr.feature.overview.navigation.AlbumDetailsRoute
+import dk.clausr.feature.overview.navigation.AlbumListSource
+import dk.clausr.feature.overview.navigation.detailsRoute
 import dk.clausr.feature.overview.preview.historicAlbumPreviewData
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.first
+import kotlin.math.abs
+import kotlin.math.floor
+import kotlin.math.min
 
 @Composable
 fun AlbumDetailsScreen(
-    navigateToDetails: (slug: String, list: String) -> Unit,
+    navigateToDetails: (AlbumDetailsRoute) -> Unit,
     onNavigateBack: () -> Unit,
     openLink: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -103,6 +124,7 @@ fun AlbumDetailsScreen(
         ).toPersistentList(),
     )
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val analyticsHelper = LocalAnalyticsHelper.current
 
     AlbumDetailsContent(
         modifier = modifier,
@@ -111,6 +133,13 @@ fun AlbumDetailsScreen(
         listName = viewModel.listName,
         onNavigateBack = onNavigateBack,
         openLink = openLink,
+        onAlbumSettled = viewModel::onAlbumSettled,
+        onAlbumSwiped = { forward ->
+            analyticsHelper.logAlbumSwiped(
+                listName = viewModel.listSource.name,
+                direction = if (forward) "next" else "previous",
+            )
+        },
     )
 }
 
@@ -118,16 +147,62 @@ fun AlbumDetailsScreen(
 @Composable
 private fun AlbumDetailsContent(
     state: AlbumDetailsViewModel.AlbumDetailsViewState,
-    navigateToDetails: (slug: String, list: String) -> Unit,
+    navigateToDetails: (AlbumDetailsRoute) -> Unit,
     openLink: (String) -> Unit,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     listName: String = "List",
+    onAlbumSettled: (HistoricAlbum) -> Unit = {},
+    onAlbumSwiped: (forward: Boolean) -> Unit = {},
 ) {
     val context = LocalContext.current
     val historicAlbum = state.album
     val animatedContentScope = LocalNavAnimatedVisibilityScope.current
     val hazeState = remember { HazeState() }
+
+    // Created once the pages have loaded, so it starts on the album that was tapped
+    val pagerState = key(state.pages.isNotEmpty()) {
+        rememberPagerState(initialPage = state.selectedIndex) { state.pages.size }
+    }
+
+    LaunchedEffect(pagerState, state.pages) {
+        val pages = state.pages
+        if (pages.isEmpty()) return@LaunchedEffect
+
+        // Stay on the same album if the list changes, e.g. after a refresh
+        if (pagerState.settledPage != state.selectedIndex) {
+            pagerState.scrollToPage(state.selectedIndex)
+        }
+
+        var previousPage = pagerState.settledPage
+        snapshotFlow { pagerState.settledPage }.collect { page ->
+            pages.getOrNull(page)?.let(onAlbumSettled)
+            if (page != previousPage) {
+                onAlbumSwiped(page > previousPage)
+                previousPage = page
+            }
+        }
+    }
+
+    val settledAlbumKey = state.pages.getOrNull(pagerState.settledPage)?.key
+    // The details trail the settled page until they have loaded for it
+    val contentReady by rememberUpdatedState(settledAlbumKey == null || settledAlbumKey == state.albumKey)
+    val contentFadeIn = remember { Animatable(1f) }
+
+    LaunchedEffect(settledAlbumKey) {
+        if (!contentReady) {
+            contentFadeIn.snapTo(0f)
+            snapshotFlow { contentReady }.first { it }
+            contentFadeIn.animateTo(1f, animationSpec = tween(durationMillis = 300))
+        }
+    }
+
+    // Fades out while the cover is dragged away, and in again with the next album's details
+    val contentModifier = Modifier.graphicsLayer {
+        val dragDistance = abs(pagerState.currentPage + pagerState.currentPageOffsetFraction - pagerState.settledPage)
+        val dragAlpha = 1f - (dragDistance * 3f).coerceAtMost(1f)
+        alpha = if (contentReady) min(dragAlpha, contentFadeIn.value) else 0f
+    }
 
     var enterAnimationRunning by remember { mutableStateOf(false) }
     val fromAlpha = if (LocalInspectionMode.current) 0.75f else 0.1f
@@ -161,7 +236,7 @@ private fun AlbumDetailsContent(
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
                     title = {
                         Text(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = contentModifier.fillMaxWidth(),
                             text = historicAlbum?.album?.name.orEmpty(),
                             style = MaterialTheme.typography.titleLarge,
                         )
@@ -184,7 +259,8 @@ private fun AlbumDetailsContent(
             ) {
                 item {
                     DetailsCoverArt(
-                        historicAlbum = historicAlbum,
+                        pages = state.pages,
+                        pagerState = pagerState,
                         animatedAlpha = animatedAlpha,
                         paddingValues = paddingValues,
                         listName = listName,
@@ -194,10 +270,14 @@ private fun AlbumDetailsContent(
 
                 if (historicAlbum?.album != null) {
                     item {
-                        AlbumDetails(historicAlbum)
+                        AlbumDetails(
+                            historicAlbum = historicAlbum,
+                            modifier = contentModifier,
+                        )
                     }
                     item {
                         LinkButtons(
+                            modifier = contentModifier,
                             historicAlbum = historicAlbum,
                             state = state,
                             listName = listName,
@@ -209,7 +289,7 @@ private fun AlbumDetailsContent(
 
                 item {
                     Column(
-                        modifier = Modifier.padding(
+                        modifier = contentModifier.padding(
                             vertical = 8.dp,
                             horizontal = 16.dp,
                         ),
@@ -257,9 +337,18 @@ private fun AlbumDetailsContent(
                 if (state.relatedAlbums.isNotEmpty()) {
                     item {
                         AlbumRow(
+                            modifier = contentModifier,
                             title = stringResource(R.string.related_albums_title, state.relatedAlbums.first().album.artist),
                             albums = state.relatedAlbums,
-                            onClickAlbum = navigateToDetails,
+                            onClickAlbum = { album, listName ->
+                                navigateToDetails(
+                                    album.detailsRoute(
+                                        listName = listName,
+                                        source = AlbumListSource.Related,
+                                        relatedTo = state.albumKey,
+                                    ),
+                                )
+                            },
                             streamingPlatform = state.streamingPlatform,
                             tertiaryTextTransform = { "${it.metadata?.rating?.ratingText(context)}\n${it.album.releaseDate}" },
                             onClickPlay = { context.openLink(it) },
@@ -351,7 +440,8 @@ private fun AlbumDetails(
 
 @Composable
 private fun SharedTransitionScope.DetailsCoverArt(
-    historicAlbum: HistoricAlbum?,
+    pages: ImmutableList<HistoricAlbum>,
+    pagerState: PagerState,
     animatedAlpha: Float,
     paddingValues: PaddingValues,
     listName: String,
@@ -363,32 +453,80 @@ private fun SharedTransitionScope.DetailsCoverArt(
         modifier = modifier.fillMaxWidth(),
         contentAlignment = Alignment.TopCenter,
     ) {
-        // Background
-        AlbumCover(
-            coverUrl = historicAlbum?.album?.imageUrl,
-            albumSlug = historicAlbum?.album?.slug,
-            shape = RectangleShape,
-            contentScale = ContentScale.FillHeight,
+        // Background. Stays in place and blends into the next album's cover as the foreground is swiped
+        val position = { pagerState.currentPage + pagerState.currentPageOffsetFraction }
+        val fromPage by remember(pagerState) { derivedStateOf { floor(position()).toInt() } }
+        Box(
             modifier = Modifier
                 .graphicsLayer(alpha = animatedAlpha)
+                .fillMaxWidth()
                 .height(maxWidth + topBarHeight)
                 .blur(radius = 20.dp),
-        )
+        ) {
+            if (pages.isEmpty()) {
+                BackgroundCover(historicAlbum = null)
+            }
+            pages.getOrNull(fromPage)?.let { album ->
+                key(album.key) {
+                    BackgroundCover(historicAlbum = album)
+                }
+            }
+            pages.getOrNull(fromPage + 1)?.let { album ->
+                key(album.key) {
+                    BackgroundCover(
+                        historicAlbum = album,
+                        modifier = Modifier.graphicsLayer { alpha = position() - fromPage },
+                    )
+                }
+            }
+        }
 
         // Foreground
-        AlbumCover(
-            coverUrl = historicAlbum?.album?.imageUrl,
-            albumSlug = historicAlbum?.album?.slug,
-            modifier = Modifier
-                .padding(horizontal = 32.dp)
-                .padding(top = topBarHeight + 32.dp)
-                .sharedElement(
-                    sharedContentState = rememberSharedContentState(key = "$listName-cover-${historicAlbum?.album?.slug}"),
-                    animatedVisibilityScope = animatedContentScope,
+        val coverModifier = Modifier
+            .padding(horizontal = 32.dp)
+            .aspectRatio(1f)
+        if (pages.isEmpty()) {
+            AlbumCover(
+                coverUrl = null,
+                albumSlug = null,
+                modifier = coverModifier
+                    .padding(top = topBarHeight + 32.dp)
+                    .shadow(elevation = 8.dp),
+            )
+        } else {
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.padding(top = topBarHeight + 32.dp),
+                key = { page -> pages[page].key.toString() },
+            ) { page ->
+                val album = pages[page].album
+                AlbumCover(
+                    coverUrl = album.imageUrl,
+                    albumSlug = album.slug,
+                    modifier = coverModifier
+                        .sharedElement(
+                            sharedContentState = rememberSharedContentState(key = "$listName-cover-${album.slug}"),
+                            animatedVisibilityScope = animatedContentScope,
+                        )
+                        .shadow(elevation = 8.dp),
                 )
-                .shadow(elevation = 8.dp),
-        )
+            }
+        }
     }
+}
+
+@Composable
+private fun BackgroundCover(
+    historicAlbum: HistoricAlbum?,
+    modifier: Modifier = Modifier,
+) {
+    AlbumCover(
+        coverUrl = historicAlbum?.album?.imageUrl,
+        albumSlug = historicAlbum?.album?.slug,
+        shape = RectangleShape,
+        contentScale = ContentScale.FillHeight,
+        modifier = modifier.fillMaxHeight(),
+    )
 }
 
 @Composable
@@ -422,6 +560,8 @@ private fun DetailsPreview() {
                 ) {
                     AlbumDetailsContent(
                         state = AlbumDetailsViewModel.AlbumDetailsViewState(
+                            pages = persistentListOf(historicAlbumPreviewData()),
+                            albumKey = historicAlbumPreviewData().key,
                             album = historicAlbumPreviewData(),
                             streamingPlatform = StreamingPlatform.Tidal,
                             relatedAlbums = persistentListOf(
@@ -444,7 +584,7 @@ private fun DetailsPreview() {
                                 ),
                             ),
                         ),
-                        navigateToDetails = { _, _ -> },
+                        navigateToDetails = { },
                         onNavigateBack = { },
                         openLink = { },
                     )
