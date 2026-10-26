@@ -24,6 +24,9 @@ jobs:
     steps:
       - name: Checking out branch
         uses: actions/checkout@v4
+        with:
+          # Gradle configuration runs git describe to resolve the version name, which needs the tags
+          fetch-depth: 0
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
