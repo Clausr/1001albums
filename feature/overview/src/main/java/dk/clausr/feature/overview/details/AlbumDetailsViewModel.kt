@@ -136,7 +136,7 @@ class AlbumDetailsViewModel @Inject constructor(
             initialValue = AlbumDetailsViewState(),
         )
 
-    fun onAlbumSettled(album: HistoricAlbum) {
+    fun onAlbumSelected(album: HistoricAlbum) {
         selectedKey.value = album.key
     }
 

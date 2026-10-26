@@ -12,6 +12,8 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -30,6 +32,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -63,6 +66,8 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -106,6 +111,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.min
@@ -139,7 +145,7 @@ fun AlbumDetailsScreen(
         listName = viewModel.listName,
         onNavigateBack = onNavigateBack,
         openLink = openLink,
-        onAlbumSettled = viewModel::onAlbumSettled,
+        onAlbumSelected = viewModel::onAlbumSelected,
         consumeSwipeHint = viewModel::consumeSwipeHint,
         onAlbumSwiped = { forward ->
             viewModel.onAlbumSwiped()
@@ -160,7 +166,7 @@ private fun AlbumDetailsContent(
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     listName: String = "List",
-    onAlbumSettled: (HistoricAlbum) -> Unit = {},
+    onAlbumSelected: (HistoricAlbum) -> Unit = {},
     onAlbumSwiped: (forward: Boolean) -> Unit = {},
     consumeSwipeHint: suspend () -> Boolean = { false },
 ) {
@@ -168,6 +174,7 @@ private fun AlbumDetailsContent(
     val historicAlbum = state.album
     val animatedContentScope = LocalNavAnimatedVisibilityScope.current
     val hazeState = remember { HazeState() }
+    val listState = rememberLazyListState()
 
     // Created once the pages have loaded, so it starts on the album that was tapped
     val pagerState = key(state.pages.isNotEmpty()) {
@@ -179,13 +186,19 @@ private fun AlbumDetailsContent(
         if (pages.isEmpty()) return@LaunchedEffect
 
         // Stay on the same album if the list changes, e.g. after a refresh
-        if (pagerState.settledPage != state.selectedIndex) {
+        if (pagerState.currentPage != state.selectedIndex) {
             pagerState.scrollToPage(state.selectedIndex)
+        }
+
+        // Selects the album as soon as the cover is past halfway, so its details are ready when it lands
+        launch {
+            snapshotFlow { pagerState.currentPage }.collect { page ->
+                pages.getOrNull(page)?.let(onAlbumSelected)
+            }
         }
 
         var previousPage = pagerState.settledPage
         snapshotFlow { pagerState.settledPage }.collect { page ->
-            pages.getOrNull(page)?.let(onAlbumSettled)
             if (page != previousPage) {
                 onAlbumSwiped(page > previousPage)
                 previousPage = page
@@ -204,12 +217,12 @@ private fun AlbumDetailsContent(
         }
     }
 
-    val settledAlbumKey = state.pages.getOrNull(pagerState.settledPage)?.key
-    // The details trail the settled page until they have loaded for it
-    val contentReady by rememberUpdatedState(settledAlbumKey == null || settledAlbumKey == state.albumKey)
+    val currentAlbumKey = state.pages.getOrNull(pagerState.currentPage)?.key
+    // The details trail the current page until they have loaded for it
+    val contentReady by rememberUpdatedState(currentAlbumKey == null || currentAlbumKey == state.albumKey)
     val contentFadeIn = remember { Animatable(1f) }
 
-    LaunchedEffect(settledAlbumKey) {
+    LaunchedEffect(currentAlbumKey) {
         if (!contentReady) {
             contentFadeIn.snapTo(0f)
             snapshotFlow { contentReady }.first { it }
@@ -217,9 +230,9 @@ private fun AlbumDetailsContent(
         }
     }
 
-    // Fades out while the cover is dragged away, and in again with the next album's details
+    // Fades out while the cover is dragged away, and in with the next album's details as that cover comes in
     val contentModifier = Modifier.graphicsLayer {
-        val dragDistance = abs(pagerState.currentPage + pagerState.currentPageOffsetFraction - pagerState.settledPage)
+        val dragDistance = abs(pagerState.currentPageOffsetFraction)
         val dragAlpha = 1f - (dragDistance * 3f).coerceAtMost(1f)
         alpha = if (contentReady) min(dragAlpha, contentFadeIn.value) else 0f
     }
@@ -270,6 +283,7 @@ private fun AlbumDetailsContent(
             },
         ) { paddingValues ->
             LazyColumn(
+                state = listState,
                 modifier = Modifier
                     .fillMaxSize()
                     .hazeSource(state = hazeState),
@@ -285,6 +299,7 @@ private fun AlbumDetailsContent(
                         paddingValues = paddingValues,
                         listName = listName,
                         animatedContentScope = animatedContentScope,
+                        isScrollingVertically = listState.isScrollInProgress,
                     )
                 }
 
@@ -466,6 +481,7 @@ private fun SharedTransitionScope.DetailsCoverArt(
     paddingValues: PaddingValues,
     listName: String,
     animatedContentScope: AnimatedVisibilityScope,
+    isScrollingVertically: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val topBarHeight = remember { paddingValues.calculateTopPadding() }
@@ -510,9 +526,32 @@ private fun SharedTransitionScope.DetailsCoverArt(
                     .then(coverModifier),
             )
         } else {
+            // The covers shrink a bit from the moment they're touched, and the selected one grows back once it settles.
+            // Not when the touch turns into scrolling the page, though.
+            var isCoverPressed by remember { mutableStateOf(false) }
+            val isCoverHeld = isCoverPressed && !isScrollingVertically
+            val coverScale by animateFloatAsState(
+                targetValue = if ((isCoverHeld || pagerState.isScrollInProgress) && pages.size > 1) 0.9f else 1f,
+                animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessMedium),
+            )
             HorizontalPager(
                 state = pagerState,
-                modifier = Modifier.padding(top = topBarHeight + 32.dp),
+                modifier = Modifier
+                    .padding(top = topBarHeight + 32.dp)
+                    .pointerInput(Unit) {
+                        // Only observes the touches, so the swiping and scrolling work as usual
+                        awaitEachGesture {
+                            awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
+                            isCoverPressed = true
+                            try {
+                                do {
+                                    val event = awaitPointerEvent(pass = PointerEventPass.Initial)
+                                } while (event.changes.any { it.pressed })
+                            } finally {
+                                isCoverPressed = false
+                            }
+                        }
+                    },
                 key = { page -> pages[page].key.toString() },
             ) { page ->
                 val album = pages[page].album
@@ -524,6 +563,10 @@ private fun SharedTransitionScope.DetailsCoverArt(
                             sharedContentState = rememberSharedContentState(key = "$listName-cover-${album.slug}"),
                             animatedVisibilityScope = animatedContentScope,
                         )
+                        .graphicsLayer {
+                            scaleX = coverScale
+                            scaleY = coverScale
+                        }
                         .shadow(elevation = 8.dp),
                 )
             }
