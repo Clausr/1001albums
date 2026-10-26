@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -29,6 +30,18 @@ class OagDataStore @Inject constructor(
         .map { preferences ->
             preferences[IS_ONBOARDED] == true
         }
+
+    /** How many times the album details have nudged the cover to show it can be swiped. */
+    val albumSwipeHintCount: Flow<Int> = context.oagDataStore.data
+        .map { preferences ->
+            preferences[ALBUM_SWIPE_HINT_COUNT] ?: 0
+        }
+
+    suspend fun setAlbumSwipeHintCount(count: Int) {
+        context.oagDataStore.edit { preferences ->
+            preferences[ALBUM_SWIPE_HINT_COUNT] = count
+        }
+    }
 
     suspend fun setHasOnboarded(value: Boolean) {
         context.oagDataStore.edit { preferences ->
@@ -60,6 +73,7 @@ class OagDataStore @Inject constructor(
         private val PROJECT_ID = stringPreferencesKey("project_id")
         private val GROUP_SLUG = stringPreferencesKey("group_slug")
         private val IS_ONBOARDED = booleanPreferencesKey("isOnboarded")
+        private val ALBUM_SWIPE_HINT_COUNT = intPreferencesKey("album_swipe_hint_count")
         const val OAG_DATASTORE_NAME = "oagConfig"
     }
 }

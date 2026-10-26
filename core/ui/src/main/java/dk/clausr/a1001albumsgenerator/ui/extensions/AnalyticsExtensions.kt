@@ -59,6 +59,21 @@ fun AnalyticsHelper.logListItemSelected(
     )
 }
 
+fun AnalyticsHelper.logAlbumSwiped(
+    listName: String,
+    direction: String,
+) {
+    logEvent(
+        AnalyticsEvent(
+            type = AnalyticsEvent.Types.SWIPE_ALBUM,
+            extras = listOf(
+                AnalyticsEvent.Param(AnalyticsEvent.ParamKeys.ITEM_LIST_NAME, listName),
+                AnalyticsEvent.Param(AnalyticsEvent.ParamKeys.DIRECTION, direction),
+            ),
+        ),
+    )
+}
+
 /**
  * A side-effect which records a screen view event.
  */

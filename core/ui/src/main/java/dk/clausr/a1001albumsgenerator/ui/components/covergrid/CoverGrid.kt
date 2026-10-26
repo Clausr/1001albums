@@ -15,10 +15,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import coil3.compose.AsyncImage
-import dk.clausr.a1001albumsgenerator.ui.R
+import dk.clausr.a1001albumsgenerator.ui.components.rememberAlbumCoverPlaceholder
 import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 import dk.clausr.core.ui.CoverData
 
@@ -52,7 +51,7 @@ fun CoverGrid(
             AsyncImage(
                 model = covers.covers[index],
                 contentDescription = null,
-                placeholder = painterResource(id = R.drawable.album_cover_placeholder),
+                placeholder = rememberAlbumCoverPlaceholder(),
                 modifier = Modifier
                     .aspectRatio(
                         ratio = 1f,

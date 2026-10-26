@@ -7,8 +7,10 @@ import androidx.navigation.NavOptions
 import androidx.navigation.navOptions
 import androidx.navigation.navigation
 import dk.clausr.a1001albumsgenerator.ui.navigation.sharedTransitionComposable
+import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.feature.overview.OverviewRoute
 import dk.clausr.feature.overview.details.AlbumDetailsScreen
+import dk.clausr.feature.overview.details.AlbumKey
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -17,19 +19,58 @@ data object OverviewBaseRoute
 @Serializable
 data object OverviewRoute
 
+/** The section an album was opened from; the details screen lets the user swipe between its albums. */
 @Serializable
-data class AlbumDetailsRoute(val albumId: String, val listName: String)
+enum class AlbumListSource {
+    History,
+    DidNotListen,
+    TopRated,
+    Related,
+
+    /** Opened outside a list, e.g. from a notification. Nothing to swipe to. */
+    None,
+}
+
+/**
+ * @param listName Prefix of the shared element keys, so the cover animates back into the thumbnail it came from.
+ * @param generatedAt Epoch millis; tells apart entries of the same album that has been generated more than once.
+ * @param userAlbums Whether the list is the user albums tab or the 1001 albums tab.
+ * @param relatedToAlbumId For [AlbumListSource.Related]: the album whose related row was tapped, which isn't part of the row.
+ */
+@Serializable
+data class AlbumDetailsRoute(
+    val albumId: String,
+    val listName: String,
+    val generatedAt: Long? = null,
+    val source: AlbumListSource = AlbumListSource.None,
+    val userAlbums: Boolean = false,
+    val relatedToAlbumId: String? = null,
+    val relatedToGeneratedAt: Long? = null,
+)
+
+fun HistoricAlbum.detailsRoute(
+    listName: String,
+    source: AlbumListSource,
+    relatedTo: AlbumKey? = null,
+) = AlbumDetailsRoute(
+    albumId = album.id,
+    listName = listName,
+    generatedAt = metadata?.generatedAt?.toEpochMilli(),
+    source = source,
+    userAlbums = album.isUserAlbum,
+    relatedToAlbumId = relatedTo?.id,
+    relatedToGeneratedAt = relatedTo?.generatedAt,
+)
 
 fun NavController.navigateToAlbumDetails(
-    albumId: String,
-    listName: String,
+    route: AlbumDetailsRoute,
     navOptions: NavOptions = navOptions { },
-) = navigate(route = AlbumDetailsRoute(albumId, listName), navOptions)
+) = navigate(route = route, navOptions)
 
 fun NavGraphBuilder.overviewGraph(
     navigateBack: () -> Unit,
     navigateToSettings: () -> Unit,
-    navigateToAlbumDetails: (albumId: String, list: String) -> Unit,
+    navigateToAlbumDetails: (AlbumDetailsRoute) -> Unit,
 ) {
     navigation<OverviewBaseRoute>(startDestination = OverviewRoute) {
         sharedTransitionComposable<OverviewRoute> {
@@ -42,9 +83,7 @@ fun NavGraphBuilder.overviewGraph(
             val uriHandler = LocalUriHandler.current
 
             AlbumDetailsScreen(
-                navigateToDetails = { id, list ->
-                    navigateToAlbumDetails(id, list)
-                },
+                navigateToDetails = navigateToAlbumDetails,
                 onNavigateBack = navigateBack,
                 openLink = { uriHandler.openUri(it) },
             )

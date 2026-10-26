@@ -23,6 +23,7 @@ data class AnalyticsEvent(
         const val RATE_ALBUM = "rate_album"
         const val CLICK_ITEM = "click_event"
         const val REFRESH_ACTION = "refresh_content"
+        const val SWIPE_ALBUM = "album_details_swipe"
     }
 
     /**
@@ -44,5 +45,6 @@ data class AnalyticsEvent(
         const val ITEM_NAME = FirebaseAnalytics.Param.ITEM_LIST_NAME
         const val RATING = "rating"
         const val EVENT_NAME = "event_name"
+        const val DIRECTION = "direction"
     }
 }

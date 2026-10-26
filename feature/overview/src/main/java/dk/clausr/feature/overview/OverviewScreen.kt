@@ -87,6 +87,9 @@ import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingServices
 import dk.clausr.core.model.UpdateFrequency
 import dk.clausr.extensions.askToAddToHomeScreen
+import dk.clausr.feature.overview.navigation.AlbumDetailsRoute
+import dk.clausr.feature.overview.navigation.AlbumListSource
+import dk.clausr.feature.overview.navigation.detailsRoute
 import dk.clausr.feature.overview.notifications.NotificationUpperSheet
 import dk.clausr.feature.overview.preview.albumPreviewData
 import dk.clausr.feature.overview.preview.historicAlbumPreviewData
@@ -101,7 +104,7 @@ import java.time.Instant
 @Composable
 fun OverviewRoute(
     navigateToSettings: () -> Unit,
-    navigateToAlbumDetails: (id: String, listName: String) -> Unit,
+    navigateToAlbumDetails: (AlbumDetailsRoute) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: OverviewViewModel = hiltViewModel(),
 ) {
@@ -141,7 +144,7 @@ fun OverviewRoute(
             onNotificationClick = {
                 when (it) {
                     is NotificationData.GroupReviewData -> {
-                        navigateToAlbumDetails(/*id =*/ it.albumId, /*listName =*/ "notifications")
+                        navigateToAlbumDetails(AlbumDetailsRoute(albumId = it.albumId, listName = "notifications"))
                     }
 
                     else -> {}
@@ -156,7 +159,7 @@ fun OverviewRoute(
 internal fun OverviewScreen(
     state: OverviewUiState,
     navigateToSettings: () -> Unit,
-    navigateToAlbumDetails: (id: String, listName: String) -> Unit,
+    navigateToAlbumDetails: (AlbumDetailsRoute) -> Unit,
     openLink: (streamingLink: String) -> Unit,
     openNotifications: () -> Unit,
     onRefresh: () -> Unit,
@@ -375,7 +378,7 @@ internal fun OverviewScreen(
 
 private fun LazyGridScope.didNotListenSection(
     state: OverviewUiState.Success,
-    navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
+    navigateToAlbumDetails: (AlbumDetailsRoute) -> Unit,
     clickPlay: (String) -> Unit,
 ) {
     if (state.didNotListen.isNotEmpty()) {
@@ -388,7 +391,9 @@ private fun LazyGridScope.didNotListenSection(
                     .fillMaxWidth(),
                 title = stringResource(R.string.overview_section_did_not_listen_title),
                 albums = state.didNotListen,
-                onClickAlbum = navigateToAlbumDetails,
+                onClickAlbum = { album, listName ->
+                    navigateToAlbumDetails(album.detailsRoute(listName = listName, source = AlbumListSource.DidNotListen))
+                },
                 streamingPlatform = state.streamingPlatform,
                 onClickPlay = clickPlay,
                 tertiaryTextTransform = { historicAlbum ->
@@ -401,7 +406,7 @@ private fun LazyGridScope.didNotListenSection(
 
 private fun LazyGridScope.topRatedSection(
     state: OverviewUiState.Success,
-    navigateToAlbumDetails: (slug: String, listName: String) -> Unit,
+    navigateToAlbumDetails: (AlbumDetailsRoute) -> Unit,
     clickPlay: (String) -> Unit,
 ) {
     if (state.topRated.isNotEmpty()) {
@@ -414,7 +419,9 @@ private fun LazyGridScope.topRatedSection(
                     .fillMaxWidth(),
                 title = stringResource(R.string.overview_section_top_rated_albums_title),
                 albums = state.topRated,
-                onClickAlbum = navigateToAlbumDetails,
+                onClickAlbum = { album, listName ->
+                    navigateToAlbumDetails(album.detailsRoute(listName = listName, source = AlbumListSource.TopRated))
+                },
                 streamingPlatform = state.streamingPlatform,
                 tertiaryTextTransform = { historicAlbum ->
                     historicAlbum.metadata?.generatedAt?.formatToDate()
@@ -428,7 +435,7 @@ private fun LazyGridScope.topRatedSection(
 private fun LazyGridScope.historySection(
     state: OverviewUiState.Success,
     prefStreamingPlatform: StreamingPlatform,
-    navigateToAlbumDetails: (id: String, listName: String) -> Unit,
+    navigateToAlbumDetails: (AlbumDetailsRoute) -> Unit,
     onClickPlay: (String) -> Unit,
 ) {
     state.groupedHistory.forEach { (date, albums) ->
@@ -452,12 +459,13 @@ private fun LazyGridScope.historySection(
                 }
             }
 
+            // One list name for all months, as the details screen swipes across them
             AlbumThumb(
                 album = historicAlbum,
-                onClick = { navigateToAlbumDetails(historicAlbum.album.id, "history-$date") },
+                onClick = { navigateToAlbumDetails(historicAlbum.detailsRoute(listName = "history", source = AlbumListSource.History)) },
                 onClickPlay = onPlay,
                 tertiaryText = historicAlbum.metadata?.generatedAt?.formatToDate(),
-                listName = "history-$date",
+                listName = "history",
             )
         }
     }
@@ -476,7 +484,7 @@ private fun OverviewPreview() {
         PreviewSharedTransitionLayout {
             OverviewScreen(
                 navigateToSettings = {},
-                navigateToAlbumDetails = { _, _ -> },
+                navigateToAlbumDetails = { },
                 state = OverviewUiState.Success(
                     project = Project(
                         name = "GlanceWidget",
