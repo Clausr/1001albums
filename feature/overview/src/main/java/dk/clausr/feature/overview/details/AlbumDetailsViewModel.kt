@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.clausr.core.common.ExternalLinks
 import dk.clausr.core.data.repository.AlbumReviewRepository
 import dk.clausr.core.data.repository.OagRepository
+import dk.clausr.core.data.repository.UserRepository
 import dk.clausr.core.model.GroupReview
 import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.core.model.Rating
@@ -31,6 +32,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.withIndex
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -52,11 +54,14 @@ private val ReviewsNetworkDelay = 400.milliseconds
 class AlbumDetailsViewModel @Inject constructor(
     private val oagRepository: OagRepository,
     private val albumReviewRepository: AlbumReviewRepository,
+    private val userRepository: UserRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val navArgs: AlbumDetailsRoute = savedStateHandle.toRoute<AlbumDetailsRoute>()
     val listName = navArgs.listName
     val listSource = navArgs.source
+
+    private var swipeHintConsumed = false
 
     private val selectedKey = MutableStateFlow(AlbumKey(id = navArgs.albumId, generatedAt = navArgs.generatedAt))
 
@@ -133,6 +138,17 @@ class AlbumDetailsViewModel @Inject constructor(
 
     fun onAlbumSettled(album: HistoricAlbum) {
         selectedKey.value = album.key
+    }
+
+    fun onAlbumSwiped() {
+        viewModelScope.launch { userRepository.setHasSwipedAlbums() }
+    }
+
+    /** Whether to nudge the cover to show it can be swiped. At most once per screen, also across configuration changes. */
+    suspend fun consumeSwipeHint(): Boolean {
+        if (swipeHintConsumed) return false
+        swipeHintConsumed = true
+        return userRepository.consumeAlbumSwipeHint()
     }
 
     private fun List<HistoricAlbum>.inSelectedTab() = filter { it.album.isUserAlbum == navArgs.userAlbums }

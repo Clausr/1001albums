@@ -6,8 +6,12 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -100,10 +104,12 @@ import dk.clausr.feature.overview.preview.historicAlbumPreviewData
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.min
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun AlbumDetailsScreen(
@@ -134,7 +140,9 @@ fun AlbumDetailsScreen(
         onNavigateBack = onNavigateBack,
         openLink = openLink,
         onAlbumSettled = viewModel::onAlbumSettled,
+        consumeSwipeHint = viewModel::consumeSwipeHint,
         onAlbumSwiped = { forward ->
+            viewModel.onAlbumSwiped()
             analyticsHelper.logAlbumSwiped(
                 listName = viewModel.listSource.name,
                 direction = if (forward) "next" else "previous",
@@ -154,6 +162,7 @@ private fun AlbumDetailsContent(
     listName: String = "List",
     onAlbumSettled: (HistoricAlbum) -> Unit = {},
     onAlbumSwiped: (forward: Boolean) -> Unit = {},
+    consumeSwipeHint: suspend () -> Boolean = { false },
 ) {
     val context = LocalContext.current
     val historicAlbum = state.album
@@ -181,6 +190,17 @@ private fun AlbumDetailsContent(
                 onAlbumSwiped(page > previousPage)
                 previousPage = page
             }
+        }
+    }
+
+    // Nudge the cover once the screen has opened, to show that it can be swiped
+    val canSwipe = state.pages.size > 1
+    LaunchedEffect(pagerState, canSwipe) {
+        if (!canSwipe) return@LaunchedEffect
+        snapshotFlow { animatedContentScope.transition.run { isRunning || currentState != targetState } }.first { !it }
+        delay(SwipeHintDelay)
+        if (!pagerState.isScrollInProgress && consumeSwipeHint()) {
+            pagerState.nudge()
         }
     }
 
@@ -463,9 +483,6 @@ private fun SharedTransitionScope.DetailsCoverArt(
                 .height(maxWidth + topBarHeight)
                 .blur(radius = 20.dp),
         ) {
-            if (pages.isEmpty()) {
-                BackgroundCover(historicAlbum = null)
-            }
             pages.getOrNull(fromPage)?.let { album ->
                 key(album.key) {
                     BackgroundCover(historicAlbum = album)
@@ -486,12 +503,11 @@ private fun SharedTransitionScope.DetailsCoverArt(
             .padding(horizontal = 32.dp)
             .aspectRatio(1f)
         if (pages.isEmpty()) {
-            AlbumCover(
-                coverUrl = null,
-                albumSlug = null,
-                modifier = coverModifier
+            // Keeps the space while loading, without flashing the placeholder cover
+            Spacer(
+                modifier = Modifier
                     .padding(top = topBarHeight + 32.dp)
-                    .shadow(elevation = 8.dp),
+                    .then(coverModifier),
             )
         } else {
             HorizontalPager(
@@ -517,15 +533,31 @@ private fun SharedTransitionScope.DetailsCoverArt(
 
 @Composable
 private fun BackgroundCover(
-    historicAlbum: HistoricAlbum?,
+    historicAlbum: HistoricAlbum,
     modifier: Modifier = Modifier,
 ) {
     AlbumCover(
-        coverUrl = historicAlbum?.album?.imageUrl,
-        albumSlug = historicAlbum?.album?.slug,
+        coverUrl = historicAlbum.album.imageUrl,
+        albumSlug = historicAlbum.album.slug,
         shape = RectangleShape,
         contentScale = ContentScale.FillHeight,
         modifier = modifier.fillMaxHeight(),
+    )
+}
+
+private val SwipeHintDelay = 600.milliseconds
+
+/** A small fake drag towards the next page, or the previous one on the last page. */
+private suspend fun PagerState.nudge() {
+    val startPage = currentPage
+    val direction = if (startPage < pageCount - 1) 1 else -1
+    animateScrollBy(
+        value = direction * layoutInfo.pageSize * 0.15f,
+        animationSpec = tween(durationMillis = 350, easing = FastOutSlowInEasing),
+    )
+    animateScrollToPage(
+        page = startPage,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessLow),
     )
 }
 
