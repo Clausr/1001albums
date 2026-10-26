@@ -326,50 +326,10 @@ private fun AlbumDetailsContent(
                 }
 
                 item {
-                    Column(
-                        modifier = contentModifier.padding(
-                            vertical = 8.dp,
-                            horizontal = 16.dp,
-                        ),
-                    ) {
-                        when (val reviewState = state.reviewViewState) {
-                            is AlbumDetailsViewModel.AlbumReviewsViewState.Failed -> {
-                                Text(
-                                    "Woopsie doopsie daisy..\n${reviewState.error.cause}",
-                                    color = MaterialTheme.colorScheme.error,
-                                )
-                            }
-
-                            AlbumDetailsViewModel.AlbumReviewsViewState.Loading -> {
-                                LoadingRow()
-                            }
-
-                            AlbumDetailsViewModel.AlbumReviewsViewState.None -> Unit
-                            is AlbumDetailsViewModel.AlbumReviewsViewState.Success -> {
-                                reviewState.reviews.forEachIndexed { index, review ->
-                                    Text(
-                                        text = "${review.author} ${review.rating?.ratingText(context).orEmpty()}",
-                                        style = MaterialTheme.typography.labelLarge,
-                                    )
-                                    if (review.review?.isNotBlank() == true) {
-                                        Text(
-                                            text = "${review.review}",
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .skipToLookaheadSize(),
-                                            style = MaterialTheme.typography.bodyLarge.copy(fontStyle = FontStyle.Italic),
-                                        )
-                                    }
-                                    if (index < reviewState.reviews.size) {
-                                        Spacer(Modifier.height(8.dp))
-                                    }
-                                }
-                                AnimatedVisibility(reviewState.loading) {
-                                    LoadingRow()
-                                }
-                            }
-                        }
-                    }
+                    Reviews(
+                        reviewState = state.reviewViewState,
+                        modifier = contentModifier,
+                    )
                 }
 
                 if (state.relatedAlbums.isNotEmpty()) {
@@ -392,6 +352,59 @@ private fun AlbumDetailsContent(
                             onClickPlay = { context.openLink(it) },
                         )
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SharedTransitionScope.Reviews(
+    reviewState: AlbumDetailsViewModel.AlbumReviewsViewState,
+    modifier: Modifier = Modifier,
+) {
+    val context = LocalContext.current
+
+    Column(
+        modifier = modifier.padding(
+            vertical = 8.dp,
+            horizontal = 16.dp,
+        ),
+    ) {
+        when (reviewState) {
+            is AlbumDetailsViewModel.AlbumReviewsViewState.Failed -> {
+                Text(
+                    "Woopsie doopsie daisy..\n${reviewState.error.cause}",
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
+
+            AlbumDetailsViewModel.AlbumReviewsViewState.Loading -> {
+                LoadingRow()
+            }
+
+            AlbumDetailsViewModel.AlbumReviewsViewState.None -> Unit
+            is AlbumDetailsViewModel.AlbumReviewsViewState.Success -> {
+                reviewState.reviews.forEachIndexed { index, review ->
+                    Text(
+                        text = "${review.author} ${review.rating?.ratingText(context).orEmpty()}",
+                        style = MaterialTheme.typography.labelLarge,
+                    )
+                    if (review.review?.isNotBlank() == true) {
+                        Text(
+                            text = "${review.review}",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .skipToLookaheadSize(),
+                            style = MaterialTheme.typography.bodyLarge.copy(fontStyle = FontStyle.Italic),
+                        )
+                    }
+                    if (index < reviewState.reviews.size) {
+                        Spacer(Modifier.height(8.dp))
+                    }
+                }
+                AnimatedVisibility(reviewState.loading) {
+                    LoadingRow()
                 }
             }
         }
