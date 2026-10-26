@@ -44,6 +44,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -106,6 +107,8 @@ fun OverviewRoute(
     navigateToSettings: () -> Unit,
     navigateToAlbumDetails: (AlbumDetailsRoute) -> Unit,
     modifier: Modifier = Modifier,
+    openNotificationsRequested: Boolean = false,
+    onNotificationsOpened: () -> Unit = {},
     viewModel: OverviewViewModel = hiltViewModel(),
 ) {
     TrackScreenViewEvent(screenName = "Overview")
@@ -114,6 +117,13 @@ fun OverviewRoute(
     val snackbarHostState = remember { SnackbarHostState() }
     var showNotifications by remember {
         mutableStateOf(false)
+    }
+
+    LaunchedEffect(openNotificationsRequested) {
+        if (openNotificationsRequested) {
+            showNotifications = true
+            onNotificationsOpened()
+        }
     }
 
     viewModel.viewEffect.collectWithLifecycle {

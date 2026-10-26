@@ -1,5 +1,6 @@
 package dk.clausr.a1001albumsgenerator
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,6 +18,7 @@ import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import dk.clausr.a1001albumsgenerator.analytics.AnalyticsHelper
 import dk.clausr.a1001albumsgenerator.analytics.LocalAnalyticsHelper
+import dk.clausr.extensions.EXTRA_OPEN_NOTIFICATIONS
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -30,10 +32,16 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
 
+    /** Set when launched from the widget's notification button; cleared once the sheet has been opened. */
+    private var openNotificationsRequested by mutableStateOf(false)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+
+        // On recreation the intent is the original one again, so only read it on a fresh launch
+        if (savedInstanceState == null) handleIntent(intent)
 
         var uiState: MainViewState by mutableStateOf(MainViewState.Loading)
 
@@ -66,8 +74,21 @@ class MainActivity : ComponentActivity() {
                 OagApp(
                     uiState = uiState,
                     navHostController = navHostController,
+                    openNotificationsRequested = openNotificationsRequested,
+                    onNotificationsOpened = { openNotificationsRequested = false },
                 )
             }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent) {
+        if (intent.getBooleanExtra(EXTRA_OPEN_NOTIFICATIONS, false)) {
+            openNotificationsRequested = true
         }
     }
 }
