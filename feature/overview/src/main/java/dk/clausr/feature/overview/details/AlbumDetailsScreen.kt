@@ -227,6 +227,9 @@ private fun AlbumDetailsContent(
             contentFadeIn.snapTo(0f)
             snapshotFlow { contentReady }.first { it }
             contentFadeIn.animateTo(1f, animationSpec = tween(durationMillis = 300))
+        } else {
+            // A previous fade-in may have been cancelled before it finished
+            contentFadeIn.snapTo(1f)
         }
     }
 

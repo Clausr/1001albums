@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
@@ -63,7 +64,16 @@ class AlbumDetailsViewModel @Inject constructor(
 
     private var swipeHintConsumed = false
 
-    private val selectedKey = MutableStateFlow(AlbumKey(id = navArgs.albumId, generatedAt = navArgs.generatedAt))
+    // Null until known: a notification only has the album id, so its entry is looked up in init
+    private val selectedKey = MutableStateFlow(navArgs.generatedAt?.let { AlbumKey(id = navArgs.albumId, generatedAt = it) })
+
+    init {
+        if (selectedKey.value == null) {
+            viewModelScope.launch {
+                selectedKey.value = oagRepository.getHistoricAlbum(navArgs.albumId).first().key
+            }
+        }
+    }
 
     /** The albums of the section the details were opened from, in the order they're shown there. */
     private val listAlbums: Flow<List<HistoricAlbum>> = when (navArgs.source) {
@@ -83,6 +93,7 @@ class AlbumDetailsViewModel @Inject constructor(
     }
 
     private val selectedAlbumDetails: Flow<SelectedAlbumDetails> = selectedKey
+        .filterNotNull()
         .withIndex()
         .flatMapLatest { (index, key) ->
             combine(
@@ -108,7 +119,7 @@ class AlbumDetailsViewModel @Inject constructor(
 
     val state = combine(
         listAlbums,
-        selectedKey,
+        selectedKey.filterNotNull(),
         oagRepository.preferredStreamingPlatform,
         selectedAlbumDetails,
     ) { listAlbums, selectedKey, streaming, details ->
