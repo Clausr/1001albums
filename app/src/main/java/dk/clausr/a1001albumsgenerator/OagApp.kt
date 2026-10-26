@@ -15,6 +15,8 @@ import dk.clausr.a1001albumsgenerator.ui.theme.OagTheme
 fun OagApp(
     uiState: MainViewState,
     navHostController: NavHostController = rememberNavController(),
+    openNotificationsRequested: Boolean = false,
+    onNotificationsOpened: () -> Unit = {},
 ) {
     OagTheme {
         Scaffold(
@@ -23,6 +25,8 @@ fun OagApp(
             MainAppNavHost(
                 uiState = uiState,
                 navHostController = navHostController,
+                openNotificationsRequested = openNotificationsRequested,
+                onNotificationsOpened = onNotificationsOpened,
                 modifier = Modifier
                     .padding(padding)
                     .consumeWindowInsets(padding),

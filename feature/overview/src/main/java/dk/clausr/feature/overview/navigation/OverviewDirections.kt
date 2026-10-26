@@ -71,12 +71,16 @@ fun NavGraphBuilder.overviewGraph(
     navigateBack: () -> Unit,
     navigateToSettings: () -> Unit,
     navigateToAlbumDetails: (AlbumDetailsRoute) -> Unit,
+    openNotificationsRequested: Boolean,
+    onNotificationsOpened: () -> Unit,
 ) {
     navigation<OverviewBaseRoute>(startDestination = OverviewRoute) {
         sharedTransitionComposable<OverviewRoute> {
             OverviewRoute(
                 navigateToSettings = navigateToSettings,
                 navigateToAlbumDetails = navigateToAlbumDetails,
+                openNotificationsRequested = openNotificationsRequested,
+                onNotificationsOpened = onNotificationsOpened,
             )
         }
         sharedTransitionComposable<AlbumDetailsRoute> {

@@ -51,7 +51,7 @@ import dk.clausr.core.model.StreamingPlatform
 import dk.clausr.core.model.StreamingService
 import dk.clausr.core.model.StreamingServices
 import dk.clausr.extensions.GlancePreview
-import dk.clausr.extensions.openAppAction
+import dk.clausr.extensions.openNotificationsAction
 import dk.clausr.worker.BurstUpdateWorker
 import dk.clausr.worker.PeriodicProjectUpdateWidgetWorker
 import kotlinx.coroutines.delay
@@ -163,7 +163,7 @@ private fun ShowAlbumCover(
                 modifier = GlanceModifier.size(36.dp),
                 imageProvider = ImageProvider(R.drawable.ic_notification_active),
                 contentDescription = null,
-                onClick = openAppAction(context),
+                onClick = openNotificationsAction(context),
             )
         }
 

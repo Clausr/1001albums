@@ -16,6 +16,8 @@ import dk.clausr.feature.overview.navigation.overviewGraph
 fun MainAppNavHost(
     uiState: MainViewState,
     navHostController: NavHostController,
+    openNotificationsRequested: Boolean,
+    onNotificationsOpened: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (uiState !is MainViewState.Loading) {
@@ -32,6 +34,8 @@ fun MainAppNavHost(
                             navigateToAlbumDetails = navHostController::navigateToAlbumDetails,
                             navigateToSettings = navHostController::navigateToSettings,
                             navigateBack = navHostController::navigateUp,
+                            openNotificationsRequested = openNotificationsRequested,
+                            onNotificationsOpened = onNotificationsOpened,
                         )
 
                         settingsGraph(navHostController = navHostController)
