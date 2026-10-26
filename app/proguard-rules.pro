@@ -27,3 +27,5 @@
 -keepnames class dk.clausr.a1001albumsgenerator.*
 -keepattributes SourceFile,LineNumberTable        # Keep file names and line numbers.
 -keep public class * extends java.lang.Exception  # Optional: Keep custom exceptions.
+# Navigation Safe-Args. Keep names of the classes that are used for serialization
+-keepnames @kotlinx.serialization.Serializable class * {*;}
