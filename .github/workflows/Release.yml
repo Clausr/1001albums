@@ -15,6 +15,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Sanity check before a release is uploaded; PRs and main are covered by Detekt.yml itself.
+  # Not named "detekt": on PRs this job is skipped, and a skipped check would satisfy the required "detekt" check.
+  release_detekt:
+    if: github.ref_type == 'tag'
+    uses: ./.github/workflows/Detekt.yml
+    secrets: inherit
+
   build:
     runs-on: ubuntu-latest
 
@@ -86,7 +93,7 @@ jobs:
 
   google_play_upload:
     if: github.ref_type == 'tag'
-    needs: build
+    needs: [build, release_detekt]
     runs-on: ubuntu-latest
 
     steps:

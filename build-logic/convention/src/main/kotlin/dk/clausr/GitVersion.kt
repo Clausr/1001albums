@@ -1,6 +1,5 @@
 package dk.clausr
 
-
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 
