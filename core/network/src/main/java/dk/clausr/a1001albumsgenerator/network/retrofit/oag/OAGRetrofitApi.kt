@@ -17,7 +17,5 @@ interface OAGRetrofitApi {
     ): NetworkAlbumGroupReviews
 
     @GET("api/v1/groups/{groupSlug}")
-    suspend fun getGroup(
-        @Path("groupSlug") groupSlug: String,
-    ): NetworkGroup
+    suspend fun getGroup(@Path("groupSlug") groupSlug: String): NetworkGroup
 }
