@@ -25,4 +25,8 @@ data class AlbumEntity(
     val deezerId: String?,
     @ColumnInfo(defaultValue = "0")
     val isUserAlbum: Boolean = false,
+    @ColumnInfo(defaultValue = "[]")
+    val genres: List<String> = emptyList(),
+    @ColumnInfo(defaultValue = "[]")
+    val subGenres: List<String> = emptyList(),
 )

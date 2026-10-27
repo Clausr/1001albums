@@ -43,6 +43,8 @@ fun NetworkAlbum.toEntity(isUserAlbum: Boolean = false): AlbumEntity = AlbumEnti
     deezerId = deezerId,
     qobuzId = qobuzId,
     isUserAlbum = isUserAlbum,
+    genres = genres,
+    subGenres = subGenres,
 )
 
 fun AlbumEntity.asExternalModel(): Album = Album(
@@ -50,8 +52,8 @@ fun AlbumEntity.asExternalModel(): Album = Album(
     artist = artist,
     artistOrigin = artistOrigin,
     imageUrl = imageUrl,
-    genres = emptyList(),
-    subGenres = emptyList(),
+    genres = genres,
+    subGenres = subGenres,
     name = name,
     slug = slug,
     releaseDate = releaseDate,
