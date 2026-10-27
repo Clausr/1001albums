@@ -48,7 +48,7 @@ fun NetworkAlbum.toEntity(isUserAlbum: Boolean = false): AlbumEntity = AlbumEnti
 fun AlbumEntity.asExternalModel(): Album = Album(
     id = id,
     artist = artist,
-    artistOrigin = artist,
+    artistOrigin = artistOrigin,
     imageUrl = imageUrl,
     genres = emptyList(),
     subGenres = emptyList(),
