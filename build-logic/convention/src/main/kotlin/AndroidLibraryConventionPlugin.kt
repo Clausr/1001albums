@@ -25,7 +25,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                 add("implementation", libs.findLibrary("kotlinx.serialization.json").get())
 
                 add("androidTestImplementation", kotlin("test"))
-                add("testImplementation", kotlin("test"))
+                add("testImplementation", kotlin("test-junit"))
             }
         }
     }
