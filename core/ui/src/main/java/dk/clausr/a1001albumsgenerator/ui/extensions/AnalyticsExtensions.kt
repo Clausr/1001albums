@@ -74,6 +74,18 @@ fun AnalyticsHelper.logAlbumSwiped(
     )
 }
 
+/** Logs which type of filter was used in search; never the selected values or the query. */
+fun AnalyticsHelper.logSearchFilterUsed(filterType: String) {
+    logEvent(
+        AnalyticsEvent(
+            type = AnalyticsEvent.Types.SEARCH_FILTER,
+            extras = listOf(
+                AnalyticsEvent.Param(AnalyticsEvent.ParamKeys.FILTER_TYPE, filterType),
+            ),
+        ),
+    )
+}
+
 /**
  * A side-effect which records a screen view event.
  */

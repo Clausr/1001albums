@@ -24,6 +24,7 @@ data class AnalyticsEvent(
         const val CLICK_ITEM = "click_event"
         const val REFRESH_ACTION = "refresh_content"
         const val SWIPE_ALBUM = "album_details_swipe"
+        const val SEARCH_FILTER = "search_filter"
     }
 
     /**
@@ -46,5 +47,6 @@ data class AnalyticsEvent(
         const val RATING = "rating"
         const val EVENT_NAME = "event_name"
         const val DIRECTION = "direction"
+        const val FILTER_TYPE = "filter_type"
     }
 }
