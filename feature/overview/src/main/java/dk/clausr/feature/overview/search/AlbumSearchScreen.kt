@@ -62,6 +62,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
+import dev.chrisbanes.haze.materials.HazeMaterials
 import dk.clausr.a1001albumsgenerator.ui.components.AlbumCover
 import dk.clausr.a1001albumsgenerator.ui.components.LocalNavAnimatedVisibilityScope
 import dk.clausr.a1001albumsgenerator.ui.components.LocalSharedTransitionScope
@@ -109,6 +114,7 @@ fun AlbumSearchRoute(
     )
 }
 
+@OptIn(ExperimentalHazeMaterialsApi::class)
 @Composable
 internal fun AlbumSearchScreen(
     query: String,
@@ -140,10 +146,16 @@ internal fun AlbumSearchScreen(
         if (listState.isScrollInProgress) focusManager.clearFocus()
     }
 
+    val hazeState = remember { HazeState() }
+
     Scaffold(
         modifier = modifier,
         topBar = {
-            Column(modifier = Modifier.statusBarsPadding()) {
+            Column(
+                modifier = Modifier
+                    .hazeEffect(state = hazeState, style = HazeMaterials.regular())
+                    .statusBarsPadding(),
+            ) {
                 SearchField(
                     query = query,
                     onQueryChange = onQueryChange,
@@ -183,6 +195,7 @@ internal fun AlbumSearchScreen(
                 state = listState,
                 modifier = Modifier
                     .fillMaxSize()
+                    .hazeSource(state = hazeState)
                     .consumeWindowInsets(innerPadding)
                     .imePadding(),
                 contentPadding = innerPadding,
