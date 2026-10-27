@@ -9,7 +9,6 @@ import dk.clausr.a1001albumsgenerator.settings.navigation.navigateToSettings
 import dk.clausr.a1001albumsgenerator.settings.navigation.settingsGraph
 import dk.clausr.a1001albumsgenerator.ui.components.OagNavHost
 import dk.clausr.feature.overview.navigation.OverviewBaseRoute
-import dk.clausr.feature.overview.navigation.navigateToAlbumDetails
 import dk.clausr.feature.overview.navigation.overviewGraph
 
 @Composable
@@ -31,9 +30,8 @@ fun MainAppNavHost(
                         modifier = modifier,
                     ) {
                         overviewGraph(
-                            navigateToAlbumDetails = navHostController::navigateToAlbumDetails,
+                            navController = navHostController,
                             navigateToSettings = navHostController::navigateToSettings,
-                            navigateBack = navHostController::navigateUp,
                             openNotificationsRequested = openNotificationsRequested,
                             onNotificationsOpened = onNotificationsOpened,
                         )

@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Album
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Badge
@@ -105,6 +106,7 @@ import java.time.Instant
 @Composable
 fun OverviewRoute(
     navigateToSettings: () -> Unit,
+    navigateToSearch: () -> Unit,
     navigateToAlbumDetails: (AlbumDetailsRoute) -> Unit,
     modifier: Modifier = Modifier,
     openNotificationsRequested: Boolean = false,
@@ -138,6 +140,7 @@ fun OverviewRoute(
         modifier = modifier,
         state = uiState,
         navigateToSettings = navigateToSettings,
+        navigateToSearch = navigateToSearch,
         navigateToAlbumDetails = navigateToAlbumDetails,
         openLink = viewModel::openStreamingLink,
         snackbarHostState = snackbarHostState,
@@ -174,6 +177,7 @@ internal fun OverviewScreen(
     openNotifications: () -> Unit,
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
+    navigateToSearch: () -> Unit = {},
     showUserAlbums: (Boolean) -> Unit = {},
     snackbarHostState: SnackbarHostState = SnackbarHostState(),
 ) {
@@ -236,6 +240,17 @@ internal fun OverviewScreen(
                         title = { },
                         colors = TopAppBarDefaults.topAppBarColors().copy(containerColor = Color.Transparent),
                         actions = {
+                            IconButton(
+                                onClick = {
+                                    analyticsHelper.logClickEvent("Search")
+                                    navigateToSearch()
+                                },
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Search,
+                                    contentDescription = stringResource(R.string.a11y_search_albums),
+                                )
+                            }
                             if (state is OverviewUiState.Success && !state.isUsingWidget) {
                                 IconButton(
                                     onClick = {

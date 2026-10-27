@@ -11,6 +11,7 @@ import dk.clausr.core.model.HistoricAlbum
 import dk.clausr.feature.overview.OverviewRoute
 import dk.clausr.feature.overview.details.AlbumDetailsScreen
 import dk.clausr.feature.overview.details.AlbumKey
+import dk.clausr.feature.overview.search.AlbumSearchRoute
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -18,6 +19,9 @@ data object OverviewBaseRoute
 
 @Serializable
 data object OverviewRoute
+
+@Serializable
+data object AlbumSearchRoute
 
 /** The section an album was opened from; the details screen lets the user swipe between its albums. */
 @Serializable
@@ -67,20 +71,29 @@ fun NavController.navigateToAlbumDetails(
     navOptions: NavOptions = navOptions { },
 ) = navigate(route = route, navOptions)
 
+private fun NavController.navigateToAlbumSearch() = navigate(route = AlbumSearchRoute)
+
 fun NavGraphBuilder.overviewGraph(
-    navigateBack: () -> Unit,
+    navController: NavController,
     navigateToSettings: () -> Unit,
-    navigateToAlbumDetails: (AlbumDetailsRoute) -> Unit,
     openNotificationsRequested: Boolean,
     onNotificationsOpened: () -> Unit,
 ) {
+    val navigateToAlbumDetails: (AlbumDetailsRoute) -> Unit = navController::navigateToAlbumDetails
     navigation<OverviewBaseRoute>(startDestination = OverviewRoute) {
         sharedTransitionComposable<OverviewRoute> {
             OverviewRoute(
                 navigateToSettings = navigateToSettings,
+                navigateToSearch = navController::navigateToAlbumSearch,
                 navigateToAlbumDetails = navigateToAlbumDetails,
                 openNotificationsRequested = openNotificationsRequested,
                 onNotificationsOpened = onNotificationsOpened,
+            )
+        }
+        sharedTransitionComposable<AlbumSearchRoute> {
+            AlbumSearchRoute(
+                onNavigateBack = navController::navigateUp,
+                navigateToAlbumDetails = navigateToAlbumDetails,
             )
         }
         sharedTransitionComposable<AlbumDetailsRoute> {
@@ -88,7 +101,7 @@ fun NavGraphBuilder.overviewGraph(
 
             AlbumDetailsScreen(
                 navigateToDetails = navigateToAlbumDetails,
-                onNavigateBack = navigateBack,
+                onNavigateBack = navController::navigateUp,
                 openLink = { uriHandler.openUri(it) },
             )
         }

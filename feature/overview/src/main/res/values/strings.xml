@@ -38,4 +38,18 @@
     <string name="show_all_notifications">Show all notifications</string>
     <string name="overview_tab_1001_albums">1001 albums</string>
     <string name="overview_tab_user_albums">User albums</string>
+
+    <string name="a11y_search_albums">Search albums</string>
+    <string name="a11y_search_back">Back</string>
+    <string name="a11y_search_clear_query">Clear search</string>
+    <string name="a11y_search_user_album">User album</string>
+    <string name="search_placeholder">Artist, album, review or subgenre</string>
+    <string name="search_filter_rating">Rating</string>
+    <string name="search_filter_decade">Decade</string>
+    <string name="search_filter_genre">Genre</string>
+    <string name="search_filter_clear">Clear</string>
+    <string name="search_filter_selection_more">%1$s +%2$d</string>
+    <string name="search_decade">%1$ds</string>
+    <string name="search_no_results">No albums match</string>
+    <string name="search_clear_filters">Clear filters</string>
 </resources>
