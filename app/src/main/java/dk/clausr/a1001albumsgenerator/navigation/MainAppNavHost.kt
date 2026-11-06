@@ -2,12 +2,14 @@ package dk.clausr.a1001albumsgenerator.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import dk.clausr.a1001albumsgenerator.MainViewState
 import dk.clausr.a1001albumsgenerator.onboarding.OnboardingRoute
 import dk.clausr.a1001albumsgenerator.settings.navigation.navigateToSettings
 import dk.clausr.a1001albumsgenerator.settings.navigation.settingsGraph
 import dk.clausr.a1001albumsgenerator.ui.components.OagNavHost
+import dk.clausr.feature.overview.navigation.AlbumDetailsRoute
 import dk.clausr.feature.overview.navigation.OverviewBaseRoute
 import dk.clausr.feature.overview.navigation.overviewGraph
 
@@ -28,6 +30,7 @@ fun MainAppNavHost(
                         navController = navHostController,
                         startDestination = OverviewBaseRoute,
                         modifier = modifier,
+                        isCrossfadeDestination = { it.hasRoute<AlbumDetailsRoute>() },
                     ) {
                         overviewGraph(
                             navController = navHostController,
