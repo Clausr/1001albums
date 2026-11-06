@@ -575,9 +575,17 @@ private fun SharedTransitionScope.DetailsCoverArt(
                     coverUrl = album.imageUrl,
                     albumSlug = album.slug,
                     modifier = coverModifier
-                        .sharedElement(
-                            sharedContentState = rememberSharedContentState(key = "$listName-cover-${album.slug}"),
-                            animatedVisibilityScope = animatedContentScope,
+                        .then(
+                            // Only the shown cover. The pager also composes its neighbours, which would otherwise match their
+                            // thumbnails on the previous screen and fly on top of everything during the transition.
+                            if (page == pagerState.currentPage) {
+                                Modifier.sharedElement(
+                                    sharedContentState = rememberSharedContentState(key = "$listName-cover-${album.slug}"),
+                                    animatedVisibilityScope = animatedContentScope,
+                                )
+                            } else {
+                                Modifier
+                            },
                         )
                         .graphicsLayer {
                             scaleX = coverScale
