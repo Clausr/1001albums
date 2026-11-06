@@ -94,7 +94,7 @@ data class StreamingService(private val id: String, val platform: StreamingPlatf
             StreamingPlatform.AmazonMusic -> "https://music.amazon.com/albums/$id"
             StreamingPlatform.YouTubeMusic -> "https://music.youtube.com/playlist?list=$id"
             StreamingPlatform.Deezer -> "https://deezer.com/album/$id"
-            StreamingPlatform.Qobuz -> "https://play.qobuz.com/album/$id" // TODO Confirm
+            StreamingPlatform.Qobuz -> "https://open.qobuz.com/album/$id"
             StreamingPlatform.Undefined -> ""
         }
 }
