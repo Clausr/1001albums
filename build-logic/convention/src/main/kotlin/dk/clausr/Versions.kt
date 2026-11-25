@@ -7,6 +7,7 @@ import kotlin.jvm.optionals.getOrNull
 object Versions {
     const val TARGET_VERSION = 36
     const val COMPILE_SDK = 37
+    const val COMPILE_SDK_MINOR = 1
     const val MIN_SDK = 26
 
     fun getJdkVersion(project: Project): String {

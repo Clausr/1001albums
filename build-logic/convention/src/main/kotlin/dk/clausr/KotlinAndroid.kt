@@ -37,7 +37,9 @@ internal fun Project.configureKotlinAndroid(extension: LibraryExtension) {
  */
 internal fun Project.configureKotlinAndroidCommon(extension: ApplicationExtension) {
     extension.apply {
-        compileSdk = Versions.COMPILE_SDK
+        compileSdk {
+            version = release(Versions.COMPILE_SDK) { minorApiLevel = Versions.COMPILE_SDK_MINOR }
+        }
 
         defaultConfig {
             minSdk = Versions.MIN_SDK
@@ -53,7 +55,9 @@ internal fun Project.configureKotlinAndroidCommon(extension: ApplicationExtensio
 
 internal fun Project.configureKotlinAndroidCommon(extension: LibraryExtension) {
     extension.apply {
-        compileSdk = Versions.COMPILE_SDK
+        compileSdk {
+            version = release(Versions.COMPILE_SDK) { minorApiLevel = Versions.COMPILE_SDK_MINOR }
+        }
 
         defaultConfig {
             minSdk = Versions.MIN_SDK
