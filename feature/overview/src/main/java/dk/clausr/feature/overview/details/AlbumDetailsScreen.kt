@@ -568,9 +568,11 @@ private fun SharedTransitionScope.DetailsCoverArt(
                             }
                         }
                     },
-                key = { page -> pages[page].key.toString() },
+                // The page count follows the pager state, which picks up a changed list before these lambdas do, so the
+                // pager can briefly ask for a page past the end of `pages`. The fallback key only lives until then.
+                key = { page -> pages.getOrNull(page)?.key?.toString() ?: page },
             ) { page ->
-                val album = pages[page].album
+                val album = pages.getOrNull(page)?.album ?: return@HorizontalPager
                 AlbumCover(
                     coverUrl = album.imageUrl,
                     albumSlug = album.slug,
